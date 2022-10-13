@@ -1,0 +1,128 @@
+.logout {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.logout__modal{
+    display: flex;
+    flex-direction: column;
+    z-index: 200;
+    background-color: #012243;
+    width: 30%;
+    height: 50%;
+    border-radius: 15px;
+    position: relative;
+    animation: animate 0.3s;
+}
+
+.logout__modal--light{
+    background-color: white;
+}
+
+.logout__info{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.logout__close{
+    color:white;
+    text-align: right;
+}
+
+.logout__close:hover{
+    cursor: pointer;
+}
+
+.logout__close--light{
+    color:black;
+}
+
+.logout__icon {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30px;
+}
+
+.logout__address{
+    padding:10px;
+    color:white;
+    font-weight: 600;
+    font-size: 27px;
+}
+
+.logout__address--light{
+    color: black;
+}
+
+.logout__arbiscan {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:#8798ad;
+}
+
+.logout__copy {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:white;
+}
+
+.logout__copy:hover{
+    cursor: pointer;
+}
+
+.logout__copy--light{
+    color:black;
+}
+
+.logout__copy--light:hover{
+    cursor: pointer;
+}
+
+.logout__arbiscan:hover{
+    cursor: pointer;
+    color:white;
+}
+
+.logout__arbiscan--light:hover{
+    cursor: pointer;
+    color:black;
+}
+
+.logout__arbiscan--light{
+    color:#8798ad;
+}
+
+.logout__view{
+    margin-left: 5px;
+}
+
+.logout__button{
+    margin-top:5%;
+    background-color: #7cc4eb;
+    color:white;
+    font-weight:700;
+    font-size:17px;
+    border-radius:15px;
+    padding: 20px;
+    width:fit-content;
+    padding-left: 70px;
+    padding-right: 70px;
+    align-self: center;
+}
+
+.logout__button:hover{
+    cursor: pointer;
+    background-color: #68b4c9;
+}

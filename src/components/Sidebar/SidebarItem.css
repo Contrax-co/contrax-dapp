@@ -1,0 +1,65 @@
+.sidebar_title{
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.sideitems{
+    display:flex;
+    align-items: center;
+    margin-bottom: 10px;
+    color: white;
+    padding:5px;
+}
+
+.sideitems--light{
+    color:#8798ad;
+}
+
+.sideitems--selected{
+    background-color:#012243;
+    border-radius:10px;
+    width: 150px;
+}
+
+.sideitems--selected--light{
+    background-color: white;
+    border: 1px solid #d9d9d9;
+}
+
+.sideitems--selected > div {
+    color: #009aff;
+}
+
+.sideitems--selected--light >div {
+    color: #61cddf;
+}
+
+.sideitems:hover > div{
+    color: #009aff;
+    cursor: pointer;
+}
+
+.sideitems--light:hover > div {
+    color: black;
+    cursor: pointer;
+}
+
+.icon{
+    color: white;
+    margin-right: 10px;
+    font-size: 23px;
+}
+
+.icon--light{
+    color:#8798ad;
+}
+
+.icon2{
+    color: white;
+    margin-right: 5px;
+    font-size: 11px;
+}
+
+.icon2--light{
+    color:#8798ad;
+}

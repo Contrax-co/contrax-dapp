@@ -1,0 +1,66 @@
+.farms {
+    width: 100%;
+    height: 100vh;
+    overflow-y:scroll;
+    overflow-x:hidden;
+}
+
+.farm_header{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.farm_header > p{
+    font-size: 34px;
+    font-weight: bold;
+    color:white;
+}
+
+.farm_header--light >p{
+    font-size: 34px;
+    font-weight: bold;
+    color:black;
+}
+
+.farms>p{
+    color:white;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.farms--light > p {
+    color:#009aff;
+}
+
+.farm__title {
+    display: flex;
+    font-size:13px;
+    font-weight: bold;
+    justify-content: space-between;
+    padding-left:30px;
+    padding-right:30px;
+    color:white;
+}
+
+.farm__title--light {
+    color:black;
+}
+
+.farm__asset{
+    flex:2;
+}
+
+.farm__second__title{
+    flex: 5;
+    display: flex;
+    justify-content: space-around;
+}
+
+
+.pools_list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top:10px;
+}
