@@ -7,22 +7,28 @@ export const wethAddress="0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
  * @param setEthUserBal 
  * @param ethUserBal 
  */
- export const getEthBalance = async(currentWallet:any, setEthUserBal:any, ethUserBal:any) => {
-    const {ethereum} = window;
-    try{
-        if(ethereum){
-            const provider = new ethers.providers.Web3Provider(ethereum);
+ export const getEthBalance = async(currentWallet:any, setEthUserBal:any) => {
+    if(currentWallet){
 
-            const balance = await provider.getBalance(currentWallet);
-            const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
-            setEthUserBal(formattedBal);
+        const {ethereum} = window;
+        try{
+            if(ethereum){
+                const provider = new ethers.providers.Web3Provider(ethereum);
+
+                const balance = await provider.getBalance(currentWallet);
+                const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
+                setEthUserBal(formattedBal);
+            }
+            else{
+                console.log("Ethereum object doesn't exist!");
+            }
         }
-        else{
-            console.log("Ethereum object doesn't exist!");
+        catch(error){
+            console.log(error);
         }
-    }
-    catch(error){
-        console.log(error);
+
+    } else {
+        setEthUserBal(0);
     }
 }
 
@@ -34,23 +40,29 @@ export const wethAddress="0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
  * @param setUserLPBalance 
  * @param userLPBalance 
  */
- export const getLPBalance = async(pool:any, currentWallet:any, setUserLPBalance:any, userLPBalance:any) => {
-    const {ethereum} = window; 
-    try {
-        if (ethereum) {
-            const provider = new ethers.providers.Web3Provider(ethereum);
-            const lpContract = new ethers.Contract(pool.lp_address, pool.lp_abi, provider);
+ export const getLPBalance = async(pool:any, currentWallet:any, setUserLPBalance:any) => {
+    if(currentWallet){
 
-            const balance = await lpContract.balanceOf(currentWallet);
-            const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
-            setUserLPBalance(formattedBal);
+        const {ethereum} = window; 
+        try {
+            if (ethereum) {
+                const provider = new ethers.providers.Web3Provider(ethereum);
+                const lpContract = new ethers.Contract(pool.lp_address, pool.lp_abi, provider);
+
+                const balance = await lpContract.balanceOf(currentWallet);
+                const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
+                setUserLPBalance(formattedBal);
+            }
+            else {
+                console.log("Ethereum object doesn't exist!");
+            }
         }
-        else {
-            console.log("Ethereum object doesn't exist!");
+        catch (error){
+            console.log(error);
         }
-    }
-    catch (error){
-        console.log(error);
+
+    }else{
+        setUserLPBalance(0); 
     }
 }
 
