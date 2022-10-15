@@ -7,7 +7,7 @@ export const wethAddress="0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
  * @param setEthUserBal 
  * @param ethUserBal 
  */
- export const getEthBalance = async(currentWallet, setEthUserBal, ethUserBal) => {
+ export const getEthBalance = async(currentWallet:any, setEthUserBal:any, ethUserBal:any) => {
     const {ethereum} = window;
     try{
         if(ethereum){
@@ -34,7 +34,7 @@ export const wethAddress="0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
  * @param setUserLPBalance 
  * @param userLPBalance 
  */
- export const getLPBalance = async(pool, currentWallet, setUserLPBalance, userLPBalance) => {
+ export const getLPBalance = async(pool:any, currentWallet:any, setUserLPBalance:any, userLPBalance:any) => {
     const {ethereum} = window; 
     try {
         if (ethereum) {
@@ -62,7 +62,7 @@ export const wethAddress="0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
  * @param {*} wethAddress 
  * @param {*} setEthZapAmount 
  */
-export const zapIn = async(setLoading, pool, ethZapAmount, setEthZapAmount, setLoaderMessage) => {
+export const zapIn = async(setLoading:any, pool:any, ethZapAmount:any, setEthZapAmount:any, setLoaderMessage:any) => {
     const {ethereum} = window;
     setLoading(true);
     setLoaderMessage('User initiated a zap into the vault!')
@@ -77,7 +77,7 @@ export const zapIn = async(setLoading, pool, ethZapAmount, setEthZapAmount, setL
             */
             const formattedBal = ethers.utils.parseUnits(ethZapAmount.toString(), 18);
     
-            const gasEstimated = await zapperContract.estimateGas.zapInETH(pool.vault_addr, formattedBal, wethAddress, {value:formattedBal});
+            const gasEstimated:any = await zapperContract.estimateGas.zapInETH(pool.vault_addr, formattedBal, wethAddress, {value:formattedBal});
             const gasMargin = gasEstimated * 1.1; 
             
             const zapperTxn = await zapperContract.zapInETH(pool.vault_addr, formattedBal, wethAddress, {value:formattedBal, gasLimit: Math.ceil(gasMargin)});
@@ -113,7 +113,7 @@ export const zapIn = async(setLoading, pool, ethZapAmount, setEthZapAmount, setL
  * @param {*} setLPDepositAmount 
  * @param {*} setLoading 
  */
-export const deposit = async(pool, depositAmount, setLPDepositAmount, setLoading, setLoaderMessage) => {
+export const deposit = async(pool:any, depositAmount:any, setLPDepositAmount:any, setLoading:any, setLoaderMessage:any) => {
     
     const {ethereum} = window;
     setLoading(true);
@@ -133,7 +133,7 @@ export const deposit = async(pool, depositAmount, setLPDepositAmount, setLoading
             const lpContract = new ethers.Contract(pool.lp_address, pool.lp_abi, signer);
             await lpContract.approve(pool.vault_addr, formattedBal);
 
-            const gasEstimated = await vaultContract.estimateGas.deposit(formattedBal);
+            const gasEstimated:any = await vaultContract.estimateGas.deposit(formattedBal);
             const gasMargin = gasEstimated * 1.1;
 
 

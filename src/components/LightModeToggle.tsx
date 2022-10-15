@@ -2,7 +2,7 @@ import React from 'react';
 import {MdOutlineDarkMode, MdOutlineLightMode, MdLightMode, MdDarkMode} from 'react-icons/md';
 import './LightModeToggle.css';
 
-function LightModeToggle({lightMode, ...props}) {
+function LightModeToggle({lightMode, ...props}:any) {
   return (
     <div className="togglelight_container">
         {lightMode ? <MdLightMode className={`label1 ${lightMode && "label1--light"}`}/> : <MdOutlineLightMode className={`label1 ${lightMode && "label1--light"}`} />}

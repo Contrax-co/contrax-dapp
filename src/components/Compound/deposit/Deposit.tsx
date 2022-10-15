@@ -5,7 +5,7 @@ import {MoonLoader} from "react-spinners";
 import { deposit, getEthBalance, getLPBalance, zapIn } from './deposit-functions';
 
 
-function Deposit({lightMode, pool, currentWallet, connectWallet}) {
+function Deposit({lightMode, pool, currentWallet, connectWallet}:any) {
     const [toggleType, setToggleType] = useState(false);
 
     const [ethUserBal, setEthUserBal] = useState(0);
@@ -24,11 +24,11 @@ function Deposit({lightMode, pool, currentWallet, connectWallet}) {
     }, [currentWallet, ethUserBal, pool, lpUserBal])
 
 
-    const handleDepositChange = (e) => {
+    const handleDepositChange = (e:any) => {
         setLPDepositAmount(e.target.value);
     }
 
-    const handleZapChange = (e) => {
+    const handleZapChange = (e:any) => {
         setEthZapAmount(e.target.value);
     }
 
