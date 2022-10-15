@@ -1,5 +1,5 @@
 // Method To Store User Session
-export function setUserSession(data) {
+export function setUserSession(data:any) {
     return localStorage.setItem('userOnboardData', JSON.stringify(data));
 }
 
