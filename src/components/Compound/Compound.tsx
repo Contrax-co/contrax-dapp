@@ -3,7 +3,7 @@ import './Compound.css';
 import { useQuery } from "react-query";
 import CompoundItem from './CompoundItem';
 
-function Compound({lightMode, currentWallet, connectWallet}) {
+function Compound({lightMode, currentWallet, connectWallet}:any) {
 
     const fetchPools = async () => {
         const res = await fetch("http://localhost:3001/api/pools.json");
@@ -31,7 +31,7 @@ function Compound({lightMode, currentWallet, connectWallet}) {
 
         {status === "success" && (
             <div className="pools_list">
-                {data.map((pool) => (
+                {data.map((pool:any) => (
                     <CompoundItem
                         key={pool.id}
                         lightMode={lightMode}

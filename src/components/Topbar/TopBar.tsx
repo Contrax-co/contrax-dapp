@@ -2,7 +2,7 @@ import React from 'react';
 import Jazzicon, {jsNumberForAddress} from 'react-jazzicon';
 import './TopBar.css';
 
-function TopBar({lightMode, currentWallet, connectWallet, logout, networkId, ...props}) {
+function TopBar({lightMode, currentWallet, connectWallet, logout, networkId, ...props}:any) {
   return (
     <div className="topbar_placement">
         {currentWallet ? (

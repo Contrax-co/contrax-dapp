@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import Toggle from '../Toggle';
 import './Withdraw.css';
 
-function Withdraw({lightMode, pool}) {
+function Withdraw({lightMode, pool}:any) {
   const [toggleType, setToggleType] = useState(false);
 
   return (

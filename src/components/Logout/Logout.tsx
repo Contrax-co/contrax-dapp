@@ -6,13 +6,13 @@ import {BsCheckCircle} from 'react-icons/bs';
 import './Logout.css';
 import { removeUserSession } from '../../store/localStorage';
 
-function Logout({lightMode, setLogout, currentWallet, setCurrentWallet}) {
+function Logout({lightMode, setLogout, currentWallet, setCurrentWallet}:any) {
     const [copied, setCopied] = useState(false);
 
     // close the modal when clicking outside the modal.
-    const modalRef= useRef();
+    const modalRef:any = useRef();
 
-    const closeModal = (e) => {
+    const closeModal = (e:any) => {
         if (e.target === modalRef.current) {
             setLogout(false);
         }
