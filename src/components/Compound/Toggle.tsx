@@ -1,7 +1,7 @@
 import React from 'react';
 import './Toggle.css';
 
-function Toggle({lightMode, active, pool, ...props}) {
+function Toggle({lightMode, active, pool, ...props}:any) {
   return (
     <div className="switch">
      

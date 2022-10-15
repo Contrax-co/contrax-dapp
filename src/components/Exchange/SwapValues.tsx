@@ -1,11 +1,11 @@
 import React, {useRef} from 'react';
 import './SwapValues.css';
 
-function SwapValues({lightMode, setOpenModal, tokens, setTokenSwap}) {
+function SwapValues({lightMode, setOpenModal, tokens, setTokenSwap}:any) {
     // close the modal when clicking outside the modal.
-    const modalRef = useRef();
+    const modalRef:any = useRef();
 
-    const closeModal = (e) => {
+    const closeModal = (e:any) => {
         if (e.target === modalRef.current) {
             setOpenModal(false);
         }
@@ -20,7 +20,7 @@ function SwapValues({lightMode, setOpenModal, tokens, setTokenSwap}) {
             </div>
 
             <div>
-                {tokens.map((token) => (
+                {tokens.map((token:any) => (
                     <div key={token.id} className={`exchange_items ${lightMode && "exchange_items--light"}`} onClick={() => {
                         setOpenModal(false); 
                         setTokenSwap(token.id);

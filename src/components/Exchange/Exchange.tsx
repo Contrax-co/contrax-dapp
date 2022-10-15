@@ -5,7 +5,7 @@ import SwapValues from './SwapValues';
 import { useQuery } from "react-query";
 import './Exchange.css';
 
-function Exchange({lightMode}) {
+function Exchange({lightMode}:any) {
   const [openModal, setOpenModal] = useState(false);
   const [swapTokensFrom, setSwapTokensFrom] = useState("Ether");
   const [swapTokensTo, setSwapTokensTo] = useState("Sushi");
