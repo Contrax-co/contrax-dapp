@@ -1,9 +1,9 @@
 import React from 'react';
 import './Dropdown.css';
 
-function Dropdown({pool, value, setValue}) {
+function Dropdown({pool, value, setValue}:any) {
 
-    const handleChange = (event) => {
+    const handleChange = (event:any) => {
         setValue(event.target.value);
     };
 

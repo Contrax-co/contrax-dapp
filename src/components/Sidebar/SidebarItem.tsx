@@ -1,7 +1,7 @@
 import React from 'react';
 import './SidebarItem.css'; 
 
-function SidebarItem({icon, title, icon2, lightMode, active, ...props}) {
+function SidebarItem({icon, title, icon2, lightMode, active, ...props}:any) {
   return (
     <div className={`sideitems 
     ${lightMode && "sideitems--light"} 

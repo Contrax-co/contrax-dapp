@@ -5,7 +5,7 @@ import Deposit from './deposit/Deposit';
 import PoolButton from './PoolButton';
 import Withdraw from './withdraw/Withdraw';
 
-function CompoundItem({lightMode, pool, currentWallet, connectWallet}) {
+function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
   const [dropdown, setDropDown] = useState(false);
   const [buttonType, setButtonType] = useState("Deposit");
 
