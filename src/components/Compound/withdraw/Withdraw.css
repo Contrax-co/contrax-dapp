@@ -65,6 +65,7 @@
     justify-content:center;
     color:white;
     font-weight: bold;
+    margin-right:70px;
   }
   
   .withdraw_tab--light{
@@ -202,4 +203,23 @@
   .overlay:hover{
     cursor:pointer;
   }
+
+  .spinner {
+    position:fixed;
+    top: 15%;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    right: 0;
+    height:8vh;
+    display: flex;
+    align-items: center;
+    background-color:#dcf2ff;
+    padding: 10px;
+}
+
+.spinner_description{
+  margin-left:20px;
+  word-wrap: break-word;
+  width: 350px;
+}
   

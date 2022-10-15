@@ -1,7 +1,7 @@
 import React from 'react';
 import './Compound.css';
 import { useQuery } from "react-query";
-import CompoundItem from './CompoundItem';
+import CompoundItem from './compound-item/CompoundItem';
 
 function Compound({lightMode, currentWallet, connectWallet}:any) {
 
