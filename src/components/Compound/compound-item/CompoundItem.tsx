@@ -1,13 +1,21 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {RiArrowDownSLine, RiArrowUpSLine} from 'react-icons/ri';
 import './CompoundItem.css';
-import Deposit from './deposit/Deposit';
-import PoolButton from './PoolButton';
-import Withdraw from './withdraw/Withdraw';
+import Deposit from '../deposit/Deposit';
+import PoolButton from '../PoolButton';
+import Withdraw from '../withdraw/Withdraw';
+import { getUserVaultBalance } from './compound-functions';
 
 function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
   const [dropdown, setDropDown] = useState(false);
   const [buttonType, setButtonType] = useState("Deposit");
+
+  const [userVaultBal, setUserVaultBalance] = useState(0);
+
+  useEffect(() => {
+    getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
+  }, [pool, currentWallet])
+
 
   return (
     <div className={`pools ${lightMode && "pools--light"}`}>
@@ -55,7 +63,7 @@ function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
                     <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                         $user value
                     </p>
-                    <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>user Tokens</p>
+                    <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>{userVaultBal.toFixed(5)}</p>
                 </div>
 
                 <div className={`container ${lightMode && "container--light"}`}>
@@ -106,6 +114,8 @@ function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
               <Withdraw
                 lightMode={lightMode}
                 pool={pool}
+                currentWallet={currentWallet}
+                connectWallet={connectWallet}
               />
             )}
 
