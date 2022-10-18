@@ -4,17 +4,43 @@ import './CompoundItem.css';
 import Deposit from '../deposit/Deposit';
 import PoolButton from '../PoolButton';
 import Withdraw from '../withdraw/Withdraw';
-import { getUserVaultBalance } from './compound-functions';
+import { getTotalVaultBalance, getUserVaultBalance, 
+  priceOfTokens, totalLPTokenExisting, 
+  usdTokenValueInVault, usdUserVaultValue
+} from './compound-functions';
+
 
 function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
   const [dropdown, setDropDown] = useState(false);
   const [buttonType, setButtonType] = useState("Deposit");
 
   const [userVaultBal, setUserVaultBalance] = useState(0);
+  const [totalVaultBalance, setTotalVaultBalance] = useState(0);
+
+  const [price0, setPrice0] = useState(0);
+  const [price1, setPrice1] = useState(0);
+
+  const [priceOfToken, setPriceOfToken] = useState(0);
+  const [valueInVault, setValueInVault] = useState(0);
+
+  const [userUsdVault, setUserUsdVault] = useState(0);
+
 
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
+    getTotalVaultBalance(pool, setTotalVaultBalance);
+
   }, [pool, currentWallet])
+
+  useEffect(() => {
+    priceOfTokens(pool.token1, setPrice0); 
+    priceOfTokens(pool.token2, setPrice1); 
+
+    totalLPTokenExisting(pool, price0, price1, setPriceOfToken);
+    usdTokenValueInVault(priceOfToken, totalVaultBalance, setValueInVault); 
+    usdUserVaultValue(priceOfToken, userVaultBal, setUserUsdVault); 
+
+  }, [pool, price0, price1, priceOfToken, totalVaultBalance, userVaultBal])
 
 
   return (
@@ -46,14 +72,18 @@ function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
 
                 <div className={`container__apy ${lightMode && "container__apy--light"}`}>
                     <p className={`pool_name__apy ${lightMode && "pool_name__apy--light"}`}>apy</p>
+                
                 </div>
 
                 <div className={`container ${lightMode && "container--light"}`}>
                     <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                        $total value
+                        {valueInVault.toLocaleString('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                          })}
                     </p>
                     
-                    <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>total number Tokens</p>
+                    <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>{totalVaultBalance.toFixed(2)}</p>
                     
                 </div>
 
@@ -61,7 +91,10 @@ function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
             
                 <div className={`container ${lightMode && "container--light"}`}>
                     <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                        $user value
+                        {userUsdVault.toLocaleString('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                          })}
                     </p>
                     <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>{userVaultBal.toFixed(5)}</p>
                 </div>
