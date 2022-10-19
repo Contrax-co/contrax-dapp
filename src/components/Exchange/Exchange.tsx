@@ -1,8 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {CgArrowsExchangeAltV} from 'react-icons/cg';
 import {HiChevronDown} from 'react-icons/hi';
 import SwapValues from './SwapValues';
-import { useQuery } from "react-query";
 import './Exchange.css';
 
 function Exchange({lightMode}:any) {
@@ -12,13 +11,17 @@ function Exchange({lightMode}:any) {
 
   const [tokenSwap, setTokenSwap] = useState(0);
 
-  
-  const fetchPools = async () => {
-    const res = await fetch("http://localhost:3001/api/poolswap.json");
-    return res.json();
-  };
-  
-  const {data, status} = useQuery("pools", fetchPools);
+  const [tokens, setTokens] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/poolswap.json")       //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
+    .then(response => response.json())
+    .then(data => {
+        setTokens(data); 
+    })
+
+  }, [])
+
 
   return (
     <div className={`whole__exchange__container`}>
@@ -67,10 +70,10 @@ function Exchange({lightMode}:any) {
 
       </div>
 
-      {status === "success" && (
+      { (
         openModal ? (
         <SwapValues 
-          tokens={data} 
+          tokens={tokens} 
           setOpenModal={setOpenModal} 
           setTokenSwap={setTokenSwap}
 

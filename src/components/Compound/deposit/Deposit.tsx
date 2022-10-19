@@ -19,8 +19,8 @@ function Deposit({lightMode, pool, currentWallet, connectWallet}:any) {
     const [loaderMessage, setLoaderMessage] = useState('');
 
     useEffect(() => {
-        getEthBalance(currentWallet, setEthUserBal, ethUserBal); 
-        getLPBalance(pool, currentWallet, setLPUserBal, lpUserBal);
+        getEthBalance(currentWallet, setEthUserBal); 
+        getLPBalance(pool, currentWallet, setLPUserBal);
     }, [currentWallet, ethUserBal, pool, lpUserBal])
 
 
