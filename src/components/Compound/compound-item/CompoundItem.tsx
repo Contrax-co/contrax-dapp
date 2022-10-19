@@ -27,7 +27,7 @@ function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
 
   const [userUsdVault, setUserUsdVault] = useState(0);
 
-  const { data } = useQuery(GET_DEPOSITED, {
+  const { data, loading, error } = useQuery(GET_DEPOSITED, {
     variables: { 
       currentWallet
     },
@@ -48,7 +48,9 @@ function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
     usdTokenValueInVault(priceOfToken, totalVaultBalance, setValueInVault); 
     usdUserVaultValue(priceOfToken, userVaultBal, setUserUsdVault); 
 
-  }, [pool, price0, price1, priceOfToken, totalVaultBalance, userVaultBal])
+    console.log(`the data being loaded from the hasura database is ${data}`)
+
+  }, [pool, price0, price1, priceOfToken, totalVaultBalance, userVaultBal, data])
 
 
   return (

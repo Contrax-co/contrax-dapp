@@ -5,13 +5,14 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
+console.log(`the secret key is ${process.env.REACT_APP_ADMIN_SECRET}`)
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 const client = new ApolloClient({
   uri: 'https://contrax-db.hasura.app/v1/graphql',
   headers: {
     'content-type': 'application/json',
-    'x-hasura-admin-secret': process.env.REACT_APP_ADMIN_SECRET as string,
+    'x-hasura-admin-secret': `${process.env.REACT_APP_ADMIN_SECRET}`,
   },
   cache: new InMemoryCache(),
 });
