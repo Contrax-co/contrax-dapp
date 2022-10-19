@@ -8,6 +8,8 @@ import { getTotalVaultBalance, getUserVaultBalance,
   priceOfTokens, totalLPTokenExisting, 
   usdTokenValueInVault, usdUserVaultValue
 } from './compound-functions';
+import { useQuery } from '@apollo/client';
+import { GET_DEPOSITED } from './queries';
 
 
 function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
@@ -24,6 +26,12 @@ function CompoundItem({lightMode, pool, currentWallet, connectWallet}:any) {
   const [valueInVault, setValueInVault] = useState(0);
 
   const [userUsdVault, setUserUsdVault] = useState(0);
+
+  const { data } = useQuery(GET_DEPOSITED, {
+    variables: { 
+      currentWallet
+    },
+  });
 
 
   useEffect(() => {
