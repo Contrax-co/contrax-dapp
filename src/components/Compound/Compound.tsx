@@ -1,17 +1,19 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import './Compound.css';
-import { useQuery } from "react-query";
-import CompoundItem from './CompoundItem';
+import CompoundItem from './compound-item/CompoundItem';
 
 function Compound({lightMode, currentWallet, connectWallet}:any) {
+    const [pools, setPools] = useState([]);
 
-    const fetchPools = async () => {
-        const res = await fetch("http://localhost:3001/api/pools.json");
-        return res.json();
-    };
+    useEffect(() => {
+        fetch(`http://localhost:3000/api/pools.json`)       //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
+        .then(response => response.json())
+        .then(data => {
+            setPools(data); 
+        })
 
-    const {data, status} = useQuery("pools", fetchPools);
-  
+    }, [])
+
 
   return (
     <div className={`farms ${lightMode && "farms--light"}`}>
@@ -29,9 +31,9 @@ function Compound({lightMode, currentWallet, connectWallet}:any) {
             </div>
         </div>
 
-        {status === "success" && (
+
             <div className="pools_list">
-                {data.map((pool:any) => (
+                {pools.map((pool:any) => (
                     <CompoundItem
                         key={pool.id}
                         lightMode={lightMode}
@@ -41,7 +43,7 @@ function Compound({lightMode, currentWallet, connectWallet}:any) {
                     />
                 ))}
             </div>
-        )}
+      
        
     </div>
   )
