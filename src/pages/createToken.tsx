@@ -8,7 +8,7 @@ import { useInput } from 'rooks';
 import { Col, Container, Row } from '../components/blocks/Blocks';
 import { Modal } from '../components/modal/Modal';
 import { useEffect, useState } from 'react';
-import { getUserSession } from '../store/localstorage';
+import { getUserSession } from '../store/localStorage';
 import { gql, useMutation } from '@apollo/client';
 import Tokens from '../components/tokens';
 import swal from 'sweetalert';

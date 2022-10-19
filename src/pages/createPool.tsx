@@ -9,7 +9,7 @@ import TokenModal from '../components/TokenModal';
 import { StyledDropBtn } from '../components/form/dropdownInput/DropdownInput.styles';
 import { gql, useQuery } from '@apollo/client';
 import { ethers } from 'ethers';
-import { getUserSession } from '../store/localstorage';
+import { getUserSession } from '../store/localStorage';
 import swal from 'sweetalert';
 import TokenModal1 from '../components/TokenModal1';
 import abi from '../config/sushiswap.json';
