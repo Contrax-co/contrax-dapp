@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
-console.log(`the secret key is ${process.env.REACT_APP_ADMIN_SECRET}`)
+console.log(`the secret key is ${process.env.REACT_APP_ADMIN_SECRET}`);
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 const client = new ApolloClient({
@@ -23,7 +23,6 @@ root.render(
       <App />
     </ApolloProvider>
   </React.StrictMode>
- 
 );
 
 // If you want to start measuring performance in your app, pass a function
