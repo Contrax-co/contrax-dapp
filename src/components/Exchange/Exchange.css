@@ -1,208 +1,206 @@
-.whole__exchange__container{
-    width:100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+.whole__exchange__container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.exchange__header{
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
+.exchange__header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
 
-.whole__container__title{
-    font-size:34px;
-    font-weight:bold;
-    color:white;
+.whole__container__title {
+  font-size: 34px;
+  font-weight: bold;
+  color: white;
 }
 
-.whole__container__title--light{
-    color:black;
+.whole__container__title--light {
+  color: black;
 }
 
-.swap__container{  
-    margin-top:50px; 
-    display: flex;
-    flex-direction: column;
-    align-self: center;
-    justify-self: center;
-    background-color: #012243;
-    padding:15px;
-    border-radius:20px;
-    width:50%;
-    height:50%;
+.swap__container {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-self: center;
+  background-color: #012243;
+  padding: 15px;
+  border-radius: 20px;
+  width: 50%;
+  height: 50%;
 }
 
-.swap__container--light{
-    background-color: white;
-    box-shadow: 2px 2px 18px lightgrey;
+.swap__container--light {
+  background-color: white;
+  box-shadow: 2px 2px 18px lightgrey;
 }
 
-.swap_title{
-    color: white;
-    font-weight: bold;
+.swap_title {
+  color: white;
+  font-weight: bold;
 }
 
-.swap_title--light{
-    color:black;
-    font-weight: bold;
+.swap_title--light {
+  color: black;
+  font-weight: bold;
 }
 
 .from {
-    color:white;
-    padding-bottom:15px;
-    padding-top:15px;
+  color: white;
+  padding-bottom: 15px;
+  padding-top: 15px;
 }
 
-.from--light{
-    color:lightgrey;
-    width:100%;
+.from--light {
+  color: lightgrey;
+  width: 100%;
 }
 
-.from__input{
-    display: flex;
-    background-color: #001428;
-    color:white;
-    height:60px;
-    padding:5px;
-    border-radius:15px;
+.from__input {
+  display: flex;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
 }
 
-.from__input--light{
-    background-color:rgb(233, 237, 245);
-    color:lightgrey;
+.from__input--light {
+  background-color: rgb(233, 237, 245);
+  color: lightgrey;
 }
 
-
-.to__input{
-    display: flex;
-    background-color: #001428;
-    color:white;
-    height:60px;
-    padding:5px;
-    border-radius: 15px;
+.to__input {
+  display: flex;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
 }
 
-.to__input--light{
-    background-color:rgb(233, 237, 245);
-    color:lightgrey;
+.to__input--light {
+  background-color: rgb(233, 237, 245);
+  color: lightgrey;
 }
 
-.from__amount{
-    flex:7;
-    border:none;
-    height:100%;
-    border-right: 1px solid #043b71;
-    font-size: 25px;
-    background-color: #001428;
-    color:white;
+.from__amount {
+  flex: 7;
+  border: none;
+  height: 100%;
+  border-right: 1px solid #043b71;
+  font-size: 25px;
+  background-color: #001428;
+  color: white;
 }
 
-.from__amount--light{
-    background-color:rgb(233, 237, 245);
-    border-right: 1px solid lightgrey;
-    color:black;
+.from__amount--light {
+  background-color: rgb(233, 237, 245);
+  border-right: 1px solid lightgrey;
+  color: black;
 }
 
-.dropdown__from{
-    flex:2;
-    float:right;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    justify-content: space-evenly;
-    color:white;
+.dropdown__from {
+  flex: 2;
+  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-content: space-evenly;
+  color: white;
 }
 
-.dropdown__from:hover{
-    cursor: pointer;
-    color: #009aff;
+.dropdown__from:hover {
+  cursor: pointer;
+  color: #009aff;
 }
-.dropdown__from--light:hover{
-    cursor: pointer;
-    color: #009aff;
-}
-
-.dropdown__from--light{
-    color:black;
+.dropdown__from--light:hover {
+  cursor: pointer;
+  color: #009aff;
 }
 
-.dropdown__to{
-    flex:2;
-    display:flex;
-    float:right;
-    align-items:center;
-    justify-content:center;
-    justify-content: space-evenly;
-    color:white;
+.dropdown__from--light {
+  color: black;
 }
 
-.dropdown__to--light:hover{
-    cursor: pointer;
-    color: #009aff;
+.dropdown__to {
+  flex: 2;
+  display: flex;
+  float: right;
+  align-items: center;
+  justify-content: center;
+  justify-content: space-evenly;
+  color: white;
 }
 
-.dropdown__to:hover{
-    cursor: pointer;
-    color: #009aff;
+.dropdown__to--light:hover {
+  cursor: pointer;
+  color: #009aff;
 }
 
-.dropdown__to--light{
-    color:black;
+.dropdown__to:hover {
+  cursor: pointer;
+  color: #009aff;
 }
 
-.swap__logo{
-    width:30px;
+.dropdown__to--light {
+  color: black;
 }
 
-
-.to__amount{
-    flex:7;
-    border:none;
-    height:100%;
-    border-right: 1px solid #043b71;
-    font-size:25px;
-    background-color: #001428;
-    color:white;
+.swap__logo {
+  width: 30px;
 }
 
-.to__amount--light{
-    background-color:rgb(233, 237, 245);
-    border-right: 1px solid lightgrey;
-    color:black;
+.to__amount {
+  flex: 7;
+  border: none;
+  height: 100%;
+  border-right: 1px solid #043b71;
+  font-size: 25px;
+  background-color: #001428;
+  color: white;
 }
 
-.symbol__exchange{
-    color:white;
-    align-self:center;
-    font-size:50px;
+.to__amount--light {
+  background-color: rgb(233, 237, 245);
+  border-right: 1px solid lightgrey;
+  color: black;
 }
 
-.symbol__exchange--light{
-    color:black;
+.symbol__exchange {
+  color: white;
+  align-self: center;
+  font-size: 50px;
 }
 
-.to{
-    color:white;
+.symbol__exchange--light {
+  color: black;
 }
 
-.to--light{
-    color:lightgrey;
+.to {
+  color: white;
 }
 
-.exchange_button{
-    background-color: rgb(89, 179, 247);
-    padding:15px;
-    border-radius:15px;
-    font-weight:bold;
-    font-size:20px;
-    margin-top: 30px;
-    text-align: center;
-    color:white;
+.to--light {
+  color: lightgrey;
 }
 
-.exchange_button:hover{
-    cursor: pointer;
-    background-color:rgb(63, 140, 199);
+.exchange_button {
+  background-color: rgb(89, 179, 247);
+  padding: 15px;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 30px;
+  text-align: center;
+  color: white;
+}
+
+.exchange_button:hover {
+  cursor: pointer;
+  background-color: rgb(63, 140, 199);
 }
