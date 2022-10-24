@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import * as colors from '../theme/colors';
+import { getUserSession } from '../store/localStorage';
 
 import Header from '../components/header/Header';
 import StatsCard from '../components/statsCard/StatsCard';
@@ -11,13 +12,9 @@ import { Col, Container, Row } from '../components/blocks/Blocks';
 import { FormInput } from '../components/form/Form';
 import { Modal } from '../components/modal/Modal';
 
-import { getUserSession } from '../store/localStorage';
-
 const contractFile = require('../config/erc20.json');
 const ethers = require('ethers');
-// const Web3 = require('web3');
 
-// TODO - review security risks when using [ethereum: any] vs [ethereum: MetaMaskInpageProvider;]
 declare global {
   interface Window {
     ethereum: any;

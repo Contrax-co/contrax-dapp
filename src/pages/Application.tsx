@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Sidebar from '../components/Sidebar/Sidebar';
 import TopBar from '../components/Topbar/TopBar';
 import './Application.css';
@@ -8,6 +8,8 @@ import { getUserSession, setUserSession } from '../store/localStorage';
 import Logout from '../components/Logout/Logout';
 import Exchange from '../components/Exchange/Exchange';
 import Compound from '../components/Compound/Compound';
+import CreateToken from './createToken';
+import CreatePool from './createPool';
 
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
 
@@ -92,8 +94,8 @@ function Application() {
               connectWallet={connectWallet}
             />
           )}
-          {menuItem === 'Create token' && <p>create token</p>}
-          {menuItem === 'Create pool' && <p>create pool</p>}
+          {menuItem === 'Create token' && <CreateToken />}
+          {menuItem === 'Create pool' && <CreatePool />}
           {menuItem === 'Exchange' && <Exchange lightMode={lightMode} />}
         </div>
       </div>

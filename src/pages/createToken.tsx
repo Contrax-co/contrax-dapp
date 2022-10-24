@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
 import { ethers } from 'ethers';
 import swal from 'sweetalert';
-import { getUserSession } from '../store/localStorage';
 import { useInput } from 'rooks';
+import { getUserSession } from '../store/localStorage';
 
 import BottomBar from '../components/bottomBar/BottomBar';
 import Button from '../components/button/Button';
@@ -16,10 +16,7 @@ import Tokens from '../components/tokens';
 import LoadingSpinner from '../components/spinner/spinner';
 
 const contractFile = require('../config/erc20.json');
-// const Web3 = require('web3');
-// const ethers = require('ethers');
 
-// TODO - review security risks when using [ethereum: any] vs [ethereum: MetaMaskInpageProvider;]
 declare global {
   interface Window {
     ethereum: any;

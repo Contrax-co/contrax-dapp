@@ -67,9 +67,6 @@ const TokenModal1 = ({ id, onSelection, standardTokens }: any) => {
   //   },
   // ];
 
-  // TODO - useEffect contains a call to 'setWallet'. Without a list of dependencies,
-  // this can lead to an infinite chain of updates. To fix this,
-  // pass [standardTokens, tokens] as a second argument to the useEffect hook
   useEffect(() => {
     // Get various currencies from the server
     // console.log(standardTokens[0].tokenName)
@@ -81,7 +78,7 @@ const TokenModal1 = ({ id, onSelection, standardTokens }: any) => {
       setTokens(standardTokens);
       console.log(tokens);
     }
-  });
+  }, []);
 
   return (
     <Modal id={id} title="Select a token" closeLabel="" okLabel="">

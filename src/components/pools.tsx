@@ -10,8 +10,7 @@ export default function Pools() {
   const [values, setValues] = useState<any>([]);
   // const [isLoading, setIsLoading] = useState(false);
 
-  // TODO - React Hook useEffect has a missing dependency: 'pools'
-  // ...either include it or remove the dependency array
+  // TODO - Switch to useQuery()
   useEffect(() => {
     let sessionData = getUserSession();
     let walletData: any;
