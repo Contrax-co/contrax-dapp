@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { CgArrowsExchangeAltV } from 'react-icons/cg';
-import { HiChevronDown } from 'react-icons/hi';
-import SwapValues from './SwapValues';
+import SwapValuesFrom from './SwapValuesFrom';
+import SwapValuesTo from './SwapValuesTo';
 import './Exchange.css';
+import From from './From';
+import To from './To';
 
 function Exchange({ lightMode }: any) {
-  const [openModal, setOpenModal] = useState(false);
-  const [swapTokensFrom, setSwapTokensFrom] = useState('Ether');
-  const [swapTokensTo, setSwapTokensTo] = useState('Sushi');
+  const [openModalFrom, setOpenModalFrom] = useState(false);
+  const [openModalTo, setOpenModalTo] = useState(false);
 
-  const [tokenSwap, setTokenSwap] = useState(0);
 
+  const[tokenId1, setTokenId1] = useState(1);
+  const[tokenId2, setTokenId2] = useState(1);
   const [tokens, setTokens] = useState([]);
 
   useEffect(() => {
@@ -39,29 +41,14 @@ function Exchange({ lightMode }: any) {
         <p className={`swap_title ${lightMode && 'swap_title--light'}`}>Swap</p>
 
         <div className={`from ${lightMode && 'from--light'}`}>
-          <p>From</p>
+          
+            <From 
+              lightMode={lightMode}
+              setOpenModal={setOpenModalFrom}
+              tokens = {tokens}
+              tokenId = {tokenId1}
+            /> 
 
-          <div className={`from__input ${lightMode && 'from__input--light'}`}>
-            <input
-              type="number"
-              placeholder="0.0"
-              className={`from__amount ${lightMode && 'from__amount--light'}`}
-            />
-            <div
-              className={`dropdown__from ${
-                lightMode && 'dropdown__from--light'
-              }`}
-              onClick={() => setOpenModal(true)}
-            >
-              <img
-                className={`swap__logo`}
-                alt="ETH token"
-                src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=023"
-              />
-              <p>ETH</p>
-              <HiChevronDown />
-            </div>
-          </div>
         </div>
 
         <CgArrowsExchangeAltV
@@ -71,27 +58,14 @@ function Exchange({ lightMode }: any) {
         />
 
         <div className={`to ${lightMode && 'to--light'}`}>
-          <p>To</p>
-          <div className={`to__input ${lightMode && 'to__input--light'}`}>
-            <input
-              type="number"
-              placeholder="0.0"
-              className={`to__amount ${lightMode && 'to__amount--light'}`}
-            />
 
-            <div
-              className={`dropdown__to ${lightMode && 'dropdown__to--light'}`}
-              onClick={() => setOpenModal(true)}
-            >
-              <img
-                className={`swap__logo`}
-                alt="Sushi token"
-                src="https://cryptologos.cc/logos/sushiswap-sushi-logo.png?v=023"
-              />
-              <p>{swapTokensTo}</p>
-              <HiChevronDown />
-            </div>
-          </div>
+          <To 
+            lightMode={lightMode}
+            setOpenModal={setOpenModalTo}
+            tokens = {tokens}
+            tokenId={tokenId2}
+          />
+
         </div>
 
         <div
@@ -101,14 +75,21 @@ function Exchange({ lightMode }: any) {
         </div>
       </div>
 
-      {openModal ? (
-        <SwapValues
+      {openModalFrom ? (
+        <SwapValuesFrom
           tokens={tokens}
-          setOpenModal={setOpenModal}
-          setTokenSwap={setTokenSwap}
-          setSwapTokensFrom={setSwapTokensFrom}
-          setSwapTokensTo={setSwapTokensTo}
+          setOpenModal={setOpenModalFrom}
           lightMode={lightMode}
+          setTokenId = {setTokenId1}
+        />
+      ) : null}
+
+      {openModalTo ? (
+        <SwapValuesTo
+          tokens={tokens}
+          setOpenModal={setOpenModalTo}
+          lightMode={lightMode}
+          setTokenId = {setTokenId2}
         />
       ) : null}
     </div>

@@ -4,48 +4,40 @@
         "token_name": "ETH",
         "token_sub": "Ether",
         "address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
-        "token_alt2": "ETH logo",
-        "token_logo2": "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=023" 
+        "token_alt": "ETH logo",
+        "token_logo": "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=023" 
     },
     {
         "id": 2,
         "token_name": "WETH-DAI",
         "token_sub": "LP Token", 
         "address": "0x692a0B300366D1042679397e40f3d2cb4b8F7D30",
-        "token_alt1": "ETH logo",
-        "token_logo1": "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=023",
-        "token_alt2": "DAI logo",
-        "token_logo2": "https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=023" 
+        "token_alt": "WETH-DAI logo",
+        "token_logo": "https://i.imgur.com/m7Q1XPp.png" 
     },
     {
         "id": 3,
         "token_name": "WETH-USDC",
         "token_sub": "LP Token", 
         "address": "0x905dfCD5649217c42684f23958568e533C711Aa3",
-        "token_alt1": "WETH logo",
-        "token_logo1": "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=023",
-        "token_alt2": "USDC logo",
-        "token_logo2": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=023"
+        "token_alt": "WETH-USDC logo",
+        "token_logo": "https://i.imgur.com/m7Q1XPp.png"
     },
     {
         "id": 4,
         "token_name": "WETH-USDT",
         "token_sub": "LP Token", 
         "address": "0xCB0E5bFa72bBb4d16AB5aA0c60601c438F04b4ad",
-        "token_alt1": "WETH logo",
-        "token_logo1": "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=023",
-        "token_alt2": "USDT logo",
-        "token_logo2": "https://cryptologos.cc/logos/tether-usdt-logo.png?v=023"
+        "token_alt": "WETH-USDT logo",
+        "token_logo": "https://i.imgur.com/m7Q1XPp.png"
     },
     {
         "id": 5, 
         "token_name": "WETH-WBTC",
         "token_sub": "LP Token", 
         "address": "0x515e252b2b5c22b4b2b6Df66c2eBeeA871AA4d69",
-        "token_alt1": "WETH logo",
-        "token_logo1": "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=023",
-        "token_alt2": "WBTC logo",
-        "token_logo2": "https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=023"
+        "token_alt": "WETH-WBTC logo",
+        "token_logo": "https://i.imgur.com/m7Q1XPp.png"
     }
 
 ]
