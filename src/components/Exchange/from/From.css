@@ -1,3 +1,8 @@
+.from_div{
+    display: flex;
+    justify-content: space-between;
+}
+
 .from__input {
     display: flex;
     background-color: #001428;

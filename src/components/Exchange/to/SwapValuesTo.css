@@ -21,6 +21,8 @@
   border-radius: 15px;
   position: relative;
   animation: animate 0.3s;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .swap__modal--light {

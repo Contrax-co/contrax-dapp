@@ -1,5 +1,6 @@
 import './SidebarItem.css';
 
+
 function SidebarItem({ icon, title, icon2, lightMode, active, ...props }: any) {
   return (
     <div
@@ -12,6 +13,7 @@ function SidebarItem({ icon, title, icon2, lightMode, active, ...props }: any) {
       <div className={`icon ${lightMode && 'icon--light'}`}>{icon}</div>
       <div className="sidebar_title">{title}</div>
       <div className={`icon2 ${lightMode && 'icon2--light'}`}>{icon2}</div>
+  
     </div>
   );
 }

@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { HiChevronDown } from 'react-icons/hi';
 import './To.css';
 
-function To({lightMode, setOpenModal, tokens, tokenId}:any) {
+function To({lightMode, setOpenModal, tokens, tokenId, setTokenType, setToAddress}:any) {
 
   const token = tokens.slice(tokenId - 1, tokenId);
 
@@ -14,11 +14,13 @@ function To({lightMode, setOpenModal, tokens, tokenId}:any) {
   useEffect(() => {
 
       token.forEach((token:any) => {
-          setTokenName(token.token_name);
-          setTokenSrc(token.token_logo);
-          setTokenAlt(token.token_alt);
-      })
-  })
+        setTokenName(token.token_name);
+        setTokenSrc(token.token_logo);
+        setTokenAlt(token.token_alt);
+        setTokenType(token.token_sub);
+        setToAddress(token.address);
+    })
+  }, [token])
 
 
   return (
