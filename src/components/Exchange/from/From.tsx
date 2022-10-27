@@ -4,7 +4,7 @@ import { totalFrom } from './from-functions';
 import "./From.css";
 
 
-function From({lightMode, setOpenModal, tokens, tokenId, currentWallet, setValue, setTokenType, setFromAddress, setFromAbi}: any) {
+function From({lightMode, setOpenModal, tokens, tokenId, currentWallet, setValue, setTokenType, setFromAddress, setAbi}: any) {
 
     const token = tokens.slice(tokenId - 1, tokenId);
 
@@ -29,12 +29,12 @@ function From({lightMode, setOpenModal, tokens, tokenId, currentWallet, setValue
             setTokenLp(token.address);
             setTokenType(token.token_sub);
             setFromAddress(token.address);
-            setFromAbi(token.token_abi);
+            setAbi(JSON.stringify(token.token_abi))
         })
 
         totalFrom(currentWallet, tokenName, setFromAmt, tokenLp, tokenAbi);
 
-    }, [currentWallet, tokenName, tokenLp, tokenAbi, token])
+    }, [currentWallet, tokenName, tokenLp, tokenAbi, token, setFromAddress, setTokenType, setAbi])
 
     const handleSwapChange = (e: any) => {
         setSwapAmount(e.target.value);

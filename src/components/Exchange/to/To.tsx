@@ -20,7 +20,7 @@ function To({lightMode, setOpenModal, tokens, tokenId, setTokenType, setToAddres
         setTokenType(token.token_sub);
         setToAddress(token.address);
     })
-  }, [token])
+  }, [token, setTokenType, setToAddress])
 
 
   return (

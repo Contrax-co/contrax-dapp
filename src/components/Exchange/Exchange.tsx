@@ -5,7 +5,7 @@ import SwapValuesTo from './to/SwapValuesTo';
 import './Exchange.css';
 import From from './from/From';
 import To from './to/To';
-import { swapFromTokenToToken } from './exchange-functions';
+import { swapFromTokenToPair, swapFromTokenToToken } from './exchange-functions';
 
 function Exchange({ lightMode, currentWallet }: any) {
   const [openModalFrom, setOpenModalFrom] = useState(false);
@@ -23,7 +23,8 @@ function Exchange({ lightMode, currentWallet }: any) {
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
 
-  const [fromAbi, setFromAbi] = useState({}); 
+  const [tokenAbi, setTokenAbi] = useState([]); 
+
 
   useEffect(() => {
     fetch('http://localhost:3000/api/poolswap.json') //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
@@ -33,12 +34,6 @@ function Exchange({ lightMode, currentWallet }: any) {
       });
   }, []);
 
-  useEffect(() =>{
-    console.log(`the from address is ${fromAddress}`);
-    console.log(`the to address is ${toAddress}`);
-
-    console.log(`the value to be swapped is ${value}`);
-  })
 
   return (
     <div className={`whole__exchange__container`}>
@@ -66,7 +61,7 @@ function Exchange({ lightMode, currentWallet }: any) {
               setValue = {setValue}
               setTokenType={setTokenType1}
               setFromAddress = {setFromAddress}
-              setFromAbi = {setFromAbi}
+              setAbi = {setTokenAbi}
             /> 
 
         </div>
@@ -88,18 +83,32 @@ function Exchange({ lightMode, currentWallet }: any) {
           />
 
         </div>
+        
+        {(tokenType1 === "Token") && (tokenType2 === "Token")? (
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi)}>
+           
+            {value ? (
+              <p>Swap</p>
+            ): (
+              <p>Enter a amount</p>
+            )}
 
-        <div
-          className={`exchange_button ${lightMode && 'exchange_button--light'}`}
-          onClick={() => swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue)}
-        >
-          {value ? (
-            <p>Swap</p>
-          ): (
-            <p>Enter a amount</p>
-          )}
-          
-        </div>
+          </div>
+         
+        ) : (tokenType1 === "Token") && (tokenType2 === "LP Token") ? (
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue)}>
+           
+            {value ? (
+              <p>Swap</p>
+            ): (
+              <p>Enter a amount</p>
+            )}
+
+          </div>
+        ): (
+          <p></p>
+        )}
+    
       </div>
 
       {openModalFrom ? (
