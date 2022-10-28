@@ -5,7 +5,7 @@ import SwapValuesTo from './to/SwapValuesTo';
 import './Exchange.css';
 import From from './from/From';
 import To from './to/To';
-import { swapFromTokenToPair, swapFromTokenToToken } from './exchange-functions';
+import { swapFromTokenToPair, swapFromTokenToToken, swapPairForPair, swapPairForToken } from './exchange-functions';
 
 function Exchange({ lightMode, currentWallet }: any) {
   const [openModalFrom, setOpenModalFrom] = useState(false);
@@ -105,8 +105,26 @@ function Exchange({ lightMode, currentWallet }: any) {
             )}
 
           </div>
+        ): (tokenType1 === "LP Token") && (tokenType2 === "Token") ? (
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue)}>
+           
+            {value ? (
+              <p>Swap</p>
+            ): (
+              <p>Enter a amount</p>
+            )}
+
+          </div>
         ): (
-          <p></p>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue)}>
+           
+            {value ? (
+              <p>Swap</p>
+            ): (
+              <p>Enter a amount</p>
+            )}
+
+          </div>
         )}
     
       </div>

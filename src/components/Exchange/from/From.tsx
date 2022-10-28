@@ -45,7 +45,7 @@ function From({lightMode, setOpenModal, tokens, tokenId, currentWallet, setValue
     <div>
         <div className="from_div">
             <p>From</p>
-            <p>{fromAmt.toFixed(4)}</p> 
+            <p>{fromAmt.toFixed(6)}</p> 
         </div>
 
         <div className={`from__input ${lightMode && 'from__input--light'}`}>

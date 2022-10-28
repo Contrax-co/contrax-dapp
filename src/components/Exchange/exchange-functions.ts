@@ -15,6 +15,12 @@ export const swapFromTokenToToken = async (
       if(ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
+
+
+        const signature = await signer.getChainId();
+
+        console.log(`the chainid is the ${signature}`)
+
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
         const tokenContract = new ethers.Contract(from, token_abi,signer); 
@@ -25,15 +31,15 @@ export const swapFromTokenToToken = async (
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
         await tokenContract.approve(exchange_address, formattedBal); 
        
-        const gasPrice = await provider.getGasPrice();
-        const exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {gasLimit: gasPrice});
+        const gasPrice: any = await provider.getGasPrice();
+        //const exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {gasLimit: gasPrice});
+        //const gasEstimated: any = await exchangeContract.estimateGas.swapFromTokenToToken(from, to, formattedBal);
 
-          // const gasEstimated: any = await exchangeContract.estimateGas.swapFromTokenToToken(from, to, formattedBal);
+        //const gasMargin = gasEstimated * 1.1;
 
-          // const gasMargin = gasEstimated * 1.1;
-          // exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {
-          //   gasLimit: Math.ceil(gasMargin),
-          // });
+        const exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {
+            gasLimit: gasPrice,
+          });
 
        
 
@@ -77,21 +83,20 @@ export const swapFromTokenToPair = async (
 
         const tokenContract = new ethers.Contract(from, token_abi, signer); 
 
+        const gasPrice: any = await provider.getGasPrice();
+
          /*
         * Execute the actual swap functionality from smart contract
         */
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
         await tokenContract.approve(exchange_address, formattedBal); 
 
-        const gasEstimated: any = await exchangeContract.estimateGas.swapTokenForPair(from, to, formattedBal);
+        //const gasEstimated: any = await exchangeContract.estimateGas.swapTokenForPair(from, to, formattedBal);
+        //const gasMargin = gasEstimated * 1.1;
 
-        const gasMargin = gasEstimated * 1.1;
         const exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal, {
-            gasLimit: Math.ceil(gasMargin),
+            gasLimit: gasPrice,
         });
-        
-        // const gasPrice = await provider.getGasPrice();
-        // const exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal, {gasLimit: gasPrice});
 
         console.log(`Swapping... ${exchangeTxn.hash}`);
 
@@ -119,3 +124,121 @@ export const swapFromTokenToPair = async (
   }
 
 }
+
+
+export const swapPairForToken = async (
+  currentWallet:any, from:any, to:any, 
+  token_abi:any, fromValue:any, setValue:any
+) => {
+  if(currentWallet){
+    const { ethereum } = window;
+    try{
+      if(ethereum){
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
+
+        const tokenContract = new ethers.Contract(from, token_abi, signer); 
+
+        const gasPrice: any = await provider.getGasPrice();
+
+        /*
+        * Execute the actual swap functionality from smart contract
+        */
+        const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
+        await tokenContract.approve(exchange_address, formattedBal); 
+
+        //const gasEstimated: any = await exchangeContract.estimateGas.swapPairForToken(from, to, formattedBal);
+        //const gasMargin = gasEstimated * gasPrice;
+
+        const exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, {
+            gasLimit: gasPrice,
+        });
+
+        console.log(`Swapping... ${exchangeTxn.hash}`);
+
+        const exchangeTxnStatus = await exchangeTxn.wait(1);
+        if (!exchangeTxnStatus.status) {
+          console.log(`Error swapping!`);
+        } else {
+          console.log(`Swapped-- ${exchangeTxn.hash}`);
+          setValue(0.0);
+        }
+
+      }
+      else{
+        console.log("Ethereum object doesn't exist!");
+      }
+
+    }
+    catch(error) {
+      console.log(error);
+    }
+
+  }
+  else{
+    console.log("Connect Wallet!")
+  }
+}
+
+
+export const swapPairForPair = async (
+  currentWallet:any, from:any, to:any, 
+  token_abi:any, fromValue:any, setValue:any
+) => {
+  if(currentWallet){
+    const { ethereum } = window;
+    try{
+      if(ethereum){
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
+
+        const tokenContract = new ethers.Contract(from, token_abi, signer); 
+
+        const gasPrice: any = await provider.getGasPrice();
+
+        /*
+        * Execute the actual swap functionality from smart contract
+        */
+        const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
+        await tokenContract.approve(exchange_address, formattedBal); 
+
+
+        // const gasEstimated: any = await exchangeContract.estimateGas.swapPairForPair(from, to, formattedBal);
+        // const gasMargin = gasEstimated * 1.1;
+
+        const exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal, {
+            gasLimit: gasPrice,
+        });
+
+        console.log(`Swapping... ${exchangeTxn.hash}`);
+
+        const exchangeTxnStatus = await exchangeTxn.wait(1);
+        if (!exchangeTxnStatus.status) {
+          console.log(`Error swapping!`);
+        } else {
+          console.log(`Swapped-- ${exchangeTxn.hash}`);
+          setValue(0.0);
+        }
+
+      }
+      else{
+        console.log("Ethereum object doesn't exist!");
+      }
+
+    }
+    catch(error) {
+      console.log(error);
+    }
+
+  }
+  else{
+    console.log("Connect Wallet!")
+  }
+}
+
+
+
+
+
