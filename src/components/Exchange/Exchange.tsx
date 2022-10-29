@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {CgArrowsExchangeAltV} from 'react-icons/cg';
 import SwapValuesFrom from './from/SwapValuesFrom';
 import SwapValuesTo from './to/SwapValuesTo';
+import { MoonLoader } from 'react-spinners';
 import './Exchange.css';
 import From from './from/From';
 import To from './to/To';
@@ -24,6 +25,10 @@ function Exchange({ lightMode, currentWallet }: any) {
   const [toAddress, setToAddress] = useState("");
 
   const [tokenAbi, setTokenAbi] = useState([]); 
+
+  const [isLoading, setLoading] = useState(false);
+  const [loaderMessage, setLoaderMessage] = useState('');
+  const [secondaryMessage, setSecondaryMessage] = useState('');
 
 
   useEffect(() => {
@@ -85,7 +90,7 @@ function Exchange({ lightMode, currentWallet }: any) {
         </div>
         
         {(tokenType1 === "Token") && (tokenType2 === "Token")? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi)}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage)}>
            
             {value ? (
               <p>Swap</p>
@@ -96,7 +101,7 @@ function Exchange({ lightMode, currentWallet }: any) {
           </div>
          
         ) : (tokenType1 === "Token") && (tokenType2 === "LP Token") ? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue)}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage)}>
            
             {value ? (
               <p>Swap</p>
@@ -106,7 +111,7 @@ function Exchange({ lightMode, currentWallet }: any) {
 
           </div>
         ): (tokenType1 === "LP Token") && (tokenType2 === "Token") ? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue)}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage)}>
            
             {value ? (
               <p>Swap</p>
@@ -116,7 +121,7 @@ function Exchange({ lightMode, currentWallet }: any) {
 
           </div>
         ): (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue)}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage)}>
            
             {value ? (
               <p>Swap</p>
@@ -146,6 +151,28 @@ function Exchange({ lightMode, currentWallet }: any) {
           setTokenId = {setTokenId2}
         />
       ) : null}
+
+      {isLoading && (
+        <div className={`exchange_spinner ${lightMode && 'exchange_spinner--light'}`}>
+
+          <div className={`exchange_spinner_top`}>
+            <div className="exchange_spinner-left">
+            <MoonLoader size={20} loading={isLoading} color={'rgb(89, 179, 247)'}/> 
+            </div>
+
+              <div className={`exchange_spinner_right`}>
+                <p style={{fontWeight:'700'}}>{loaderMessage}</p>
+                <p style={{fontSize:'13px'}}>{secondaryMessage}</p>
+              </div>
+
+          </div>
+
+          <div className={`exchange_spinner_bottom`} onClick={() => setLoading(false)}>
+            <p>Dismiss</p>
+          </div> 
+
+        </div>
+      )}
     </div>
   );
 }

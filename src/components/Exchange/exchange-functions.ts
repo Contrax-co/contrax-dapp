@@ -7,8 +7,12 @@ const exchange_abi = [{"inputs":[{"internalType":"address","name":"_controller",
 export const swapFromTokenToToken = async (
   currentWallet:any, fromValue: any, 
   from:any, to:any, setValue:any, 
-  token_abi: any
+  token_abi: any,
+  setLoading:any,
+  setLoaderMessage:any
 ) => {
+  setLoading(true); 
+  setLoaderMessage('Swap Pending');
   if (currentWallet) {
     const { ethereum } = window;
     try{
@@ -32,10 +36,6 @@ export const swapFromTokenToToken = async (
         await tokenContract.approve(exchange_address, formattedBal); 
        
         const gasPrice: any = await provider.getGasPrice();
-        //const exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {gasLimit: gasPrice});
-        //const gasEstimated: any = await exchangeContract.estimateGas.swapFromTokenToToken(from, to, formattedBal);
-
-        //const gasMargin = gasEstimated * 1.1;
 
         const exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {
             gasLimit: gasPrice,
@@ -43,13 +43,13 @@ export const swapFromTokenToToken = async (
 
        
 
-        console.log(`Swapping... ${exchangeTxn.hash}`);
+        setLoaderMessage(`Swapping... ${exchangeTxn.hash}`);
 
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
-          console.log(`Error swapping!`);
+          setLoaderMessage(`Error swapping`); 
         } else {
-          console.log(`Swapped-- ${exchangeTxn.hash}`);
+          setLoaderMessage(`Swapped-- ${exchangeTxn.hash}`);
           setValue(0.0);
         }
   
@@ -65,14 +65,18 @@ export const swapFromTokenToToken = async (
 
   }
   else{
-
+    setLoaderMessage("Connect Wallet!"); 
   }
 }
 
 export const swapFromTokenToPair = async (
   currentWallet:any, from:any, to:any, 
-  token_abi: any, fromValue:any, setValue:any
+  token_abi: any, fromValue:any, setValue:any,
+  setLoading:any, 
+  setLoaderMessage:any
 ) => {
+  setLoading(true);
+  setLoaderMessage("Swap Pending"); 
   if (currentWallet) {
     const { ethereum } = window;
     try{
@@ -91,20 +95,17 @@ export const swapFromTokenToPair = async (
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
         await tokenContract.approve(exchange_address, formattedBal); 
 
-        //const gasEstimated: any = await exchangeContract.estimateGas.swapTokenForPair(from, to, formattedBal);
-        //const gasMargin = gasEstimated * 1.1;
-
         const exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal, {
             gasLimit: gasPrice,
         });
 
-        console.log(`Swapping... ${exchangeTxn.hash}`);
+        setLoaderMessage(`Swapping... ${exchangeTxn.hash}`);
 
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
-          console.log(`Error swapping!`);
+          setLoaderMessage(`Error swapping!`);
         } else {
-          console.log(`Swapped-- ${exchangeTxn.hash}`);
+          setLoaderMessage(`Swapped-- ${exchangeTxn.hash}`);
           setValue(0.0);
         }
 
@@ -120,7 +121,7 @@ export const swapFromTokenToPair = async (
 
   }
   else{
-
+    setLoaderMessage("Connect wallet!")
   }
 
 }
@@ -128,8 +129,12 @@ export const swapFromTokenToPair = async (
 
 export const swapPairForToken = async (
   currentWallet:any, from:any, to:any, 
-  token_abi:any, fromValue:any, setValue:any
+  token_abi:any, fromValue:any, setValue:any,
+  setLoading:any, 
+  setLoaderMessage:any
 ) => {
+  setLoading(true); 
+  setLoaderMessage("Swap Pending"); 
   if(currentWallet){
     const { ethereum } = window;
     try{
@@ -148,20 +153,17 @@ export const swapPairForToken = async (
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
         await tokenContract.approve(exchange_address, formattedBal); 
 
-        //const gasEstimated: any = await exchangeContract.estimateGas.swapPairForToken(from, to, formattedBal);
-        //const gasMargin = gasEstimated * gasPrice;
-
         const exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, {
             gasLimit: gasPrice,
         });
 
-        console.log(`Swapping... ${exchangeTxn.hash}`);
+        setLoaderMessage(`Swapping... ${exchangeTxn.hash}`);
 
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
-          console.log(`Error swapping!`);
+          setLoaderMessage(`Error swapping!`);
         } else {
-          console.log(`Swapped-- ${exchangeTxn.hash}`);
+          setLoaderMessage(`Swapped-- ${exchangeTxn.hash}`);
           setValue(0.0);
         }
 
@@ -177,15 +179,19 @@ export const swapPairForToken = async (
 
   }
   else{
-    console.log("Connect Wallet!")
+    setLoaderMessage("Connect Wallet!")
   }
 }
 
 
 export const swapPairForPair = async (
   currentWallet:any, from:any, to:any, 
-  token_abi:any, fromValue:any, setValue:any
+  token_abi:any, fromValue:any, setValue:any,
+  setLoading:any,setLoaderMessage:any,
+  setSecondaryMessage:any
 ) => {
+  setLoading(true); 
+  setLoaderMessage("Swap Pending")
   if(currentWallet){
     const { ethereum } = window;
     try{
@@ -198,27 +204,28 @@ export const swapPairForPair = async (
 
         const gasPrice: any = await provider.getGasPrice();
 
+        console.log(`we are before approving swapper`); 
+        setSecondaryMessage("Approving Token")
+
         /*
         * Execute the actual swap functionality from smart contract
         */
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
         await tokenContract.approve(exchange_address, formattedBal); 
 
-
-        // const gasEstimated: any = await exchangeContract.estimateGas.swapPairForPair(from, to, formattedBal);
-        // const gasMargin = gasEstimated * 1.1;
+        console.log(`we are after approving swapper`); 
 
         const exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal, {
             gasLimit: gasPrice,
         });
 
-        console.log(`Swapping... ${exchangeTxn.hash}`);
+        setLoaderMessage(`Swapping... ${exchangeTxn.hash}`);
 
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
-          console.log(`Error swapping!`);
+          setLoaderMessage(`Error swapping!`);
         } else {
-          console.log(`Swapped-- ${exchangeTxn.hash}`);
+          setLoaderMessage(`Swapped-- ${exchangeTxn.hash}`);
           setValue(0.0);
         }
 
@@ -234,7 +241,7 @@ export const swapPairForPair = async (
 
   }
   else{
-    console.log("Connect Wallet!")
+    setLoaderMessage("Connect Wallet!")
   }
 }
 
