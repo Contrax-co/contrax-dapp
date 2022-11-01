@@ -4,12 +4,14 @@ const exchange_address = "0xdD035b13ef190244c514f68E8F7b16555aFc89Fd";
 const exchange_abi = [{"inputs":[{"internalType":"address","name":"_controller","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[],"name":"controller","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"sushiRouter","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_from","type":"address"},{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"swapFromTokenToToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_from","type":"address"},{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"swapPairForPair","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_from","type":"address"},{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"swapPairForToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_from","type":"address"},{"internalType":"address","name":"_to","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"swapTokenForPair","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"weth","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}];
 
 
+
 export const swapFromTokenToToken = async (
   currentWallet:any, fromValue: any, 
   from:any, to:any, setValue:any, 
   token_abi: any,
   setLoading:any,
-  setLoaderMessage:any
+  setLoaderMessage:any,
+  setSecondaryMessage: any
 ) => {
   setLoading(true); 
   setLoaderMessage('Swap Pending');
@@ -20,20 +22,18 @@ export const swapFromTokenToToken = async (
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
 
-
-        const signature = await signer.getChainId();
-
-        console.log(`the chainid is the ${signature}`)
-
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
-
         const tokenContract = new ethers.Contract(from, token_abi,signer); 
+
+        setSecondaryMessage("Approving Token");
 
         /*
         * Execute the actual swap functionality from smart contract
         */
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
         await tokenContract.approve(exchange_address, formattedBal); 
+
+        setSecondaryMessage("Confirm Contract Interaction"); 
        
         const gasPrice: any = await provider.getGasPrice();
 
@@ -41,15 +41,15 @@ export const swapFromTokenToToken = async (
             gasLimit: gasPrice,
           });
 
-       
-
-        setLoaderMessage(`Swapping... ${exchangeTxn.hash}`);
+        setLoaderMessage(`Swapping...`);
+        setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
 
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping`); 
         } else {
-          setLoaderMessage(`Swapped-- ${exchangeTxn.hash}`);
+          setLoaderMessage(`Swapped--`);
+          setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
           setValue(0.0);
         }
   
@@ -61,6 +61,7 @@ export const swapFromTokenToToken = async (
     }
     catch(error){
       console.log(error);
+      // log error to screen not console 
     }
 
   }
@@ -73,7 +74,8 @@ export const swapFromTokenToPair = async (
   currentWallet:any, from:any, to:any, 
   token_abi: any, fromValue:any, setValue:any,
   setLoading:any, 
-  setLoaderMessage:any
+  setLoaderMessage:any, 
+  setSecondaryMessage: any
 ) => {
   setLoading(true);
   setLoaderMessage("Swap Pending"); 
@@ -88,6 +90,7 @@ export const swapFromTokenToPair = async (
         const tokenContract = new ethers.Contract(from, token_abi, signer); 
 
         const gasPrice: any = await provider.getGasPrice();
+        setSecondaryMessage("Approving Token");
 
          /*
         * Execute the actual swap functionality from smart contract
@@ -95,17 +98,21 @@ export const swapFromTokenToPair = async (
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
         await tokenContract.approve(exchange_address, formattedBal); 
 
+        setSecondaryMessage("Confirm Contract Interaction"); 
+
         const exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal, {
             gasLimit: gasPrice,
         });
 
-        setLoaderMessage(`Swapping... ${exchangeTxn.hash}`);
+        setLoaderMessage(`Swapping...`);
+        setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
 
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
         } else {
-          setLoaderMessage(`Swapped-- ${exchangeTxn.hash}`);
+          setLoaderMessage(`Swapped--`);
+          setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
           setValue(0.0);
         }
 
@@ -131,7 +138,8 @@ export const swapPairForToken = async (
   currentWallet:any, from:any, to:any, 
   token_abi:any, fromValue:any, setValue:any,
   setLoading:any, 
-  setLoaderMessage:any
+  setLoaderMessage:any, 
+  setSecondaryMessage:any
 ) => {
   setLoading(true); 
   setLoaderMessage("Swap Pending"); 
@@ -146,6 +154,7 @@ export const swapPairForToken = async (
         const tokenContract = new ethers.Contract(from, token_abi, signer); 
 
         const gasPrice: any = await provider.getGasPrice();
+        setSecondaryMessage("Approving Token")
 
         /*
         * Execute the actual swap functionality from smart contract
@@ -153,17 +162,21 @@ export const swapPairForToken = async (
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
         await tokenContract.approve(exchange_address, formattedBal); 
 
+        setSecondaryMessage("Confirm Contract Interaction"); 
+
         const exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, {
             gasLimit: gasPrice,
         });
 
-        setLoaderMessage(`Swapping... ${exchangeTxn.hash}`);
+        setLoaderMessage(`Swapping...`);
+        setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
 
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
         } else {
-          setLoaderMessage(`Swapped-- ${exchangeTxn.hash}`);
+          setLoaderMessage(`Swapped--`);
+          setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
           setValue(0.0);
         }
 
@@ -204,7 +217,6 @@ export const swapPairForPair = async (
 
         const gasPrice: any = await provider.getGasPrice();
 
-        console.log(`we are before approving swapper`); 
         setSecondaryMessage("Approving Token")
 
         /*
@@ -213,19 +225,22 @@ export const swapPairForPair = async (
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
         await tokenContract.approve(exchange_address, formattedBal); 
 
-        console.log(`we are after approving swapper`); 
+        setSecondaryMessage("Confirm Contract Interaction"); 
 
         const exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal, {
             gasLimit: gasPrice,
         });
 
-        setLoaderMessage(`Swapping... ${exchangeTxn.hash}`);
+        setLoaderMessage(`Swapping...`);
+        setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
 
         const exchangeTxnStatus = await exchangeTxn.wait(1);
+
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
         } else {
-          setLoaderMessage(`Swapped-- ${exchangeTxn.hash}`);
+          setLoaderMessage(`Swapped--`);
+          setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
           setValue(0.0);
         }
 
@@ -244,8 +259,3 @@ export const swapPairForPair = async (
     setLoaderMessage("Connect Wallet!")
   }
 }
-
-
-
-
-

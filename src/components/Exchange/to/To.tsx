@@ -1,14 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import { HiChevronDown } from 'react-icons/hi';
+import { estimateValueFrom } from './to-functions';
 import './To.css';
 
-function To({lightMode, setOpenModal, tokens, tokenId, setTokenType, setToAddress}:any) {
+function To({lightMode, setOpenModal, tokens, tokenId, setTokenType, setToAddress, setToValue, toValue, fromAddress, toAddress, setValue}:any) {
 
   const token = tokens.slice(tokenId - 1, tokenId);
 
   const[tokenName, setTokenName] = useState("");
   const[tokenSrc, setTokenSrc] = useState("");
   const[tokenAlt, setTokenAlt] = useState("");
+
+  const [swapAmount, setSwapAmount] = useState(0.0);
 
 
   useEffect(() => {
@@ -22,6 +25,17 @@ function To({lightMode, setOpenModal, tokens, tokenId, setTokenType, setToAddres
     })
   }, [token, setTokenType, setToAddress])
 
+  const handleSwapChange = (e: any) => {
+    setSwapAmount(e.target.value);
+    setToValue(e.target.value);
+    estimateValueFrom(fromAddress, toAddress, e.target.value, setValue); 
+    
+  };
+
+  useEffect(() => {
+    setSwapAmount(toValue);
+  }, [toValue]);
+
 
   return (
     <div>
@@ -32,6 +46,8 @@ function To({lightMode, setOpenModal, tokens, tokenId, setTokenType, setToAddres
                 type="number"
                 placeholder="0.0"
                 className={`to__amount ${lightMode && 'to__amount--light'}`}
+                value={swapAmount}
+                onChange={handleSwapChange}
             />
 
             <div

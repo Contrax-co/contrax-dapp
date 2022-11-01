@@ -6,7 +6,9 @@ import { MoonLoader } from 'react-spinners';
 import './Exchange.css';
 import From from './from/From';
 import To from './to/To';
-import { swapFromTokenToPair, swapFromTokenToToken, swapPairForPair, swapPairForToken } from './exchange-functions';
+import { swapFromTokenToPair, swapFromTokenToToken, 
+  swapPairForPair, swapPairForToken
+} from './exchange-functions';
 
 function Exchange({ lightMode, currentWallet }: any) {
   const [openModalFrom, setOpenModalFrom] = useState(false);
@@ -30,6 +32,8 @@ function Exchange({ lightMode, currentWallet }: any) {
   const [loaderMessage, setLoaderMessage] = useState('');
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
+  const [toValue, setToValue] = useState(0.0);
+
 
   useEffect(() => {
     fetch('http://localhost:3000/api/poolswap.json') //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
@@ -38,7 +42,6 @@ function Exchange({ lightMode, currentWallet }: any) {
         setTokens(data);
       });
   }, []);
-
 
   return (
     <div className={`whole__exchange__container`}>
@@ -67,6 +70,10 @@ function Exchange({ lightMode, currentWallet }: any) {
               setTokenType={setTokenType1}
               setFromAddress = {setFromAddress}
               setAbi = {setTokenAbi}
+              value={value}
+              fromAddress = {fromAddress}
+              toAddress={toAddress}
+              setToValue={setToValue}
             /> 
 
         </div>
@@ -85,12 +92,17 @@ function Exchange({ lightMode, currentWallet }: any) {
             tokenId={tokenId2}
             setTokenType={setTokenType2}
             setToAddress = {setToAddress}
+            setToValue = {setToValue}
+            toValue = {toValue}
+            fromAddress = {fromAddress}
+            toAddress = {toAddress}
+            setValue = {setValue}
           />
 
         </div>
         
         {(tokenType1 === "Token") && (tokenType2 === "Token")? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage)}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage, setSecondaryMessage)}>
            
             {value ? (
               <p>Swap</p>
@@ -101,7 +113,7 @@ function Exchange({ lightMode, currentWallet }: any) {
           </div>
          
         ) : (tokenType1 === "Token") && (tokenType2 === "LP Token") ? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage)}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage)}>
            
             {value ? (
               <p>Swap</p>
@@ -111,7 +123,7 @@ function Exchange({ lightMode, currentWallet }: any) {
 
           </div>
         ): (tokenType1 === "LP Token") && (tokenType2 === "Token") ? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage)}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage)}>
            
             {value ? (
               <p>Swap</p>

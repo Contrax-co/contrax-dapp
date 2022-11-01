@@ -154,6 +154,9 @@
 .exchange_spinner_right{
   flex-direction: column;
   margin-left:30px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .exchange_spinner_bottom{
