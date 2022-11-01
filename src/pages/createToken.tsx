@@ -1,21 +1,20 @@
 // @ts-nocheck
-
-import BottomBar from '../components/bottomBar/BottomBar';
-import { Title, Desc, DescSpan, H3 } from '../components/text/Text';
-import { FormInput, FormCheckbox, Form } from '../components/form/Form';
-import Button from '../components/button/Button';
-import { useInput } from 'rooks';
-import { Col, Container, Row } from '../components/blocks/Blocks';
-import { Modal } from '../components/modal/Modal';
 import { useEffect, useState } from 'react';
-import { getUserSession } from '../store/localStorage';
 import { gql, useMutation } from '@apollo/client';
-import Tokens from '../components/tokens';
+import { ethers } from 'ethers';
 import swal from 'sweetalert';
+import { useInput } from 'rooks';
+import { getUserSession } from '../store/localStorage';
+import "./Application.css"
+import BottomBar from '../components/bottomBar/BottomBar';
+import Button from '../components/button/Button';
+import { Title, Desc, DescSpan, H3 } from '../components/text/Text';
+import { Col, Container, Row } from '../components/blocks/Blocks';
+import { FormInput, FormCheckbox, Form } from '../components/form/Form';
+import { Modal } from '../components/modal/Modal';
+import Tokens from '../components/tokens';
 import LoadingSpinner from '../components/spinner/spinner';
 
-// const Web3 = require('web3');
-const ethers = require('ethers');
 const contractFile = require('../config/erc20.json');
 
 declare global {
@@ -52,7 +51,7 @@ const INCREMENT_COUNTER = gql`
   }
 `;
 
-export default function CreateToken(props: any) {
+export default function CreateToken({ lightMode }: any) {
   const tokenSymbol = useInput('');
   const tokenSupply = useInput('');
   const tokenName = useInput('');
@@ -62,14 +61,13 @@ export default function CreateToken(props: any) {
   const tokenTradingFee = useInput(false);
   const tokenTradingFeeValue = useInput('');
   const tokenSupportSupplyIncrease = useInput(false);
-  // const [tokens, setTokens] = useState([]);
   const [tokenAddress, setTokenAddress] = useState();
   const [wallet, setWallet] = useState();
   const [decimals, setDecimal] = useState();
   const [totalSupply, setTotalSupply] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [mutateFunction, { data }] = useMutation(INCREMENT_COUNTER, {
+  const mutateFunction = useMutation(INCREMENT_COUNTER, {
     variables: {
       tokenName: tokenName.value,
       tokenSymbol: tokenSymbol.value,
@@ -184,23 +182,29 @@ export default function CreateToken(props: any) {
 
   return (
     <>
-      <Container className="h-100">
+      <Container className="h-100 pool">
         <Row>
-          <Col size="8">
-            <Form onSubmit={handleSubmit} className="shadow-sm px-4 py-4 my-5">
+          <Col size="12">
+            <form onSubmit={handleSubmit}
+              className={`pool__container  px-4 py-4 my-5 ${lightMode && 'pool__container--light'}`}
+           >
               <Row className="row">
                 <Col size="12" className="my-2">
-                  <H3>Enter Token Parameters</H3>
+                  <H3>
+                  <div className={`swap_title ${lightMode && 'swap_title--light'}`}>
+                    Enter Token Parameters</div></H3>
                 </Col>
                 <FormInput
                   className="col-lg-6 col-md-6 col-sm-6"
                   caption="1-16 Characters"
                   placeholder="Token Symbol"
+                  lightMode={lightMode}
                   {...tokenSymbol}
                 />
                 <FormInput
                   className="col-lg-6 col-md-6 col-sm-6"
                   type="number"
+                  lightMode={lightMode}
                   caption="0-99999999999999999"
                   placeholder={'Token Supply'}
                   {...tokenSupply}
@@ -209,24 +213,28 @@ export default function CreateToken(props: any) {
                 <FormInput
                   className="col-lg-6 col-md-6 col-sm-6"
                   caption="1-64 Characters"
+                  lightMode={lightMode}
                   placeholder={'Token Name'}
                   {...tokenName}
                 />
                 <FormInput
                   className="col-lg-6 col-md-6 col-sm-6"
                   type="number"
+                  lightMode={lightMode}
                   caption="0-18"
                   placeholder={'Decimals'}
                   {...tokenDecimal}
                 />
 
                 <Col size="12" className="mt-3 mb-2">
-                  <H3>Special Features</H3>
+                  <H3> <div className={`swap_title ${lightMode && 'swap_title--light'}`}>
+                    Special Features </div></H3>
                 </Col>
                 <Col className="col-lg-10 col-md-10 col-sm-10 my-2">
                   <FormCheckbox
                     className="col-lg-10 col-md-10 col-sm-10 my-2"
                     label="Burn"
+                    lightMode={lightMode}
                     {...tokenBurn}
                     caption="A percentage of tokens will be sent to the burn address for each on-chain transfer"
                   />
@@ -235,6 +243,7 @@ export default function CreateToken(props: any) {
                   className="col-lg-2 col-md-2 col-sm-2 my-2 mt-5"
                   type="number"
                   placeholder="0%"
+                  lightMode={lightMode}
                   id="burnPercent"
                   name="burnPercent"
                   {...tokenBurnValue}
@@ -243,6 +252,7 @@ export default function CreateToken(props: any) {
                   <FormCheckbox
                     id="exampleCheck1"
                     label="Trading Fees"
+                    lightMode={lightMode}
                     {...tokenTradingFee}
                     caption="A percentage of tokens will be sent to the creators address for each on-chain transfer"
                   />
@@ -251,6 +261,7 @@ export default function CreateToken(props: any) {
                   className="col-lg-2 col-md-2 col-sm-2 my-2 mt-4"
                   type="number"
                   placeholder="0%"
+                  lightMode={lightMode}
                   id="tradingFeePercent"
                   name="tradingFeePercent"
                   {...tokenTradingFeeValue}
@@ -259,6 +270,7 @@ export default function CreateToken(props: any) {
                   <FormCheckbox
                     id="exampleCheck1"
                     label="Supports Supply Increase"
+                    lightMode={lightMode}
                     {...tokenSupportSupplyIncrease}
                     caption="Allows the creator to issue additional tokens after the token creation"
                   />
@@ -283,11 +295,13 @@ export default function CreateToken(props: any) {
                   </div>
                 </Row>
               )}
-            </Form>
+            </form>
           </Col>
-          <Title className="mt-5" value={'My Token List'} variant={'dark'} />
+          <H3> <div className={`swap_title mb-4 ${lightMode && 'swap_title--light'}`}>
+                   My Token List </div></H3>
+          {/* <Title value={'My Token List'} variant={'dark'} /> */}
           {/* "Tokens" component is a list of tokens created by the user */}
-          <Tokens />
+          <Tokens lightMode={lightMode} />
         </Row>
       </Container>
 
