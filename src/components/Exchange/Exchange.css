@@ -73,7 +73,24 @@
   background-color: rgb(233, 237, 245);
   color: lightgrey;
 }
+.table__input {
+  
+  background-color: #001428;
+  color: white;
 
+}
+.table__token {
+
+  background-color: #001428;
+  color: white;
+
+
+ 
+}
+.table--light{
+  background-color: white;
+  color: black;
+}
 .to__input {
   display: flex;
   background-color: #001428;

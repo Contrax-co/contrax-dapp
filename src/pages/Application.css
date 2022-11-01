@@ -1,16 +1,18 @@
 .page {
   background-color: #001428;
   width: 100vw;
-  height: 100vh;
+  height: auto;
   top: 0;
   bottom: 0;
   position: fixed;
 }
-
+.modal-content{
+  z-index: 9999999999f !important;
+}
 .page--light {
   background-color: #f5f6fa;
   width: 100vw;
-  height: 100vh;
+  height: auto;
 }
 
 .ac_page {
@@ -47,3 +49,152 @@
 .topbar {
   margin-bottom: 50px;
 }
+
+
+
+
+.whole__exchange__container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.exchange__header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.whole__container__title {
+  font-size: 34px;
+  font-weight: bold;
+  color: white;
+}
+
+.whole__container__title--light {
+  color: black;
+}
+
+.pool__container {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-self: center;
+  background-color: #012243;
+  padding: 15px;
+  border-radius: 20px;
+ width: auto;
+ height: auto;
+}
+
+.pool__container--light {
+  background-color: white;
+  box-shadow: 2px 2px 18px lightgrey;
+}
+
+.pool_title {
+  color: white;
+  font-weight: bold;
+}
+
+.pool_title--light {
+  color: black;
+  font-weight: bold;
+}
+
+
+.token_title {
+  color: white;
+  font-weight: light;
+}
+.token_title--light {
+  color: white;
+  font-weight: bold;
+}
+.from {
+  color: white;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+.from--light {
+  color: lightgrey;
+  width: 100%;
+}
+
+.from__input {
+  display: flex;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+.from__input--light {
+  background-color: rgb(233, 237, 245);
+  color: lightgrey;
+}
+
+.from-control {
+  display: flex;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
+  width: 500px;
+}
+
+.from__input--light {
+  background-color: rgb(233, 237, 245);
+  color: lightgrey;
+}
+
+.from__input-pool {
+ width: 100%;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+.from__input--light-pool {
+  background-color: rgb(233, 237, 245);
+  color: black;
+}
+
+
+.to__input {
+  display: flex;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+.to__input--light {
+  background-color: rgb(233, 237, 245);
+  color: lightgrey;
+}
+
+.from__amount {
+  flex: 7;
+  border: none;
+  height: 100%;
+  border-right: 1px solid #043b71;
+  font-size: 25px;
+  background-color: #001428;
+  color: white;
+}
+
+.from__amount--light {
+  background-color: rgb(233, 237, 245);
+  border-right: 1px solid lightgrey;
+  color: black;
+}
+
