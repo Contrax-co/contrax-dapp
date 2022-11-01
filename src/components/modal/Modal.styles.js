@@ -1,10 +1,16 @@
 import styled from 'styled-components/macro';
 import Button from '../button/Button';
-
+import "./modal.css"
 export const StyledModalContent = styled.div.attrs((props) => {
+ const a =  window.localStorage.getItem('light')
+ console.log(typeof a)
+ console.log(a)
+
   return {
-    className: 'modal-content',
+   className: `${a !== 'false' ? 'modal-content--light' : 'modal-content' }`
+ 
   };
+  
 })`
   padding: 1.8rem 1.2rem;
   border-radius: 1.25rem;

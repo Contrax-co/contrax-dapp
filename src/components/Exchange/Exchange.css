@@ -71,6 +71,26 @@
   color: black;
 }
 
+.table__input {
+  background-color: #001428;
+  color: white;
+}
+
+.table__token {
+  background-color: #001428;
+  color: white;
+}
+
+.table--light{
+  background-color: white;
+  color: black;
+}
+
+.to__input {
+  display: flex;
+  background-color: #001428;
+}
+
 .to {
   color: white;
 }
@@ -109,6 +129,7 @@
   border-radius: 999px;
   border: 1px solid white;
 }
+
 .exchange_icon2:hover{
   cursor:pointer;
 }
@@ -143,7 +164,6 @@
   flex-direction: row;
   height:90px;
   width:100%;
- 
 }
 
 .exchange_spinner-left{
