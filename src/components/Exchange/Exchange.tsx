@@ -9,6 +9,7 @@ import To from './to/To';
 import { swapFromTokenToPair, swapFromTokenToToken, 
   swapPairForPair, swapPairForToken
 } from './exchange-functions';
+import Confirm from './Confirm';
 
 function Exchange({ lightMode, currentWallet }: any) {
   const [openModalFrom, setOpenModalFrom] = useState(false);
@@ -33,6 +34,8 @@ function Exchange({ lightMode, currentWallet }: any) {
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
   const [toValue, setToValue] = useState(0.0);
+
+  const [confirmPage, setConfirmPage] = useState(false);
 
 
   useEffect(() => {
@@ -102,7 +105,10 @@ function Exchange({ lightMode, currentWallet }: any) {
         </div>
         
         {(tokenType1 === "Token") && (tokenType2 === "Token")? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage, setSecondaryMessage)}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => {
+          setConfirmPage(true)
+          swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage, setSecondaryMessage)
+          }}>
            
             {value ? (
               <p>Swap</p>
@@ -184,6 +190,13 @@ function Exchange({ lightMode, currentWallet }: any) {
           </div> 
 
         </div>
+      )}
+
+      {confirmPage && (
+        <Confirm
+          lightMode ={lightMode}
+          setConfirmPage = {setConfirmPage}
+        /> 
       )}
     </div>
   );

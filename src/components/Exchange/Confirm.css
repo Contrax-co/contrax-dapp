@@ -1,0 +1,30 @@
+.confirm_page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.confirm_modal{
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  background-color: #012243;
+  width: 60%;
+  height: 50%;
+  border-radius: 15px;
+  position: relative;
+  animation: animate 0.3s;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.confirm_modal--light{
+  background-color: white;
+}
