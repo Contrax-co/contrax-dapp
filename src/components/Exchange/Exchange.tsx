@@ -10,6 +10,8 @@ import { swapFromTokenToPair, swapFromTokenToToken,
   swapPairForPair, swapPairForToken
 } from './exchange-functions';
 import Confirm from './Confirm';
+import {AiOutlineCheckCircle} from "react-icons/ai";
+import {MdOutlineErrorOutline} from "react-icons/md";
 
 function Exchange({ lightMode, currentWallet }: any) {
   const [openModalFrom, setOpenModalFrom] = useState(false);
@@ -36,6 +38,16 @@ function Exchange({ lightMode, currentWallet }: any) {
   const [toValue, setToValue] = useState(0.0);
 
   const [confirmPage, setConfirmPage] = useState(false);
+  const [fromName, setFromName] = useState(""); 
+  const [toName, setToName] = useState(""); 
+
+  const [fromImg, setFromImg] = useState("");
+  const [toImg, setToImg] = useState("");
+  const [fromAlt, setFromAlt] = useState("");
+  const [toAlt, setToAlt] = useState("");
+
+
+  const [success, setSuccess] = useState("loading");
 
 
   useEffect(() => {
@@ -77,6 +89,9 @@ function Exchange({ lightMode, currentWallet }: any) {
               fromAddress = {fromAddress}
               toAddress={toAddress}
               setToValue={setToValue}
+              setFromName = {setFromName}
+              setFromImg = {setFromImg}
+              setFromAlt = {setFromAlt}
             /> 
 
         </div>
@@ -100,15 +115,14 @@ function Exchange({ lightMode, currentWallet }: any) {
             fromAddress = {fromAddress}
             toAddress = {toAddress}
             setValue = {setValue}
+            setToName = {setToName}
+            setToImg = {setToImg}
+            setToAlt = {setToAlt}
           />
 
         </div>
         
-        {(tokenType1 === "Token") && (tokenType2 === "Token")? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => {
-          setConfirmPage(true)
-          swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage, setSecondaryMessage)
-          }}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => setConfirmPage(true)}>
            
             {value ? (
               <p>Swap</p>
@@ -118,38 +132,6 @@ function Exchange({ lightMode, currentWallet }: any) {
 
           </div>
          
-        ) : (tokenType1 === "Token") && (tokenType2 === "LP Token") ? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage)}>
-           
-            {value ? (
-              <p>Swap</p>
-            ): (
-              <p>Enter a amount</p>
-            )}
-
-          </div>
-        ): (tokenType1 === "LP Token") && (tokenType2 === "Token") ? (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage)}>
-           
-            {value ? (
-              <p>Swap</p>
-            ): (
-              <p>Enter a amount</p>
-            )}
-
-          </div>
-        ): (
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => swapPairForPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage)}>
-           
-            {value ? (
-              <p>Swap</p>
-            ): (
-              <p>Enter a amount</p>
-            )}
-
-          </div>
-        )}
-    
       </div>
 
       {openModalFrom ? (
@@ -175,7 +157,14 @@ function Exchange({ lightMode, currentWallet }: any) {
 
           <div className={`exchange_spinner_top`}>
             <div className="exchange_spinner-left">
-            <MoonLoader size={20} loading={isLoading} color={'rgb(89, 179, 247)'}/> 
+            {success === "success" ? (
+              <AiOutlineCheckCircle style={{color: "#00E600", fontSize: "20px"}}/> 
+            ): (success === "loading") ? (
+              <MoonLoader size={20} loading={isLoading} color={'rgb(89, 179, 247)'}/> 
+            ): (success === "fail") ? (
+              <MdOutlineErrorOutline style={{color:"#e60000"}} />
+            ): null}
+            
             </div>
 
               <div className={`exchange_spinner_right`}>
@@ -196,6 +185,27 @@ function Exchange({ lightMode, currentWallet }: any) {
         <Confirm
           lightMode ={lightMode}
           setConfirmPage = {setConfirmPage}
+          amount = {value}
+          toAmount = {toValue}
+          fromName={fromName}
+          toName = {toName}
+          fromImg = {fromImg}
+          toImg = {toImg}
+          fromAlt = {fromAlt}
+          toAlt = {toAlt}
+          swap = {() => {
+
+            ((tokenType1 === "Token") && (tokenType2 === "Token")) ? (
+            swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ): ((tokenType1 === "Token") && (tokenType2 === "LP Token")) ? (
+            swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ): ((tokenType1 === "LP Token") && (tokenType2 === "Token")) ? (
+            swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ): (
+            swapPairForPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            )
+          }}
+          
         /> 
       )}
     </div>

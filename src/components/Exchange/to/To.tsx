@@ -3,7 +3,11 @@ import { HiChevronDown } from 'react-icons/hi';
 import { estimateValueFrom } from './to-functions';
 import './To.css';
 
-function To({lightMode, setOpenModal, tokens, tokenId, setTokenType, setToAddress, setToValue, toValue, fromAddress, toAddress, setValue}:any) {
+function To({
+  lightMode, setOpenModal, tokens, tokenId, setTokenType, 
+  setToAddress, setToValue, toValue, fromAddress, toAddress, 
+  setValue, setToName, setToImg, setToAlt
+}:any) {
 
   const token = tokens.slice(tokenId - 1, tokenId);
 
@@ -19,11 +23,14 @@ function To({lightMode, setOpenModal, tokens, tokenId, setTokenType, setToAddres
       token.forEach((token:any) => {
         setTokenName(token.token_name);
         setTokenSrc(token.token_logo);
+        setToImg(token.token_logo);
         setTokenAlt(token.token_alt);
+        setToAlt(token.token_alt);
         setTokenType(token.token_sub);
         setToAddress(token.address);
+        setToName(token.token_name);
     })
-  }, [token, setTokenType, setToAddress])
+  }, [token, setTokenType, setToAddress, setToAlt, setToImg, setToName])
 
   const handleSwapChange = (e: any) => {
     setSwapAmount(e.target.value);

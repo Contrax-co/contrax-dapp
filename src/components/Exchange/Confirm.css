@@ -17,14 +17,110 @@
   z-index: 200;
   background-color: #012243;
   width: 60%;
-  height: 50%;
+  height: 40%;
   border-radius: 15px;
   position: relative;
   animation: animate 0.3s;
   overflow-y: scroll;
   overflow-x: hidden;
+  align-items: center;
 }
 
 .confirm_modal--light{
   background-color: white;
+}
+
+
+.confirmation_header {
+  display: flex;
+  padding: 20px;
+}
+
+.confirm_title{
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.confirm_title--light{
+  color:black;
+}
+
+.confirmation_close{
+  position: absolute;
+  right: 2vh; 
+}
+
+.confirmation_close:hover{
+  cursor: pointer;
+}
+
+.confirmation_logo_container{
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.confirmation_logo{
+  width: 40px;
+  height: 40px;
+  margin-right: -10px;
+  border-radius: 999px;
+}
+
+.confirmation_block{
+  display: flex;
+  flex-direction: column;
+  padding: 3vh;
+  align-items: center;
+  justify-content:center;
+}
+
+.transaction_details{
+  font-size: 20px;
+  color:white;
+}
+
+.transaction_details--light{
+  color:black;
+}
+
+.confirm_arrow{
+  padding: 20px;
+  font-size: 20px;
+}
+
+.confirm_retrieve{
+  font-size: 20px;
+  color:white;
+}
+
+.confirm_retrieve--light{
+  color:black;
+}
+
+.confirmation_button{
+  position: absolute;
+  bottom: 5vh; 
+  width: 90%;
+  height: 50px;
+  display:flex;
+  justify-content:center;
+}
+
+.button_container{
+  display: flex;
+  margin:10px;
+  background-color: rgb(89, 179, 247); 
+  height:100%;
+  width:100%;
+  align-items: center;
+  justify-content: center;
+  color:white;
+  font-weight: 700;
+  border-radius: 10px;
+}
+
+.button_container:hover{
+  cursor:pointer;
+  background-color:rgb(67, 161, 233);
 }
