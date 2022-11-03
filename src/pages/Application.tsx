@@ -38,14 +38,17 @@ function Application() {
   const [logoutInfo, setLogout] = useState(false);
 
   useEffect(() => {
+    chainId();
+
+  });
+
+  useEffect(() => {
     const data = getUserSession();
     if (data) {
       const userInfo = JSON.parse(data);
       setCurrentWallet(userInfo.address);
       setNetworkId(userInfo.networkId);
     }
-
-    chainId();
   }, []);
 
   const connectWallet = async () => {
@@ -67,9 +70,9 @@ function Application() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send('eth_requestAccounts', []);
     const { chainId } = await provider.getNetwork();
-    if (chainId !== 42161) {
-      setNetworkId(chainId.toString(16));
-    }
+
+    setNetworkId(chainId.toString(16));
+    console.log(`the network id is ${chainId}`);
   }
 
   const toggleLight = () => {
