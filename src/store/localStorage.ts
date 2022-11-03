@@ -8,6 +8,14 @@ export function getUserSession() {
   return localStorage.getItem('userOnboardData');
 }
 
+export function getUserPreferences() {
+  return window.localStorage.getItem('userPreferences');
+}
+
+export function setUserPreferences(data:any) {
+  return window.localStorage.setItem('userPreferences', JSON.stringify(data));
+}
+
 // Method To Remove User Session
 export function removeUserSession() {
   return localStorage.removeItem('userOnboardData');
