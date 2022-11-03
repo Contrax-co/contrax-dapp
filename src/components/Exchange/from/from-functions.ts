@@ -9,6 +9,7 @@ export const totalFrom = async(currentWallet: any, tokenName: any, setFromAmt: a
     try{
       if(ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
 
         if(tokenName === "ETH"){
@@ -48,6 +49,7 @@ export const estimateValueTo = async(
     if(ethereum){
 
       const provider = new ethers.providers.Web3Provider(ethereum);
+      await provider.send('eth_requestAccounts', []);
       const signer = provider.getSigner();
       const Uniswap = new ethers.Contract(uniSwap_address, uniswap_abi, signer); 
 

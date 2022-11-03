@@ -5,7 +5,11 @@ import { totalFrom } from './from-functions';
 import "./From.css";
 
 
-function From({lightMode, setOpenModal, tokens, tokenId, currentWallet, setValue, setTokenType, setFromAddress, setAbi, value, fromAddress, toAddress, setToValue}: any) {
+function From({
+    lightMode, setOpenModal, tokens, tokenId, currentWallet, 
+    setValue, setTokenType, setFromAddress, setAbi, value, fromAddress, 
+    toAddress, setToValue, setFromName, setFromImg, setFromAlt
+}: any) {
 
     const token = tokens.slice(tokenId - 1, tokenId);
 
@@ -22,18 +26,21 @@ function From({lightMode, setOpenModal, tokens, tokenId, currentWallet, setValue
     useEffect(() => {
         token.forEach((token:any) => {
             setTokenName(token.token_name);
+            setFromName(token.token_name);
             setTokenSrc(token.token_logo);
+            setFromImg(token.token_logo);
             setTokenAlt(token.token_alt);
+            setFromAlt(token.token_alt);
             setTokenAbi(token.token_abi);
             setTokenLp(token.address);
             setTokenType(token.token_sub);
             setFromAddress(token.address);
-            setAbi(JSON.stringify(token.token_abi))
+            setAbi(JSON.stringify(token.token_abi));
         })
 
         totalFrom(currentWallet, tokenName, setFromAmt, tokenLp, tokenAbi);
 
-    }, [currentWallet, tokenName, tokenLp, tokenAbi, token, setFromAddress, setTokenType, setAbi]);
+    }, [currentWallet, tokenName, tokenLp, tokenAbi, token, setFromAddress, setTokenType, setAbi, setFromAlt, setFromImg, setFromName]);
 
     useEffect(() => {
         setSwapAmount(value);
