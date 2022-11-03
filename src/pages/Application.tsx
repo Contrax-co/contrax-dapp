@@ -10,6 +10,7 @@ import Exchange from '../components/Exchange/Exchange';
 import Compound from '../components/Compound/Compound';
 import CreateToken from './createToken';
 import CreatePool from './createPool';
+import * as ethers from 'ethers';
 
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
 
@@ -43,6 +44,8 @@ function Application() {
       setCurrentWallet(userInfo.address);
       setNetworkId(userInfo.networkId);
     }
+
+    chainId();
   }, []);
 
   const connectWallet = async () => {
@@ -59,6 +62,15 @@ function Application() {
       setNetworkId(states.chains[0].id);
     }
   };
+
+  const chainId = async() => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send('eth_requestAccounts', []);
+    const { chainId } = await provider.getNetwork();
+    if (chainId !== 42161) {
+      setNetworkId(chainId.toString(16));
+    }
+  }
 
   const toggleLight = () => {
     setLightMode(!lightMode);

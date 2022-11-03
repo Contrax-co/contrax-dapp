@@ -22,6 +22,7 @@ export const swapFromTokenToToken = async (
     try{
       if(ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
 
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
@@ -94,6 +95,7 @@ export const swapFromTokenToPair = async (
     try{
       if (ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
@@ -166,6 +168,7 @@ export const swapPairForToken = async (
     try{
       if(ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
@@ -236,6 +239,7 @@ export const swapPairForPair = async (
     try{
       if(ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 

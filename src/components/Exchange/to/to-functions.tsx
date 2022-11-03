@@ -13,6 +13,7 @@ export const estimateValueFrom = async (
     if(ethereum){
 
       const provider = new ethers.providers.Web3Provider(ethereum);
+      await provider.send('eth_requestAccounts', []);
       const signer = provider.getSigner();
       const Uniswap = new ethers.Contract(uniSwap_address, uniswap_abi, signer); 
       
