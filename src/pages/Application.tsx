@@ -4,12 +4,13 @@ import TopBar from '../components/Topbar/TopBar';
 import './Application.css';
 import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
-import { getUserSession, setUserSession } from '../store/localStorage';
+import { getUserPreferences, getUserSession, setUserPreferences, setUserSession } from '../store/localStorage';
 import Logout from '../components/Logout/Logout';
 import Exchange from '../components/Exchange/Exchange';
 import Compound from '../components/Compound/Compound';
 import CreateToken from './createToken';
 import CreatePool from './createPool';
+import * as ethers from 'ethers';
 
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
 
@@ -36,6 +37,23 @@ function Application() {
 
   const [logoutInfo, setLogout] = useState(false);
 
+
+  useEffect(() => {
+    const data = window.localStorage.getItem('lightMode');
+
+    if(data != null) {
+      setLightMode(JSON.parse(data));
+    }
+  }, [])
+
+  useEffect(() => {
+    chainId();
+    
+    window.localStorage.setItem('lightMode', JSON.stringify(lightMode)); 
+    
+  }, [lightMode]);
+
+
   useEffect(() => {
     const data = getUserSession();
     if (data) {
@@ -44,6 +62,7 @@ function Application() {
       setNetworkId(userInfo.networkId);
     }
   }, []);
+
 
   const connectWallet = async () => {
     const wallets = await onboard.connectWallet();
@@ -59,6 +78,16 @@ function Application() {
       setNetworkId(states.chains[0].id);
     }
   };
+  
+
+  const chainId = async() => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send('eth_requestAccounts', []);
+    const { chainId } = await provider.getNetwork();
+
+    setNetworkId(chainId.toString(16));
+    console.log(`the network id is ${chainId}`);
+  }
 
   const toggleLight = () => {
     setLightMode(!lightMode);

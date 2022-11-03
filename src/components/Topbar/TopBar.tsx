@@ -15,7 +15,7 @@ function TopBar({
         <div
           className={`wallet_address ${lightMode && 'wallet_address--light'}`}
         >
-          {networkId === '0xa4b1' ? (
+          {networkId === '0xa4b1' || networkId === 'a4b1' ? (
             <div className={`ethBal ${lightMode && 'ethBal--light'}`}>
               <p>Arbitrum</p>
             </div>
