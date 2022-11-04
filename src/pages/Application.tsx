@@ -125,7 +125,9 @@ function Application() {
           )}
           {menuItem === 'Create token' && <CreateToken />}
           {menuItem === 'Create pool' && <CreatePool />}
-          {menuItem === 'Exchange' && <Exchange lightMode={lightMode} currentWallet={currentWallet} />}
+          {menuItem === 'Exchange' && (
+          <Exchange lightMode={lightMode} currentWallet={currentWallet} /> 
+          )}
         </div>
       </div>
 
