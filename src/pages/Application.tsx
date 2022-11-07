@@ -86,7 +86,7 @@ function Application() {
     const { chainId } = await provider.getNetwork();
 
     setNetworkId(chainId.toString(16));
-    console.log(`the network id is ${chainId}`);
+    console.log(`the networkId is ${chainId}`);
   }
 
   const toggleLight = () => {
