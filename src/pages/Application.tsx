@@ -11,6 +11,7 @@ import Compound from '../components/Compound/Compound';
 import CreateToken from './createToken';
 import CreatePool from './createPool';
 import * as ethers from 'ethers';
+import Dashboard from '../components/Dashboard/Dashboard';
 
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
 
@@ -115,7 +116,11 @@ function Application() {
               logout={() => setLogout(true)}
             />
           </div>
-          {menuItem === 'Dashboard' && <p>dashboard</p>}
+          {menuItem === 'Dashboard' &&
+            <Dashboard
+              lightMode={lightMode}
+              currentWallet={currentWallet}
+            />}
           {menuItem === 'Farms' && (
             <Compound
               lightMode={lightMode}

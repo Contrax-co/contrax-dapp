@@ -38,9 +38,7 @@ function SwapValuesTo({ lightMode, setOpenModal, tokens, setTokenId }: any) {
                 <div className={`pad_options ${lightMode && 'pad_options--light'}`}>
                   <img
                     alt={token.token_alt}
-                    className={`exchange__logo2 ${
-                      lightMode && 'exchange__logo2--light'
-                    }`}
+                    className={`exchange__logo2`}
                     src={token.token_logo}
                   />
                   <p>{token.token_name}</p>
