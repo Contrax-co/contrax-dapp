@@ -11,8 +11,10 @@ export const swapFromTokenToToken = async (
   token_abi: any,
   setLoading:any,
   setLoaderMessage:any,
-  setSecondaryMessage: any
+  setSecondaryMessage: any,
+  setSuccess:any
 ) => {
+  setSuccess("loading"); 
   setLoading(true); 
   setLoaderMessage('Swap Pending');
   if (currentWallet) {
@@ -20,6 +22,7 @@ export const swapFromTokenToToken = async (
     try{
       if(ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
 
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
@@ -47,8 +50,11 @@ export const swapFromTokenToToken = async (
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping`); 
+          setSecondaryMessage(`Try again!`);
+          setSuccess("fail"); 
         } else {
           setLoaderMessage(`Swapped--`);
+          setSuccess("success"); 
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
           setValue(0.0);
         }
@@ -56,6 +62,9 @@ export const swapFromTokenToToken = async (
       }
       else{
         console.log("Ethereum object doesn't exist!");
+        setLoaderMessage(`Error swapping!`);
+        setSecondaryMessage(`Try again!`)
+        setSuccess("fail"); 
       }
 
     }
@@ -75,8 +84,10 @@ export const swapFromTokenToPair = async (
   token_abi: any, fromValue:any, setValue:any,
   setLoading:any, 
   setLoaderMessage:any, 
-  setSecondaryMessage: any
+  setSecondaryMessage: any,
+  setSuccess: any
 ) => {
+  setSuccess("loading"); 
   setLoading(true);
   setLoaderMessage("Swap Pending"); 
   if (currentWallet) {
@@ -84,6 +95,7 @@ export const swapFromTokenToPair = async (
     try{
       if (ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
@@ -110,8 +122,11 @@ export const swapFromTokenToPair = async (
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
+          setSecondaryMessage(`Try again!`);
+          setSuccess("fail"); 
         } else {
           setLoaderMessage(`Swapped--`);
+          setSuccess("success"); 
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
           setValue(0.0);
         }
@@ -119,6 +134,9 @@ export const swapFromTokenToPair = async (
       }
       else{
         console.log("Ethereum object doesn't exist!");
+        setLoaderMessage(`Error swapping!`);
+        setSecondaryMessage(`Try again!`)
+        setSuccess("fail"); 
       }
 
     }
@@ -139,8 +157,10 @@ export const swapPairForToken = async (
   token_abi:any, fromValue:any, setValue:any,
   setLoading:any, 
   setLoaderMessage:any, 
-  setSecondaryMessage:any
+  setSecondaryMessage:any,
+  setSuccess: any
 ) => {
+  setSuccess("loading"); 
   setLoading(true); 
   setLoaderMessage("Swap Pending"); 
   if(currentWallet){
@@ -148,6 +168,7 @@ export const swapPairForToken = async (
     try{
       if(ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
@@ -174,8 +195,11 @@ export const swapPairForToken = async (
         const exchangeTxnStatus = await exchangeTxn.wait(1);
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
+          setSecondaryMessage(`Try again!`);
+          setSuccess("fail"); 
         } else {
           setLoaderMessage(`Swapped--`);
+          setSuccess("success"); 
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
           setValue(0.0);
         }
@@ -183,6 +207,9 @@ export const swapPairForToken = async (
       }
       else{
         console.log("Ethereum object doesn't exist!");
+        setLoaderMessage(`Error swapping!`);
+        setSecondaryMessage(`Try again!`)
+        setSuccess("fail"); 
       }
 
     }
@@ -201,8 +228,10 @@ export const swapPairForPair = async (
   currentWallet:any, from:any, to:any, 
   token_abi:any, fromValue:any, setValue:any,
   setLoading:any,setLoaderMessage:any,
-  setSecondaryMessage:any
+  setSecondaryMessage:any,
+  setSuccess:any
 ) => {
+  setSuccess("loading"); 
   setLoading(true); 
   setLoaderMessage("Swap Pending")
   if(currentWallet){
@@ -210,6 +239,7 @@ export const swapPairForPair = async (
     try{
       if(ethereum){
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
@@ -238,8 +268,11 @@ export const swapPairForPair = async (
 
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
+          setSecondaryMessage(`Try again!`)
+          setSuccess("fail"); 
         } else {
           setLoaderMessage(`Swapped--`);
+          setSuccess("success"); 
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
           setValue(0.0);
         }
@@ -247,6 +280,9 @@ export const swapPairForPair = async (
       }
       else{
         console.log("Ethereum object doesn't exist!");
+        setLoaderMessage(`Error swapping!`);
+        setSecondaryMessage(`Try again!`)
+        setSuccess("fail"); 
       }
 
     }

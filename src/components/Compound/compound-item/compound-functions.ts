@@ -33,6 +33,7 @@ export const getUserVaultBalance = async (
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
         const signer = provider.getSigner();
         const vaultContract = new ethers.Contract(
           pool.vault_addr,
@@ -63,6 +64,7 @@ export const getTotalVaultBalance = async (
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
+      await provider.send('eth_requestAccounts', []);
       const signer = provider.getSigner();
       const vaultContract = new ethers.Contract(
         pool.vault_addr,
@@ -92,6 +94,7 @@ export const totalLPTokenExisting = async (
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
+      await provider.send('eth_requestAccounts', []);
       const signer = provider.getSigner();
       const lpContract = new ethers.Contract(
         pool.lp_address,

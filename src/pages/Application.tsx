@@ -10,6 +10,8 @@ import Exchange from '../components/Exchange/Exchange';
 import Compound from '../components/Compound/Compound';
 import CreateToken from './createToken';
 import CreatePool from './createPool';
+import * as ethers from 'ethers';
+import Dashboard from '../components/Dashboard/Dashboard';
 
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
 
@@ -36,6 +38,23 @@ function Application() {
 
   const [logoutInfo, setLogout] = useState(false);
 
+
+  useEffect(() => {
+    const data = window.localStorage.getItem('lightMode');
+
+    if(data != null) {
+      setLightMode(JSON.parse(data));
+    }
+  }, [])
+
+  useEffect(() => {
+    chainId();
+    
+    window.localStorage.setItem('lightMode', JSON.stringify(lightMode)); 
+    
+  }, [lightMode]);
+
+
   useEffect(() => {
     const data = getUserSession();
     if (data) {
@@ -44,6 +63,7 @@ function Application() {
       setNetworkId(userInfo.networkId);
     }
   }, []);
+
 
   const connectWallet = async () => {
     const wallets = await onboard.connectWallet();
@@ -59,6 +79,16 @@ function Application() {
       setNetworkId(states.chains[0].id);
     }
   };
+  
+
+  const chainId = async() => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send('eth_requestAccounts', []);
+    const { chainId } = await provider.getNetwork();
+
+    setNetworkId(chainId.toString(16));
+    console.log(`the networkId is ${chainId}`);
+  }
 
   const toggleLight = () => {
     setLightMode(!lightMode);
@@ -86,7 +116,11 @@ function Application() {
               logout={() => setLogout(true)}
             />
           </div>
-          {menuItem === 'Dashboard' && <p>dashboard</p>}
+          {menuItem === 'Dashboard' &&
+            <Dashboard
+              lightMode={lightMode}
+              currentWallet={currentWallet}
+            />}
           {menuItem === 'Farms' && (
             <Compound
               lightMode={lightMode}
@@ -96,7 +130,9 @@ function Application() {
           )}
           {menuItem === 'Create token' && <CreateToken />}
           {menuItem === 'Create pool' && <CreatePool />}
-          {menuItem === 'Exchange' && <Exchange lightMode={lightMode} currentWallet={currentWallet} />}
+          {menuItem === 'Exchange' && (
+          <Exchange lightMode={lightMode} currentWallet={currentWallet} /> 
+          )}
         </div>
       </div>
 

@@ -13,6 +13,7 @@ export const getEthBalance = async (currentWallet: any, setEthUserBal: any) => {
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
 
         const balance = await provider.getBalance(currentWallet);
         const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
@@ -45,6 +46,8 @@ export const getLPBalance = async (
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
+        await provider.send('eth_requestAccounts', []);
+
         const lpContract = new ethers.Contract(
           pool.lp_address,
           pool.lp_abi,
@@ -86,6 +89,7 @@ export const zapIn = async (
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
+      await provider.send('eth_requestAccounts', []);
       const signer = provider.getSigner();
       const zapperContract = new ethers.Contract(
         pool.zapper_addr,
@@ -154,6 +158,7 @@ export const deposit = async (
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
+      await provider.send('eth_requestAccounts', []);
       const signer = provider.getSigner();
       const vaultContract = new ethers.Contract(
         pool.vault_addr,
