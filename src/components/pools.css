@@ -1,0 +1,15 @@
+.table__input {
+  background-color: #001428;
+  color: white;
+}
+
+.table__token {
+  background-color: #001428;
+  color: white;
+}
+
+.table--light{
+  background-color: white;
+  color: black;
+}
+

@@ -15,6 +15,7 @@ export const wethAddress="0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
         try {
             if (ethereum) {
                 const provider = new ethers.providers.Web3Provider(ethereum);
+                await provider.send('eth_requestAccounts', []);
                 const signer = provider.getSigner();
                 const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
 
@@ -52,6 +53,7 @@ export const withdraw = async(pool:any, withdrawAmount:any, setWithdrawAmount:an
     try{
         if(ethereum){
             const provider = new ethers.providers.Web3Provider(ethereum);
+            await provider.send('eth_requestAccounts', []);
             const signer = provider.getSigner();
             const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
 
@@ -105,6 +107,7 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
     try{
         if(ethereum){
             const provider = new ethers.providers.Web3Provider(ethereum);
+            await provider.send('eth_requestAccounts', []);
             const signer = provider.getSigner();
             const zapperContract = new ethers.Contract(pool.zapper_addr, pool.zapper_abi, signer); 
 

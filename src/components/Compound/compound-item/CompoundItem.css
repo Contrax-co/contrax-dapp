@@ -1,187 +1,172 @@
-.pools{
-    width: 100%;
-    height: 100%;
-    background-color:#012243; 
-    border-radius: 20px;
-    margin-bottom: 7px;
+.pools {
+  width: 100%;
+  height: 100%;
+  background-color: #012243;
+  border-radius: 20px;
+  margin-bottom: 7px;
 }
 
-.pools--light{
-    background-color:white;
+.pools--light {
+  background-color: white;
 }
 
-.pools:hover{
-    background-color: #032a51;
-    cursor: pointer;
+.pools:hover {
+  background-color: #032a51;
+  cursor: pointer;
 }
 
-
-.pools--light:hover{
-    background-color: white;
-    cursor: pointer;
+.pools--light:hover {
+  background-color: white;
+  cursor: pointer;
 }
 
 .single_pool {
-    display: flex;
-    flex-direction: column;
-    width:100%;
-    height: 100%;
-    justify-content: space-evenly;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: space-evenly;
 }
 
-.row_items{
-    display: flex;
-    flex-direction: row;
-    padding:20px;
+.row_items {
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
 }
 
 .title_container {
-    display: flex;
-    flex: 2;
-    align-items: center;
+  display: flex;
+  flex: 2;
+  align-items: center;
 }
 
-.pair{
-    display: flex;
+.pair {
+  display: flex;
 }
 
-.pool_title{
-    margin-left:10px;    
-    line-height: 0px;
+.pool_title {
+  margin-left: 10px;
+  line-height: 0px;
 }
 
-.logofirst{
-    width:50px;
-    height: 50px;
-    margin-right: -10px;
-    border: 4px solid #093156;
-    border-radius: 999px;
+.logofirst {
+  width: 60px;
+  height: 60px;
+  margin-right: -10px;
+
 }
 
-.logofirst--light{
-    border: 4px solid lightblue;
+.logo {
+  width: 60px;
+  height: 60px;
 }
 
-.logo{
-    width:50px;
-    height: 50px;
-    border: 4px solid #093156;
-    border-radius: 999px;
+.rewards_div {
+  display: flex;
+  align-items: center;
 }
 
-.logo--light{
-    border: 4px solid lightblue;
+.dropdown {
+  width: 15px;
+  color: white;
+  font-size: 21px;
+  align-self: center;
 }
 
-.rewards_div{
-    display: flex;
-    align-items:center;
+.dropdown--light {
+  color: black;
 }
 
-
-.dropdown{
-    width:15px;
-    color:white;
-    font-size:21px;
-    align-self:center;
-}
-
-.dropdown--light{
-    color: black;
-}
-
-.rewards_image{
-    width:15px;
-    border-radius: 999px;
-    border:1px solid black;
-    background-color:black;
+.rewards_image {
+  width: 15px;
+  border-radius: 999px;
+  border: 1px solid black;
+  background-color: black;
 }
 
 .pool_name {
-    white-space: nowrap;
-    font-size: 15px;
-    font-weight: bold;
-    color: rgb(237, 232, 232);
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: bold;
+  color: rgb(237, 232, 232);
 }
 
 .pool_name__apy {
-    font-size:17px;
-    font-weight:700;
-    color: rgb(237, 232, 232);
-    margin-left: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  color: rgb(237, 232, 232);
+  margin-left: 10px;
 }
 
 .pool_name__apy--light {
-    color: black;
+  color: black;
 }
 
-.pool_name--light{
-    color: black;
+.pool_name--light {
+  color: black;
 }
 
 .tvlLP {
-    color: lightgrey;
-    font-size:13px;
-    font-weight: 600;
+  color: lightgrey;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.tvlLP--light{
-    color:#8798ad;
+.tvlLP--light {
+  color: #8798ad;
 }
 
-
-.farm_type{
-    color:white;
-    font-size:13px;
-    margin-right:5px;
+.farm_type {
+  color: white;
+  font-size: 13px;
+  margin-right: 5px;
 }
 
-.farm_type--light{
-    color: black;
+.farm_type--light {
+  color: black;
 }
 
-.pool_info{
-    display: flex;
-    flex:5;
-    justify-content: space-evenly;
+.pool_info {
+  display: flex;
+  flex: 5;
+  justify-content: space-evenly;
 }
 
-.container{
-    flex:1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .container__apy {
-    flex:1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content:center
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .rewards {
-    width:15px;
+  width: 15px;
 }
 
-.dropdown_menu{
-    cursor:default;
-    display: flex;
-    flex-direction:column;
-    width: 100%;
-    border-top:1px solid #043b71;
+.dropdown_menu {
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-top: 1px solid #043b71;
 }
 
-.dropdown_menu--light{
-    border-top: 1px solid rgb(210, 232, 239);
+.dropdown_menu--light {
+  border-top: 1px solid rgb(210, 232, 239);
 }
 
-.drop_buttons{
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    padding-top: 20px;
-    padding-bottom: 10px;
-
+.drop_buttons {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding-top: 20px;
+  padding-bottom: 10px;
 }

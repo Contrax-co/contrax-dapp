@@ -1,92 +1,215 @@
-import React, {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import {CgArrowsExchangeAltV} from 'react-icons/cg';
-import {HiChevronDown} from 'react-icons/hi';
-import SwapValues from './SwapValues';
+import SwapValuesFrom from './from/SwapValuesFrom';
+import SwapValuesTo from './to/SwapValuesTo';
+import { MoonLoader } from 'react-spinners';
 import './Exchange.css';
+import From from './from/From';
+import To from './to/To';
+import { swapFromTokenToPair, swapFromTokenToToken, 
+  swapPairForPair, swapPairForToken
+} from './exchange-functions';
+import Confirm from './Confirm';
+import {AiOutlineCheckCircle} from "react-icons/ai";
+import {MdOutlineErrorOutline} from "react-icons/md";
 
-function Exchange({lightMode}:any) {
-  const [openModal, setOpenModal] = useState(false);
-  const [swapTokensFrom, setSwapTokensFrom] = useState("Ether");
-  const [swapTokensTo, setSwapTokensTo] = useState("Sushi");
+function Exchange({ lightMode, currentWallet }: any) {
+  const [openModalFrom, setOpenModalFrom] = useState(false);
+  const [openModalTo, setOpenModalTo] = useState(false);
 
-  const [tokenSwap, setTokenSwap] = useState(0);
 
+  const[tokenId1, setTokenId1] = useState(1);
+  const[tokenId2, setTokenId2] = useState(2);
   const [tokens, setTokens] = useState([]);
 
+  const [value, setValue] = useState(0); 
+  const [tokenType1, setTokenType1] = useState("");
+  const [tokenType2, setTokenType2] = useState("");
+
+  const [fromAddress, setFromAddress] = useState("");
+  const [toAddress, setToAddress] = useState("");
+
+  const [tokenAbi, setTokenAbi] = useState([]); 
+
+  const [isLoading, setLoading] = useState(false);
+  const [loaderMessage, setLoaderMessage] = useState('');
+  const [secondaryMessage, setSecondaryMessage] = useState('');
+
+  const [toValue, setToValue] = useState(0.0);
+
+  const [confirmPage, setConfirmPage] = useState(false);
+  const [fromName, setFromName] = useState(""); 
+  const [toName, setToName] = useState(""); 
+
+  const [fromImg, setFromImg] = useState("");
+  const [toImg, setToImg] = useState("");
+  const [fromAlt, setFromAlt] = useState("");
+  const [toAlt, setToAlt] = useState("");
+
+
+  const [success, setSuccess] = useState("loading");
+
+
   useEffect(() => {
-    fetch("http://localhost:3000/api/poolswap.json")       //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
-    .then(response => response.json())
-    .then(data => {
-        setTokens(data); 
-    })
-
-  }, [])
-
+    fetch('http://localhost:3000/api/poolswap.json') //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
+      .then((response) => response.json())
+      .then((data) => {
+        setTokens(data);
+      });
+  }, []);
 
   return (
     <div className={`whole__exchange__container`}>
-
       <div className="exchange__header">
-        <p className={`whole__container__title ${lightMode && "whole__container__title--light"}`}>Exchange</p>
-      </div>
-      
-      
-      <div className={`swap__container ${lightMode && "swap__container--light"}`}>
-        <p className={`swap_title ${lightMode && "swap_title--light"}`}>Swap</p>
-
-        <div className={`from ${lightMode && "from--light"}`}>
-          <p>From</p>
-
-          <div className={`from__input ${lightMode && "from__input--light"}`}>
-            <input type="number" placeholder="0.0" className={`from__amount ${lightMode && "from__amount--light"}`}/>
-            <div className={`dropdown__from ${lightMode && "dropdown__from--light"}`} onClick={() => setOpenModal(true)}>
-              <img className={`swap__logo`} alt="ETH token" src="https://cryptologos.cc/logos/ethereum-eth-logo.png?v=023"/>
-              <p>ETH</p>
-              <HiChevronDown />
-            </div>
-          </div>
-
-        </div>
-
-        <CgArrowsExchangeAltV className={`symbol__exchange ${lightMode && "symbol__exchange--light"}`}/>
-
-        <div className={`to ${lightMode && "to--light"}`}>
-          <p>To</p>
-          <div className={`to__input ${lightMode && "to__input--light"}`}>
-            <input type="number" placeholder="0.0" className={`to__amount ${lightMode && "to__amount--light"}`}/>
-
-            <div className={`dropdown__to ${lightMode && "dropdown__to--light"}`} onClick={() => setOpenModal(true)}>
-              <img className={`swap__logo`} alt="Sushi token" src="https://cryptologos.cc/logos/sushiswap-sushi-logo.png?v=023"/>
-              <p>{swapTokensTo}</p>
-              <HiChevronDown />
-            </div>
-
-          </div>
-        </div>
-
-        <div className={`exchange_button ${lightMode && "exchange_button--light"}`}>
-          <p>Enter a amount</p>
-        </div>
-
+        <p
+          className={`whole__container__title ${
+            lightMode && 'whole__container__title--light'
+          }`}
+        >
+          Exchange
+        </p>
       </div>
 
-      { (
-        openModal ? (
-        <SwapValues 
-          tokens={tokens} 
-          setOpenModal={setOpenModal} 
-          setTokenSwap={setTokenSwap}
+      <div className={`swap__container ${lightMode && 'swap__container--light'}`}>
+        <p className={`swap_title ${lightMode && 'swap_title--light'}`}>Swap</p>
 
-          setSwapTokensFrom={setSwapTokensFrom} 
-          setSwapTokensTo={setSwapTokensTo} 
+        <div className={`from ${lightMode && 'from--light'}`}>
+          
+            <From 
+              lightMode={lightMode}
+              setOpenModal={setOpenModalFrom}
+              tokens = {tokens}
+              tokenId = {tokenId1}
+              currentWallet={currentWallet}
+              setValue = {setValue}
+              setTokenType={setTokenType1}
+              setFromAddress = {setFromAddress}
+              setAbi = {setTokenAbi}
+              value={value}
+              fromAddress = {fromAddress}
+              toAddress={toAddress}
+              setToValue={setToValue}
+              setFromName = {setFromName}
+              setFromImg = {setFromImg}
+              setFromAlt = {setFromAlt}
+            /> 
+
+        </div>
+
+        <div className={`exchange_icon`}>
+          <CgArrowsExchangeAltV className={`exchange_icon2 ${lightMode && 'exchange_icon2--light'}`}/>
+        </div>
+        
+
+        <div className={`to ${lightMode && 'to--light'}`}>
+
+          <To 
+            lightMode={lightMode}
+            setOpenModal={setOpenModalTo}
+            tokens = {tokens}
+            tokenId={tokenId2}
+            setTokenType={setTokenType2}
+            setToAddress = {setToAddress}
+            setToValue = {setToValue}
+            toValue = {toValue}
+            fromAddress = {fromAddress}
+            toAddress = {toAddress}
+            setValue = {setValue}
+            setToName = {setToName}
+            setToImg = {setToImg}
+            setToAlt = {setToAlt}
+          />
+
+        </div>
+        
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => setConfirmPage(true)}>
+           
+            {value ? (
+              <p>Swap</p>
+            ): (
+              <p>Enter a amount</p>
+            )}
+
+          </div>
+         
+      </div>
+
+      {openModalFrom ? (
+        <SwapValuesFrom
+          tokens={tokens}
+          setOpenModal={setOpenModalFrom}
           lightMode={lightMode}
+          setTokenId = {setTokenId1}
         />
-        ) : null
-      )}
-      
+      ) : null}
 
+      {openModalTo ? (
+        <SwapValuesTo
+          tokens={tokens}
+          setOpenModal={setOpenModalTo}
+          lightMode={lightMode}
+          setTokenId = {setTokenId2}
+        />
+      ) : null}
+
+      {isLoading && (
+        <div className={`exchange_spinner ${lightMode && 'exchange_spinner--light'}`}>
+
+          <div className={`exchange_spinner_top`}>
+            <div className="exchange_spinner-left">
+            {success === "success" ? (
+              <AiOutlineCheckCircle style={{color: "#00E600", fontSize: "20px"}}/> 
+            ): (success === "loading") ? (
+              <MoonLoader size={20} loading={isLoading} color={'rgb(89, 179, 247)'}/> 
+            ): (success === "fail") ? (
+              <MdOutlineErrorOutline style={{color:"#e60000"}} />
+            ): null}
+            
+            </div>
+
+              <div className={`exchange_spinner_right`}>
+                <p style={{fontWeight:'700'}}>{loaderMessage}</p>
+                <p style={{fontSize:'13px'}}>{secondaryMessage}</p>
+              </div>
+
+          </div>
+
+          <div className={`exchange_spinner_bottom`} onClick={() => setLoading(false)}>
+            <p>Dismiss</p>
+          </div> 
+
+        </div>
+      )}
+
+      {confirmPage && (
+        <Confirm
+          lightMode ={lightMode}
+          setConfirmPage = {setConfirmPage}
+          amount = {value}
+          toAmount = {toValue}
+          fromName={fromName}
+          toName = {toName}
+          fromImg = {fromImg}
+          toImg = {toImg}
+          fromAlt = {fromAlt}
+          toAlt = {toAlt}
+          swap = {() => {
+
+            ((tokenType1 === "Token") && (tokenType2 === "Token")) ? (
+            swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ): ((tokenType1 === "Token") && (tokenType2 === "LP Token")) ? (
+            swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ): ((tokenType1 === "LP Token") && (tokenType2 === "Token")) ? (
+            swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ): (
+            swapPairForPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            )
+          }}
+          
+        /> 
+      )}
     </div>
-  )
+  );
 }
 
-export default Exchange
+export default Exchange;
