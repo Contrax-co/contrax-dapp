@@ -1,20 +1,21 @@
-.dropdown_values {
-  padding: 5px;
-  width: 11vw;
-  border-radius: 10px;
-  background-color: pink;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.dropdown_values{
+    padding: 5px;
+    width: 11vw;
+    border-radius:10px;
+    background-color:pink;
+    display:flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.dropdown_select {
-  border: none;
-  outline: none;
-  background-color: pink;
-  padding: 10px;
+.dropdown_select{
+    border:none;
+    outline:none;
+    background-color:pink;
+    padding:10px;
 }
 
 option {
-  font-weight: 900;
+    font-weight:900;
 }
+

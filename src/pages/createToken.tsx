@@ -1,20 +1,21 @@
 // @ts-nocheck
-import { useEffect, useState } from 'react';
-import { gql, useMutation } from '@apollo/client';
-import { ethers } from 'ethers';
-import swal from 'sweetalert';
-import { useInput } from 'rooks';
-import { getUserSession } from '../store/localStorage';
 
 import BottomBar from '../components/bottomBar/BottomBar';
-import Button from '../components/button/Button';
 import { Title, Desc, DescSpan, H3 } from '../components/text/Text';
-import { Col, Container, Row } from '../components/blocks/Blocks';
 import { FormInput, FormCheckbox, Form } from '../components/form/Form';
+import Button from '../components/button/Button';
+import { useInput } from 'rooks';
+import { Col, Container, Row } from '../components/blocks/Blocks';
 import { Modal } from '../components/modal/Modal';
+import { useEffect, useState } from 'react';
+import { getUserSession } from '../store/localStorage';
+import { gql, useMutation } from '@apollo/client';
 import Tokens from '../components/tokens';
+import swal from 'sweetalert';
 import LoadingSpinner from '../components/spinner/spinner';
 
+// const Web3 = require('web3');
+const ethers = require('ethers');
 const contractFile = require('../config/erc20.json');
 
 declare global {
@@ -61,13 +62,14 @@ export default function CreateToken(props: any) {
   const tokenTradingFee = useInput(false);
   const tokenTradingFeeValue = useInput('');
   const tokenSupportSupplyIncrease = useInput(false);
+  // const [tokens, setTokens] = useState([]);
   const [tokenAddress, setTokenAddress] = useState();
   const [wallet, setWallet] = useState();
   const [decimals, setDecimal] = useState();
   const [totalSupply, setTotalSupply] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-  const mutateFunction = useMutation(INCREMENT_COUNTER, {
+  const [mutateFunction, { data }] = useMutation(INCREMENT_COUNTER, {
     variables: {
       tokenName: tokenName.value,
       tokenSymbol: tokenSymbol.value,
