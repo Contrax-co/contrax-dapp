@@ -8,13 +8,13 @@ phases:
     commands:
       - echo Pre build commands started...
       - echo npm install started.
-      - npm
+      - npm install --verbose
       - echo Finished installing packages.
   build:
     commands:
       - echo Generating build directory for react.
-      - npm build
-      - echo Finished generating build directory.
+      - npm run build --ignore-ts-errors
+      - echo Finished generating build directory
 
   post_build:
     commands:
