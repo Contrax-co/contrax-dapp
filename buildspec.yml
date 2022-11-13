@@ -1,9 +1,6 @@
-version: 0.2
+vversion: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      nodejs: 16
   pre_build:
     commands:
       - echo Pre build commands started...
@@ -14,7 +11,7 @@ phases:
     commands:
       - echo Generating build directory for react.
       - npm run build --ignore-ts-errors
-      - echo Finished generating build directory
+      - echo Finished generating build directory.
 
   post_build:
     commands:
