@@ -1,12 +1,15 @@
 .dashboard_top_bg{
   width: 100%;
-  height: 100%;
+  margin-top:5px;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .dashboard_header{
   background-image: linear-gradient(rgba(0, 154, 255, .5), rgba(0, 154, 255, 0.10), rgba(0, 154, 255, 0));
   padding-top:5px;
-  width: 100%;
+  padding:30px;
   height:20vh;
   display:block;
   flex-direction: column;
@@ -85,5 +88,29 @@
 }
 
 .dashboard_copy--light{
+  color:black;
+}
+
+.dashboard_vault_title{
+  padding:30px;
+}
+
+.dashboard_title{
+  font-size:25px;
+  font-weight:700;
+  color:white;
+}
+
+.dashboard_title--light{
+  color:black;
+}
+
+.dashboard_wallet_title{
+  font-size:25px;
+  font-weight:700;
+  color:white;
+}
+
+.dashboard_wallet_title--light{
   color:black;
 }

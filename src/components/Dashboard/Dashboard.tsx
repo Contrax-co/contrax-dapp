@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { BsCheckCircle } from 'react-icons/bs';
 import { FiExternalLink, FiCopy } from 'react-icons/fi';
 import "./Dashboard.css";
+import WalletItem from './WalletItem/WalletItem';
 
 function Dashboard({lightMode, currentWallet}:any) {
   const [copied, setCopied] = useState(false);
+  const [vaults, setVaults] = useState([]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(currentWallet);
@@ -15,6 +17,14 @@ function Dashboard({lightMode, currentWallet}:any) {
       setCopied(false);
     }, 1000);
   };
+
+  useEffect(() => {
+    fetch('http://localhost:3000/api/vaults.json') //`http://localhost:3000/api/vaults.json` or `https://testing.contrax.finance/api/vaults.json` for when we want it done locally
+      .then((response) => response.json())
+      .then((data) => {
+        setVaults(data);
+      });
+  }, []);
 
 
   return (
@@ -52,14 +62,25 @@ function Dashboard({lightMode, currentWallet}:any) {
     
 
           <div className={`dashboard_right ${lightMode && "dashboard_right--light"}`}>
-            <p className={`dashboard_worth ${lightMode && "dashboard_worth--light"}`}>Platform Worth</p>
+            <p className={`dashboard_worth ${lightMode && "dashboard_worth--light"}`}>Platform Value</p>
             <p className={`dashboard_all_prices`}>$some value</p>
           </div>
         </div>
 
       </div>
-      
-   
+
+      <div style={{padding:"30px"}}>
+        <p className={`dashboard_wallet_title ${lightMode && 'dashboard_wallet_title--light'}`}>Wallet</p>
+        <WalletItem
+          lightMode={lightMode}
+          currentWallet={currentWallet}
+        />
+      </div>
+
+      <div>
+        <p>Joined Farms</p>
+      </div>
+     
       
     </div>
   )

@@ -7,13 +7,9 @@ import Withdraw from '../withdraw/Withdraw';
 import {
   getTotalVaultBalance,
   getUserVaultBalance,
-  priceOfTokens,
-  totalLPTokenExisting,
-  usdTokenValueInVault,
-  usdUserVaultValue,
+  priceToken
 } from './compound-functions';
-import { useQuery } from '@apollo/client';
-import { GET_DEPOSITED } from './queries';
+import Details from '../Details/Details';
 
 function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [dropdown, setDropDown] = useState(false);
@@ -22,19 +18,9 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [userVaultBal, setUserVaultBalance] = useState(0);
   const [totalVaultBalance, setTotalVaultBalance] = useState(0);
 
-  const [price0, setPrice0] = useState(0);
-  const [price1, setPrice1] = useState(0);
+  const [priceOfSingleToken, setPriceOfSingleToken] = useState(0);
 
-  const [priceOfToken, setPriceOfToken] = useState(0);
-  const [valueInVault, setValueInVault] = useState(0);
-
-  const [userUsdVault, setUserUsdVault] = useState(0);
-
-  const { data, loading, error } = useQuery(GET_DEPOSITED, {
-    variables: {
-      currentWallet,
-    },
-  });
+  const [details, setDetails] = useState(false); 
 
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
@@ -42,23 +28,8 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
   }, [pool, currentWallet]);
 
   useEffect(() => {
-    priceOfTokens(pool.token1, setPrice0);
-    priceOfTokens(pool.token2, setPrice1);
-
-    totalLPTokenExisting(pool, price0, price1, setPriceOfToken);
-    usdTokenValueInVault(priceOfToken, totalVaultBalance, setValueInVault);
-    usdUserVaultValue(priceOfToken, userVaultBal, setUserUsdVault);
-
-    console.log(`the data being loaded from the hasura database is ${data}`);
-  }, [
-    pool,
-    price0,
-    price1,
-    priceOfToken,
-    totalVaultBalance,
-    userVaultBal,
-    data,
-  ]);
+    priceToken(pool.lp_address, setPriceOfSingleToken);
+  }, [pool, totalVaultBalance, userVaultBal]);
 
   return (
     <div className={`pools ${lightMode && 'pools--light'}`}>
@@ -118,7 +89,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
 
             <div className={`container ${lightMode && 'container--light'}`}>
               <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                {valueInVault.toLocaleString('en-US', {
+                {(totalVaultBalance * priceOfSingleToken).toLocaleString('en-US', {
                   style: 'currency',
                   currency: 'USD',
                 })}
@@ -133,7 +104,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
 
             <div className={`container ${lightMode && 'container--light'}`}>
               <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                {userUsdVault.toLocaleString('en-US', {
+                {(userVaultBal * priceOfSingleToken).toLocaleString('en-US', {
                   style: 'currency',
                   currency: 'USD',
                 })}
@@ -191,6 +162,33 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
               connectWallet={connectWallet}
             />
           )}
+
+          {details === false ? (
+            <div className={`see_details_dropdown ${lightMode && 'see_details_dropdown--light'}`} onClick={() => setDetails(true)}>
+              <p className={`see_details_description ${lightMode && 'see_details_description--light'}`}>See more details</p>        
+              <RiArrowDownSLine />
+            </div>
+          ): (
+            <Details 
+              lightMode={lightMode}
+              currentWallet={currentWallet}
+              alt1={pool.alt1}
+              alt2={pool.alt2}
+              logo1={pool.logo1}
+              logo2={pool.logo2}
+              pair1={pool.pair1}
+              pair2={pool.pair2}
+              token1={pool.token1}
+              token_abi={pool.lp_abi}
+              tokenAddress={pool.lp_address}
+              token2={pool.token2}
+              vaultAddress={pool.vault_addr}
+              vault_abi={pool.vault_abi}
+              onClick={() => setDetails(false)}
+            />
+          )}
+          
+
         </div>
       )}
     </div>
