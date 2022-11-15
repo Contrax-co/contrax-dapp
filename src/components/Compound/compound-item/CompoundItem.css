@@ -170,3 +170,30 @@
   padding-top: 20px;
   padding-bottom: 10px;
 }
+
+.see_details_dropdown{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  color:white;
+}
+
+.see_details_dropdown:hover{
+  cursor: pointer;
+}
+
+.see_details_dropdown--light{
+  color:black;
+}
+
+.see_details_description{
+  color:white;
+  font-size:17px;
+  font-weight:600;
+  margin-right:5px;
+}
+
+.see_details_description--light{
+  color:black;
+}
