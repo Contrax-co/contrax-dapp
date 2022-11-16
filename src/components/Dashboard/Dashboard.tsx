@@ -4,6 +4,7 @@ import { BsCheckCircle } from 'react-icons/bs';
 import { FiExternalLink, FiCopy } from 'react-icons/fi';
 import "./Dashboard.css";
 import WalletItem from './WalletItem/WalletItem';
+import Vaults from './JoinedVaults/Vaults';
 
 function Dashboard({lightMode, currentWallet}:any) {
   const [copied, setCopied] = useState(false);
@@ -69,18 +70,22 @@ function Dashboard({lightMode, currentWallet}:any) {
 
       </div>
 
+      <div style={{padding:"50px"}}>
+        <p className={`dashboard_wallet_title ${lightMode && 'dashboard_wallet_title--light'}`}>Joined Vaults</p>
+        <Vaults 
+          lightMode={lightMode}
+          vaults={vaults}
+          currentWallet={currentWallet}
+        />
+      </div>
+
       <div style={{padding:"30px"}}>
         <p className={`dashboard_wallet_title ${lightMode && 'dashboard_wallet_title--light'}`}>Wallet</p>
         <WalletItem
           lightMode={lightMode}
           currentWallet={currentWallet}
         />
-      </div>
-
-      <div>
-        <p>Joined Farms</p>
-      </div>
-     
+      </div>     
       
     </div>
   )
