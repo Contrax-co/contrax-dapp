@@ -117,16 +117,8 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
               </p>
             </div>
 
-            <div className={`container ${lightMode && 'container--light'}`}>
-              {!totalVaultBalance ? (
-                <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                  0
-                </p>
-              ): (
-                <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                {((userVaultBal/totalVaultBalance)*100).toFixed(2)} %
-                </p>
-              )}
+            <div className={`container1 ${lightMode && 'container1--light'}`}>
+              <img className={`container_rewards`} src={pool.rewards} alt={pool.rewards_alt} />
             </div>
           </div>
 
