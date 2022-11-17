@@ -6,6 +6,7 @@ function Vaults({lightMode, vaults, currentWallet}:any) {
     <div>
       {vaults.map((vault:any) => (
         <VaultItem
+          key={vault.id}
           lightMode={lightMode}
           currentWallet={currentWallet}
           vault={vault}

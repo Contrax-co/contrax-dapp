@@ -15,6 +15,21 @@ export const priceOfToken = async(address:any, setPrice:any) => {
   });
 }
 
+export const totalArbitrumUsd = async(currentWallet:any, setTotalUsd:any) => {
+  await fetch(`https://api.apy.vision/portfolio/42161/core/${currentWallet}?accessToken=${process.env.REACT_APP_APY_TOKEN}`)
+  .then((response) => response.json())
+  .then((data) => {
+
+    const total = JSON.stringify(data); 
+
+    const totalValue = JSON.parse(total);
+
+    const totalValueUsd = totalValue[`totalValueUsd`];
+
+    setTotalUsd(totalValueUsd?.toFixed(2));
+  })
+}
+
 export const totalVault = async (vaultAddress:any, vault_abi:any, setVaultAmount: any) => {
   const{ ethereum } = window;
   try{

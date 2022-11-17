@@ -5,10 +5,13 @@ import { FiExternalLink, FiCopy } from 'react-icons/fi';
 import "./Dashboard.css";
 import WalletItem from './WalletItem/WalletItem';
 import Vaults from './JoinedVaults/Vaults';
+import { totalArbitrumUsd } from './JoinedVaults/vault-functions';
 
 function Dashboard({lightMode, currentWallet}:any) {
   const [copied, setCopied] = useState(false);
   const [vaults, setVaults] = useState([]);
+
+  const [totalUsd, setTotalUsd] = useState(0);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(currentWallet);
@@ -26,6 +29,10 @@ function Dashboard({lightMode, currentWallet}:any) {
         setVaults(data);
       });
   }, []);
+
+  useEffect(() => {
+    totalArbitrumUsd(currentWallet, setTotalUsd);
+  }, [currentWallet])
 
 
   return (
@@ -63,8 +70,10 @@ function Dashboard({lightMode, currentWallet}:any) {
     
 
           <div className={`dashboard_right ${lightMode && "dashboard_right--light"}`}>
-            <p className={`dashboard_worth ${lightMode && "dashboard_worth--light"}`}>Platform Value</p>
-            <p className={`dashboard_all_prices`}>$some value</p>
+            <p className={`dashboard_worth ${lightMode && "dashboard_worth--light"}`}>Network Value</p>
+            <p className={`dashboard_all_prices`}>
+              ${totalUsd}
+            </p>
           </div>
         </div>
 

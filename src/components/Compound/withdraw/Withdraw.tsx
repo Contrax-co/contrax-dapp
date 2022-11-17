@@ -89,7 +89,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
               </div>
               {toggleType ? (
                 <div
-                  className={`zap_button ${lightMode && 'zap_button--light'}`}
+                  className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
                   onClick={() =>
                     withdraw(
                       pool,
@@ -104,7 +104,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                 </div>
               ) : (
                 <div
-                  className={`zap_button ${lightMode && 'zap_button--light'}`}
+                  className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
                   onClick={() =>
                     zapOut(
                       setLoading,

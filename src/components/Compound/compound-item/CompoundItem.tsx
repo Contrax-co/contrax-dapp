@@ -78,13 +78,16 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                 lightMode && 'container__apy--light'
               }`}
             >
-              <p
-                className={`pool_name__apy ${
-                  lightMode && 'pool_name__apy--light'
-                }`}
-              >
-                apy
-              </p>
+               {!totalVaultBalance ? (
+                <p className={`pool_name__apy ${lightMode && 'pool_name__apy--light'}`}>
+                  0
+                </p>
+              ): (
+                <p className={`pool_name__apy ${lightMode && 'pool_name__apy--light'}`}>
+                  {((userVaultBal/totalVaultBalance)*100).toFixed(2)} %
+                </p>
+              )}
+             
             </div>
 
             <div className={`container ${lightMode && 'container--light'}`}>
@@ -115,10 +118,15 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
             </div>
 
             <div className={`container ${lightMode && 'container--light'}`}>
-              <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                $earned
-              </p>
-              <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}> - </p>
+              {!totalVaultBalance ? (
+                <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                  0
+                </p>
+              ): (
+                <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                {((userVaultBal/totalVaultBalance)*100).toFixed(2)} %
+                </p>
+              )}
             </div>
           </div>
 

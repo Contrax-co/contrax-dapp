@@ -40,16 +40,16 @@ function VaultItem({lightMode, currentWallet, vault}:any) {
               </div>
 
               <div className={`vault_items_bottom_categories`}>
-                <p className={`vault_items_title ${lightMode && 'vault_items_title--light'}`}>Pool APR</p>
-                <p>mini item</p>
+                <p className={`vault_items_title ${lightMode && 'vault_items_title--light'}`}>Pool Share</p>
+                <p>{((tokenAmount/vaultAmount)*100).toFixed(2)}%</p>
               </div>
 
             </div>
 
             <div className={`vault_items_bottom_row`}>
               <div className={`vault_items_bottom_categories`}>
-                <p className={`vault_items_title ${lightMode && 'vault_items_title--light'}`}>Farm APR</p>
-                <p>mini item</p>
+                <p className={`vault_items_title ${lightMode && 'vault_items_title--light'}`}>Rewards</p>
+                <img className={`vault_rewards`} src={vault.rewards} alt={vault.rewards_alt} />
               </div>
 
               <div className={`vault_items_bottom_categories`}>

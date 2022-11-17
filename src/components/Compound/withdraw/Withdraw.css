@@ -163,7 +163,7 @@
   cursor: pointer;
 }
 
-.zap_button {
+.withdraw_zap_button {
   background-color: rgb(89, 179, 247);
   border: none;
   border-radius: 15px;
@@ -178,12 +178,12 @@
   margin-left: 20px;
 }
 
-.zap_button--light {
+.withdraw_zap_button--light {
   background-color: white;
   color: #009aff;
 }
 
-.zap_button:hover {
+.withdraw_zap_button:hover {
   cursor: pointer;
 }
 

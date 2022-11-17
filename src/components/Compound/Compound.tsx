@@ -22,10 +22,10 @@ function Compound({ lightMode, currentWallet, connectWallet }: any) {
       <div className={`farm__title ${lightMode && 'farm__title--light'}`}>
         <p className={`farm__asset`}>ASSET</p>
         <div className={`farm__second__title`}>
-          <p>APY</p>
+          <p>SHARE</p>
           <p>LIQUIDITY</p>
           <p>DEPOSITED</p>
-          <p>EARNED</p>
+          <p>REWARDS</p>
         </div>
       </div>
 
