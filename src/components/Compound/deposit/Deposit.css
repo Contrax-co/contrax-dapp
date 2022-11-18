@@ -173,7 +173,7 @@
   cursor: pointer;
 }
 
-.zap_button {
+.deposit_zap_button {
   background-color: rgb(89, 179, 247);
   border: none;
   border-radius: 20px;
@@ -188,16 +188,16 @@
   margin-left: 20px;
 }
 
-.zap_button--light {
+.deposit_zap_button--light {
   background-color: #61cddf;
   color: white;
 }
 
-.zap_button:hover {
+.deposit_zap_button:hover {
   cursor: pointer;
 }
 
-.zap_button-disable {
+.deposit_zap_button-disable {
   pointer-events: none;
 }
 

@@ -95,7 +95,6 @@
   font-size: 17px;
   font-weight: 700;
   color: rgb(237, 232, 232);
-  margin-left: 10px;
 }
 
 .pool_name__apy--light {
@@ -196,4 +195,16 @@
 
 .see_details_description--light{
   color:black;
+}
+
+.container1{
+  flex: 1;
+  display: flex;
+  justify-content:center;
+  align-items: center;
+}
+
+.container_rewards{
+  width: 20px;
+  height: 20px;
 }
