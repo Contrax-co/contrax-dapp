@@ -23,8 +23,14 @@ function VaultItem({lightMode, currentWallet, vault}:any) {
       {!tokenAmount ? (null): (
         <div className={`vault_item ${lightMode && 'vault_item--light'}`}>
           <div className={`vault_item_images`}>
-            <img className={`vault_item_logo1`} alt={vault.alt1} src={vault.logo1}/>
-            <img className={`vault_item_logo2`} alt={vault.alt2} src={vault.logo2}/>
+            {vault.alt1 ? (
+              <img className={`vault_item_logo1`} alt={vault.alt1} src={vault.logo1}/>
+            ): (null)}
+            
+            {vault.alt2 ? (
+              <img className={`vault_item_logo2`} alt={vault.alt2} src={vault.logo2}/>
+            ): (null)}
+            
 
             <p className={`vault_item_name`}>{vault.name}</p>
           </div>
@@ -49,7 +55,14 @@ function VaultItem({lightMode, currentWallet, vault}:any) {
             <div className={`vault_items_bottom_row`}>
               <div className={`vault_items_bottom_categories`}>
                 <p className={`vault_items_title ${lightMode && 'vault_items_title--light'}`}>Rewards</p>
-                <img className={`vault_rewards`} src={vault.rewards} alt={vault.rewards_alt} />
+                {vault.rewards1 ? (
+                  <img className={`vault_rewards`} src={vault.rewards1} alt={vault.rewards1_alt} />
+                ): null}
+
+                {vault.rewards2 ? (
+                  <img className={`vault_rewards`} src={vault.rewards2} alt={vault.rewards2_alt} />
+                ): null}
+                
               </div>
 
               <div className={`vault_items_bottom_categories`}>

@@ -1,5 +1,6 @@
 .dashboard_wallet{
-  height:50vh;
+  height:fit-content;
+  width: 25vw;
   background-color: #012243;
   border: 1px solid #032a51;
   border-radius:20px;

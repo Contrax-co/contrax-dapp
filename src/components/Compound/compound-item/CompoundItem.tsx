@@ -41,16 +41,22 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
         <div className="row_items">
           <div className="title_container">
             <div className="pair">
-              <img
+              {pool.logo1 ? (
+                <img
                 alt={pool.alt1}
                 className={`logofirst ${lightMode && 'logofirst--light'}`}
                 src={pool.logo1}
-              />
-              <img
+                />
+              ): null}
+              
+              {pool.logo2 ? (
+                <img
                 alt={pool.alt2}
                 className={`logo ${lightMode && 'logo--light'}`}
                 src={pool.logo2}
-              />
+                />
+              ) :null}
+             
             </div>
 
             <div>
@@ -63,9 +69,9 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                     {pool.platform}
                   </p>
                   <img
-                    alt={pool.rewards_alt}
+                    alt={pool.platform_alt}
                     className="rewards_image"
-                    src={pool.rewards}
+                    src={pool.platform_logo}
                   />
                 </div>
               </div>
@@ -118,7 +124,14 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
             </div>
 
             <div className={`container1 ${lightMode && 'container1--light'}`}>
-              <img className={`container_rewards`} src={pool.rewards} alt={pool.rewards_alt} />
+              {pool.rewards1 ? (
+                <img className={`container_rewards`} src={pool.rewards1} alt={pool.rewards1_alt} />
+              ) : null}
+
+              {pool.rewards2 ? (
+                <img className={`container_rewards`} src={pool.rewards2} alt={pool.rewards2_alt} />
+              ) : null}
+    
             </div>
           </div>
 
@@ -172,18 +185,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
             <Details 
               lightMode={lightMode}
               currentWallet={currentWallet}
-              alt1={pool.alt1}
-              alt2={pool.alt2}
-              logo1={pool.logo1}
-              logo2={pool.logo2}
-              pair1={pool.pair1}
-              pair2={pool.pair2}
-              token1={pool.token1}
-              token_abi={pool.lp_abi}
-              tokenAddress={pool.lp_address}
-              token2={pool.token2}
-              vaultAddress={pool.vault_addr}
-              vault_abi={pool.vault_abi}
+              pool={pool}
               onClick={() => setDetails(false)}
             />
           )}
