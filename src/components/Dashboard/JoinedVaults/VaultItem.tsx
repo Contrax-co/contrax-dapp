@@ -14,7 +14,6 @@ function VaultItem({lightMode, currentWallet, vault}:any) {
     priceOfToken(vault.lp_address, setPrice);
 
     totalVault(vault.vault_address, vault.vault_abi, setVaultAmount); 
-
   }, [currentWallet, vault]);
 
 
@@ -55,13 +54,15 @@ function VaultItem({lightMode, currentWallet, vault}:any) {
             <div className={`vault_items_bottom_row`}>
               <div className={`vault_items_bottom_categories`}>
                 <p className={`vault_items_title ${lightMode && 'vault_items_title--light'}`}>Rewards</p>
-                {vault.rewards1 ? (
-                  <img className={`vault_rewards`} src={vault.rewards1} alt={vault.rewards1_alt} />
-                ): null}
+                <div className={`vault_rewards_images`}>
+                  {vault.rewards1 ? (
+                    <img className={`vault_rewards`} src={vault.rewards1} alt={vault.rewards1_alt} />
+                  ): null}
 
-                {vault.rewards2 ? (
-                  <img className={`vault_rewards`} src={vault.rewards2} alt={vault.rewards2_alt} />
-                ): null}
+                  {vault.rewards2 ? (
+                    <img className={`vault_rewards`} src={vault.rewards2} alt={vault.rewards2_alt} />
+                  ): null}
+                </div>
                 
               </div>
 
