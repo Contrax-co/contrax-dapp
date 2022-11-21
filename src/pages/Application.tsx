@@ -10,7 +10,7 @@ import Exchange from '../components/Exchange/Exchange';
 import Compound from '../components/Compound/Compound';
 import CreateToken from './createToken';
 import CreatePool from './createPool';
-
+import { ethers } from "ethers"
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
 
 const injected = injectedModule();
@@ -45,6 +45,78 @@ function Application() {
     }
   }, []);
 
+
+  useEffect(() => {
+
+
+
+
+    network();
+
+    wallet();
+
+
+
+
+  }, [])
+
+
+  async function network() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    const { chainId } = await provider.getNetwork()
+    console.log(chainId)
+
+
+    if (chainId !== 42161) {
+      console.log(networkId, 'ok')
+      window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [{
+          chainId: "0xA4B1",
+          rpcUrls: ["https://arb1.arbitrum.io/rpc/"],
+          chainName: "Arbitrum",
+          nativeCurrency: {
+            name: "ETH",
+            symbol: "ETH",
+            decimals: 18
+          },
+          blockExplorerUrls: ["https://arbiscan.io/"]
+        }]
+      });
+    } else {
+      console.log(networkId, 'sorry')
+    }
+  }
+
+
+  async function wallet() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    let accounts = await provider.send("eth_requestAccounts", []);
+    let account = accounts[0];
+    provider.on('accountsChanged', function (accounts) {
+      account = accounts[0];
+      console.log(address); // Print new address
+    });
+
+    const signer = provider.getSigner();
+
+    const address = await signer.getAddress();
+
+    console.log(address.toLowerCase(), currentWallet);
+
+    const data = getUserSession();
+    if (data) {
+      const userInfo = JSON.parse(data);
+      if (address.toLowerCase() !== userInfo.address) {
+        connectWallet()
+        console.log('call')
+      } else {
+        console.log('Sorry')
+      }
+    }
+
+
+  }
   const connectWallet = async () => {
     const wallets = await onboard.connectWallet();
 
@@ -62,7 +134,7 @@ function Application() {
 
   const toggleLight = () => {
     setLightMode(!lightMode);
-    
+
     window.localStorage.setItem('light', JSON.stringify(!lightMode));
   };
 
@@ -88,24 +160,24 @@ function Application() {
               logout={() => setLogout(true)}
             />
           </div>
-          <div style={{overflowY:'auto'}}>
-          {menuItem === 'Dashboard' && <p>dashboard</p>}
-          {menuItem === 'Farms' && (
-            <Compound
+          <div style={{ overflowY: 'auto' }}>
+            {menuItem === 'Dashboard' && <p>dashboard</p>}
+            {menuItem === 'Farms' && (
+              <Compound
+                lightMode={lightMode}
+                currentWallet={currentWallet}
+                connectWallet={connectWallet}
+              />
+            )}
+            {menuItem === 'Create token' && <CreateToken
               lightMode={lightMode}
-              currentWallet={currentWallet}
-              connectWallet={connectWallet}
-            />
-          )}
-          {menuItem === 'Create token' && <CreateToken 
-          lightMode={lightMode}
-          />}
-          {menuItem === 'Create pool' && <CreatePool 
-           lightMode={lightMode}
-          />}
-          {menuItem === 'Exchange' && <Exchange lightMode={lightMode} />}
-        </div>
-      </div></div>
+            />}
+            {menuItem === 'Create pool' && <CreatePool
+              lightMode={lightMode}
+            />}
+            {menuItem === 'Exchange' && <Exchange lightMode={lightMode} />}
+          </div>
+        </div></div>
 
       {logoutInfo ? (
         <Logout

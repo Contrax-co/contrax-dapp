@@ -9,7 +9,7 @@ export default function Pools({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState<any>([]);
   // const [isLoading, setIsLoading] = useState(false);
-console.log(lightMode)
+
   // TODO - Switch to useQuery()
   useEffect(() => {
     let sessionData = getUserSession();
@@ -91,7 +91,7 @@ console.log(lightMode)
                         </span>
                         </B1>{' '}
                       <Link
-                        link={'https://arbiscan.io/address/' + item.id}
+                        link={'https://app.sushi.com/analytics/pools/' + item.id+'?chainId=97'}
                         target="_blank"
                         rel="noreferrer"
                       >
