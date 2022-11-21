@@ -1,10 +1,10 @@
 .vault_item{
   padding: 20px;
-  padding-right:30px;
   border-radius: 20px;
   color:white;
   background-color: #08315a;
-  width:30%;
+  width:270px;
+  height:200px;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 2px 18px #030d16;
@@ -22,7 +22,6 @@
 }
 
 .vault_item:hover{
-  cursor: pointer;
   transform: scale(1.05);
 }
 
@@ -77,5 +76,9 @@
 .vault_rewards{
   width:30px;
   height:30px;
+}
+
+.vault_rewards_images{
+  display:flex;
 }
 

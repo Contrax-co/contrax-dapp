@@ -3,9 +3,7 @@ import { RiArrowUpSLine } from 'react-icons/ri';
 import { priceOfToken, userTokenAmount, userVaultAmount } from './details-functions';
 import "./Details.css";
 
-function Details({lightMode, currentWallet, tokenAddress, token_abi, 
-  pair1, pair2, alt1, alt2, logo1, logo2, token1, token2,
-  vaultAddress, vault_abi, ...props}:any) {
+function Details({lightMode, currentWallet, pool, ...props}:any) {
 
   const [price1, setPrice1] = useState(0);
   const [price2, setPrice2] = useState(0);
@@ -17,13 +15,13 @@ function Details({lightMode, currentWallet, tokenAddress, token_abi,
 
 
   useEffect(() => {
-    priceOfToken(token1, setPrice1); 
-    priceOfToken(token2, setPrice2); 
-    priceOfToken(tokenAddress, setLPPrice);
+    priceOfToken(pool.token1, setPrice1); 
+    priceOfToken(pool.token2, setPrice2); 
+    priceOfToken(pool.lp_address, setLPPrice);
 
-    userTokenAmount(currentWallet, tokenAddress, token_abi, setUnstakedTokenValue); 
-    userVaultAmount(currentWallet, vaultAddress, vault_abi, setStakedTokenValue);
-  }, [token1, token2, currentWallet, token_abi, tokenAddress, vaultAddress, vault_abi])
+    userTokenAmount(currentWallet, pool.lp_address, pool.lp_abi, setUnstakedTokenValue); 
+    userVaultAmount(currentWallet, pool.vault_addr, pool.vault_abi, setStakedTokenValue);
+  }, [pool, currentWallet])
 
   return (
     <div>
@@ -32,27 +30,47 @@ function Details({lightMode, currentWallet, tokenAddress, token_abi,
 
         <div className={`details_leftside`}>
             <div className={`details_dropdrown_header`}>
-              <img className={`details_logo1`} alt={alt1} src={logo1}/>
-              <img className={`details_logo2`} alt={alt2} src={logo2}/>
-              <p className={`details_pair_name ${lightMode && 'details_pair_name--light'}`}>{pair1}/{pair2}</p>
+              {pool.alt1 ? (
+                <img className={`details_logo1`} alt={pool.alt1} src={pool.logo1}/>
+              ): null}
+
+              {pool.alt2 ? (
+                <img className={`details_logo2`} alt={pool.alt2} src={pool.logo2}/>
+              ): null}
+              
+              {pool.pair2 ? (
+                 <p className={`details_pair_name ${lightMode && 'details_pair_name--light'}`}>{pool.pair1}/{pool.pair2}</p>
+              ): (
+                <p className={`details_pair_name ${lightMode && 'details_pair_name--light'}`}>{pool.pair1}</p>
+              )}
+             
             </div>
 
             <div className={`token_details`}>
-              <div className={`details_single_token ${lightMode && 'details_single_token--light'}`} style={{marginRight:"10px"}}>
-                <img className={`mini_details_image`} alt={alt1} src={logo1}/>
-                <p>{pair1} = {price1.toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    })}</p>
-              </div>
+              {pool.alt1 ? (
+                <div className={`details_single_token ${lightMode && 'details_single_token--light'}`} style={{marginRight:"10px"}}>
+                  <img className={`mini_details_image`} alt={pool.alt1} src={pool.logo1}/>
+                  <p>
+                    {pool.pair1} = {price1.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
+                  </p>
+                </div>
+              ): null}
 
-              <div className={`details_single_token ${lightMode && 'details_single_token--light'}`}>
-                <img className={`mini_details_image`} alt={alt2} src ={logo2}/>
-                <p>{pair2} = {price2.toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    })}</p>
-              </div>
+              {pool.alt2 ? (
+                <div className={`details_single_token ${lightMode && 'details_single_token--light'}`}>
+                  <img className={`mini_details_image`} alt={pool.alt2} src ={pool.logo2}/>
+                  <p>{pool.pair2} = {price2.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}</p>
+                </div>
+              ): null}
+             
+
+              
 
             </div> 
         </div>
@@ -64,9 +82,15 @@ function Details({lightMode, currentWallet, tokenAddress, token_abi,
             <p>Unstaked Position</p>
             <div className={`unstaked_details`}>
               <div className={`unstaked_details_header`}> 
-                <img className={`unstaked_images1`} alt={alt1} src={logo1}/>
-                <img className={`unstaked_images2`} alt={alt2} src={logo2}/>
-                <p className={`detailed_unstaked_pairs`}>{unstakedTokenValue.toFixed(3)} {pair1}-{pair2}</p>
+                {pool.alt1 ? (
+                  <img className={`unstaked_images1`} alt={pool.alt1} src={pool.logo1}/>
+                ) : null}
+                
+                {pool.alt2 ? (
+                  <img className={`unstaked_images2`} alt={pool.alt2} src={pool.logo2}/>
+                ): null}
+                
+                <p className={`detailed_unstaked_pairs`}>{unstakedTokenValue.toFixed(3)} {pool.name}</p>
               </div>
               
               
@@ -83,9 +107,15 @@ function Details({lightMode, currentWallet, tokenAddress, token_abi,
             <div className={`unstaked_details`}>
             
             <div className={`unstaked_details_header`}> 
-                <img className={`unstaked_images1`} alt={alt1} src={logo1}/>
-                <img className={`unstaked_images2`} alt={alt2} src={logo2}/>
-                <p className={`detailed_unstaked_pairs`}>{stakedTokenValue.toFixed(3)} {pair1}-{pair2}</p>
+                {pool.alt1 ? (
+                  <img className={`unstaked_images1`} alt={pool.alt1} src={pool.logo1}/>
+                ) : null}
+                
+                {pool.alt2 ? (
+                  <img className={`unstaked_images2`} alt={pool.alt2} src={pool.logo2}/>
+                ) : null}
+                
+                <p className={`detailed_unstaked_pairs`}>{stakedTokenValue.toFixed(3)} {pool.name}</p>
             </div>
             <p className={`detailed_unstaked_pairs`}>{(lpPrice * stakedTokenValue).toLocaleString('en-US', {
                         style: 'currency',

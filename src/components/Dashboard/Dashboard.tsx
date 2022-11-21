@@ -74,12 +74,13 @@ function Dashboard({lightMode, currentWallet}:any) {
             <p className={`dashboard_all_prices`}>
               ${totalUsd}
             </p>
+
           </div>
         </div>
 
       </div>
 
-      <div style={{padding:"50px"}}>
+      <div className={`dashboard_vaults`}>
         <p className={`dashboard_wallet_title ${lightMode && 'dashboard_wallet_title--light'}`}>Joined Vaults</p>
         <Vaults 
           lightMode={lightMode}

@@ -114,3 +114,8 @@
 .dashboard_wallet_title--light{
   color:black;
 }
+
+.dashboard_vaults{
+  padding:30px;
+  width: 100%;
+}
