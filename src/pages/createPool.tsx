@@ -137,7 +137,7 @@ export default function CreatePool({ lightMode }: any) {
     const tokenABI = ercabi.abi;
     // const factoryABI = factory;
     const tokenAddress: any = tokenOne.tokenaddress;
-    const tokenAddressb: any = '0x9E37efb8Ebf9eb8831bFCA312B215c78759785F5';
+    const tokenAddressb: any = tokenTwo.tokenaddress;
     console.log(tokenAddress, tokenAddressb);
     const amount1: any = tokenOneAmount;
     const amount2: any = tokenTwoAmount;
