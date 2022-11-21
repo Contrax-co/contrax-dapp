@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { BsCheckCircle } from 'react-icons/bs';
 import { FiExternalLink, FiCopy } from 'react-icons/fi';
@@ -12,6 +12,7 @@ function Dashboard({lightMode, currentWallet}:any) {
   const [vaults, setVaults] = useState([]);
 
   const [totalUsd, setTotalUsd] = useState(0);
+  const [singlePrice, setSinglePrice] = useState([]); 
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(currentWallet);
@@ -30,9 +31,19 @@ function Dashboard({lightMode, currentWallet}:any) {
       });
   }, []);
 
+
   useEffect(() => {
-    totalArbitrumUsd(currentWallet, setTotalUsd);
-  }, [currentWallet])
+    console.log(singlePrice)
+    let total = 0; 
+    for(let i = 0 ; i < singlePrice.length; i++){
+      let price:number = Number(singlePrice[i]);
+      total += price;
+    }  
+    setTotalUsd(total);
+ 
+  }, [currentWallet, singlePrice])
+
+
 
 
   return (
@@ -70,9 +81,12 @@ function Dashboard({lightMode, currentWallet}:any) {
     
 
           <div className={`dashboard_right ${lightMode && "dashboard_right--light"}`}>
-            <p className={`dashboard_worth ${lightMode && "dashboard_worth--light"}`}>Network Value</p>
+            <p className={`dashboard_worth ${lightMode && "dashboard_worth--light"}`}>Platform Value</p>
             <p className={`dashboard_all_prices`}>
-              ${totalUsd}
+              {totalUsd.toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+              })}
             </p>
 
           </div>
@@ -86,6 +100,8 @@ function Dashboard({lightMode, currentWallet}:any) {
           lightMode={lightMode}
           vaults={vaults}
           currentWallet={currentWallet}
+          singlePrice={singlePrice}
+          setSinglePrice={setSinglePrice}
         />
       </div>
 

@@ -62,11 +62,9 @@ export const withdraw = async(pool:any, withdrawAmount:any, setWithdrawAmount:an
             */
             const formattedBal = ethers.utils.parseUnits(withdrawAmount.toString(), 18);
 
+            const gasPrice = await provider.getGasPrice();
 
-            const gasEstimated:any = await vaultContract.estimateGas.withdraw(formattedBal);
-            const gasMargin = gasEstimated * 1.1;
-
-            const withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit: Math.ceil(gasMargin)});
+            const withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit:gasPrice});
             console.log("Withdrawing...", withdrawTxn.hash);
 
             setLoaderMessage(`Withdrawing... ${withdrawTxn.hash}`)
@@ -123,10 +121,9 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
             const lpContract = new ethers.Contract(pool.lp_address, pool.lp_abi, signer);
             await lpContract.approve(pool.zapper_addr, formattedBal);
 
-            const gasEstimated:any = await zapperContract.estimateGas.zapOutAndSwap(pool.vault_addr, formattedBal, wethAddress, 0);
-            const gasMargin = gasEstimated * 1.1;
+            const gasPrice = await provider.getGasPrice();
 
-            const withdrawTxn = await zapperContract.zapOutAndSwap(pool.vault_addr, formattedBal, wethAddress, 0, {gasLimit: Math.ceil(gasMargin)});
+            const withdrawTxn = await zapperContract.zapOutAndSwap(pool.vault_addr, formattedBal, wethAddress, 0, {gasLimit: gasPrice});
             console.log("Withdrawing...", withdrawTxn.hash);
 
             setLoaderMessage(`Withdrawing... ${withdrawTxn.hash}`)
