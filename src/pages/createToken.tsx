@@ -23,33 +23,6 @@ declare global {
   }
 }
 
-const INCREMENT_COUNTER = gql`
-  mutation (
-    $chainId: String!
-    $decimals: String!
-    $tokenName: String!
-    $tokenSymbol: String!
-    $tokenaddress: String!
-    $totalSupply: String!
-    $userwallet: String!
-  ) {
-    insert_tokens(
-      objects: {
-        chainId: $chainId
-        decimal: $decimals
-        tokenName: $tokenName
-        tokenSymbol: $tokenSymbol
-        tokenaddress: $tokenaddress
-        totalSupply: $totalSupply
-        userwallet: $userwallet
-      }
-    ) {
-      returning {
-        id
-      }
-    }
-  }
-`;
 
 export default function CreateToken({ lightMode }: any) {
   const tokenSymbol = useInput('');
@@ -67,17 +40,6 @@ export default function CreateToken({ lightMode }: any) {
   const [totalSupply, setTotalSupply] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-  const mutateFunction = useMutation(INCREMENT_COUNTER, {
-    variables: {
-      tokenName: tokenName.value,
-      tokenSymbol: tokenSymbol.value,
-      tokenaddress: tokenAddress,
-      totalSupply: totalSupply,
-      userwallet: wallet,
-      decimals: decimals,
-      chainId: '421611',
-    },
-  });
 
   useEffect(() => {
     let walletData: any;
@@ -151,7 +113,7 @@ export default function CreateToken({ lightMode }: any) {
               console.log('something');
             } else {
               setIsLoading(false);
-              mutateFunction();
+            
               swal({
                 title: 'Good job!',
                 text: 'Token Created',
@@ -305,7 +267,7 @@ export default function CreateToken({ lightMode }: any) {
         </Row>
       </Container>
 
-      <BottomBar />
+      {/* <BottomBar /> */}
 
       <Modal
         id="PrevieCreateToken"

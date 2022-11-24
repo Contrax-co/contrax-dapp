@@ -4,37 +4,14 @@ import { gql, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from './spinner/spinner';
 import "../components/Exchange/Exchange.css"
-const FETCH = gql`
-  query MyQuery($chainId: String!, $userwallet: String!) {
-    tokens(
-      where: {
-        chainId: { _like: $chainId }
-        userwallet: { _like: $userwallet }
-      }
-    ) {
-      userwallet
-      totalSupply
-      tokenaddress
-      chainId
-      decimal
-      id
-      tokenName
-      tokenSymbol
-    }
-  }
-`;
 
 export default function Tokens({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState([]);
+  const [datas, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data } = useQuery(FETCH, {
-    variables: {
-      chainId: '421611',
-      userwallet: wallet,
-    },
-  });
+
 
   // TODO - React Hook useEffect contains a call to 'setIsLoading'. Without a list
   // of dependencies, this can lead to an infinite chain of updates. To fix this,
@@ -46,17 +23,35 @@ export default function Tokens({ lightMode }: any) {
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address);
-      const a = data;
-      if (typeof a !== 'undefined') {
-        console.log(a.tokens);
-        setValues(a.tokens);
-        setIsLoading(false);
-      }else{
-        setIsLoading(false);
-      }
+    
+     
      
     }
   },[wallet]);
+
+
+  useEffect(()=>{
+   fetch(`https://api.covalenthq.com/v1/42161/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=true/`, {
+      method: 'GET',
+      headers: {
+        "Authorization": "Basic Y2tleV81YzcwODllZTFiMTQ0NWM3Yjg0NjcyYmFlM2Q6",
+        "Content-Type": "application/json"
+      }
+  }).then(response =>response.json()).then((items)=>{
+      console.log( items.data.items);
+      setData(items.data.items)
+      setIsLoading(false)
+  }).catch(error => {
+      console.log('sorry');
+      console.log(error)
+
+  })
+  },[wallet])
+
+
+
+
+
 
   return (
     <>
@@ -71,8 +66,8 @@ export default function Tokens({ lightMode }: any) {
               <th>Token Name</th>
               <th>Decimal</th>
 
-              <th>Total Supply</th>
-              <th>Operation</th>
+              <th>Balance</th>
+             
             </tr>
           </thead>
           {isLoading ? (
@@ -83,25 +78,16 @@ export default function Tokens({ lightMode }: any) {
             </div>
           ) : (
             <tbody>
-              {values.map((token: any, index) => {
+              {datas.map((token: any, index) => {
                 return (
-                  <tr key={index}>
+                  <tr  className={`table__token ${lightMode && 'table--light '}`} key={index}>
                     <th>{index + 1}</th>
-                    <td>{token.tokenSymbol}</td>
-                    <td>{token.tokenName}</td>
-                    <td>{token.decimal}</td>
+                    <td>{token.contract_ticker_symbol}</td>
+                    <td>{token.contract_name}</td>
+                    <td>{token.contract_decimals}</td>
 
-                    <td>{token.totalSupply}</td>
-                    <td>
-                      <Link
-                        style={{ color: '#5ECDDE' }}
-                        className="btn btn-text p-0"
-                        to="/manage-token"
-                        state={token}
-                      >
-                        Manage
-                      </Link>
-                    </td>
+                    <td>{token.balance / Math.pow(10,token.contract_decimals)}</td>
+                    
                   </tr>
                 );
               })}

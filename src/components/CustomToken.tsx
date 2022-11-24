@@ -13,40 +13,45 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import { ethers } from 'ethers';
 import "./modal/modal.css"
 import abi from "../config/erc20.json";
-const url = 'https://gateway.ipfs.io/ipns/tokens.uniswap.org';
-const FETCH = gql`
-query MyQuery($chainId:String!,$userwallet:String!) {
-    tokens(where: {chainId: {_like: $chainId}, userwallet: {_like: $userwallet}}) {
-      userwallet
-      totalSupply
-      tokenaddress
-      chainId
-      decimal
-      id
-      tokenName
-      tokenSymbol
-    }
-  }
-  
-`;
+
 const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
   console.log(standardTokens)
   const { ethereum } = window;
-  const [tokens, setTokens] = useState([]);
+  const [tokens, setTokens] = useState<any[]>([]);
   const [wallet, setWallet] = useState()
   const [search, setSearch] = useState<any[]>([])
-  const [values, setValues] = useState([]);
+  const [values, setValues] = useState<any[]>([]);
   const [balance, setBalance] = useState<any>()
   const [name, setName] = useState<any>()
   const [symbol, setSymbol] = useState<any>()
   const [div, setDiv] = useState(false);
-  const { data, loading, error } = useQuery(FETCH, {
-    variables: {
-      chainId: "421611",
-      userwallet: wallet
+  const StableTOKEN = [
+    {
+      id: '0xDB6bbEBdF9515f308e9d9690aeF0796d4fF7F999',
+      name: 'USDC',
+      symbol: 'USDC',
     },
-  }
-  );
+    {
+      id: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+      name: 'USDT',
+      symbol: 'USDT',
+    },
+    {
+      id: '0xDF1742fE5b0bFc12331D8EAec6b478DfDbD31464',
+      name: 'DAI',
+      symbol: 'DAI',
+    },
+    {
+      id: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+      name: 'WETH',
+      symbol: 'WETH',
+    },
+    {
+      id: '0x9D575a9bF57a5e24a99D29724B86ca021A2b0435',
+      name: 'ETH',
+      symbol: 'ETH',
+    },
+  ];
   useEffect(() => {
     // Get various currencies from the server
     // console.log(standardTokens[0].tokenName)
@@ -56,11 +61,11 @@ const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address)
-      setTokens(standardTokens)
-      console.log(tokens)
+    setTokens(StableTOKEN)
+   
     }
 
-  });
+  },[wallet]);
 
 
   async function getInputValue(event: any) {

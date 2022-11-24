@@ -19,25 +19,7 @@ import abi from '../config/sushiswap.json';
 import ercabi from '../config/erc20.json';
 import factory from '../config/pool.json';
 
-const FETCH = gql`
-  query MyQuery($chainId: String!, $userwallet: String!) {
-    tokens(
-      where: {
-        chainId: { _like: $chainId }
-        userwallet: { _like: $userwallet }
-      }
-    ) {
-      userwallet
-      totalSupply
-      tokenaddress
-      chainId
-      decimal
-      id
-      tokenName
-      tokenSymbol
-    }
-  }
-`;
+
 
 export default function CreatePool({ lightMode }: any) {
   const { ethereum } = window;
@@ -53,24 +35,14 @@ export default function CreatePool({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState([]);
 
-  const { data } = useQuery(FETCH, {
-    variables: {
-      chainId: '421611',
-      userwallet: wallet,
-    },
-  });
+  
   useEffect(() => {
     let walletData: any;
     let sessionData = getUserSession();
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address);
-      const a = data;
-      if (typeof a !== 'undefined') {
-        console.log(a.tokens);
-        setValues(a.tokens);
-        console.log(values);
-      }
+     
     }
   });
 
@@ -128,7 +100,7 @@ export default function CreatePool({ lightMode }: any) {
     console.log(
       tokenOneAmount,
       tokenTwoAmount,
-      tokenOne.tokenaddress,
+      tokenOne.contract_address,
       tokenTwo.id
     );
     const contractAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
@@ -136,8 +108,8 @@ export default function CreatePool({ lightMode }: any) {
     const contractABI = factory;
     const tokenABI = ercabi.abi;
     // const factoryABI = factory;
-    const tokenAddress: any = tokenOne.tokenaddress;
-    const tokenAddressb: any = tokenTwo.tokenaddress;
+    const tokenAddress: any = tokenOne.contract_address;
+    const tokenAddressb: any = tokenTwo.id;
     console.log(tokenAddress, tokenAddressb);
     const amount1: any = tokenOneAmount;
     const amount2: any = tokenTwoAmount;
@@ -254,7 +226,7 @@ if(hash){
                           >
                             <div className="create-pool-tokenDropdown">
                               {tokenOne
-                                ? String(tokenOne['tokenName'])
+                                ? String(tokenOne['contract_name'])
                                     .split(' ')[0]
                                     .trim()
                                 : 'Select a token'}
@@ -291,7 +263,7 @@ if(hash){
                           <div className="depositAmount-group">
                             <div  className={`selectedToken-div swap_title ${lightMode && 'swap_title--light'}`} >
                               {tokenOne &&
-                                String(tokenOne['tokenName'])
+                                String(tokenOne['contract_name'])
                                   .split(' ')[0]
                                   .trim()}
                             </div>
