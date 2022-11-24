@@ -6,8 +6,9 @@ import { MoonLoader } from 'react-spinners';
 import './Exchange.css';
 import From from './from/From';
 import To from './to/To';
-import { swapFromTokenToPair, swapFromTokenToToken, 
-  swapPairForPair, swapPairForToken
+import { swapEthForPair, swapEthForToken, swapFromTokenToPair, swapFromTokenToToken, 
+  swapPairForETH, 
+  swapPairForPair, swapPairForToken, swapTokenForETH
 } from './exchange-functions';
 import Confirm from './Confirm';
 import {AiOutlineCheckCircle} from "react-icons/ai";
@@ -60,6 +61,7 @@ function Exchange({ lightMode, currentWallet }: any) {
 
   return (
     <div className={`whole__exchange__container`}>
+  
       <div className="exchange__header">
         <p
           className={`whole__container__title ${
@@ -92,6 +94,9 @@ function Exchange({ lightMode, currentWallet }: any) {
               setFromName = {setFromName}
               setFromImg = {setFromImg}
               setFromAlt = {setFromAlt}
+              toName={toName}
+              tokenType1 = {tokenType1}
+              tokenType2 = {tokenType2}
             /> 
 
         </div>
@@ -125,7 +130,7 @@ function Exchange({ lightMode, currentWallet }: any) {
           <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => setConfirmPage(true)}>
            
             {value ? (
-              <p>Swap</p>
+              <p>See details</p>
             ): (
               <p>Enter a amount</p>
             )}
@@ -185,6 +190,8 @@ function Exchange({ lightMode, currentWallet }: any) {
         <Confirm
           lightMode ={lightMode}
           setConfirmPage = {setConfirmPage}
+          fromAddress = {fromAddress}
+          toAddress = {toAddress}
           amount = {value}
           toAmount = {toValue}
           fromName={fromName}
@@ -195,13 +202,21 @@ function Exchange({ lightMode, currentWallet }: any) {
           toAlt = {toAlt}
           swap = {() => {
 
-            ((tokenType1 === "Token") && (tokenType2 === "Token")) ? (
+            ((tokenType1 === "Token") && (tokenType2 === "Token") && (fromName !== "ETH") && (toName !== "ETH")) ? (
             swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
-            ): ((tokenType1 === "Token") && (tokenType2 === "LP Token")) ? (
+            ): ((tokenType1 === "Token") && (tokenType2 === "LP Token") && (fromName !== "ETH") && (toName !== "ETH")) ? (
             swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
-            ): ((tokenType1 === "LP Token") && (tokenType2 === "Token")) ? (
+            ): ((tokenType1 === "LP Token") && (tokenType2 === "Token") && (fromName !== "ETH") && (toName !== "ETH")) ? (
             swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
-            ): (
+            ): (tokenType1 === "Token") && (tokenType2 === "Token") && (fromName === "ETH") ? (
+            swapEthForToken(currentWallet, toAddress, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ) : (tokenType1 === "Token") && (tokenType2 === "LP Token") && (fromName === "ETH") ? (
+            swapEthForPair(currentWallet, toAddress, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ): (tokenType1 === "LP Token") && (tokenType2 === "Token") && (toName === "ETH") ? (
+            swapPairForETH(currentWallet, fromAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ): (tokenType1 === "Token") && (tokenType2 === "Token") && (toName === "ETH") ? (
+            swapTokenForETH(currentWallet, fromAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            ):(
             swapPairForPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
             )
           }}

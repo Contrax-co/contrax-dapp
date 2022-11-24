@@ -145,11 +145,14 @@ export const deposit = async (
   depositAmount: any,
   setLPDepositAmount: any,
   setLoading: any,
-  setLoaderMessage: any
+  setLoaderMessage: any,
+  setSuccess: any,
+  setSecondaryMessage:any
 ) => {
   const { ethereum } = window;
+  setSuccess("loading"); 
   setLoading(true);
-  setLoaderMessage('User initiated a deposit into the vault!');
+  setLoaderMessage('Deposit initiated!');
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
@@ -160,6 +163,8 @@ export const deposit = async (
         pool.vault_abi,
         signer
       );
+
+      setSecondaryMessage("Approving deposit...");
 
       /*
        * Execute the actual deposit functionality from smart contract
@@ -179,26 +184,39 @@ export const deposit = async (
 
       const gasPrice = await provider.getGasPrice();
 
+      setSecondaryMessage("Confirm deposit..."); 
+
       //the abi of the vault contract needs to be checked
       const depositTxn = await vaultContract.deposit(formattedBal, {
         gasLimit: gasPrice,
       });
 
       setLoaderMessage(`Depositing... ${depositTxn.hash}`);
+      setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
 
       const depositTxnStatus = await depositTxn.wait(1);
       if (!depositTxnStatus.status) {
         setLoaderMessage(`Error depositing into vault!`);
+        setSecondaryMessage(`Try again!`);
+        setSuccess("fail"); 
+
       } else {
         setLoaderMessage(`Deposited-- ${depositTxn.hash}`);
+        setSuccess("success"); 
+        setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
         setLPDepositAmount(0.0);
       }
     } else {
       console.log("Ethereum object doesn't exist!");
+    
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
     }
   } catch (error) {
     console.log(error);
     setLoaderMessage(error + 'Try again!');
+
   } finally {
     setLoading(false);
   }

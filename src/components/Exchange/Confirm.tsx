@@ -1,9 +1,13 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {BsArrowDown} from "react-icons/bs";
-import {GrClose} from "react-icons/gr"; 
+import {IoMdClose} from "react-icons/io"; 
+import { priceToken } from './confirm-functions';
 import './Confirm.css';
 
-function Confirm({lightMode, setConfirmPage, amount, toAmount, fromName, toName, fromImg, toImg, fromAlt, toAlt, swap}: any) {
+function Confirm({lightMode, setConfirmPage, amount, toAmount, fromName, toName, fromImg, toImg, fromAlt, toAlt, swap, fromAddress, toAddress}: any) {
+
+  const [fromPrice, setFromPrice] = useState(0);
+  const [toPrice, setToPrice] = useState(0);
 
   // close the modal when clicking outside the modal.
   const modalRef: any = useRef();
@@ -13,6 +17,12 @@ function Confirm({lightMode, setConfirmPage, amount, toAmount, fromName, toName,
       setConfirmPage(false);
     }
   };
+
+  useEffect(() => {
+    priceToken(fromAddress, setFromPrice);
+    priceToken(toAddress, setToPrice);
+
+  }, [fromAddress, toAddress])
 
 
   return (
@@ -26,8 +36,8 @@ function Confirm({lightMode, setConfirmPage, amount, toAmount, fromName, toName,
             Confirm Transaction
           </div>
 
-          <div className={`confirmation_close`} onClick={() => setConfirmPage(false)}>
-            <GrClose />
+          <div className={`confirmation_close ${lightMode && 'confirmation_close--light'}`} onClick={() => setConfirmPage(false)}>
+            <IoMdClose />
           </div>
           
 
@@ -44,15 +54,23 @@ function Confirm({lightMode, setConfirmPage, amount, toAmount, fromName, toName,
 
           
           <div className={`transaction_details ${lightMode && 'transaction_details--light'}`}>
-            Swap {amount} {fromName}
+            <p className={`transaction_value ${lightMode && 'transaction_value--light'}`}>Swap {amount} {fromName}</p>
+            <p className={`transaction_usd ${lightMode && 'transaction_usd--light'}`}>{(amount * fromPrice).toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+              })}</p>
           </div>
 
           <div className={`confirm_arrow ${lightMode && 'confirm_arrow--light'}`}>
             <BsArrowDown />
           </div>
 
-          <div className={`confirm_retrieve ${lightMode && 'confirm_retrieve--light'}`}>
-          {toAmount} {toName}
+          <div className={`transaction_details ${lightMode && 'transaction_details--light'}`}>
+          <p className={`transaction_value ${lightMode && 'transaction_value--light'}`}>{toAmount.toFixed(4)} {toName}</p>
+          <p className={`transaction_usd ${lightMode && 'transaction_usd--light'}`}>{(toAmount * toPrice).toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+              })}</p>
           </div>
 
         </div>

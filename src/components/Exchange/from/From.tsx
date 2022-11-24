@@ -1,14 +1,16 @@
 import {useEffect, useState} from 'react';
 import { HiChevronDown } from 'react-icons/hi';
+import { priceToken } from '../../Compound/compound-item/compound-functions';
 import { estimateValueTo } from './from-functions';
 import { totalFrom } from './from-functions';
 import "./From.css";
 
 
 function From({
+    tokenType1, tokenType2,
     lightMode, setOpenModal, tokens, tokenId, currentWallet, 
     setValue, setTokenType, setFromAddress, setAbi, value, fromAddress, 
-    toAddress, setToValue, setFromName, setFromImg, setFromAlt
+    toAddress, setToValue, setFromName, setFromImg, setFromAlt, toName
 }: any) {
 
     const token = tokens.slice(tokenId - 1, tokenId);
@@ -22,6 +24,9 @@ function From({
     const[tokenAbi, setTokenAbi] = useState([]);
 
     const [swapAmount, setSwapAmount] = useState(0.0);
+
+    const [fromPrice, setFromPrice] = useState(0);
+    const [toPrice, setToPrice] = useState(0); 
 
     useEffect(() => {
         token.forEach((token:any) => {
@@ -43,13 +48,16 @@ function From({
     }, [currentWallet, tokenName, tokenLp, tokenAbi, token, setFromAddress, setTokenType, setAbi, setFromAlt, setFromImg, setFromName]);
 
     useEffect(() => {
-        setSwapAmount(value);
-    }, [value]);
+        priceToken(fromAddress, setFromPrice); 
+        priceToken(toAddress, setToPrice);
+        estimateValueTo(swapAmount, fromPrice, toPrice, tokenType1, tokenType2, tokenName, toName, swapAmount, fromAddress, toAddress, setToValue); 
+    }, [fromAmt, tokenType1, tokenType2, fromPrice, toPrice,
+        tokenName, toName, swapAmount, fromAddress, 
+        toAddress, setToValue]);
 
     const handleSwapChange = (e: any) => {
         setSwapAmount(e.target.value);
         setValue(e.target.value);
-        estimateValueTo(e.target.value, fromAddress, toAddress, setToValue); 
     };
       
 
