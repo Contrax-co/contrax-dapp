@@ -7,6 +7,11 @@ const settings = {
 
 const alchemy = new Alchemy(settings);  
 
+export const getGasPrice = async (setGasPrice:any) => {
+  const gas  = await alchemy.core.getGasPrice(); 
+  setGasPrice(gas["_hex"]);
+}
+
 export const main = async (currentWallet:any, setTokens: any) => {
   const balances = await alchemy.core.getTokenBalances(currentWallet);
 

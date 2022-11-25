@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react';
-import Toggle from '../Toggle';
-import { getUserVaultBalance, withdraw, zapOut } from './withdraw-function';
+import { getUserVaultBalance, withdraw } from './withdraw-function';
 import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
+import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
 
 function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
-  const [toggleType, setToggleType] = useState(false);
   const [loaderMessage, setLoaderMessage] = useState('');
   const [isLoading, setLoading] = useState(false);
 
   const [withdrawAmt, setWithdrawAmt] = useState(0.0);
 
   const [userVaultBal, setUserVaultBalance] = useState(0);
+  const [gasPrice, setGasPrice] = useState(); 
 
   useEffect(() => {
+    getGasPrice(setGasPrice);
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
   }, [pool, currentWallet]);
 
@@ -23,12 +24,6 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
 
   return (
     <div className="whole_tab">
-      <Toggle
-        lightMode={lightMode}
-        active={toggleType}
-        pool={pool}
-        onClick={() => setToggleType(!toggleType)}
-      />
 
       <div className="detail_container">
         <div
@@ -43,17 +38,11 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
           >
             Removal of Liquidity
           </p>
-          {toggleType ? (
             <p className="withdrawal_description2">
               Your deposited LP token can be withdrawn from the autocompounding
               vault back to the user's connected wallet.{' '}
             </p>
-          ) : (
-            <p className="withdrawal_description2">
-              Your deposited LP token can be withdrawn from the autocompounding
-              vault back into wallet as native ETH tokens.{' '}
-            </p>
-          )}
+          
         </div>
 
         <div className={`withdraw_tab ${lightMode && 'withdraw_tab--light'}`}>
@@ -87,11 +76,12 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                   onChange={handleWithdrawChange}
                 />
               </div>
-              {toggleType ? (
+        
                 <div
                   className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
                   onClick={() =>
                     withdraw(
+                      gasPrice,
                       pool,
                       withdrawAmt,
                       setWithdrawAmt,
@@ -102,22 +92,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                 >
                   <p>Withdraw LP</p>
                 </div>
-              ) : (
-                <div
-                  className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
-                  onClick={() =>
-                    zapOut(
-                      setLoading,
-                      setLoaderMessage,
-                      pool,
-                      withdrawAmt,
-                      setWithdrawAmt
-                    )
-                  }
-                >
-                  <p>Withdraw ETH</p>
-                </div>
-              )}
+            
             </div>
           </div>
 

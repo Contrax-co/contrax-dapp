@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { priceOfToken, totalVault, userVaultTokens } from './vault-functions';
 import "./VaultItem.css";
 
-function VaultItem({lightMode, currentWallet, vault}:any) {
+function VaultItem({lightMode, currentWallet, vault, setSinglePrice, singlePrice}:any) {
   const [tokenAmount, setTokenAmount] = useState(0);
   const [price, setPrice] = useState(0); 
 
@@ -14,7 +14,10 @@ function VaultItem({lightMode, currentWallet, vault}:any) {
     priceOfToken(vault.lp_address, setPrice);
 
     totalVault(vault.vault_address, vault.vault_abi, setVaultAmount); 
-  }, [currentWallet, vault]);
+    setSinglePrice([...singlePrice, (tokenAmount * price)]); 
+
+  }, [currentWallet, vault, tokenAmount, price]);
+  
 
 
   return (
