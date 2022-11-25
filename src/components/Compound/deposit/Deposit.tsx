@@ -8,6 +8,7 @@ import {
 } from './deposit-functions';
 import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
+import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
 
 function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [ethUserBal, setEthUserBal] = useState(0);
@@ -21,10 +22,12 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [success, setSuccess] = useState("loading");
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
+  const [gasPrice, setGasPrice] = useState(); 
+
   useEffect(() => {
+    getGasPrice(setGasPrice);
     getEthBalance(currentWallet, setEthUserBal);
     getLPBalance(pool, currentWallet, setLPUserBal);
-
   }, [currentWallet, ethUserBal, pool, lpUserBal]);
 
   const handleDepositChange = (e: any) => {
@@ -107,6 +110,7 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
                   className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
                   onClick={() =>
                     deposit(
+                      gasPrice,
                       pool,
                       lpDepositAmount,
                       setLPDepositAmount,

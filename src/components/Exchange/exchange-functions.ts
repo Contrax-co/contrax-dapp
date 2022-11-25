@@ -6,6 +6,7 @@ const exchange_abi = [{"inputs":[{"internalType":"address","name":"_controller",
 
 
 export const swapFromTokenToToken = async (
+  gasPrice:any,
   currentWallet:any, fromValue: any, 
   from:any, to:any, setValue:any, 
   token_abi: any,
@@ -37,8 +38,6 @@ export const swapFromTokenToToken = async (
         await tokenContract.approve(exchange_address, formattedBal); 
 
         setSecondaryMessage("Confirm Contract Interaction"); 
-       
-        const gasPrice: any = await provider.getGasPrice();
 
         const exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {
             gasLimit: gasPrice,
@@ -80,6 +79,7 @@ export const swapFromTokenToToken = async (
 }
 
 export const swapFromTokenToPair = async (
+  gasPrice:any,
   currentWallet:any, from:any, to:any, 
   token_abi: any, fromValue:any, setValue:any,
   setLoading:any, 
@@ -101,10 +101,9 @@ export const swapFromTokenToPair = async (
 
         const tokenContract = new ethers.Contract(from, token_abi, signer); 
 
-        const gasPrice: any = await provider.getGasPrice();
         setSecondaryMessage("Approving Token");
 
-         /*
+        /*
         * Execute the actual swap functionality from smart contract
         */
         const formattedBal = ethers.utils.parseUnits(fromValue.toString(), 18);
@@ -153,6 +152,7 @@ export const swapFromTokenToPair = async (
 
 
 export const swapPairForToken = async (
+  gasPrice:any,
   currentWallet:any, from:any, to:any, 
   token_abi:any, fromValue:any, setValue:any,
   setLoading:any, 
@@ -174,7 +174,6 @@ export const swapPairForToken = async (
 
         const tokenContract = new ethers.Contract(from, token_abi, signer); 
 
-        const gasPrice: any = await provider.getGasPrice();
         setSecondaryMessage("Approving Token")
 
         /*
@@ -225,6 +224,7 @@ export const swapPairForToken = async (
 
 
 export const swapPairForPair = async (
+  gasPrice:any,
   currentWallet:any, from:any, to:any, 
   token_abi:any, fromValue:any, setValue:any,
   setLoading:any,setLoaderMessage:any,
@@ -244,8 +244,6 @@ export const swapPairForPair = async (
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
         const tokenContract = new ethers.Contract(from, token_abi, signer); 
-
-        const gasPrice: any = await provider.getGasPrice();
 
         setSecondaryMessage("Approving Token")
 
@@ -297,6 +295,7 @@ export const swapPairForPair = async (
 }
 
 export const swapEthForToken = async(
+  gasPrice:any,
   currentWallet:any, to:any, 
   fromValue:any, setValue:any,
   setLoading:any,setLoaderMessage:any,
@@ -318,7 +317,6 @@ export const swapEthForToken = async(
 
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
-        const gasPrice: any = await provider.getGasPrice();
         setSecondaryMessage("Approving Token");
 
         /*
@@ -369,6 +367,7 @@ export const swapEthForToken = async(
 
 
 export const swapEthForPair = async(
+  gasPrice:any,
   currentWallet:any, to:any, 
   fromValue:any, setValue:any,
   setLoading:any,setLoaderMessage:any,
@@ -390,7 +389,6 @@ export const swapEthForPair = async(
 
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
-        const gasPrice: any = await provider.getGasPrice();
         setSecondaryMessage("Approving Token");
 
         /*
@@ -441,6 +439,7 @@ export const swapEthForPair = async(
 
 
 export const swapPairForETH = async(
+  gasPrice:any, 
   currentWallet:any, from:any, 
   token_abi:any,
   fromValue:any, setValue:any,
@@ -464,10 +463,8 @@ export const swapPairForETH = async(
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
         const tokenContract = new ethers.Contract(from, token_abi, signer); 
 
-        const gasPrice: any = await provider.getGasPrice();
         setSecondaryMessage("Approving Token");
         
-
         /*
         * Execute the actual swap functionality from smart contract
         */
@@ -516,6 +513,7 @@ export const swapPairForETH = async(
 }
 
 export const swapTokenForETH = async(
+  gasPrice:any,
   currentWallet:any, from:any, 
   token_abi:any,
   fromValue:any, setValue:any,
@@ -539,9 +537,7 @@ export const swapTokenForETH = async(
         const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
         const tokenContract = new ethers.Contract(from, token_abi, signer); 
 
-        const gasPrice: any = await provider.getGasPrice();
         setSecondaryMessage("Approving Token");
-        
 
         /*
         * Execute the actual swap functionality from smart contract

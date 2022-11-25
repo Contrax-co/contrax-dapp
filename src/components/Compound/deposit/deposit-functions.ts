@@ -141,6 +141,7 @@ export const zapIn = async (
  * @param {*} setLoading
  */
 export const deposit = async (
+  gasPrice:any,
   pool: any,
   depositAmount: any,
   setLPDepositAmount: any,
@@ -181,8 +182,6 @@ export const deposit = async (
         signer
       );
       await lpContract.approve(pool.vault_addr, formattedBal);
-
-      const gasPrice = await provider.getGasPrice();
 
       setSecondaryMessage("Confirm deposit..."); 
 

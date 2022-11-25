@@ -46,7 +46,7 @@ export const wethAddress="0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
  * @param setLoading 
  * @param setLoaderMessage 
  */
-export const withdraw = async(pool:any, withdrawAmount:any, setWithdrawAmount:any, setLoading:any, setLoaderMessage:any) => {
+export const withdraw = async(gasPrice:any, pool:any, withdrawAmount:any, setWithdrawAmount:any, setLoading:any, setLoaderMessage:any) => {
     const {ethereum} = window;
     setLoading(true);
     setLoaderMessage('User initiated a withdraw from the vault!'); 
@@ -61,8 +61,6 @@ export const withdraw = async(pool:any, withdrawAmount:any, setWithdrawAmount:an
             * Execute the actual withdraw functionality from smart contract
             */
             const formattedBal = ethers.utils.parseUnits(withdrawAmount.toString(), 18);
-
-            const gasPrice = await provider.getGasPrice();
 
             const withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit:gasPrice});
             console.log("Withdrawing...", withdrawTxn.hash);

@@ -13,6 +13,7 @@ import { swapEthForPair, swapEthForToken, swapFromTokenToPair, swapFromTokenToTo
 import Confirm from './Confirm';
 import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
+import { getGasPrice } from '../Dashboard/WalletItem/wallet-functions';
 
 function Exchange({ lightMode, currentWallet }: any) {
   const [openModalFrom, setOpenModalFrom] = useState(false);
@@ -49,6 +50,7 @@ function Exchange({ lightMode, currentWallet }: any) {
 
 
   const [success, setSuccess] = useState("loading");
+  const [gasPrice, setGasPrice] = useState(); 
 
 
   useEffect(() => {
@@ -58,6 +60,10 @@ function Exchange({ lightMode, currentWallet }: any) {
         setTokens(data);
       });
   }, []);
+
+  useEffect(() => {
+    getGasPrice(setGasPrice);
+  }, [])
 
   return (
     <div className={`whole__exchange__container`}>
@@ -203,21 +209,21 @@ function Exchange({ lightMode, currentWallet }: any) {
           swap = {() => {
 
             ((tokenType1 === "Token") && (tokenType2 === "Token") && (fromName !== "ETH") && (toName !== "ETH")) ? (
-            swapFromTokenToToken(currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            swapFromTokenToToken(gasPrice, currentWallet, value, fromAddress, toAddress, setValue, tokenAbi, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
             ): ((tokenType1 === "Token") && (tokenType2 === "LP Token") && (fromName !== "ETH") && (toName !== "ETH")) ? (
-            swapFromTokenToPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            swapFromTokenToPair(gasPrice, currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
             ): ((tokenType1 === "LP Token") && (tokenType2 === "Token") && (fromName !== "ETH") && (toName !== "ETH")) ? (
-            swapPairForToken(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            swapPairForToken(gasPrice, currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
             ): (tokenType1 === "Token") && (tokenType2 === "Token") && (fromName === "ETH") ? (
-            swapEthForToken(currentWallet, toAddress, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            swapEthForToken(gasPrice, currentWallet, toAddress, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
             ) : (tokenType1 === "Token") && (tokenType2 === "LP Token") && (fromName === "ETH") ? (
-            swapEthForPair(currentWallet, toAddress, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            swapEthForPair(gasPrice, currentWallet, toAddress, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
             ): (tokenType1 === "LP Token") && (tokenType2 === "Token") && (toName === "ETH") ? (
-            swapPairForETH(currentWallet, fromAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            swapPairForETH(gasPrice, currentWallet, fromAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
             ): (tokenType1 === "Token") && (tokenType2 === "Token") && (toName === "ETH") ? (
-            swapTokenForETH(currentWallet, fromAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            swapTokenForETH(gasPrice, currentWallet, fromAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
             ):(
-            swapPairForPair(currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
+            swapPairForPair(gasPrice, currentWallet, fromAddress, toAddress, tokenAbi, value, setValue, setLoading, setLoaderMessage, setSecondaryMessage, setSuccess)
             )
           }}
           

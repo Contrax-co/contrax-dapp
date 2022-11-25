@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getUserVaultBalance, withdraw } from './withdraw-function';
 import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
+import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
 
 function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [loaderMessage, setLoaderMessage] = useState('');
@@ -10,8 +11,10 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [withdrawAmt, setWithdrawAmt] = useState(0.0);
 
   const [userVaultBal, setUserVaultBalance] = useState(0);
+  const [gasPrice, setGasPrice] = useState(); 
 
   useEffect(() => {
+    getGasPrice(setGasPrice);
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
   }, [pool, currentWallet]);
 
@@ -78,6 +81,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                   className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
                   onClick={() =>
                     withdraw(
+                      gasPrice,
                       pool,
                       withdrawAmt,
                       setWithdrawAmt,
