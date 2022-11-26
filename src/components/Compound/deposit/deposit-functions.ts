@@ -200,7 +200,7 @@ export const deposit = async (
         setSuccess("fail"); 
 
       } else {
-        setLoaderMessage(`Deposited-- ${depositTxn.hash}`);
+        setLoaderMessage(`Deposited--`);
         setSuccess("success"); 
         setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
         setLPDepositAmount(0.0);
@@ -216,7 +216,5 @@ export const deposit = async (
     console.log(error);
     setLoaderMessage(error + 'Try again!');
 
-  } finally {
-    setLoading(false);
   }
 };

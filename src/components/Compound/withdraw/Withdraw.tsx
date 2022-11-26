@@ -3,6 +3,8 @@ import { getUserVaultBalance, withdraw } from './withdraw-function';
 import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
 import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
+import {AiOutlineCheckCircle} from "react-icons/ai";
+import {MdOutlineErrorOutline} from "react-icons/md";
 
 function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [loaderMessage, setLoaderMessage] = useState('');
@@ -12,6 +14,8 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
 
   const [userVaultBal, setUserVaultBalance] = useState(0);
   const [gasPrice, setGasPrice] = useState(); 
+  const [success, setSuccess] = useState("loading");
+  const [secondaryMessage, setSecondaryMessage] = useState('');
 
   useEffect(() => {
     getGasPrice(setGasPrice);
@@ -81,6 +85,8 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                   className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
                   onClick={() =>
                     withdraw(
+                      setSuccess,
+                      setSecondaryMessage,
                       gasPrice,
                       pool,
                       withdrawAmt,
@@ -108,11 +114,33 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
       </div>
 
       {isLoading && (
-        <div className="spinner">
-          <MoonLoader size={25} loading={isLoading} color="#36d7b7" />
-          <div className={`spinner_description`}>
-            <p>{loaderMessage}</p>
+        <div className={`withdraw_spinner ${lightMode && 'withdraw_spinner--light'}`}>
+          
+          <div className={`withdraw_spinner_top`}>
+
+            <div className={`withdraw_spinner-left`}>
+
+              {success === "success" ? (
+                <AiOutlineCheckCircle style={{color: "#00E600", fontSize: "20px"}}/> 
+              ): (success === "loading") ? (
+                <MoonLoader size={20} loading={isLoading} color={'rgb(89, 179, 247)'}/> 
+              ): (success === "fail") ? (
+                <MdOutlineErrorOutline style={{color:"#e60000"}} />
+              ): null}
+
+            </div>
+
+            <div className={`withdraw_spinner_right`}>
+              <p style={{fontWeight:'700'}}>{loaderMessage}</p>
+              <p style={{fontSize:'13px'}}>{secondaryMessage}</p>
+            </div>
+
           </div>
+
+          <div className={`withdraw_spinner_bottom`} onClick={() => setLoading(false)}>
+            <p>Dismiss</p>
+          </div> 
+
         </div>
       )}
     </div>
