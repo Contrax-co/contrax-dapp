@@ -104,7 +104,7 @@ export default function CreatePool({ lightMode }: any) {
       tokenTwo.id
     );
     const contractAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
-    const factoryAddress = '0xF20781F5Cdf1c5728446c30Bb4f869042F2cF9F1';
+    const factoryAddress = '0x87e49e9B403C91749dCF89be4ab1d400CBD4068C';
     const contractABI = factory;
     const tokenABI = ercabi.abi;
     // const factoryABI = factory;

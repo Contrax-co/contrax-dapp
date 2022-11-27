@@ -4,6 +4,10 @@ import { gql, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from './spinner/spinner';
 import "../components/Exchange/Exchange.css"
+import { ethers } from 'ethers';
+const contractFile = require('../config/erc20.json');
+
+
 
 export default function Tokens({ lightMode }: any) {
   const [wallet, setWallet] = useState();
@@ -23,33 +27,44 @@ export default function Tokens({ lightMode }: any) {
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address);
-    
-     
-     
+
+
+
     }
-  },[wallet]);
+  }, [wallet]);
 
 
-  useEffect(()=>{
-   fetch(`https://api.covalenthq.com/v1/42161/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=true/`, {
+  useEffect(() => {
+    getting();
+
+
+  })
+
+
+  async function getting() {
+
+    fetch(`https://api.covalenthq.com/v1/42161/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=true/`, {
       method: 'GET',
       headers: {
         "Authorization": "Basic Y2tleV81YzcwODllZTFiMTQ0NWM3Yjg0NjcyYmFlM2Q6",
         "Content-Type": "application/json"
       }
-  }).then(response =>response.json()).then((items)=>{
-      console.log( items.data.items);
+    }).then(response => response.json()).then(async (items) => {
+      console.log(items.data.items);
+      console.log(items.data.items.length);
+     
       setData(items.data.items)
       setIsLoading(false)
-  }).catch(error => {
+    }).catch(error => {
       console.log('sorry');
       console.log(error)
 
-  })
-  },[wallet])
+    })
 
 
 
+
+  }
 
 
 
@@ -67,7 +82,7 @@ export default function Tokens({ lightMode }: any) {
               <th>Decimal</th>
 
               <th>Balance</th>
-             
+
             </tr>
           </thead>
           {isLoading ? (
@@ -77,17 +92,19 @@ export default function Tokens({ lightMode }: any) {
               </div>
             </div>
           ) : (
+            
             <tbody>
+
               {datas.map((token: any, index) => {
                 return (
-                  <tr  className={`table__token ${lightMode && 'table--light '}`} key={index}>
+                  <tr className={`table__token ${lightMode && 'table--light '}`} key={index}>
                     <th>{index + 1}</th>
                     <td>{token.contract_ticker_symbol}</td>
                     <td>{token.contract_name}</td>
                     <td>{token.contract_decimals}</td>
 
-                    <td>{token.balance / Math.pow(10,token.contract_decimals)}</td>
-                    
+                    <td>{token.balance / Math.pow(10, token.contract_decimals)}</td>
+
                   </tr>
                 );
               })}
