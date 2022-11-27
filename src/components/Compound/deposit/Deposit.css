@@ -357,6 +357,21 @@
   text-overflow: ellipsis;
 }
 
+.deposit_deposits{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deposit_all{
+  text-decoration: underline;
+  margin-top: 5px;
+}
+
+.deposit_all:hover{
+  cursor: pointer;
+}
+
 input {
   outline: none;
 }

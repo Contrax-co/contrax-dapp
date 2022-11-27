@@ -3,6 +3,7 @@ import './Deposit.css';
 import { MoonLoader } from 'react-spinners';
 import {
   deposit,
+  depositAll,
   getEthBalance,
   getLPBalance,
 } from './deposit-functions';
@@ -33,6 +34,22 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
   const handleDepositChange = (e: any) => {
     setLPDepositAmount(e.target.value);
   };
+
+  function depositAmount () {
+    deposit(
+      setLPUserBal,
+      currentWallet,
+      gasPrice,
+      pool,
+      lpDepositAmount,
+      setLPDepositAmount,
+      setLoading,
+      setLoaderMessage,
+      setSuccess,
+      setSecondaryMessage
+    )
+
+  }
 
   return (
     <div className="addliquidity_outsidetab">
@@ -82,7 +99,7 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
                 }`}
               >
                 <p>{pool.name} balance:</p>
-                <p>{lpUserBal.toFixed(3)}</p>
+                <p>{lpUserBal.toPrecision(3)}</p>
               </div>
             
           
@@ -106,22 +123,33 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
                     onChange={handleDepositChange}
                   />
                 </div>
-                <div
-                  className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
-                  onClick={() =>
-                    deposit(
-                      gasPrice,
-                      pool,
-                      lpDepositAmount,
-                      setLPDepositAmount,
-                      setLoading,
-                      setLoaderMessage,
-                      setSuccess,
+
+                <div className={`deposit_deposits ${lightMode && 'deposit_deposits--light'}`}>
+                  <div
+                    className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
+                    onClick={!lpDepositAmount || lpDepositAmount <= 0 || lpDepositAmount >= lpUserBal ? () => {} : depositAmount}
+                  >
+                    <p>Deposit {pool.name}</p>
+                  </div>
+
+                  <div className={`deposit_all ${lightMode && 'deposit_all--light'}`}
+                  onClick={() => {
+                    depositAll(
+                      lpUserBal, 
+                      setLPUserBal, 
+                      currentWallet, 
+                      gasPrice, 
+                      pool, 
+                      setLPDepositAmount, 
+                      setLoading, 
+                      setLoaderMessage, 
+                      setSuccess, 
                       setSecondaryMessage
                     )
-                  }
-                >
-                  <p>Deposit LP</p>
+                  }}
+                  >
+                    Deposit All
+                  </div>
                 </div>
               </div>
              

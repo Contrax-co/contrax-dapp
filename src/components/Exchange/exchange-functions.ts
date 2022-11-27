@@ -40,7 +40,7 @@ export const swapFromTokenToToken = async (
         setSecondaryMessage("Confirm Contract Interaction"); 
 
         const exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {
-            gasLimit: gasPrice,
+            gasLimit: gasPrice/10,
           });
 
         setLoaderMessage(`Swapping...`);
@@ -69,7 +69,9 @@ export const swapFromTokenToToken = async (
     }
     catch(error){
       console.log(error);
-      // log error to screen not console 
+      setLoaderMessage(`Error swapping!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
     }
 
   }
@@ -112,7 +114,7 @@ export const swapFromTokenToPair = async (
         setSecondaryMessage("Confirm Contract Interaction"); 
 
         const exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal, {
-            gasLimit: gasPrice,
+            gasLimit: gasPrice/10,
         });
 
         setLoaderMessage(`Swapping...`);
@@ -141,6 +143,9 @@ export const swapFromTokenToPair = async (
     }
     catch(error) {
       console.log(error);
+      setLoaderMessage(`Error swapping!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
     }
 
   }
@@ -185,7 +190,7 @@ export const swapPairForToken = async (
         setSecondaryMessage("Confirm Contract Interaction"); 
 
         const exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, {
-            gasLimit: gasPrice,
+            gasLimit: gasPrice/10,
         });
 
         setLoaderMessage(`Swapping...`);
@@ -214,6 +219,9 @@ export const swapPairForToken = async (
     }
     catch(error) {
       console.log(error);
+      setLoaderMessage(`Error swapping!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
     }
 
   }
@@ -256,7 +264,7 @@ export const swapPairForPair = async (
         setSecondaryMessage("Confirm Contract Interaction"); 
 
         const exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal, {
-            gasLimit: gasPrice,
+            gasLimit: gasPrice/10,
         });
 
         setLoaderMessage(`Swapping...`);
@@ -286,6 +294,9 @@ export const swapPairForPair = async (
     }
     catch(error) {
       console.log(error);
+      setLoaderMessage(`Error swapping!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
     }
 
   }
@@ -326,7 +337,7 @@ export const swapEthForToken = async(
 
         setSecondaryMessage("Confirm Contract Interaction"); 
 
-        const exchangeTxn = await exchangeContract.swapFromEthToToken(to, { value: formattedBal, gasLimit: gasPrice});
+        const exchangeTxn = await exchangeContract.swapFromEthToToken(to, { value: formattedBal, gasLimit: gasPrice/10});
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
@@ -355,6 +366,9 @@ export const swapEthForToken = async(
     }
     catch(error) {
       console.log(error);
+      setLoaderMessage(`Error swapping!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
     }
 
 
@@ -398,7 +412,7 @@ export const swapEthForPair = async(
 
         setSecondaryMessage("Confirm Contract Interaction"); 
 
-        const exchangeTxn = await exchangeContract.swapEthForPair(to, { value: formattedBal, gasLimit: gasPrice});
+        const exchangeTxn = await exchangeContract.swapEthForPair(to, { value: formattedBal, gasLimit: gasPrice/10});
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
@@ -427,6 +441,9 @@ export const swapEthForPair = async(
     }
     catch(error) {
       console.log(error);
+      setLoaderMessage(`Error swapping!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
     }
 
 
@@ -473,7 +490,7 @@ export const swapPairForETH = async(
 
         setSecondaryMessage("Confirm Contract Interaction"); 
 
-        const exchangeTxn = await exchangeContract.swapPairForEth(from, formattedBal, {gasLimit: gasPrice});
+        const exchangeTxn = await exchangeContract.swapPairForEth(from, formattedBal, {gasLimit: gasPrice/10});
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
@@ -502,6 +519,9 @@ export const swapPairForETH = async(
     }
     catch(error) {
       console.log(error);
+      setLoaderMessage(`Error swapping!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
     }
 
 
@@ -547,7 +567,7 @@ export const swapTokenForETH = async(
 
         setSecondaryMessage("Confirm Contract Interaction"); 
 
-        const exchangeTxn = await exchangeContract.swapFromTokenToEth(from, formattedBal, {gasLimit: gasPrice});
+        const exchangeTxn = await exchangeContract.swapFromTokenToEth(from, formattedBal, {gasLimit: gasPrice/10});
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`); 
@@ -576,6 +596,10 @@ export const swapTokenForETH = async(
     }
     catch(error) {
       console.log(error);
+      setLoaderMessage(`Error swapping!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
+
     }
 
 

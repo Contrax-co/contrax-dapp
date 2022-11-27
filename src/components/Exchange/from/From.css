@@ -60,4 +60,8 @@
 .swap__logo {
     width: 30px;
 }
+
+.swap_amount:hover{
+    cursor: pointer;
+}
   

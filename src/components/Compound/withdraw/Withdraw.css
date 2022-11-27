@@ -282,4 +282,17 @@
   cursor: pointer;
 }
 
+.withdraw_withdraw{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
+.withdraw_all{
+  text-decoration: underline;
+  margin-top: 5px;
+}
+
+.withdraw_all:hover{
+  cursor: pointer;
+}

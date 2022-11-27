@@ -93,7 +93,6 @@ function Exchange({ lightMode, currentWallet }: any) {
               setTokenType={setTokenType1}
               setFromAddress = {setFromAddress}
               setAbi = {setTokenAbi}
-              value={value}
               fromAddress = {fromAddress}
               toAddress={toAddress}
               setToValue={setToValue}
@@ -133,7 +132,8 @@ function Exchange({ lightMode, currentWallet }: any) {
 
         </div>
         
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} onClick={() => setConfirmPage(true)}>
+          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} 
+            onClick={!value || value <= 0 ? () => {} : () => setConfirmPage(true)}>
            
             {value ? (
               <p>See details</p>

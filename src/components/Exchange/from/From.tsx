@@ -9,7 +9,7 @@ import "./From.css";
 function From({
     tokenType1, tokenType2,
     lightMode, setOpenModal, tokens, tokenId, currentWallet, 
-    setValue, setTokenType, setFromAddress, setAbi, value, fromAddress, 
+    setValue, setTokenType, setFromAddress, setAbi, fromAddress, 
     toAddress, setToValue, setFromName, setFromImg, setFromAlt, toName
 }: any) {
 
@@ -59,13 +59,20 @@ function From({
         setSwapAmount(e.target.value);
         setValue(e.target.value);
     };
+
+    function setMax() {
+        setSwapAmount(fromAmt);
+        setValue(fromAmt);
+    }
       
 
   return (
     <div>
         <div className="from_div">
             <p>From</p>
-            <p>{fromAmt.toFixed(7)}</p> 
+            <p className={`swap_amount ${lightMode && 'swap_amount--light'}`}
+                onClick={setMax}
+            >{fromAmt.toPrecision(3)}</p> 
         </div>
 
         <div className={`from__input ${lightMode && 'from__input--light'}`}>
