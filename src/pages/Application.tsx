@@ -150,7 +150,7 @@ function Application() {
           <Exchange lightMode={lightMode} currentWallet={currentWallet} /> 
           )}
         </div>
-      </div></div>
+      </div>
 
       {logoutInfo ? (
         <Logout
