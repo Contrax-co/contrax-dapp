@@ -108,7 +108,7 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
                 {(price * lpUserBal) < 0.01 ? (
                   <p>0</p>
                 ) : (
-                  <p>{lpUserBal.toPrecision(3)}</p>
+                  <p>{lpUserBal.toPrecision(4)}</p>
                 )}
                 
               </div>
@@ -138,9 +138,14 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
                 <div className={`deposit_deposits ${lightMode && 'deposit_deposits--light'}`}>
                   <div
                     className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
-                    onClick={!lpDepositAmount || lpDepositAmount <= 0 || lpDepositAmount >= lpUserBal ? () => {} : depositAmount}
+                    onClick={!lpDepositAmount || lpDepositAmount <= 0 ? () => {} : depositAmount}
                   >
-                    <p>Deposit {pool.name}</p>
+                    {lpDepositAmount > lpUserBal ? (
+                      <p>Insufficient Balance</p>
+                    ) : (
+                      <p>Deposit {pool.name}</p>
+                    )}
+                    
                   </div>
 
                   <div className={`deposit_all ${lightMode && 'deposit_all--light'}`}
