@@ -3,7 +3,7 @@ import { getUserSession } from '../store/localStorage';
 import { gql, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from './spinner/spinner';
-
+import "../components/Exchange/Exchange.css"
 const FETCH = gql`
   query MyQuery($chainId: String!, $userwallet: String!) {
     tokens(
@@ -24,7 +24,7 @@ const FETCH = gql`
   }
 `;
 
-export default function Tokens() {
+export default function Tokens({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,16 +51,21 @@ export default function Tokens() {
         console.log(a.tokens);
         setValues(a.tokens);
         setIsLoading(false);
+      }else{
+        setIsLoading(false);
       }
+     
     }
-  });
+  },[wallet]);
 
   return (
     <>
       <div className="table-responsive">
         <table className="table table-hover">
           <thead>
-            <tr className="table-light">
+            <tr
+              className={`table__token ${lightMode && 'table--light '}`}
+            >
               <th>#</th>
               <th>Token Symbol</th>
               <th>Token Name</th>

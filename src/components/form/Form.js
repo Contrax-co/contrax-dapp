@@ -3,7 +3,7 @@ import { StyledCheckbox, StyledForm, StyledInput } from './Form.styles';
 import * as colors from '../../theme/colors';
 import { weight } from '../../theme/fonts';
 import { Block, Row } from '../blocks/Blocks';
-
+import "./form.css";
 export const Form = (props) => {
   const { children, ...remainingProps } = props;
 
@@ -20,6 +20,7 @@ export const FormInput = (props) => {
     className,
     inputClassName,
     type,
+    lightMode,
     ...remainingProps
   } = props;
 
@@ -29,11 +30,15 @@ export const FormInput = (props) => {
       <StyledInput
         variant={variant}
         onClick={!onClick ? undefined : onClick}
-        className="form-control"
+         className={`form-control from__input ${lightMode && 'form-control from__input--light'}`}
+     
         type={type || 'text'}
         {...remainingProps}
       ></StyledInput>
-      {props.caption && <Caption>{props.caption}</Caption>}
+      {props.caption && <Caption>
+       <div  className={`token_title ${lightMode && 'token_title--light'}`}>
+        {props.caption}
+        </div></Caption>}
     </div>
   );
 };
@@ -46,6 +51,7 @@ export const FormCheckbox = (props) => {
     children,
     label,
     className,
+    lightMode,
     inputClassName,
     ...remainingProps
   } = props;
@@ -62,13 +68,21 @@ export const FormCheckbox = (props) => {
         />
         <Block className="p-0">
           <Row>
+        
             <B1 weight={props.caption ? weight.semibold : weight.regular}>
+            <div  className={`token_title ${lightMode && 'token_title--light'}`}>
               {props.label}
+              </div>
             </B1>
+            
           </Row>
           {props.caption && (
             <Row>
-              <B1>{props.caption}</B1>
+              
+              <B1>
+              <div  className={`token_title ${lightMode && 'token_title--light'}`}>
+                {props.caption}    </div></B1>
+          
             </Row>
           )}
         </Block>

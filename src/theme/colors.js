@@ -1,9 +1,9 @@
-export const white = '#ffffff';
+export const white = 'white';
 export const whiteText = '#f2f2f2';
 export const redText = '#ff5072';
 export const greenText = '#56f6da';
 export const primary = '#63CCE0';
-export const secondaryLight = '#F9FAFB';
+export const secondaryLight = '#FFFFFF';
 export const secondaryMideum = '#9CA3AF';
 export const secondaryDark = '#323433';
 export const accentLight = '#EFFAFC';

@@ -9,7 +9,7 @@ import crossImage from '../../images/cross.svg';
 import { Image } from '../image/Image';
 import * as colors from '../../theme/colors';
 import Icon from '../icon/Icon';
-
+import "./modal.css";
 export const Modal = (props) => {
   const {
     onClose,
@@ -18,10 +18,12 @@ export const Modal = (props) => {
     children,
     title,
     okLabel,
+    lightMode,
     closeLabel,
     ...remainingProps
   } = props;
   return (
+
     <div
       className="modal fade"
       aria-labelledby="exampleModalLabel"
@@ -29,7 +31,7 @@ export const Modal = (props) => {
       {...remainingProps}
     >
       <StyledModalDialog>
-        <StyledModalContent>
+        <StyledModalContent   lightMode={lightMode}>
           <div className="modal-header border-0 pb-2">
             <H3 className="modal-title" color={colors.accentDark}>
               {props.titleIcon && <Icon name={props.titleIcon} />} {title}
