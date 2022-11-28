@@ -9,7 +9,8 @@ import logo2 from '../../images/logo-4x.png';
 import LightModeToggle from '../LightModeToggle';
 import './Sidebar.css';
 
-function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
+function Sidebar({ lightMode, menuItem, setMenuItem,...props }: any) {
+
   return (
     <div className={`sidebar_bg ${lightMode && 'sidebar_bg--light'}`}>
       <img

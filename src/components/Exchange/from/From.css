@@ -60,4 +60,28 @@
 .swap__logo {
     width: 30px;
 }
+
+.swap_amount:hover{
+    cursor: pointer;
+}
+
+.from_values{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.from_usd{
+    font-weight: 700;
+    font-size: 18px;
+
+}
+
+.from_usd--light{
+    color: black;
+}
+
+.swap_amount{
+    margin-top:0;
+}
   

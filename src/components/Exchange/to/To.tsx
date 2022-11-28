@@ -35,7 +35,7 @@ function To({
   const handleSwapChange = (e: any) => {
     setSwapAmount(e.target.value);
     setToValue(e.target.value);
-    estimateValueFrom(fromAddress, toAddress, e.target.value, setValue); 
+    //estimateValueFrom(fromAddress, toAddress, e.target.value, setValue); 
     
   };
 

@@ -1,0 +1,15 @@
+.item_container {
+  color:white;
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+}
+
+.item_container--light{
+  color:black;
+}
+
+.dashboard_wallet_item_name{
+  font-size: 15px;
+  font-weight:600;
+}

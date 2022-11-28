@@ -46,10 +46,18 @@ export const wethAddress="0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
  * @param setLoading 
  * @param setLoaderMessage 
  */
-export const withdraw = async(pool:any, withdrawAmount:any, setWithdrawAmount:any, setLoading:any, setLoaderMessage:any) => {
+export const withdraw = async(
+    setUserVaultBalance:any,
+    currentWallet: any,
+    setSuccess:any, setSecondaryMessage:any, 
+    gasPrice:any, pool:any, withdrawAmount:any, 
+    setWithdrawAmount:any, setLoading:any, 
+    setLoaderMessage:any
+) => {
     const {ethereum} = window;
+    setSuccess("loading"); 
     setLoading(true);
-    setLoaderMessage('User initiated a withdraw from the vault!'); 
+    setLoaderMessage('Withdraw initiated!');
     try{
         if(ethereum){
             const provider = new ethers.providers.Web3Provider(ethereum);
@@ -57,37 +65,44 @@ export const withdraw = async(pool:any, withdrawAmount:any, setWithdrawAmount:an
             const signer = provider.getSigner();
             const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
 
+            setSecondaryMessage("Approving withdraw...");
+
             /*
             * Execute the actual withdraw functionality from smart contract
             */
             const formattedBal = ethers.utils.parseUnits(withdrawAmount.toString(), 18);
 
+            setSecondaryMessage("Confirm withdraw..."); 
 
-            const gasEstimated:any = await vaultContract.estimateGas.withdraw(formattedBal);
-            const gasMargin = gasEstimated * 1.1;
+            const withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit:gasPrice/10});
 
-            const withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit: Math.ceil(gasMargin)});
-            console.log("Withdrawing...", withdrawTxn.hash);
-
-            setLoaderMessage(`Withdrawing... ${withdrawTxn.hash}`)
+            setLoaderMessage(`Withdrawing... `);
+            setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`); 
 
             const withdrawTxnStatus = await withdrawTxn.wait(1);
             if (!withdrawTxnStatus.status) {
-                setLoaderMessage(`Error withdrawing into vault!`)
+                setLoaderMessage(`Error withdrawing from vault!`)
+                setSecondaryMessage(`Try again!`);
+                setSuccess("fail"); 
+
             }else{
-                setLoaderMessage(`Withdrawn-- ${withdrawTxn.hash}`)
+                setSuccess("success"); 
+                setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`); 
+                setLoaderMessage(`Withdrawn--`)
                 setWithdrawAmount(0.0);
+                getUserVaultBalance(pool, currentWallet, setUserVaultBalance); 
             }
             
         }else {
             console.log("Ethereum object doesn't exist!");
+
+            setLoaderMessage(`Error withdrawing!`);
+            setSecondaryMessage(`Try again!`)
+            setSuccess("fail"); 
           }
     }catch (error) {
         console.log(error);
         setLoaderMessage(error + "Try again!")
-    }
-    finally {
-        setLoading(false);
     }
 }
 
@@ -123,10 +138,9 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
             const lpContract = new ethers.Contract(pool.lp_address, pool.lp_abi, signer);
             await lpContract.approve(pool.zapper_addr, formattedBal);
 
-            const gasEstimated:any = await zapperContract.estimateGas.zapOutAndSwap(pool.vault_addr, formattedBal, wethAddress, 0);
-            const gasMargin = gasEstimated * 1.1;
+            const gasPrice = await provider.getGasPrice();
 
-            const withdrawTxn = await zapperContract.zapOutAndSwap(pool.vault_addr, formattedBal, wethAddress, 0, {gasLimit: Math.ceil(gasMargin)});
+            const withdrawTxn = await zapperContract.zapOutAndSwap(pool.vault_addr, formattedBal, wethAddress, 0, {gasLimit: gasPrice});
             console.log("Withdrawing...", withdrawTxn.hash);
 
             setLoaderMessage(`Withdrawing... ${withdrawTxn.hash}`)
@@ -148,5 +162,65 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
     }
     finally {
         setLoading(false);
+    }
+}
+
+
+
+ export const withdrawAll = async(
+    setUserVaultBalance:any,
+    currentWallet: any,
+    setSuccess:any, setSecondaryMessage:any, 
+    gasPrice:any, pool:any, 
+    setWithdrawAmount:any, setLoading:any, 
+    setLoaderMessage:any
+) => {
+    const {ethereum} = window;
+    setSuccess("loading"); 
+    setLoading(true);
+    setLoaderMessage('Withdraw initiated!');
+    try{
+        if(ethereum){
+            const provider = new ethers.providers.Web3Provider(ethereum);
+            await provider.send('eth_requestAccounts', []);
+            const signer = provider.getSigner();
+            const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
+
+            setSecondaryMessage("Approving withdraw...");
+
+            /*
+            * Execute the actual withdraw functionality from smart contract
+            */
+            setSecondaryMessage("Confirm withdraw..."); 
+
+            const withdrawTxn = await vaultContract.withdrawAll( {gasLimit:gasPrice/10});
+
+            setLoaderMessage(`Withdrawing... `);
+            setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`); 
+
+            const withdrawTxnStatus = await withdrawTxn.wait(1);
+            if (!withdrawTxnStatus.status) {
+                setLoaderMessage(`Error withdrawing from vault!`)
+                setSecondaryMessage(`Try again!`);
+                setSuccess("fail"); 
+
+            }else{
+                setSuccess("success"); 
+                setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`); 
+                setLoaderMessage(`Withdrawn--`)
+                setWithdrawAmount(0.0);
+                getUserVaultBalance(pool, currentWallet, setUserVaultBalance); 
+            }
+            
+        }else {
+            console.log("Ethereum object doesn't exist!");
+
+            setLoaderMessage(`Error withdrawing!`);
+            setSecondaryMessage(`Try again!`)
+            setSuccess("fail"); 
+          }
+    }catch (error) {
+        console.log(error);
+        setLoaderMessage(error + "Try again!")
     }
 }

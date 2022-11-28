@@ -9,6 +9,8 @@
   display: flex;
   width: 100%;
   justify-content: space-between;
+  padding-left:30px;
+  padding-right:30px;
 }
 
 .whole__container__title {

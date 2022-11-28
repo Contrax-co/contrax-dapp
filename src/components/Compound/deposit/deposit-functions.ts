@@ -1,5 +1,21 @@
 import * as ethers from 'ethers';
+
 export const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
+
+export const priceToken = async(address:any, setPrice:any) => {
+  await fetch(
+    `https://coins.llama.fi/prices/current/arbitrum:${address}`
+  )
+  .then((response) => response.json())
+  .then((data) => {
+    const prices = JSON.stringify(data);
+   
+    const parse = JSON.parse(prices);
+
+    const price = parse[`coins`][`arbitrum:${address}`][`price`];
+    setPrice(price);
+  });
+}
 
 /**
  * Gets the balance of the native eth that the user has
@@ -102,19 +118,13 @@ export const zapIn = async (
        */
       const formattedBal = ethers.utils.parseUnits(ethZapAmount.toString(), 18);
 
-      const gasEstimated: any = await zapperContract.estimateGas.zapInETH(
-        pool.vault_addr,
-        formattedBal,
-        wethAddress,
-        { value: formattedBal }
-      );
-      const gasMargin = gasEstimated * 1.1;
+      const gasPrice = await provider.getGasPrice();
 
       const zapperTxn = await zapperContract.zapInETH(
         pool.vault_addr,
         formattedBal,
         wethAddress,
-        { value: formattedBal, gasLimit: Math.ceil(gasMargin) }
+        { value: formattedBal, gasLimit: gasPrice}
       );
 
       setLoaderMessage(`Zapping... ${zapperTxn.hash}`);
@@ -146,15 +156,21 @@ export const zapIn = async (
  * @param {*} setLoading
  */
 export const deposit = async (
+  setLPUserBal:any,
+  currentWallet:any, 
+  gasPrice:any,
   pool: any,
   depositAmount: any,
   setLPDepositAmount: any,
   setLoading: any,
-  setLoaderMessage: any
+  setLoaderMessage: any,
+  setSuccess: any,
+  setSecondaryMessage:any
 ) => {
   const { ethereum } = window;
+  setSuccess("loading"); 
   setLoading(true);
-  setLoaderMessage('User initiated a deposit into the vault!');
+  setLoaderMessage('Deposit initiated!');
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
@@ -165,6 +181,8 @@ export const deposit = async (
         pool.vault_abi,
         signer
       );
+
+      setSecondaryMessage("Approving deposit...");
 
       /*
        * Execute the actual deposit functionality from smart contract
@@ -182,34 +200,135 @@ export const deposit = async (
       );
       await lpContract.approve(pool.vault_addr, formattedBal);
 
-      const gasEstimated: any = await vaultContract.estimateGas.deposit(
-        formattedBal
-      );
-      const gasMargin = gasEstimated * 1.1;
+      setSecondaryMessage("Confirm deposit..."); 
 
       //the abi of the vault contract needs to be checked
       const depositTxn = await vaultContract.deposit(formattedBal, {
-        gasLimit: Math.ceil(gasMargin),
+        gasLimit: gasPrice/10,
       });
-      // const gasPrice = await provider.getGasPrice();
-      // const depositTxn = await vaultContract.deposit(formattedBal, {gasLimit: gasPrice});
 
       setLoaderMessage(`Depositing... ${depositTxn.hash}`);
+      setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
 
       const depositTxnStatus = await depositTxn.wait(1);
       if (!depositTxnStatus.status) {
         setLoaderMessage(`Error depositing into vault!`);
+        setSecondaryMessage(`Try again!`);
+        setSuccess("fail"); 
+
       } else {
-        setLoaderMessage(`Deposited-- ${depositTxn.hash}`);
+        setLoaderMessage(`Deposited--`);
+        setSuccess("success"); 
+        setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
         setLPDepositAmount(0.0);
+        getLPBalance(pool, currentWallet, setLPUserBal); 
       }
     } else {
       console.log("Ethereum object doesn't exist!");
+    
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
     }
   } catch (error) {
     console.log(error);
     setLoaderMessage(error + 'Try again!');
-  } finally {
-    setLoading(false);
+
+  }
+};
+
+
+/**
+ * Deposits total available token into vault
+ * @param lpUserBal 
+ * @param setLPUserBal 
+ * @param currentWallet 
+ * @param gasPrice 
+ * @param pool 
+ * @param setLPDepositAmount 
+ * @param setLoading 
+ * @param setLoaderMessage 
+ * @param setSuccess 
+ * @param setSecondaryMessage 
+ */
+export const depositAll = async (
+  lpUserBal:any,
+  setLPUserBal:any,
+  currentWallet:any, 
+  gasPrice:any,
+  pool: any,
+  setLPDepositAmount: any,
+  setLoading: any,
+  setLoaderMessage: any,
+  setSuccess: any,
+  setSecondaryMessage:any
+) => {
+  const { ethereum } = window;
+  setSuccess("loading"); 
+  setLoading(true);
+  setLoaderMessage('Deposit initiated!');
+  try {
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      await provider.send('eth_requestAccounts', []);
+      const signer = provider.getSigner();
+      const vaultContract = new ethers.Contract(
+        pool.vault_addr,
+        pool.vault_abi,
+        signer
+      );
+
+      setSecondaryMessage("Approving deposit...");
+
+      /*
+       * Execute the actual deposit functionality from smart contract
+       */
+      const formattedBal = ethers.utils.parseUnits(
+        lpUserBal.toString(),
+        20
+      );
+
+      // approve the vault to spend asset
+      const lpContract = new ethers.Contract(
+        pool.lp_address,
+        pool.lp_abi,
+        signer
+      );
+      await lpContract.approve(pool.vault_addr, formattedBal);
+
+      setSecondaryMessage("Confirm deposit..."); 
+
+      //the abi of the vault contract needs to be checked
+      const depositTxn = await vaultContract.depositAll({
+        gasLimit: gasPrice/10,
+      });
+
+      setLoaderMessage(`Depositing... ${depositTxn.hash}`);
+      setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
+
+      const depositTxnStatus = await depositTxn.wait(1);
+      if (!depositTxnStatus.status) {
+        setLoaderMessage(`Error depositing into vault!`);
+        setSecondaryMessage(`Try again!`);
+        setSuccess("fail"); 
+
+      } else {
+        setLoaderMessage(`Deposited--`);
+        setSuccess("success"); 
+        setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
+        setLPDepositAmount(0.0);
+        getLPBalance(pool, currentWallet, setLPUserBal);
+      }
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
+    }
+  } catch (error) {
+    console.log(error);
+    setLoaderMessage(error + 'Try again!');
+
   }
 };

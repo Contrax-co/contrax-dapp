@@ -31,9 +31,8 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 30px;
-  padding-left: 35px;
-  padding-right: 35px;
+  padding-top: 30px;
+ 
 }
 
 .rightside > p {

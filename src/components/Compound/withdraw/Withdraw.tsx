@@ -1,19 +1,24 @@
 import { useState, useEffect } from 'react';
-import Toggle from '../Toggle';
-import { getUserVaultBalance, withdraw, zapOut } from './withdraw-function';
+import { getUserVaultBalance, withdraw, withdrawAll } from './withdraw-function';
 import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
+import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
+import {AiOutlineCheckCircle} from "react-icons/ai";
+import {MdOutlineErrorOutline} from "react-icons/md";
 
 function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
-  const [toggleType, setToggleType] = useState(false);
   const [loaderMessage, setLoaderMessage] = useState('');
   const [isLoading, setLoading] = useState(false);
 
   const [withdrawAmt, setWithdrawAmt] = useState(0.0);
 
   const [userVaultBal, setUserVaultBalance] = useState(0);
+  const [gasPrice, setGasPrice] = useState(); 
+  const [success, setSuccess] = useState("loading");
+  const [secondaryMessage, setSecondaryMessage] = useState('');
 
   useEffect(() => {
+    getGasPrice(setGasPrice);
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
   }, [pool, currentWallet]);
 
@@ -21,14 +26,23 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
     setWithdrawAmt(e.target.value);
   };
 
+  function withdrawFunction () {
+    withdraw(
+      setUserVaultBalance,
+      currentWallet,
+      setSuccess,
+      setSecondaryMessage,
+      gasPrice,
+      pool,
+      withdrawAmt,
+      setWithdrawAmt,
+      setLoading,
+      setLoaderMessage
+    )
+  }
+
   return (
     <div className="whole_tab">
-      <Toggle
-        lightMode={lightMode}
-        active={toggleType}
-        pool={pool}
-        onClick={() => setToggleType(!toggleType)}
-      />
 
       <div className="detail_container">
         <div
@@ -43,17 +57,11 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
           >
             Removal of Liquidity
           </p>
-          {toggleType ? (
             <p className="withdrawal_description2">
               Your deposited LP token can be withdrawn from the autocompounding
               vault back to the user's connected wallet.{' '}
             </p>
-          ) : (
-            <p className="withdrawal_description2">
-              Your deposited LP token can be withdrawn from the autocompounding
-              vault back into wallet as native ETH tokens.{' '}
-            </p>
-          )}
+          
         </div>
 
         <div className={`withdraw_tab ${lightMode && 'withdraw_tab--light'}`}>
@@ -64,7 +72,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
           >
             <div className={`lp_bal ${lightMode && 'lp_bal--light'}`}>
               <p>LP Balance:</p>
-              <p>{userVaultBal.toFixed(4)}</p>
+              <p>{userVaultBal.toPrecision(3)}</p>
             </div>
 
             <div
@@ -87,37 +95,35 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                   onChange={handleWithdrawChange}
                 />
               </div>
-              {toggleType ? (
+              
+              <div className={`withdraw_withdraw ${lightMode && 'withdraw_withdraw--light'}`}>
                 <div
-                  className={`zap_button ${lightMode && 'zap_button--light'}`}
-                  onClick={() =>
-                    withdraw(
+                  className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
+                  onClick={!withdrawAmt || withdrawAmt <= 0  || withdrawAmt >= userVaultBal ? () => {} : withdrawFunction}
+                >
+                  <p>Withdraw {pool.name}</p>
+                </div>
+
+                <div 
+                  className={`withdraw_all ${lightMode && 'withdraw_all--light'}`}
+                  onClick={() => {
+                    withdrawAll(
+                      setUserVaultBalance, 
+                      currentWallet, 
+                      setSuccess, 
+                      setSecondaryMessage, 
+                      gasPrice, 
                       pool,
-                      withdrawAmt,
-                      setWithdrawAmt,
-                      setLoading,
+                      setWithdrawAmt, 
+                      setLoading, 
                       setLoaderMessage
                     )
-                  }
+                  }}
                 >
-                  <p>Withdraw LP</p>
+                  Withdraw all
                 </div>
-              ) : (
-                <div
-                  className={`zap_button ${lightMode && 'zap_button--light'}`}
-                  onClick={() =>
-                    zapOut(
-                      setLoading,
-                      setLoaderMessage,
-                      pool,
-                      withdrawAmt,
-                      setWithdrawAmt
-                    )
-                  }
-                >
-                  <p>Withdraw ETH</p>
-                </div>
-              )}
+              </div>
+            
             </div>
           </div>
 
@@ -133,11 +139,33 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
       </div>
 
       {isLoading && (
-        <div className="spinner">
-          <MoonLoader size={25} loading={isLoading} color="#36d7b7" />
-          <div className={`spinner_description`}>
-            <p>{loaderMessage}</p>
+        <div className={`withdraw_spinner ${lightMode && 'withdraw_spinner--light'}`}>
+          
+          <div className={`withdraw_spinner_top`}>
+
+            <div className={`withdraw_spinner-left`}>
+
+              {success === "success" ? (
+                <AiOutlineCheckCircle style={{color: "#00E600", fontSize: "20px"}}/> 
+              ): (success === "loading") ? (
+                <MoonLoader size={20} loading={isLoading} color={'rgb(89, 179, 247)'}/> 
+              ): (success === "fail") ? (
+                <MdOutlineErrorOutline style={{color:"#e60000"}} />
+              ): null}
+
+            </div>
+
+            <div className={`withdraw_spinner_right`}>
+              <p style={{fontWeight:'700'}}>{loaderMessage}</p>
+              <p style={{fontSize:'13px'}}>{secondaryMessage}</p>
+            </div>
+
           </div>
+
+          <div className={`withdraw_spinner_bottom`} onClick={() => setLoading(false)}>
+            <p>Dismiss</p>
+          </div> 
+
         </div>
       )}
     </div>

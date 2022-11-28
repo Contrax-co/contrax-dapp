@@ -49,10 +49,16 @@
 .confirmation_close{
   position: absolute;
   right: 2vh; 
+  color:white;
+  font-size:20px;
 }
 
 .confirmation_close:hover{
   cursor: pointer;
+}
+
+.confirmation_close--light{
+  color:black;
 }
 
 .confirmation_logo_container{
@@ -76,7 +82,10 @@
 }
 
 .transaction_details{
-  font-size: 20px;
+  display:flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
   color:white;
 }
 
@@ -84,9 +93,24 @@
   color:black;
 }
 
+.transaction_value {
+  margin:0;
+  font-weight:700;
+}
+
+.transaction_usd{
+  margin:0;
+  font-weight:700;
+}
+
 .confirm_arrow{
+  color:white;
   padding: 20px;
-  font-size: 20px;
+  font-weight: 800;
+}
+
+.confirm_arrow--light{
+  color:black;
 }
 
 .confirm_retrieve{
