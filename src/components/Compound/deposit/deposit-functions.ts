@@ -221,7 +221,7 @@ export const deposit = async (
         setSuccess("success"); 
         setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
         setLPDepositAmount(0.0);
-        getLPBalance(pool, currentWallet, setLPUserBal);
+        getLPBalance(pool, currentWallet, setLPUserBal); 
       }
     } else {
       console.log("Ethereum object doesn't exist!");

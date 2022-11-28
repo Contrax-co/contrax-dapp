@@ -12,7 +12,7 @@ import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
 import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
 
-function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
+function Deposit({ lightMode, pool, currentWallet, connectWallet}: any) {
   const [ethUserBal, setEthUserBal] = useState(0);
   const [lpUserBal, setLPUserBal] = useState(0);
 
