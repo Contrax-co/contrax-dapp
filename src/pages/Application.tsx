@@ -99,8 +99,6 @@ function Application() {
 
   const toggleLight = () => {
     setLightMode(!lightMode);
-    
-    window.localStorage.setItem('light', JSON.stringify(!lightMode));
   };
 
   return (
@@ -143,14 +141,11 @@ function Application() {
           {menuItem === 'Create pool' && <CreatePool 
            lightMode={lightMode}
           />}
-          {menuItem === 'Exchange' && <Exchange lightMode={lightMode} />}
-          {menuItem === 'Create token' && <CreateToken />}
-          {menuItem === 'Create pool' && <CreatePool />}
           {menuItem === 'Exchange' && (
           <Exchange lightMode={lightMode} currentWallet={currentWallet} /> 
           )}
         </div>
-      </div></div>
+      </div>
 
       {logoutInfo ? (
         <Logout
