@@ -6,6 +6,7 @@ import {
   depositAll,
   getEthBalance,
   getLPBalance,
+  priceToken,
 } from './deposit-functions';
 import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
@@ -24,12 +25,17 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
   const [gasPrice, setGasPrice] = useState(); 
+  const [price, setPrice] = useState(0); 
 
   useEffect(() => {
     getGasPrice(setGasPrice);
     getEthBalance(currentWallet, setEthUserBal);
     getLPBalance(pool, currentWallet, setLPUserBal);
   }, [currentWallet, ethUserBal, pool, lpUserBal]);
+
+  useEffect(() => {
+    priceToken(pool.lp_address ,setPrice)
+  }, [pool])
 
   const handleDepositChange = (e: any) => {
     setLPDepositAmount(e.target.value);
@@ -99,7 +105,12 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
                 }`}
               >
                 <p>{pool.name} balance:</p>
-                <p>{lpUserBal.toPrecision(3)}</p>
+                {(price * lpUserBal) < 0.01 ? (
+                  <p>0</p>
+                ) : (
+                  <p>{lpUserBal.toPrecision(3)}</p>
+                )}
+                
               </div>
             
           
