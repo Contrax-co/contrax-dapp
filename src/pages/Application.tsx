@@ -30,29 +30,37 @@ const onboard = Onboard({
 });
 
 function Application() {
-  const [menuItem, setMenuItem] = useState('Dashboard');
-  const [lightMode, setLightMode] = useState(true);
+
+  const [menuItem, setMenuItem] = useState(() => {
+    const data = window.sessionStorage.getItem('menuItem');
+    if(data != null){
+      return JSON.parse(data);
+    }else{
+      return 'Dashboard';
+    }
+  });
+  const [lightMode, setLightMode] = useState(() => {
+    const data = window.sessionStorage.getItem('lightMode');
+    if(data != null){
+      return JSON.parse(data);
+    }else{
+      return false;
+    }
+  });
 
   const [currentWallet, setCurrentWallet] = useState('');
   const [networkId, setNetworkId] = useState('');
 
   const [logoutInfo, setLogout] = useState(false);
 
-
-  useEffect(() => {
-    const data = window.localStorage.getItem('lightMode');
-
-    if(data != null) {
-      setLightMode(JSON.parse(data));
-    }
-  }, [])
-
   useEffect(() => {
     chainId();
-    
-    window.localStorage.setItem('lightMode', JSON.stringify(lightMode)); 
-    
-  }, [lightMode]);
+  });
+
+  useEffect(() => {
+    window.sessionStorage.setItem('lightMode', JSON.stringify(lightMode));
+    window.sessionStorage.setItem('menuItem', JSON.stringify(menuItem));
+  }, [lightMode, menuItem])
 
 
   useEffect(() => {
@@ -87,7 +95,6 @@ function Application() {
     const { chainId } = await provider.getNetwork();
 
     setNetworkId(chainId.toString(16));
-    console.log(`the networkId is ${chainId}`);
   }
 
   const toggleLight = () => {
