@@ -4,7 +4,11 @@ import {IoMdClose} from "react-icons/io";
 import { priceToken } from './confirm-functions';
 import './Confirm.css';
 
-function Confirm({lightMode, setConfirmPage, amount, toAmount, fromName, toName, fromImg, toImg, fromAlt, toAlt, swap, fromAddress, toAddress}: any) {
+function Confirm({
+  lightMode, setConfirmPage, amount, toAmount, 
+  fromName, toName, fromImg, toImg, fromAlt, toAlt, 
+  swap, fromAddress, toAddress
+}: any) {
 
   const [fromPrice, setFromPrice] = useState(0);
   const [toPrice, setToPrice] = useState(0);

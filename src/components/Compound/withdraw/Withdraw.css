@@ -222,3 +222,77 @@
   word-wrap: break-word;
   width: 350px;
 }
+
+.withdraw_spinner {
+  position: fixed;
+  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%);
+  top: 10%;
+  border-radius: 10px;
+  right: 20px;
+  height: 130px;
+  width:300px;
+  display: flex;
+  flex-direction: column;
+  background-color: #032a51;
+  color:white;
+}
+
+.withdraw_spinner--light{
+  background-color: white;
+  box-shadow:0 4px 8px 0 rgb(0 0 0 / 20%);
+  color:black;
+}
+
+.withdraw_spinner_top{
+  display: flex;
+  flex-direction: row;
+  height:90px;
+  width:100%;
+}
+
+.withdraw_spinner-left{
+  margin-top: 20px;
+  margin-left: 10px;
+}
+
+.withdraw_spinner_right{
+  flex-direction: column;
+  margin-left:30px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.withdraw_spinner_bottom{
+  display: flex;
+  height:40px;
+  width: 100%;
+  border-top: 1px solid rgb(218, 216, 216);
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner_description {
+  margin-left: 20px;
+  word-wrap: break-word;
+  width: 350px;
+}
+
+.withdraw_spinner_bottom:hover{
+  cursor: pointer;
+}
+
+.withdraw_withdraw{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.withdraw_all{
+  text-decoration: underline;
+  margin-top: 5px;
+}
+
+.withdraw_all:hover{
+  cursor: pointer;
+}

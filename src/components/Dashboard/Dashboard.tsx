@@ -1,11 +1,10 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect} from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { BsCheckCircle } from 'react-icons/bs';
 import { FiExternalLink, FiCopy } from 'react-icons/fi';
 import "./Dashboard.css";
 import WalletItem from './WalletItem/WalletItem';
 import Vaults from './JoinedVaults/Vaults';
-import { totalArbitrumUsd } from './JoinedVaults/vault-functions';
 
 function Dashboard({lightMode, currentWallet}:any) {
   const [copied, setCopied] = useState(false);
@@ -33,7 +32,6 @@ function Dashboard({lightMode, currentWallet}:any) {
 
 
   useEffect(() => {
-    console.log(singlePrice)
     let total = 0; 
     for(let i = 0 ; i < singlePrice.length; i++){
       let price:number = Number(singlePrice[i]);
@@ -42,8 +40,6 @@ function Dashboard({lightMode, currentWallet}:any) {
     setTotalUsd(total);
  
   }, [currentWallet, singlePrice])
-
-
 
 
   return (
