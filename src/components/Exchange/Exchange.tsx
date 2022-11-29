@@ -180,7 +180,7 @@ function Exchange({ lightMode, currentWallet }: any) {
 
               <div className={`exchange_spinner_right`}>
                 <p style={{fontWeight:'700'}}>{loaderMessage}</p>
-                <p style={{fontSize:'13px'}}>{secondaryMessage}</p>
+                <p className={`exchange_second`}>{secondaryMessage}</p>
               </div>
 
           </div>
