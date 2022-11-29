@@ -1,0 +1,182 @@
+.whole__exchange__container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.exchange__header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding-left:30px;
+  padding-right:30px;
+}
+
+.whole__container__title {
+  font-size: 34px;
+  font-weight: bold;
+  color: white;
+}
+
+.whole__container__title--light {
+  color: black;
+}
+
+.swap__container {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-self: center;
+  background-color: #012243;
+  padding: 15px;
+  border-radius: 20px;
+  width: 60%;
+  height: 57%;
+  justify-content: space-around;
+}
+
+.swap__container--light {
+  background-color: white;
+  box-shadow: 2px 2px 18px lightgrey;
+}
+
+.swap_title {
+  color: white;
+  font-weight: bold;
+}
+
+.swap_title--light {
+  color: black;
+  font-weight: bold;
+}
+
+.from {
+  color: white;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+.from--light {
+  color: lightgrey;
+  width: 100%;
+}
+
+.symbol__exchange {
+  color: white;
+  align-self: center;
+  font-size: 50px;
+}
+
+.symbol__exchange--light {
+  color: black;
+}
+
+.to {
+  color: white;
+}
+
+.to--light {
+  color: lightgrey;
+}
+
+.exchange_button {
+  background-color: rgb(89, 179, 247);
+  padding: 15px;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 30px;
+  text-align: center;
+  color: white;
+}
+
+.exchange_button:hover {
+  cursor: pointer;
+  background-color: rgb(63, 140, 199);
+}
+
+.exchange_icon{
+  display:flex;
+  justify-content:center;
+  padding-top:10px;
+}
+
+.exchange_icon2{
+  width: 50px;
+  height: 50px;
+  font-size:45px;
+  color:white;  
+  border-radius: 999px;
+  border: 1px solid white;
+}
+.exchange_icon2:hover{
+  cursor:pointer;
+}
+
+.exchange_icon2--light{
+  color: black;
+  border: 1px solid black;
+}
+
+.exchange_spinner {
+  position: fixed;
+  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%);
+  top: 10%;
+  border-radius: 10px;
+  right: 20px;
+  height: 130px;
+  width:300px;
+  display: flex;
+  flex-direction: column;
+  background-color: #032a51;
+  color:white;
+}
+
+.exchange_spinner--light{
+  background-color: white;
+  box-shadow:0 4px 8px 0 rgb(0 0 0 / 20%);
+  color:black;
+}
+
+.exchange_spinner_top{
+  display: flex;
+  flex-direction: row;
+  height:90px;
+  width:100%;
+ 
+}
+
+.exchange_spinner-left{
+  margin-top: 20px;
+  margin-left: 10px;
+}
+
+.exchange_spinner_right{
+  flex-direction: column;
+  margin-left:30px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.exchange_spinner_bottom{
+  display: flex;
+  height:40px;
+  width: 100%;
+  border-top: 1px solid rgb(218, 216, 216);
+  justify-content: center;
+  align-items: center;
+}
+
+.exchange_spinner_bottom:hover{
+  cursor: pointer;
+}
+
+
+
+
+
+
+

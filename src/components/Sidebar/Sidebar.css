@@ -1,0 +1,35 @@
+.sidebar_bg {
+  background-color: #001428;
+  height: 100vh;
+  padding: 1%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  top: 0;
+  border-right: 1px solid #022b55;
+  justify-content: space-between;
+}
+
+.sidebar_bg--light {
+  background-color: #f5f6f9;
+  border-right: 1px solid #d9d9d9;
+}
+
+.contrax_logo {
+  width: 13vw;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+.side_items {
+  flex: 7;
+  margin-top: 20px;
+}
+
+.toggle_placement {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
