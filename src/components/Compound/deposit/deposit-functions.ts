@@ -204,7 +204,7 @@ export const deposit = async (
 
       //the abi of the vault contract needs to be checked
       const depositTxn = await vaultContract.deposit(formattedBal, {
-        gasLimit: gasPrice/10,
+        gasLimit: gasPrice,
       });
 
       setLoaderMessage(`Depositing... ${depositTxn.hash}`);
@@ -285,7 +285,7 @@ export const depositAll = async (
        */
       const formattedBal = ethers.utils.parseUnits(
         lpUserBal.toString(),
-        20
+        18
       );
 
       // approve the vault to spend asset
@@ -300,7 +300,7 @@ export const depositAll = async (
 
       //the abi of the vault contract needs to be checked
       const depositTxn = await vaultContract.depositAll({
-        gasLimit: gasPrice/10,
+        gasLimit: gasPrice,
       });
 
       setLoaderMessage(`Depositing... ${depositTxn.hash}`);

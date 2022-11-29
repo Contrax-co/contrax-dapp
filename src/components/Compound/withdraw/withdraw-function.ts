@@ -74,7 +74,7 @@ export const withdraw = async(
 
             setSecondaryMessage("Confirm withdraw..."); 
 
-            const withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit:gasPrice/10});
+            const withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit:gasPrice});
 
             setLoaderMessage(`Withdrawing... `);
             setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`); 
@@ -193,7 +193,7 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
             */
             setSecondaryMessage("Confirm withdraw..."); 
 
-            const withdrawTxn = await vaultContract.withdrawAll( {gasLimit:gasPrice/10});
+            const withdrawTxn = await vaultContract.withdrawAll( {gasLimit:gasPrice});
 
             setLoaderMessage(`Withdrawing... `);
             setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`); 

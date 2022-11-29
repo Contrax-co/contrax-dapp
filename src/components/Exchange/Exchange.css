@@ -154,8 +154,17 @@
 }
 
 .exchange_spinner_right{
+  display: flex;
   flex-direction: column;
-  margin-left:30px;
+  margin-left:15px;
+  width:100%;
+}
+
+.exchange_second{
+  margin-top:0;
+  max-width:80%;
+  font-size: 13px;
+  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
