@@ -41,6 +41,10 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
     )
   }
 
+  function withdrawMax() {
+    setWithdrawAmt(userVaultBal);
+  }
+
   return (
     <div className="whole_tab">
 
@@ -94,34 +98,33 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                   value={withdrawAmt}
                   onChange={handleWithdrawChange}
                 />
+                <p className={`withdraw_max ${lightMode && 'withdraw_max--light'}`}
+                  onClick={withdrawMax}>
+                  max
+                </p>
               </div>
               
               <div className={`withdraw_withdraw ${lightMode && 'withdraw_withdraw--light'}`}>
-                <div
+                {!withdrawAmt || withdrawAmt <= 0 ? (
+                  <div className={`withdraw_zap1_button_disable ${lightMode && 'withdraw_zap1_button_disable--light'}`}>
+                    <p>Withdraw</p>
+                  </div>
+                ) : withdrawAmt > userVaultBal ? (
+
+                  <div className={`withdraw_zap1_button_disable ${lightMode && 'withdraw_zap1_button_disable--light'}`} >
+                    <p>Insufficient Balance</p>
+                  </div>
+
+                ): (
+                  <div
                   className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
-                  onClick={!withdrawAmt || withdrawAmt <= 0  || withdrawAmt >= userVaultBal ? () => {} : withdrawFunction}
-                >
-                  <p>Withdraw {pool.name}</p>
+                  onClick={withdrawFunction}
+                  >
+                  <p>Withdraw</p>
                 </div>
 
-                <div 
-                  className={`withdraw_all ${lightMode && 'withdraw_all--light'}`}
-                  onClick={() => {
-                    withdrawAll(
-                      setUserVaultBalance, 
-                      currentWallet, 
-                      setSuccess, 
-                      setSecondaryMessage, 
-                      gasPrice, 
-                      pool,
-                      setWithdrawAmt, 
-                      setLoading, 
-                      setLoaderMessage
-                    )
-                  }}
-                >
-                  Withdraw all
-                </div>
+                )}
+               
               </div>
             
             </div>
