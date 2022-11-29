@@ -33,7 +33,7 @@
   padding: 15px;
   border-radius: 20px;
   width: 60%;
-  height: 57%;
+  height: 80%;
   justify-content: space-around;
 }
 
@@ -52,16 +52,6 @@
   font-weight: bold;
 }
 
-.from {
-  color: white;
-  padding-bottom: 15px;
-  padding-top: 15px;
-}
-
-.from--light {
-  color: lightgrey;
-  width: 100%;
-}
 
 .symbol__exchange {
   color: white;
@@ -97,42 +87,7 @@
   background-color: rgb(63, 140, 199);
 }
 
-.exchange_icon{
-  display:flex;
-  justify-content:center;
-  padding-top:10px;
-}
 
-.exchange_icon2{
-  width: 50px;
-  height: 50px;
-  font-size:45px;
-  color:white;  
-  border-radius: 999px;
-  border: 1px solid white;
-}
-.exchange_icon2:hover{
-  cursor:pointer;
-}
-
-.exchange_icon2--light{
-  color: black;
-  border: 1px solid black;
-}
-
-.exchange_spinner {
-  position: fixed;
-  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%);
-  top: 10%;
-  border-radius: 10px;
-  right: 20px;
-  height: 130px;
-  width:300px;
-  display: flex;
-  flex-direction: column;
-  background-color: #032a51;
-  color:white;
-}
 
 .exchange_spinner--light{
   background-color: white;
@@ -176,7 +131,39 @@
 
 
 
+.exchange_icon{
+  display:flex;
+  justify-content:center;
+  padding-top:10px;
+}
 
+.exchange_icon2{
+  width: 50px;
+  height: 50px;
+  font-size:45px;
+  color:white;  
+  border-radius: 999px;
+  border: 1px solid white;
+}
+.exchange_icon2:hover{
+  cursor:pointer;
+}
 
+.exchange_icon2--light{
+  color: black;
+  border: 1px solid black;
+}
 
-
+.exchange_spinner {
+  position: fixed;
+  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%);
+  top: 10%;
+  border-radius: 10px;
+  right: 20px;
+  height: 130px;
+  width:300px;
+  display: flex;
+  flex-direction: column;
+  background-color: #032a51;
+  color:white;
+}
