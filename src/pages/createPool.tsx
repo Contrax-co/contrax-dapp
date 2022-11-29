@@ -4,15 +4,15 @@ import { gql, useQuery } from '@apollo/client';
 import { ethers } from 'ethers';
 import swal from 'sweetalert';
 import { getUserSession } from '../store/localStorage';
-
+import "./Application.css"
 import BottomBar from '../components/bottomBar/BottomBar';
 import Button from '../components/button/Button';
 import { H2, H3 } from '../components/text/Text';
 import { Col, Container, Row } from '../components/blocks/Blocks';
 import { Form } from '../components/form/Form';
 import { StyledDropBtn } from '../components/form/dropdownInput/DropdownInput.styles';
-import TokenModal from '../components/TokenModal';
-import TokenModal1 from '../components/TokenModal1';
+import TokenModal from '../components/OwnTokenModal';
+import TokenModal1 from '../components/CustomToken';
 import Pools from '../components/pools';
 
 import abi from '../config/sushiswap.json';
@@ -39,7 +39,7 @@ const FETCH = gql`
   }
 `;
 
-export default function CreatePool() {
+export default function CreatePool({ lightMode }: any) {
   const { ethereum } = window;
 
   const [tokenOne, setTokenOne] = useState<any | null>(null);
@@ -196,17 +196,27 @@ export default function CreatePool() {
       <Container className="h-100 pool">
         <Row>
           <Col size="12" className="pt-5">
-            <Form className="px-4 my-5">
+            <div 
+             className={`pool__container ${lightMode && 'pool__container--light'}`}
+            >
+            {/* <Form 
+            
+            className='shadow px-4 my-5 bg-dark'
+            > */}
               <Row>
                 <Col size="12" className="my-2 create-pool-title">
-                  <H2>Create Pool</H2>
+                  <H2><div className={`swap_title ${lightMode && 'swap_title--light'}`}>
+                    Create Pool
+                    </div></H2>
                 </Col>
                 <Row>
                   <Col size="1" />
                   <Col size="10" className="my-2">
                     <Col size="12">
                       <Col className="mb-22">
-                        <H3>Select Pair</H3>
+                        <H3>
+                        <div className={`swap_title ${lightMode && 'swap_title--light'}`}>
+                          Select Pair</div></H3>
                       </Col>
                       <Row>
                         <Col>
@@ -249,31 +259,37 @@ export default function CreatePool() {
                     </Col>
                     <Col size="12" className="depositAmount">
                       <Col className="mb-22">
-                        <H3>Deposit Amount</H3>
+                        <H3><div className={`mt-3 swap_title ${lightMode && 'swap_title--light'}`}>
+                          Deposit Amount</div></H3>
                       </Col>
                       <Col>
                         {tokenOne ? (
                           <div className="depositAmount-group">
-                            <div className="selectedToken-div">
+                            <div  className={`selectedToken-div swap_title ${lightMode && 'swap_title--light'}`} >
                               {tokenOne &&
                                 String(tokenOne['tokenName'])
                                   .split(' ')[0]
                                   .trim()}
                             </div>
+
+                          
                             <input
                               value={tokenOne['tokenaddress']}
                               onChange={(e) => setTokenOne(e.target.value)}
                               type={'hidden'}
-                              className="depositAmount-input"
+                              className={`from__input ${lightMode && 'from__input--light'}`}
                             />
+                    
+                            
                             <input
                               onChange={(e) =>
                                 setTokenOneAmount(e.target.value)
                               }
                               placeholder="0.0"
                               type={'number'}
-                              className="depositAmount-input"
+                              className={`from__input ${lightMode && 'from__input--light'}`}
                             />
+                          
                           </div>
                         ) : (
                           <div className="select-a-token">Select a Token</div>
@@ -282,15 +298,16 @@ export default function CreatePool() {
                       <Col>
                         {tokenTwo ? (
                           <div className="depositAmount-group">
-                            <span className="selectedToken-div">
+                            <span className={`selectedToken-div swap_title ${lightMode && 'swap_title--light'}`}>
                               {tokenTwo &&
                                 String(tokenTwo['symbol']).split(' ')[0].trim()}
                             </span>
+                             <div >
                             <input
                               value={tokenTwo['id']}
                               onChange={(e) => setTokenTwo(e.target.value)}
                               type={'hidden'}
-                              className="depositAmount-input"
+                              className={`from__input ${lightMode && 'from__input--light'}`}
                             />
                             <input
                               onChange={(e) =>
@@ -298,8 +315,9 @@ export default function CreatePool() {
                               }
                               placeholder="0.0"
                               type={'number'}
-                              className="depositAmount-input"
+                              className={`from__input-pool ${lightMode && 'from__input--light-pool'}`}
                             />
+                          </div>
                           </div>
                         ) : (
                           <div className="select-a-token">Select a Token</div>
@@ -319,14 +337,19 @@ export default function CreatePool() {
                   <Col size="1" />
                 </Row>
               </Row>
-            </Form>
+            </div> 
+            {/* </Form> */}
+            
           </Col>
         </Row>
-        <Pools />
+        <div className='mt-5'>
+        <Pools  lightMode={lightMode}/>
+        </div>
       </Container>
       <BottomBar />
       <TokenModal
         id="tokenModal"
+        lightMode={lightMode}
         standardTokens={values}
         onSelection={(item: any) => {
           setTokenOne(item);
@@ -334,6 +357,7 @@ export default function CreatePool() {
       />
       <TokenModal1
         id="tokenModalTwo"
+        lightMode={lightMode}
         standardTokens={dtoken}
         onSelection={(item: any) => {
           setTokenTwo(item);

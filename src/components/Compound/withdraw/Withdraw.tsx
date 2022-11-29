@@ -157,7 +157,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
 
             <div className={`withdraw_spinner_right`}>
               <p style={{fontWeight:'700'}}>{loaderMessage}</p>
-              <p style={{fontSize:'13px'}}>{secondaryMessage}</p>
+              <p className={`withdraw_second`}>{secondaryMessage}</p>
             </div>
 
           </div>

@@ -135,8 +135,12 @@ function Application() {
               connectWallet={connectWallet}
             />
           )}
-          {menuItem === 'Create token' && <CreateToken />}
-          {menuItem === 'Create pool' && <CreatePool />}
+          {menuItem === 'Create token' && <CreateToken 
+          lightMode={lightMode}
+          />}
+          {menuItem === 'Create pool' && <CreatePool 
+           lightMode={lightMode}
+          />}
           {menuItem === 'Exchange' && (
           <Exchange lightMode={lightMode} currentWallet={currentWallet} /> 
           )}

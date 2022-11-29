@@ -70,9 +70,27 @@ function From({
     <div>
         <div className="from_div">
             <p>From</p>
-            <p className={`swap_amount ${lightMode && 'swap_amount--light'}`}
-                onClick={setMax}
-            >{fromAmt.toPrecision(3)}</p> 
+            <div className={`from_values`}>
+                <p className={`from_usd ${lightMode && 'from_usd--light'}`}>{(fromPrice * fromAmt).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}</p>
+
+                {(fromPrice * fromAmt) < 0.01 ? (
+                    <p className={`swap_amount ${lightMode && 'swap_amount--light'}`}>
+                       0
+                    </p>
+                ) : (
+
+                    <p className={`swap_amount ${lightMode && 'swap_amount--light'}`}
+                    onClick={setMax}>
+                        {fromAmt.toPrecision(3)}
+                    </p> 
+
+                )}
+               
+            </div>
+        
         </div>
 
         <div className={`from__input ${lightMode && 'from__input--light'}`}>

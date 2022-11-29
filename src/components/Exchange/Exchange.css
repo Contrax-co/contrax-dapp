@@ -73,6 +73,26 @@
   color: black;
 }
 
+.table__input {
+  background-color: #001428;
+  color: white;
+}
+
+.table__token {
+  background-color: #001428;
+  color: white;
+}
+
+.table--light{
+  background-color: white;
+  color: black;
+}
+
+.to__input {
+  display: flex;
+  background-color: #001428;
+}
+
 .to {
   color: white;
 }
@@ -111,6 +131,7 @@
   border-radius: 999px;
   border: 1px solid white;
 }
+
 .exchange_icon2:hover{
   cursor:pointer;
 }
@@ -145,7 +166,6 @@
   flex-direction: row;
   height:90px;
   width:100%;
- 
 }
 
 .exchange_spinner-left{
@@ -154,8 +174,17 @@
 }
 
 .exchange_spinner_right{
+  display: flex;
   flex-direction: column;
-  margin-left:30px;
+  margin-left:15px;
+  width:100%;
+}
+
+.exchange_second{
+  margin-top:0;
+  max-width:80%;
+  font-size: 13px;
+  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

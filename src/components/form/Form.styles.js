@@ -8,7 +8,7 @@ const noForwardProps = [];
 export const StyledForm = styled('form', {
   shouldForwardProp: (prop) => !noForwardProps.includes(prop),
 })((props) => ({
-  background: colors.secondaryLight,
+  // background: colors.secondaryLight,
   borderRadius: 10,
 }));
 

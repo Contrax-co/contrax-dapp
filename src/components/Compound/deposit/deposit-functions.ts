@@ -2,6 +2,21 @@ import * as ethers from 'ethers';
 
 export const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
 
+export const priceToken = async(address:any, setPrice:any) => {
+  await fetch(
+    `https://coins.llama.fi/prices/current/arbitrum:${address}`
+  )
+  .then((response) => response.json())
+  .then((data) => {
+    const prices = JSON.stringify(data);
+   
+    const parse = JSON.parse(prices);
+
+    const price = parse[`coins`][`arbitrum:${address}`][`price`];
+    setPrice(price);
+  });
+}
+
 /**
  * Gets the balance of the native eth that the user has
  * @param currentWallet
@@ -206,7 +221,7 @@ export const deposit = async (
         setSuccess("success"); 
         setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
         setLPDepositAmount(0.0);
-        getLPBalance(pool, currentWallet, setLPUserBal);
+        getLPBalance(pool, currentWallet, setLPUserBal); 
       }
     } else {
       console.log("Ethereum object doesn't exist!");
