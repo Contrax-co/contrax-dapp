@@ -285,7 +285,7 @@ export const depositAll = async (
        */
       const formattedBal = ethers.utils.parseUnits(
         lpUserBal.toString(),
-        20
+        18
       );
 
       // approve the vault to spend asset
