@@ -5,6 +5,7 @@ import Deposit from '../deposit/Deposit';
 import PoolButton from '../PoolButton';
 import Withdraw from '../withdraw/Withdraw';
 import {
+  apyPool,
   getTotalVaultBalance,
   getUserVaultBalance,
   priceToken
@@ -29,6 +30,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
 
   useEffect(() => {
     priceToken(pool.lp_address, setPriceOfSingleToken);
+    apyPool(pool.lp_address)
   }, [pool, totalVaultBalance, userVaultBal]);
 
 
