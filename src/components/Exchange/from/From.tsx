@@ -81,11 +81,9 @@ function From({
                        0
                     </p>
                 ) : (
-
                     <p className={`swap_amount ${lightMode && 'swap_amount--light'}`} >
                         {fromAmt}
                     </p> 
-
                 )}
                
             </div>
