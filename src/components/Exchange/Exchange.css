@@ -32,8 +32,8 @@
   background-color: #012243;
   padding: 15px;
   border-radius: 20px;
-  width: 60%;
-  height: 57%;
+  width: 60vw;
+  height: 60vh;
   justify-content: space-around;
 }
 
@@ -115,6 +115,21 @@
 .exchange_button:hover {
   cursor: pointer;
   background-color: rgb(63, 140, 199);
+}
+
+.exchange_button_disable {
+  background-color: rgb(156, 178, 193);
+  padding: 15px;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 30px;
+  text-align: center;
+  color: white;
+}
+
+.exchange_button_disable:hover {
+  cursor:not-allowed;
 }
 
 .exchange_icon{
