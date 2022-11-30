@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { getUserVaultBalance, withdraw } from './withdraw-function';
 import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
-import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
 import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
 
@@ -13,12 +12,10 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [withdrawAmt, setWithdrawAmt] = useState(0.0);
 
   const [userVaultBal, setUserVaultBalance] = useState(0);
-  const [gasPrice, setGasPrice] = useState(); 
   const [success, setSuccess] = useState("loading");
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
   useEffect(() => {
-    getGasPrice(setGasPrice);
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
   }, [pool, currentWallet]);
 
@@ -32,7 +29,6 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
       currentWallet,
       setSuccess,
       setSecondaryMessage,
-      gasPrice,
       pool,
       withdrawAmt,
       setWithdrawAmt,

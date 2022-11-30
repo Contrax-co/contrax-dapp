@@ -158,7 +158,6 @@ export const zapIn = async (
 export const deposit = async (
   setLPUserBal:any,
   currentWallet:any, 
-  gasPrice:any,
   pool: any,
   depositAmount: any,
   setLPDepositAmount: any,
@@ -182,6 +181,8 @@ export const deposit = async (
         signer
       );
 
+      const gasPrice1:any = await provider.getGasPrice(); 
+
       setSecondaryMessage("Approving deposit...");
 
       /*
@@ -204,7 +205,7 @@ export const deposit = async (
 
       //the abi of the vault contract needs to be checked
       const depositTxn = await vaultContract.deposit(formattedBal, {
-        gasLimit: gasPrice,
+        gasLimit: gasPrice1/10,
       });
 
       setLoaderMessage(`Depositing...`);

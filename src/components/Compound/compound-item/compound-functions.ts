@@ -17,6 +17,14 @@ export const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
 //     });
 // };
 
+export const apyPool = async (address:any) => {
+  await fetch(`https://api.apy.vision/contractInsights/farmSearch/42161/${address}?accessToken=${process.env.REACT_APP_APY_TOKEN}`)
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(`the data for the apy is ${JSON.stringify(data)}`)
+  });
+}
+
 export const priceToken = async(address:any, setPrice:any) => {
   await fetch(
     `https://coins.llama.fi/prices/current/arbitrum:${address}`
