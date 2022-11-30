@@ -55,3 +55,25 @@
 .swap__logo {
     width: 30px;
 }
+
+.to_div{
+    display: flex;
+    justify-content: space-between;
+}
+
+.to_values{
+    margin:0;
+    display:flex;
+    flex-direction: column;
+    text-align:right;
+}
+
+.to_usd{
+    font-weight: 700;
+    font-size: 18px;
+    margin:0;
+}
+
+.to_usd--light{
+    color: black;
+}

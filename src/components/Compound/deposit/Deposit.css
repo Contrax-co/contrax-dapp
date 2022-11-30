@@ -201,6 +201,30 @@
   pointer-events: none;
 }
 
+.deposit_zap1_button_disable {
+  background-color: rgb(156, 178, 193);
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  padding: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
+  text-align: center;
+  width: fit-content;
+  margin-left: 20px;
+}
+
+.deposit_zap1_button_disable--light {
+  background-color: rgb(156, 178, 193);
+  color: white;
+}
+
+.deposit_zap1_button_disable:hover {
+  cursor:not-allowed;
+}
+
 .details {
   display: flex;
   align-items: center;
@@ -383,6 +407,10 @@
 
 input {
   outline: none;
+}
+
+.deposit_max:hover{
+  cursor: pointer;
 }
 
 input::-webkit-outer-spin-button,

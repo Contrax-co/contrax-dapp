@@ -3,7 +3,6 @@ import './Deposit.css';
 import { MoonLoader } from 'react-spinners';
 import {
   deposit,
-  depositAll,
   getEthBalance,
   getLPBalance,
   priceToken,
@@ -57,6 +56,10 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet}: any) {
 
   }
 
+  function maxDeposit() {
+    setLPDepositAmount(lpUserBal);
+  }
+
   return (
     <div className="addliquidity_outsidetab">
 
@@ -108,7 +111,7 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet}: any) {
                 {(price * lpUserBal) < 0.01 ? (
                   <p>0</p>
                 ) : (
-                  <p>{lpUserBal.toPrecision(4)}</p>
+                  <p>{lpUserBal}</p>
                 )}
                 
               </div>
@@ -133,39 +136,40 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet}: any) {
                     value={lpDepositAmount}
                     onChange={handleDepositChange}
                   />
+  
+                  <p className={`deposit_max ${lightMode && 'deposit_max--light'}`}
+                    onClick={maxDeposit}
+                  >
+                  max
+                  </p>
                 </div>
+                
 
                 <div className={`deposit_deposits ${lightMode && 'deposit_deposits--light'}`}>
+                  {!lpDepositAmount || lpDepositAmount <= 0 ? (
                   <div
-                    className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
-                    onClick={!lpDepositAmount || lpDepositAmount <= 0 ? () => {} : depositAmount}
+                    className={`deposit_zap1_button_disable ${lightMode && 'deposit_zap1_button_disable--light'}`}
                   >
-                    {lpDepositAmount > lpUserBal ? (
-                      <p>Insufficient Balance</p>
-                    ) : (
-                      <p>Deposit {pool.name}</p>
-                    )}
-                    
+                      <p>Deposit</p>
                   </div>
 
-                  <div className={`deposit_all ${lightMode && 'deposit_all--light'}`}
-                  onClick={() => {
-                    depositAll(
-                      lpUserBal, 
-                      setLPUserBal, 
-                      currentWallet, 
-                      gasPrice, 
-                      pool, 
-                      setLPDepositAmount, 
-                      setLoading, 
-                      setLoaderMessage, 
-                      setSuccess, 
-                      setSecondaryMessage
-                    )
-                  }}
+
+                  ) : lpDepositAmount > lpUserBal ? (
+
+                    <div className={`deposit_zap1_button_disable ${lightMode && 'deposit_zap1_button_disable--light'}`}>
+                        <p>Insufficient Balance</p>
+                    </div>
+                  ) : (
+
+                  <div className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
+                    onClick={depositAmount}
                   >
-                    Deposit All
+                      <p>Deposit</p>
                   </div>
+
+                  )}
+                  
+
                 </div>
               </div>
              

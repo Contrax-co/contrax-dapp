@@ -3,38 +3,17 @@ import { getUserSession } from '../store/localStorage';
 import { gql, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from './spinner/spinner';
+import "./token.css"
+import { ethers } from 'ethers';
+const contractFile = require('../config/erc20.json');
 
-const FETCH = gql`
-  query MyQuery($chainId: String!, $userwallet: String!) {
-    tokens(
-      where: {
-        chainId: { _like: $chainId }
-        userwallet: { _like: $userwallet }
-      }
-    ) {
-      userwallet
-      totalSupply
-      tokenaddress
-      chainId
-      decimal
-      id
-      tokenName
-      tokenSymbol
-    }
-  }
-`;
-
-export default function Tokens() {
+export default function Tokens({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState([]);
+  const [datas, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data } = useQuery(FETCH, {
-    variables: {
-      chainId: '421611',
-      userwallet: wallet,
-    },
-  });
+
 
   // TODO - React Hook useEffect contains a call to 'setIsLoading'. Without a list
   // of dependencies, this can lead to an infinite chain of updates. To fix this,
@@ -46,57 +25,66 @@ export default function Tokens() {
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address);
-      const a = data;
-      if (typeof a !== 'undefined') {
-        console.log(a.tokens);
-        setValues(a.tokens);
-        setIsLoading(false);
-      }
     }
-  });
+  }, [wallet]);
 
+
+  useEffect(() => {
+    getting();
+  })
+
+  async function getting() {
+
+    fetch(`https://api.covalenthq.com/v1/42161/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=true/`, {
+      method: 'GET',
+      headers: {
+        "Authorization": "Basic Y2tleV81YzcwODllZTFiMTQ0NWM3Yjg0NjcyYmFlM2Q6",
+        "Content-Type": "application/json"
+      }
+    }).then(response => response.json()).then(async (items) => {
+      console.log(items.data.items);
+      console.log(items.data.items.length);
+      setData(items.data.items)
+      setIsLoading(false)
+    }).catch(error => {
+      console.log('sorry');
+      console.log(error)
+    })
+  }
+  
   return (
     <>
       <div className="table-responsive">
-        <table className="table table-hover">
+        <table className="table table-hover-token">
           <thead>
-            <tr className="table-light">
+            <tr
+              className={`table__token ${lightMode && 'table--light-token '}`}
+            >
               <th>#</th>
               <th>Token Symbol</th>
               <th>Token Name</th>
               <th>Decimal</th>
-
-              <th>Total Supply</th>
-              <th>Operation</th>
+              <th>Balance</th>
             </tr>
           </thead>
           {isLoading ? (
             <div style={{ marginLeft: '50%' }}>
-              <div style={{ marginLeft: '700%' }}>
+              <div style={{ marginLeft: '500%' }}>
                 <LoadingSpinner />
               </div>
             </div>
           ) : (
+            
             <tbody>
-              {values.map((token: any, index) => {
-                return (
-                  <tr key={index}>
-                    <th>{index + 1}</th>
-                    <td>{token.tokenSymbol}</td>
-                    <td>{token.tokenName}</td>
-                    <td>{token.decimal}</td>
 
-                    <td>{token.totalSupply}</td>
-                    <td>
-                      <Link
-                        style={{ color: '#5ECDDE' }}
-                        className="btn btn-text p-0"
-                        to="/manage-token"
-                        state={token}
-                      >
-                        Manage
-                      </Link>
-                    </td>
+              {datas.map((token: any, index) => {
+                return (
+                  <tr className={`table__token ${lightMode && 'table--light-token '}`} key={index}>
+                    <th>{index + 1}</th>
+                    <td>{token.contract_ticker_symbol}</td>
+                    <td>{token.contract_name}</td>
+                    <td>{token.contract_decimals}</td>
+                    <td>{token.balance / Math.pow(10, token.contract_decimals)}</td>
                   </tr>
                 );
               })}
