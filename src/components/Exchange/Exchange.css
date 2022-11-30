@@ -32,8 +32,8 @@
   background-color: #012243;
   padding: 15px;
   border-radius: 20px;
-  width: 60vw;
-  height: 60vh;
+  width: 60%;
+  height: 80%;
   justify-content: space-around;
 }
 
@@ -52,16 +52,6 @@
   font-weight: bold;
 }
 
-.from {
-  color: white;
-  padding-bottom: 15px;
-  padding-top: 15px;
-}
-
-.from--light {
-  color: lightgrey;
-  width: 100%;
-}
 
 .symbol__exchange {
   color: white;
@@ -133,22 +123,22 @@
 }
 
 .exchange_icon{
-  display:flex;
-  justify-content:center;
-  padding-top:10px;
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
 }
 
 .exchange_icon2{
   width: 50px;
   height: 50px;
-  font-size:45px;
-  color:white;  
+  font-size: 45px;
+  color: white;  
   border-radius: 999px;
   border: 1px solid white;
 }
 
 .exchange_icon2:hover{
-  cursor:pointer;
+  cursor: pointer;
 }
 
 .exchange_icon2--light{
@@ -163,24 +153,24 @@
   border-radius: 10px;
   right: 20px;
   height: 130px;
-  width:300px;
+  width: 300px;
   display: flex;
   flex-direction: column;
   background-color: #032a51;
-  color:white;
+  color: white;
 }
 
 .exchange_spinner--light{
   background-color: white;
   box-shadow:0 4px 8px 0 rgb(0 0 0 / 20%);
-  color:black;
+  color: black;
 }
 
 .exchange_spinner_top{
   display: flex;
   flex-direction: row;
-  height:90px;
-  width:100%;
+  height: 90px;
+  width: 100%;
 }
 
 .exchange_spinner-left{
@@ -191,23 +181,13 @@
 .exchange_spinner_right{
   display: flex;
   flex-direction: column;
-  margin-left:15px;
-  width:100%;
-}
-
-.exchange_second{
-  margin-top:0;
-  max-width:80%;
-  font-size: 13px;
-  display: inline-block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-left: 15px;
+  width: 100%;
 }
 
 .exchange_spinner_bottom{
   display: flex;
-  height:40px;
+  height: 40px;
   width: 100%;
   border-top: 1px solid rgb(218, 216, 216);
   justify-content: center;
@@ -218,9 +198,12 @@
   cursor: pointer;
 }
 
-
-
-
-
-
-
+.exchange_second{
+  margin-top: 0;
+  max-width: 80%;
+  font-size: 13px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

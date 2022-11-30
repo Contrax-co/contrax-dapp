@@ -14,6 +14,7 @@ export const StyledModalContent = styled.div.attrs((props) => {
 })`
   padding: 1.8rem 1.2rem;
   border-radius: 1.25rem;
+ 
 `;
 
 export const StyledModalDialog = styled.div.attrs((props) => {

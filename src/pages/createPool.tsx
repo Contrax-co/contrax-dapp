@@ -17,27 +17,9 @@ import Pools from '../components/pools';
 
 import abi from '../config/sushiswap.json';
 import ercabi from '../config/erc20.json';
-import factory from '../config/factory.json';
+import factory from '../config/pool.json';
 
-const FETCH = gql`
-  query MyQuery($chainId: String!, $userwallet: String!) {
-    tokens(
-      where: {
-        chainId: { _like: $chainId }
-        userwallet: { _like: $userwallet }
-      }
-    ) {
-      userwallet
-      totalSupply
-      tokenaddress
-      chainId
-      decimal
-      id
-      tokenName
-      tokenSymbol
-    }
-  }
-`;
+
 
 export default function CreatePool({ lightMode }: any) {
   const { ethereum } = window;
@@ -53,30 +35,20 @@ export default function CreatePool({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState([]);
 
-  const { data } = useQuery(FETCH, {
-    variables: {
-      chainId: '421611',
-      userwallet: wallet,
-    },
-  });
+  
   useEffect(() => {
     let walletData: any;
     let sessionData = getUserSession();
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address);
-      const a = data;
-      if (typeof a !== 'undefined') {
-        console.log(a.tokens);
-        setValues(a.tokens);
-        console.log(values);
-      }
+     
     }
   });
 
   const StableTOKEN = [
     {
-      id: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+      id: '0xDB6bbEBdF9515f308e9d9690aeF0796d4fF7F999',
       name: 'USDC',
       symbol: 'USDC',
     },
@@ -86,7 +58,7 @@ export default function CreatePool({ lightMode }: any) {
       symbol: 'USDT',
     },
     {
-      id: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
+      id: '0xDF1742fE5b0bFc12331D8EAec6b478DfDbD31464',
       name: 'DAI',
       symbol: 'DAI',
     },
@@ -128,23 +100,23 @@ export default function CreatePool({ lightMode }: any) {
     console.log(
       tokenOneAmount,
       tokenTwoAmount,
-      tokenOne.tokenaddress,
+      tokenOne.contract_address,
       tokenTwo.id
     );
     const contractAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
-    const factoryAddress = '0xc35DADB65012eC5796536bD9864eD8773aBc74C4';
-    const contractABI = abi;
+    const factoryAddress = '0x87e49e9B403C91749dCF89be4ab1d400CBD4068C';
+    const contractABI = factory;
     const tokenABI = ercabi.abi;
-    const factoryABI = factory;
-    const tokenAddress: any = tokenOne.tokenaddress;
+    // const factoryABI = factory;
+    const tokenAddress: any = tokenOne.contract_address;
     const tokenAddressb: any = tokenTwo.id;
     console.log(tokenAddress, tokenAddressb);
     const amount1: any = tokenOneAmount;
     const amount2: any = tokenTwoAmount;
 
     if (amount1 === amount2) {
-      const amount1min: any = amount1 - 1;
-      const amount2min: any = amount2 - 1;
+      const amount1min: any = 0;
+      const amount2min: any = 0;
 
       const amountIn1 = ethers.utils.parseEther(amount1.toString());
       const amountIn2 = ethers.utils.parseEther(amount2.toString());
@@ -159,34 +131,58 @@ export default function CreatePool({ lightMode }: any) {
 
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
-      const router = new ethers.Contract(contractAddress, contractABI, signer);
-      const factory = new ethers.Contract(factoryAddress, factoryABI, signer);
+      // const router = new ethers.Contract(contractAddress, contractABI, signer);
+      const factory = new ethers.Contract(factoryAddress, contractABI, signer);
       const TOKEN = new ethers.Contract(tokenAddress, tokenABI, signer);
       const TOKENB = new ethers.Contract(tokenAddressb, tokenABI, signer);
 
-      await factory.createPair(tokenAddress, tokenAddressb);
+      // await factory.createPair(tokenAddress, tokenAddressb);
 
-      await TOKEN.approve(contractAddress, amountIn1);
-      await TOKENB.approve(contractAddress, amountIn2);
-
-      const hx = await router.addLiquidity(
+      await TOKEN.approve(factoryAddress, amountIn1);
+      await TOKENB.approve(factoryAddress, amountIn2);
+console.log(amountIn1,amountIn2,amount1Min,amount2Min)
+      const hx = await factory.createLp(
         tokenAddress,
         tokenAddressb,
         amountIn1,
         amountIn2,
         amount1Min,
         amount2Min,
-        userAddress,
-        deadline,
         {
-          gasLimit: 300000,
+          gasLimit: 500000,
         }
       );
 
-      const hash = hx.wait();
-      console.log(hash);
+      const hash =await hx.wait();
+      console.log(hash,hx);
+if(hash){
+  swal({
+    title: "Pool Deployed",
+    text: "Your Pool is Deployed.",
+    icon: "success",
 
-      swal('Create Pool Transaction is in Process', 'Please Follow Metamask ');
+    buttons: {
+      ok: "CLOSE!",
+      Transaction: {
+        value: "Transaction",
+      },
+
+    },
+  })
+    .then((value) => {
+      switch (value) {
+        case "Transaction":
+
+          window.open(
+            `https://arbiscan.io/tx${hx.hash}`, "_blank");
+          break;
+        default:
+
+      }
+
+    });
+}
+      // swal('Create Pool Transaction is in Process', 'Please Follow Metamask ');
     } else {
       swal('TokenA Amount  and TokenB Amount Should be same ');
     }
@@ -230,7 +226,7 @@ export default function CreatePool({ lightMode }: any) {
                           >
                             <div className="create-pool-tokenDropdown">
                               {tokenOne
-                                ? String(tokenOne['tokenName'])
+                                ? String(tokenOne['contract_name'])
                                     .split(' ')[0]
                                     .trim()
                                 : 'Select a token'}
@@ -267,7 +263,7 @@ export default function CreatePool({ lightMode }: any) {
                           <div className="depositAmount-group">
                             <div  className={`selectedToken-div swap_title ${lightMode && 'swap_title--light'}`} >
                               {tokenOne &&
-                                String(tokenOne['tokenName'])
+                                String(tokenOne['contract_name'])
                                   .split(' ')[0]
                                   .trim()}
                             </div>
@@ -287,7 +283,7 @@ export default function CreatePool({ lightMode }: any) {
                               }
                               placeholder="0.0"
                               type={'number'}
-                              className={`from__input ${lightMode && 'from__input--light'}`}
+                              className={`from__input-pool ${lightMode && 'from__input--light-pool'}`}
                             />
                           
                           </div>

@@ -31,8 +31,9 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding-top: 30px;
- 
+  padding: 30px;
+  padding-left: 35px;
+  padding-right: 35px;
 }
 
 .rightside > p {
@@ -133,8 +134,8 @@
 }
 
 .from__input--light {
-  background-color: rgb(233, 237, 245);
-  color: lightgrey;
+  background-color: white;
+  color: black;
 }
 
 .from-control {
@@ -148,8 +149,8 @@
 }
 
 .from__input--light {
-  background-color: rgb(233, 237, 245);
-  color: lightgrey;
+  background-color: white;
+  color: black;
 }
 
 .from__input-pool {
@@ -177,8 +178,8 @@
 }
 
 .to__input--light {
-  background-color: rgb(233, 237, 245);
-  color: lightgrey;
+  background-color: white;
+  color: black;
 }
 
 .from__amount {
