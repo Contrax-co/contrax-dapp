@@ -10,7 +10,7 @@ function From({
     tokenType1, tokenType2,
     lightMode, setOpenModal, tokens, tokenId, currentWallet, 
     setValue, setTokenType, setFromAddress, setAbi, fromAddress, 
-    toAddress, setToValue, setFromName, setFromImg, setFromAlt, toName
+    toAddress, setToValue, setFromName, setFromImg, setFromAlt, toName, setUserAmt
 }: any) {
 
     const token = tokens.slice(tokenId - 1, tokenId);
@@ -43,9 +43,9 @@ function From({
             setAbi(JSON.stringify(token.token_abi));
         })
 
-        totalFrom(currentWallet, tokenName, setFromAmt, tokenLp, tokenAbi);
+        totalFrom(currentWallet, tokenName, setFromAmt, tokenLp, tokenAbi, setUserAmt);
 
-    }, [currentWallet, tokenName, tokenLp, tokenAbi, token, setFromAddress, setTokenType, setAbi, setFromAlt, setFromImg, setFromName]);
+    }, [currentWallet, tokenName, tokenLp, tokenAbi, token, setFromAddress, setTokenType, setAbi, setFromAlt, setFromImg, setFromName, setUserAmt]);
 
     useEffect(() => {
         priceToken(fromAddress, setFromPrice); 
@@ -70,9 +70,26 @@ function From({
     <div>
         <div className="from_div">
             <p>From</p>
-            <p className={`swap_amount ${lightMode && 'swap_amount--light'}`}
-                onClick={setMax}
-            >{fromAmt.toPrecision(3)}</p> 
+            <div className={`from_values`}>
+                <p className={`from_usd ${lightMode && 'from_usd--light'}`}>{(fromPrice * fromAmt).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}</p>
+
+                {(fromPrice * fromAmt) < 0.01 ? (
+                    <p className={`swap_amount ${lightMode && 'swap_amount--light'}`}>
+                       0
+                    </p>
+                ) : (
+
+                    <p className={`swap_amount ${lightMode && 'swap_amount--light'}`} >
+                        {fromAmt}
+                    </p> 
+
+                )}
+               
+            </div>
+        
         </div>
 
         <div className={`from__input ${lightMode && 'from__input--light'}`}>
@@ -83,6 +100,7 @@ function From({
                 value={swapAmount}
                 onChange={handleSwapChange}
             />
+            <p className={`swap_max ${lightMode && 'swap_max--light'}`} onClick={setMax}>max</p>
 
             <div
                 className={`dropdown__from ${

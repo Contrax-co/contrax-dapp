@@ -7,8 +7,6 @@ import "./token.css"
 import { ethers } from 'ethers';
 const contractFile = require('../config/erc20.json');
 
-
-
 export default function Tokens({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState([]);
@@ -27,19 +25,13 @@ export default function Tokens({ lightMode }: any) {
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address);
-
-
-
     }
   }, [wallet]);
 
 
   useEffect(() => {
     getting();
-
-
   })
-
 
   async function getting() {
 
@@ -52,22 +44,14 @@ export default function Tokens({ lightMode }: any) {
     }).then(response => response.json()).then(async (items) => {
       console.log(items.data.items);
       console.log(items.data.items.length);
-     
       setData(items.data.items)
       setIsLoading(false)
     }).catch(error => {
       console.log('sorry');
       console.log(error)
-
     })
-
-
-
-
   }
-
-
-
+  
   return (
     <>
       <div className="table-responsive">
@@ -80,9 +64,7 @@ export default function Tokens({ lightMode }: any) {
               <th>Token Symbol</th>
               <th>Token Name</th>
               <th>Decimal</th>
-
               <th>Balance</th>
-
             </tr>
           </thead>
           {isLoading ? (
@@ -102,9 +84,7 @@ export default function Tokens({ lightMode }: any) {
                     <td>{token.contract_ticker_symbol}</td>
                     <td>{token.contract_name}</td>
                     <td>{token.contract_decimals}</td>
-
                     <td>{token.balance / Math.pow(10, token.contract_decimals)}</td>
-
                   </tr>
                 );
               })}

@@ -31,6 +31,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
     priceToken(pool.lp_address, setPriceOfSingleToken);
   }, [pool, totalVaultBalance, userVaultBal]);
 
+
   return (
     <div className={`pools ${lightMode && 'pools--light'}`}>
       <div
@@ -111,7 +112,6 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
 
             {/* How much the user has deposited */}
 
-            
               {!userVaultBal ? (
                 <div className={`container ${lightMode && 'container--light'}`}>
                   <p className={`pool_name ${lightMode && 'pool_name--light'}`}>

@@ -52,6 +52,8 @@ function Exchange({ lightMode, currentWallet }: any) {
   const [success, setSuccess] = useState("loading");
   const [gasPrice, setGasPrice] = useState(); 
 
+  const [userAmt, setUserAmt] = useState(0);
+
 
   useEffect(() => {
     fetch('http://localhost:3000/api/poolswap.json') //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
@@ -102,6 +104,7 @@ function Exchange({ lightMode, currentWallet }: any) {
               toName={toName}
               tokenType1 = {tokenType1}
               tokenType2 = {tokenType2}
+              setUserAmt = {setUserAmt}
             /> 
 
         </div>
@@ -122,26 +125,34 @@ function Exchange({ lightMode, currentWallet }: any) {
             setToAddress = {setToAddress}
             setToValue = {setToValue}
             toValue = {toValue}
-            fromAddress = {fromAddress}
             toAddress = {toAddress}
-            setValue = {setValue}
             setToName = {setToName}
             setToImg = {setToImg}
             setToAlt = {setToAlt}
+            currentWallet = {currentWallet}
           />
 
         </div>
-        
-          <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} 
-            onClick={!value || value <= 0 ? () => {} : () => setConfirmPage(true)}>
-           
-            {value ? (
-              <p>See details</p>
-            ): (
-              <p>Enter a amount</p>
-            )}
 
-          </div>
+          {!value || value <= 0 ? (
+            <div className={`exchange_button_disable ${lightMode && 'exchange_button_disable--light'}`}>
+                <p>Enter a amount</p>
+            </div>
+
+          ) : value > userAmt ? (
+
+            <div className={`exchange_button_disable ${lightMode && 'exchange_button_disable--light'}`} >
+                <p>Insufficient Balance</p>
+            </div>
+
+          ): (
+            <div className={`exchange_button ${lightMode && 'exchange_button--light'}`} 
+              onClick={() => setConfirmPage(true)}
+            >
+                <p>See details</p>
+            </div>
+
+          )}
          
       </div>
 
@@ -180,7 +191,7 @@ function Exchange({ lightMode, currentWallet }: any) {
 
               <div className={`exchange_spinner_right`}>
                 <p style={{fontWeight:'700'}}>{loaderMessage}</p>
-                <p style={{fontSize:'13px'}}>{secondaryMessage}</p>
+                <p className={`exchange_second`}>{secondaryMessage}</p>
               </div>
 
           </div>

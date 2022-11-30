@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { getUserSession } from '../store/localStorage';
-
 import { Col, Row } from './blocks/Blocks';
 import { ListSubTitle, StyledListBtn } from './form/dropdownInput/DropdownInput.styles';
 import { FormInput } from './form/Form';
@@ -26,10 +25,7 @@ const TokenModal = ({ id, onSelection, standardTokens,lightMode }: any) => {
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address)
-    
-      
     }
-
   });
 
   useEffect(()=>{
@@ -45,7 +41,6 @@ const TokenModal = ({ id, onSelection, standardTokens,lightMode }: any) => {
    }).catch(error => {
        console.log('sorry');
        console.log(error)
- 
    })
    },[wallet])
 
@@ -59,7 +54,6 @@ const TokenModal = ({ id, onSelection, standardTokens,lightMode }: any) => {
         <Col size='12' className="mb-1">
           <FormInput lightMode={lightMode} name='searchCurrency' caption='' placeholder='Search' />
           <div className='tokenModal-content'>
-
             {datas.map((item: any, index: any) => {
               console.log(item)
               return (

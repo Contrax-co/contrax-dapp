@@ -6,14 +6,17 @@
   padding: 5px;
   border-radius: 15px;
 }
+
 .form-control {
   background-color: #001428;
   color: white;
 }
+
 .form-control--light {
   background-color: white;
   color: black;
 }
+
 .from__input--light {
   background-color: white;
   color: black;
@@ -23,6 +26,7 @@
   color: white;
   font-weight: light;
 }
+
 .token_title--light {
   color: black;
   font-weight: light;
