@@ -83,7 +83,7 @@ function From({
                 ) : (
 
                     <p className={`swap_amount ${lightMode && 'swap_amount--light'}`} >
-                        {fromAmt}
+                        {fromAmt.toFixed(15)}
                     </p> 
 
                 )}
