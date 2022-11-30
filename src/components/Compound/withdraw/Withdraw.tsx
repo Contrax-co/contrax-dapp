@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getUserVaultBalance, withdraw, withdrawAll } from './withdraw-function';
+import { getUserVaultBalance, withdraw } from './withdraw-function';
 import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
 import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';

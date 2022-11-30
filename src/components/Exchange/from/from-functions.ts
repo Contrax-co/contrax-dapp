@@ -20,7 +20,7 @@ export const priceToken = async(address:any, setPrice:any) => {
   });
 }
 
-export const totalFrom = async(currentWallet: any, tokenName: any, setFromAmt: any, tokenLp:any, tokenAbi: any) => {
+export const totalFrom = async(currentWallet: any, tokenName: any, setFromAmt: any, tokenLp:any, tokenAbi: any, setUserAmt:any) => {
   if (currentWallet) {
     const { ethereum } = window;
     try{
@@ -33,12 +33,14 @@ export const totalFrom = async(currentWallet: any, tokenName: any, setFromAmt: a
           const balance = await provider.getBalance(currentWallet);
           const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
           setFromAmt(formattedBal);
+          setUserAmt(formattedBal);
         }
         else if (tokenName !== "ETH"){
           const tokenContract = new ethers.Contract(tokenLp, tokenAbi, signer);
           const balance = await tokenContract.balanceOf(currentWallet);
           const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
           setFromAmt(formattedBal);
+          setUserAmt(formattedBal);
         }
 
       }
