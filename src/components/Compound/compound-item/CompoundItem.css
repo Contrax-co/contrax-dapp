@@ -208,3 +208,13 @@
   width: 20px;
   height: 20px;
 }
+
+.reward_apy{
+  color: lightgrey;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.reward_apy--light{
+  color: #8798ad;
+}

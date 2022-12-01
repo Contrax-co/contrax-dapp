@@ -22,6 +22,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [priceOfSingleToken, setPriceOfSingleToken] = useState(0);
 
   const [details, setDetails] = useState(false); 
+  const [rewardAPY, setRewardApy] = useState(0);
 
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
@@ -30,7 +31,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
 
   useEffect(() => {
     priceToken(pool.lp_address, setPriceOfSingleToken);
-    apyPool(pool.lp_address)
+    apyPool(pool.lp_address, setRewardApy); 
   }, [pool, totalVaultBalance, userVaultBal]);
 
 
@@ -142,15 +143,16 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
              
           
 
-            <div className={`container1 ${lightMode && 'container1--light'}`}>
-              {pool.rewards1 ? (
-                <img className={`container_rewards`} src={pool.rewards1} alt={pool.rewards1_alt} />
-              ) : null}
-
-              {pool.rewards2 ? (
-                <img className={`container_rewards`} src={pool.rewards2} alt={pool.rewards2_alt} />
-              ) : null}
-    
+            <div className={`container ${lightMode && 'container--light'}`}>
+              <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                cal plat apy
+              </p>
+              {!pool.apy ? (
+                <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>{rewardAPY.toLocaleString("en", {style: "percent"})}</p>
+              ) : (
+                <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>{pool.apy}%</p>
+              )}
+              
             </div>
           </div>
 

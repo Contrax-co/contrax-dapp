@@ -17,11 +17,13 @@ export const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
 //     });
 // };
 
-export const apyPool = async (address:any) => {
+export const apyPool = async (address:any, setRewardApy:any) => {
   await fetch(`https://api.apy.vision/contractInsights/farmSearch/42161/${address}?accessToken=${process.env.REACT_APP_APY_TOKEN}`)
   .then((response) => response.json())
   .then((data) => {
-    console.log(`the data for the apy is ${JSON.stringify(data)}`)
+    const results:any = JSON.stringify(data.results[0]["apy30d"]); 
+
+    setRewardApy(Number(results));
   });
 }
 

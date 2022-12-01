@@ -72,7 +72,7 @@ export const withdraw = async(
             /*
             * Execute the actual withdraw functionality from smart contract
             */
-            const formattedBal = ethers.utils.parseUnits(withdrawAmount.toString(), 18);
+            const formattedBal = ethers.utils.parseUnits(withdrawAmount.toFixed(16), 18);
 
             setSecondaryMessage("Confirm withdraw..."); 
 
