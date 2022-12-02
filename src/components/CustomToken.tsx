@@ -26,6 +26,7 @@ const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
   const [name, setName] = useState<any>();
   const [symbol, setSymbol] = useState<any>();
   const [div, setDiv] = useState(false);
+  
   const StableTOKEN = [
     {
       id: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
@@ -48,6 +49,7 @@ const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
       symbol: "WETH",
     },
   ];
+
   useEffect(() => {
     // Get various currencies from the server
     // console.log(standardTokens[0].tokenName)

@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { getUserVaultBalance, withdraw, withdrawAll } from './withdraw-function';
 import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
-import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
 import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
+import { priceToken } from '../compound-item/compound-functions';
 
 function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [loaderMessage, setLoaderMessage] = useState('');
@@ -13,13 +13,14 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [withdrawAmt, setWithdrawAmt] = useState(0.0);
 
   const [userVaultBal, setUserVaultBalance] = useState(0);
-  const [gasPrice, setGasPrice] = useState(); 
   const [success, setSuccess] = useState("loading");
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
+  const [price, setPrice] = useState(0);
+
   useEffect(() => {
-    getGasPrice(setGasPrice);
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
+    priceToken(pool.lp_address, setPrice); 
   }, [pool, currentWallet]);
 
   const handleWithdrawChange = (e: any) => {
@@ -27,18 +28,34 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   };
 
   function withdrawFunction () {
-    withdraw(
-      setUserVaultBalance,
-      currentWallet,
-      setSuccess,
-      setSecondaryMessage,
-      gasPrice,
-      pool,
-      withdrawAmt,
-      setWithdrawAmt,
-      setLoading,
-      setLoaderMessage
-    )
+    if(withdrawAmt === userVaultBal){
+      withdrawAll(
+        setUserVaultBalance, 
+        currentWallet, 
+        setSuccess, 
+        setSecondaryMessage, 
+        pool, 
+        setWithdrawAmt, 
+        setLoading, 
+        setLoaderMessage
+      )
+    }else {
+      withdraw(
+        setUserVaultBalance,
+        currentWallet,
+        setSuccess,
+        setSecondaryMessage,
+        pool,
+        withdrawAmt,
+        setWithdrawAmt,
+        setLoading,
+        setLoaderMessage
+      )
+    }
+  }
+
+  function withdrawMax() {
+    setWithdrawAmt(userVaultBal);
   }
 
   return (
@@ -70,10 +87,17 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
               !currentWallet && 'inside_toggle-none'
             }`}
           >
-            <div className={`lp_bal ${lightMode && 'lp_bal--light'}`}>
-              <p>LP Balance:</p>
-              <p>{userVaultBal.toPrecision(3)}</p>
-            </div>
+            {userVaultBal * price < 0.01 ? (
+              <div className={`lp_bal ${lightMode && 'lp_bal--light'}`}>
+               <p>LP Balance:</p>
+               <p>0</p>
+             </div>
+            ) :(
+              <div className={`lp_bal ${lightMode && 'lp_bal--light'}`}>
+                <p>LP Balance:</p>
+                <p>{userVaultBal.toFixed(10)}</p>
+              </div>
+            )}
 
             <div
               className={`withdraw_tab2 ${
@@ -94,34 +118,33 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                   value={withdrawAmt}
                   onChange={handleWithdrawChange}
                 />
+                <p className={`withdraw_max ${lightMode && 'withdraw_max--light'}`}
+                  onClick={withdrawMax}>
+                  max
+                </p>
               </div>
               
               <div className={`withdraw_withdraw ${lightMode && 'withdraw_withdraw--light'}`}>
-                <div
+                {!withdrawAmt || withdrawAmt <= 0 ? (
+                  <div className={`withdraw_zap1_button_disable ${lightMode && 'withdraw_zap1_button_disable--light'}`}>
+                    <p>Withdraw</p>
+                  </div>
+                ) : withdrawAmt > userVaultBal ? (
+
+                  <div className={`withdraw_zap1_button_disable ${lightMode && 'withdraw_zap1_button_disable--light'}`} >
+                    <p>Insufficient Balance</p>
+                  </div>
+
+                ): (
+                  <div
                   className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
-                  onClick={!withdrawAmt || withdrawAmt <= 0  || withdrawAmt >= userVaultBal ? () => {} : withdrawFunction}
-                >
-                  <p>Withdraw {pool.name}</p>
+                  onClick={withdrawFunction}
+                  >
+                  <p>Withdraw</p>
                 </div>
 
-                <div 
-                  className={`withdraw_all ${lightMode && 'withdraw_all--light'}`}
-                  onClick={() => {
-                    withdrawAll(
-                      setUserVaultBalance, 
-                      currentWallet, 
-                      setSuccess, 
-                      setSecondaryMessage, 
-                      gasPrice, 
-                      pool,
-                      setWithdrawAmt, 
-                      setLoading, 
-                      setLoaderMessage
-                    )
-                  }}
-                >
-                  Withdraw all
-                </div>
+                )}
+               
               </div>
             
             </div>
@@ -157,7 +180,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
 
             <div className={`withdraw_spinner_right`}>
               <p style={{fontWeight:'700'}}>{loaderMessage}</p>
-              <p style={{fontSize:'13px'}}>{secondaryMessage}</p>
+              <p className={`withdraw_second`}>{secondaryMessage}</p>
             </div>
 
           </div>

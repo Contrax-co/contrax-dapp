@@ -9,7 +9,7 @@ export default function Pools({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState<any>([]);
   // const [isLoading, setIsLoading] = useState(false);
-
+console.log(lightMode)
   // TODO - Switch to useQuery()
   useEffect(() => {
     let sessionData = getUserSession();

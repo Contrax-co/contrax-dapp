@@ -70,7 +70,7 @@ function Confirm({
           </div>
 
           <div className={`transaction_details ${lightMode && 'transaction_details--light'}`}>
-          <p className={`transaction_value ${lightMode && 'transaction_value--light'}`}>{toAmount.toFixed(4)} {toName}</p>
+          <p className={`transaction_value ${lightMode && 'transaction_value--light'}`}>{toAmount} {toName}</p>
           <p className={`transaction_usd ${lightMode && 'transaction_usd--light'}`}>{(toAmount * toPrice).toLocaleString('en-US', {
                   style: 'currency',
                   currency: 'USD',

@@ -6,12 +6,12 @@ import {
   depositAll,
   getEthBalance,
   getLPBalance,
+  priceToken,
 } from './deposit-functions';
 import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
-import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
 
-function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
+function Deposit({ lightMode, pool, currentWallet, connectWallet}: any) {
   const [ethUserBal, setEthUserBal] = useState(0);
   const [lpUserBal, setLPUserBal] = useState(0);
 
@@ -23,32 +23,51 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [success, setSuccess] = useState("loading");
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
-  const [gasPrice, setGasPrice] = useState(); 
+  const [price, setPrice] = useState(0); 
 
   useEffect(() => {
-    getGasPrice(setGasPrice);
     getEthBalance(currentWallet, setEthUserBal);
     getLPBalance(pool, currentWallet, setLPUserBal);
   }, [currentWallet, ethUserBal, pool, lpUserBal]);
+
+  useEffect(() => {
+    priceToken(pool.lp_address ,setPrice)
+  }, [pool]);
 
   const handleDepositChange = (e: any) => {
     setLPDepositAmount(e.target.value);
   };
 
   function depositAmount () {
-    deposit(
-      setLPUserBal,
-      currentWallet,
-      gasPrice,
-      pool,
-      lpDepositAmount,
-      setLPDepositAmount,
-      setLoading,
-      setLoaderMessage,
-      setSuccess,
-      setSecondaryMessage
-    )
+    if(lpDepositAmount === lpUserBal){
+      depositAll(
+        setLPUserBal, 
+        currentWallet, 
+        pool, 
+        lpDepositAmount, 
+        setLPDepositAmount, 
+        setLoading, 
+        setLoaderMessage, 
+        setSuccess, 
+        setSecondaryMessage
+      )
+    }else {
+      deposit(
+        setLPUserBal,
+        currentWallet,
+        pool,
+        lpDepositAmount,
+        setLPDepositAmount,
+        setLoading,
+        setLoaderMessage,
+        setSuccess,
+        setSecondaryMessage
+      )
+    }
+  }
 
+  function maxDeposit() {
+    setLPDepositAmount(lpUserBal);
   }
 
   return (
@@ -99,7 +118,12 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
                 }`}
               >
                 <p>{pool.name} balance:</p>
-                <p>{lpUserBal.toPrecision(3)}</p>
+                {(price * lpUserBal) < 0.01 ? (
+                  <p>0</p>
+                ) : (
+                  <p>{lpUserBal}</p>
+                )}
+                
               </div>
             
           
@@ -122,34 +146,40 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
                     value={lpDepositAmount}
                     onChange={handleDepositChange}
                   />
+  
+                  <p className={`deposit_max ${lightMode && 'deposit_max--light'}`}
+                    onClick={maxDeposit}
+                  >
+                  max
+                  </p>
                 </div>
+                
 
                 <div className={`deposit_deposits ${lightMode && 'deposit_deposits--light'}`}>
+                  {!lpDepositAmount || lpDepositAmount <= 0 ? (
                   <div
-                    className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
-                    onClick={!lpDepositAmount || lpDepositAmount <= 0 || lpDepositAmount >= lpUserBal ? () => {} : depositAmount}
+                    className={`deposit_zap1_button_disable ${lightMode && 'deposit_zap1_button_disable--light'}`}
                   >
-                    <p>Deposit {pool.name}</p>
+                      <p>Deposit</p>
                   </div>
 
-                  <div className={`deposit_all ${lightMode && 'deposit_all--light'}`}
-                  onClick={() => {
-                    depositAll(
-                      lpUserBal, 
-                      setLPUserBal, 
-                      currentWallet, 
-                      gasPrice, 
-                      pool, 
-                      setLPDepositAmount, 
-                      setLoading, 
-                      setLoaderMessage, 
-                      setSuccess, 
-                      setSecondaryMessage
-                    )
-                  }}
+
+                  ) : lpDepositAmount > lpUserBal ? (
+
+                    <div className={`deposit_zap1_button_disable ${lightMode && 'deposit_zap1_button_disable--light'}`}>
+                        <p>Insufficient Balance</p>
+                    </div>
+                  ) : (
+
+                  <div className={`deposit_zap_button ${lightMode && 'deposit_zap_button--light'}`}
+                    onClick={depositAmount}
                   >
-                    Deposit All
+                      <p>Deposit</p>
                   </div>
+
+                  )}
+                  
+
                 </div>
               </div>
              
@@ -185,7 +215,7 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
 
             <div className={`deposit_spinner_right`}>
                 <p style={{fontWeight:'700'}}>{loaderMessage}</p>
-                <p style={{fontSize:'13px'}}>{secondaryMessage}</p>
+                <p className={`deposit_second`}>{secondaryMessage}</p>
             </div>
 
           </div>

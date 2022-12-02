@@ -23,7 +23,7 @@ function Dashboard({lightMode, currentWallet}:any) {
   };
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/vaults.json') //`http://localhost:3000/api/vaults.json` or `https://testing.contrax.finance/api/vaults.json` for when we want it done locally
+    fetch('https://testing.contrax.finance/api/vaults.json') //`http://localhost:3000/api/vaults.json` or `https://testing.contrax.finance/api/vaults.json` for when we want it done locally
       .then((response) => response.json())
       .then((data) => {
         setVaults(data);
