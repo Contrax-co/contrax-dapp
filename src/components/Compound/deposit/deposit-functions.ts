@@ -189,7 +189,7 @@ export const deposit = async (
        * Execute the actual deposit functionality from smart contract
        */
       const formattedBal = ethers.utils.parseUnits(
-        depositAmount.toString(),
+        Number(depositAmount).toFixed(16),
         18
       );
 
@@ -205,6 +205,96 @@ export const deposit = async (
 
       //the abi of the vault contract needs to be checked
       const depositTxn = await vaultContract.deposit(formattedBal, {
+        gasLimit: gasPrice1/10,
+      });
+
+      setLoaderMessage(`Depositing...`);
+      setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
+
+      const depositTxnStatus = await depositTxn.wait(1);
+      if (!depositTxnStatus.status) {
+        setLoaderMessage(`Error depositing into vault!`);
+        setSecondaryMessage(`Try again!`);
+        setSuccess("fail"); 
+
+      } else {
+        setLoaderMessage(`Deposited--`);
+        setSuccess("success"); 
+        setSecondaryMessage(`Txn hash: ${depositTxn.hash}`); 
+        setLPDepositAmount(0.0);
+        getLPBalance(pool, currentWallet, setLPUserBal); 
+      }
+    } else {
+      console.log("Ethereum object doesn't exist!");
+    
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`)
+      setSuccess("fail"); 
+    }
+  } catch (error) {
+    console.log(error);
+    setLoaderMessage(error + 'Try again!');
+
+  }
+};
+
+/**
+ * Deposits LP token into the vault
+ * @param {*} pool
+ * @param {*} depositAmount
+ * @param {*} setLPDepositAmount
+ * @param {*} setLoading
+ */
+ export const depositAll = async (
+  setLPUserBal:any,
+  currentWallet:any, 
+  pool: any,
+  depositAmount: any,
+  setLPDepositAmount: any,
+  setLoading: any,
+  setLoaderMessage: any,
+  setSuccess: any,
+  setSecondaryMessage:any
+) => {
+  const { ethereum } = window;
+  setSuccess("loading"); 
+  setLoading(true);
+  setLoaderMessage('Deposit initiated!');
+  try {
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      await provider.send('eth_requestAccounts', []);
+      const signer = provider.getSigner();
+      const vaultContract = new ethers.Contract(
+        pool.vault_addr,
+        pool.vault_abi,
+        signer
+      );
+
+      const gasPrice1:any = await provider.getGasPrice(); 
+
+      setSecondaryMessage("Approving deposit...");
+
+      /*
+       * Execute the actual deposit functionality from smart contract
+       */
+      const formattedBal = ethers.utils.parseUnits(
+        Number(depositAmount).toFixed(16),
+        18
+      );
+
+      // approve the vault to spend asset
+      const lpContract = new ethers.Contract(
+        pool.lp_address,
+        pool.lp_abi,
+        signer
+      );
+      await lpContract.approve(pool.vault_addr, formattedBal);
+
+      setSecondaryMessage("Confirm deposit..."); 
+
+      //the abi of the vault contract needs to be checked
+      const depositTxn = await vaultContract.depositAll({
         gasLimit: gasPrice1/10,
       });
 

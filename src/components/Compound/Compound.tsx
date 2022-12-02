@@ -25,7 +25,7 @@ function Compound({ lightMode, currentWallet, connectWallet }: any) {
           <p>SHARE</p>
           <p>LIQUIDITY</p>
           <p>DEPOSITED</p>
-          <p>REWARDS</p>
+          <p>APY</p>
         </div>
       </div>
 

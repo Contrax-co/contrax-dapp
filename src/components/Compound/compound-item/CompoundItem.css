@@ -208,3 +208,38 @@
   width: 20px;
   height: 20px;
 }
+
+.reward_apy{
+  color: lightgrey;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.reward_apy--light{
+  color: #8798ad;
+}
+
+.container1_apy{
+  display: flex;
+  align-items: center;
+  position :relative;
+}
+
+.apy_info{
+  color: rgb(237, 232, 232);
+  font-size:13px;
+  margin-left:5px;
+}
+
+.apy_info--light{
+  color:black;
+}
+
+.overlay_apy{
+  position:absolute;
+  display:none;
+}
+
+.overlay_apy:hover{
+  display:flex;
+}

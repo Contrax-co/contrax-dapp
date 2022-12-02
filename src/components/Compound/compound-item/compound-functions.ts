@@ -17,12 +17,24 @@ export const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
 //     });
 // };
 
-export const apyPool = async (address:any) => {
+export const apyPool = async (address:any, setRewardApy:any) => {
   await fetch(`https://api.apy.vision/contractInsights/farmSearch/42161/${address}?accessToken=${process.env.REACT_APP_APY_TOKEN}`)
   .then((response) => response.json())
   .then((data) => {
-    console.log(`the data for the apy is ${JSON.stringify(data)}`)
+    const results:any = JSON.stringify(data.results[0]["apy30d"]); 
+
+    setRewardApy(Number(results));
   });
+}
+
+export const calculateFeeAPY = async(address:any, setFeeAPY:any) => {
+  await fetch(`https://stats.apy.vision/api/v1/pools/${address}?accessToken=${process.env.REACT_APP_APY_TOKEN}`)
+  .then((response) => response.json())
+  .then((data) => {
+    const results:any = JSON.stringify(data[0]["fee_apys_30d"]); 
+
+    setFeeAPY(Number(results)); 
+  })
 }
 
 export const priceToken = async(address:any, setPrice:any) => {
@@ -38,6 +50,25 @@ export const priceToken = async(address:any, setPrice:any) => {
     const price = parse[`coins`][`arbitrum:${address}`][`price`];
     setPrice(price);
   });
+}
+
+export const findCompoundAPY = (apy:any, setCompoundAPY:any) => {
+  // Compounded APY = ((1 + (0.8*rate/period))^period) - 1
+  const rate = apy/100; 
+  const period = 365;            //weekly
+
+  const APY = ((1 + (0.9*rate/period))**period) - 1;
+  setCompoundAPY(APY*100);
+}
+
+
+export const calculateFarmAPY = (rewardAPY:any, feeAPY:any, setAPYVisionCompound:any) => {
+  // Compounded APY = ((1 + (0.8*rate/period))^period) - 1
+  const rate = (rewardAPY + feeAPY)/100; 
+  const period = 365;
+
+  const APY = ((1 + (0.9*rate/period))**period) - 1;
+  setAPYVisionCompound(APY*100);
 }
 
 
