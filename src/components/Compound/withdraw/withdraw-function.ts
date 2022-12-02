@@ -50,7 +50,7 @@ export const withdraw = async(
     setUserVaultBalance:any,
     currentWallet: any,
     setSuccess:any, setSecondaryMessage:any, 
-    gasPrice:any, pool:any, withdrawAmount:any, 
+    pool:any, withdrawAmount:any, 
     setWithdrawAmount:any, setLoading:any, 
     setLoaderMessage:any
 ) => {
@@ -64,17 +64,19 @@ export const withdraw = async(
             await provider.send('eth_requestAccounts', []);
             const signer = provider.getSigner();
             const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
+            
+            const gasPrice1:any = await provider.getGasPrice(); 
 
             setSecondaryMessage("Approving withdraw...");
 
             /*
             * Execute the actual withdraw functionality from smart contract
             */
-            const formattedBal = ethers.utils.parseUnits(withdrawAmount.toString(), 18);
+            const formattedBal = ethers.utils.parseUnits(Number(withdrawAmount).toFixed(16), 18);
 
             setSecondaryMessage("Confirm withdraw..."); 
 
-            const withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit:gasPrice});
+            const withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit:gasPrice1/10});
 
             setLoaderMessage(`Withdrawing... `);
             setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`); 
@@ -126,11 +128,10 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
             const signer = provider.getSigner();
             const zapperContract = new ethers.Contract(pool.zapper_addr, pool.zapper_abi, signer); 
 
-            
             /*
             * Execute the actual withdraw functionality from smart contract
             */
-            const formattedBal = ethers.utils.parseUnits(withdrawAmt.toString(), 18);
+            const formattedBal = ethers.utils.parseUnits(Number(withdrawAmt).toFixed(16), 18);
 
             const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
             await vaultContract.approve(pool.zapper_addr, formattedBal);
@@ -166,12 +167,19 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
 }
 
 
-
+/**
+ * Withdraws lp from the vault to user
+ * @param pool 
+ * @param withdrawAmount 
+ * @param setWithdrawAmount 
+ * @param setLoading 
+ * @param setLoaderMessage 
+ */
  export const withdrawAll = async(
     setUserVaultBalance:any,
     currentWallet: any,
     setSuccess:any, setSecondaryMessage:any, 
-    gasPrice:any, pool:any, 
+    pool:any,
     setWithdrawAmount:any, setLoading:any, 
     setLoaderMessage:any
 ) => {
@@ -185,6 +193,8 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
             await provider.send('eth_requestAccounts', []);
             const signer = provider.getSigner();
             const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
+            
+            const gasPrice1:any = await provider.getGasPrice(); 
 
             setSecondaryMessage("Approving withdraw...");
 
@@ -193,7 +203,7 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
             */
             setSecondaryMessage("Confirm withdraw..."); 
 
-            const withdrawTxn = await vaultContract.withdrawAll( {gasLimit:gasPrice});
+            const withdrawTxn = await vaultContract.withdrawAll({gasLimit:gasPrice1/10});
 
             setLoaderMessage(`Withdrawing... `);
             setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`); 

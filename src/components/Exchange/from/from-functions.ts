@@ -94,6 +94,9 @@ export const estimateValueTo = async(
         const formattedBal = Number(ethers.utils.formatUnits(outValue, 18));
         setToValue(formattedBal); 
       }
+      else if(tokenType1 === "LP Token" && tokenType2 === "Token"){
+        setToValue((fromPrice * fromAmt) / toPrice);
+      }
       else if((tokenName === "WETH" || tokenName === "ETH") && tokenType2 === "Token"){
         const provider = new ethers.providers.Web3Provider(ethereum);
         await provider.send('eth_requestAccounts', []);

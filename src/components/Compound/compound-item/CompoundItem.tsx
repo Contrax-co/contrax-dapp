@@ -4,7 +4,12 @@ import './CompoundItem.css';
 import Deposit from '../deposit/Deposit';
 import PoolButton from '../PoolButton';
 import Withdraw from '../withdraw/Withdraw';
+import {CgInfo} from "react-icons/cg";
 import {
+  apyPool,
+  calculateFarmAPY,
+  calculateFeeAPY,
+  findCompoundAPY,
   getTotalVaultBalance,
   getUserVaultBalance,
   priceToken
@@ -21,6 +26,11 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [priceOfSingleToken, setPriceOfSingleToken] = useState(0);
 
   const [details, setDetails] = useState(false); 
+  const [rewardAPY, setRewardApy] = useState(0);
+  const [feeAPY, setFeeAPY] = useState(0);
+
+  const [apyVisionCompound, setAPYVisionCompound] = useState(0); 
+  const [compoundAPY, setCompoundAPY] = useState(0);
 
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
@@ -29,8 +39,11 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
 
   useEffect(() => {
     priceToken(pool.lp_address, setPriceOfSingleToken);
-  }, [pool, totalVaultBalance, userVaultBal]);
-
+    apyPool(pool.lp_address, setRewardApy); 
+    calculateFeeAPY(pool.lp_address, setFeeAPY);
+    calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound); 
+    findCompoundAPY(pool.apy, setCompoundAPY);
+  }, [pool, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
 
   return (
     <div className={`pools ${lightMode && 'pools--light'}`}>
@@ -85,7 +98,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                 lightMode && 'container__apy--light'
               }`}
             >
-               {!userVaultBal ? (
+               {userVaultBal * priceOfSingleToken < 0.01 ? (
                 <p className={`pool_name__apy ${lightMode && 'pool_name__apy--light'}`}>
                   
                 </p>
@@ -97,22 +110,40 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
              
             </div>
 
-            <div className={`container ${lightMode && 'container--light'}`}>
-              <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                {(totalVaultBalance * priceOfSingleToken).toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                })}
-              </p>
+            {totalVaultBalance * priceOfSingleToken < 0.01 ? (
+              <div className={`container ${lightMode && 'container--light'}`}>
+                <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                  {(0).toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  })}
+                </p>
 
-              <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>
-                {totalVaultBalance.toPrecision(4)}
-              </p>
-            </div>
+                <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>
+                  0
+                </p>
+              </div>
+            ) : (
+
+              <div className={`container ${lightMode && 'container--light'}`}>
+                <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                  {(totalVaultBalance * priceOfSingleToken).toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  })}
+                </p>
+
+                <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>
+                  {totalVaultBalance.toFixed(10)}
+                </p>
+              </div>
+            )}
+
+            
 
             {/* How much the user has deposited */}
 
-              {!userVaultBal ? (
+              {(userVaultBal * priceOfSingleToken) < 0.01 ? (
                 <div className={`container ${lightMode && 'container--light'}`}>
                   <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
                    
@@ -132,7 +163,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                       })}
                     </p>
                     <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>
-                      {userVaultBal.toPrecision(3)}
+                      {userVaultBal.toFixed(10)}
                     </p>
 
                 </div>
@@ -141,14 +172,31 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
           
 
             <div className={`container1 ${lightMode && 'container1--light'}`}>
-              {pool.rewards1 ? (
-                <img className={`container_rewards`} src={pool.rewards1} alt={pool.rewards1_alt} />
-              ) : null}
-
-              {pool.rewards2 ? (
-                <img className={`container_rewards`} src={pool.rewards2} alt={pool.rewards2_alt} />
-              ) : null}
-    
+              {!pool.apy ? (
+                <div className={`container1_apy ${lightMode && 'container1_apy--light'}`}>
+                  <div style={{display: 'flex', alignItems: 'center'}}>
+                    <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                      {(apyVisionCompound + rewardAPY + feeAPY).toFixed(2)}%
+                    </p>
+                    <CgInfo className={`apy_info ${lightMode && 'apy_info--light'}`}/>
+                  </div>
+                  <div className={`overlay_apy ${lightMode && 'overlay_apy--light'}`}>
+                    <p>info that pops up on hover</p>
+                  </div>
+                </div>
+              ) : (
+                <div className={`container1_apy ${lightMode && 'container1_apy--light'}`}>
+                  <div style={{display: 'flex', alignItems: 'center'}}>
+                    <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                      {(compoundAPY+ Number(pool.apy)).toFixed(2)}%
+                    </p>
+                    <CgInfo className={`apy_info ${lightMode && 'apy_info--light'}`}/>
+                  </div>
+                  <div className={`overlay_apy ${lightMode && 'overlay_apy--light'}`}>
+                    <p>info that pops up on hover</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

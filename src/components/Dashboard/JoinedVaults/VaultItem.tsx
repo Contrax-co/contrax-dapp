@@ -22,7 +22,7 @@ function VaultItem({lightMode, currentWallet, vault, setSinglePrice, singlePrice
 
   return (
     <div>
-      {!tokenAmount ? (null): (
+      { tokenAmount * price < 0.01 ? (null): (
         <div className={`vault_item ${lightMode && 'vault_item--light'}`}>
           <div className={`vault_item_images`}>
             {vault.alt1 ? (

@@ -3,13 +3,13 @@ import './Deposit.css';
 import { MoonLoader } from 'react-spinners';
 import {
   deposit,
+  depositAll,
   getEthBalance,
   getLPBalance,
   priceToken,
 } from './deposit-functions';
 import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
-import { getGasPrice } from '../../Dashboard/WalletItem/wallet-functions';
 
 function Deposit({ lightMode, pool, currentWallet, connectWallet}: any) {
   const [ethUserBal, setEthUserBal] = useState(0);
@@ -23,37 +23,47 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet}: any) {
   const [success, setSuccess] = useState("loading");
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
-  const [gasPrice, setGasPrice] = useState(); 
   const [price, setPrice] = useState(0); 
 
   useEffect(() => {
-    getGasPrice(setGasPrice);
     getEthBalance(currentWallet, setEthUserBal);
     getLPBalance(pool, currentWallet, setLPUserBal);
   }, [currentWallet, ethUserBal, pool, lpUserBal]);
 
   useEffect(() => {
     priceToken(pool.lp_address ,setPrice)
-  }, [pool])
+  }, [pool]);
 
   const handleDepositChange = (e: any) => {
     setLPDepositAmount(e.target.value);
   };
 
   function depositAmount () {
-    deposit(
-      setLPUserBal,
-      currentWallet,
-      gasPrice,
-      pool,
-      lpDepositAmount,
-      setLPDepositAmount,
-      setLoading,
-      setLoaderMessage,
-      setSuccess,
-      setSecondaryMessage
-    )
-
+    if(lpDepositAmount === lpUserBal){
+      depositAll(
+        setLPUserBal, 
+        currentWallet, 
+        pool, 
+        lpDepositAmount, 
+        setLPDepositAmount, 
+        setLoading, 
+        setLoaderMessage, 
+        setSuccess, 
+        setSecondaryMessage
+      )
+    }else {
+      deposit(
+        setLPUserBal,
+        currentWallet,
+        pool,
+        lpDepositAmount,
+        setLPDepositAmount,
+        setLoading,
+        setLoaderMessage,
+        setSuccess,
+        setSecondaryMessage
+      )
+    }
   }
 
   function maxDeposit() {
