@@ -4,6 +4,7 @@ import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
 import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
+import { priceToken } from '../compound-item/compound-functions';
 
 function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [loaderMessage, setLoaderMessage] = useState('');
@@ -15,8 +16,11 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [success, setSuccess] = useState("loading");
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
+  const [price, setPrice] = useState(0);
+
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
+    priceToken(pool.lp_address, setPrice); 
   }, [pool, currentWallet]);
 
   const handleWithdrawChange = (e: any) => {
@@ -70,10 +74,17 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
               !currentWallet && 'inside_toggle-none'
             }`}
           >
-            <div className={`lp_bal ${lightMode && 'lp_bal--light'}`}>
-              <p>LP Balance:</p>
-              <p>{userVaultBal.toPrecision(3)}</p>
-            </div>
+            {userVaultBal * price < 0.01 ? (
+              <div className={`lp_bal ${lightMode && 'lp_bal--light'}`}>
+               <p>LP Balance:</p>
+               <p>0</p>
+             </div>
+            ) :(
+              <div className={`lp_bal ${lightMode && 'lp_bal--light'}`}>
+                <p>LP Balance:</p>
+                <p>{userVaultBal.toFixed(10)}</p>
+              </div>
+            )}
 
             <div
               className={`withdraw_tab2 ${
