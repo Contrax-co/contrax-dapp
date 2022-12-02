@@ -72,7 +72,7 @@ export const withdraw = async(
             /*
             * Execute the actual withdraw functionality from smart contract
             */
-            const formattedBal = ethers.utils.parseUnits(withdrawAmount.toFixed(16), 18);
+            const formattedBal = ethers.utils.parseUnits(Number(withdrawAmount).toFixed(16), 18);
 
             setSecondaryMessage("Confirm withdraw..."); 
 
@@ -128,11 +128,10 @@ export const zapOut = async(setLoading:any, setLoaderMessage:any, pool:any, with
             const signer = provider.getSigner();
             const zapperContract = new ethers.Contract(pool.zapper_addr, pool.zapper_abi, signer); 
 
-            
             /*
             * Execute the actual withdraw functionality from smart contract
             */
-            const formattedBal = ethers.utils.parseUnits(withdrawAmt.toString(), 18);
+            const formattedBal = ethers.utils.parseUnits(Number(withdrawAmt).toFixed(16), 18);
 
             const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
             await vaultContract.approve(pool.zapper_addr, formattedBal);
