@@ -3,6 +3,7 @@ import './Deposit.css';
 import { MoonLoader } from 'react-spinners';
 import {
   deposit,
+  depositAll,
   getEthBalance,
   getLPBalance,
   priceToken,
@@ -31,25 +32,38 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet}: any) {
 
   useEffect(() => {
     priceToken(pool.lp_address ,setPrice)
-  }, [pool])
+  }, [pool]);
 
   const handleDepositChange = (e: any) => {
     setLPDepositAmount(e.target.value);
   };
 
   function depositAmount () {
-    deposit(
-      setLPUserBal,
-      currentWallet,
-      pool,
-      lpDepositAmount,
-      setLPDepositAmount,
-      setLoading,
-      setLoaderMessage,
-      setSuccess,
-      setSecondaryMessage
-    )
-
+    if(lpDepositAmount === lpUserBal){
+      depositAll(
+        setLPUserBal, 
+        currentWallet, 
+        pool, 
+        lpDepositAmount, 
+        setLPDepositAmount, 
+        setLoading, 
+        setLoaderMessage, 
+        setSuccess, 
+        setSecondaryMessage
+      )
+    }else {
+      deposit(
+        setLPUserBal,
+        currentWallet,
+        pool,
+        lpDepositAmount,
+        setLPDepositAmount,
+        setLoading,
+        setLoaderMessage,
+        setSuccess,
+        setSecondaryMessage
+      )
+    }
   }
 
   function maxDeposit() {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getUserVaultBalance, withdraw } from './withdraw-function';
+import { getUserVaultBalance, withdraw, withdrawAll } from './withdraw-function';
 import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
 import {AiOutlineCheckCircle} from "react-icons/ai";
@@ -28,17 +28,30 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   };
 
   function withdrawFunction () {
-    withdraw(
-      setUserVaultBalance,
-      currentWallet,
-      setSuccess,
-      setSecondaryMessage,
-      pool,
-      withdrawAmt,
-      setWithdrawAmt,
-      setLoading,
-      setLoaderMessage
-    )
+    if(withdrawAmt === userVaultBal){
+      withdrawAll(
+        setUserVaultBalance, 
+        currentWallet, 
+        setSuccess, 
+        setSecondaryMessage, 
+        pool, 
+        setWithdrawAmt, 
+        setLoading, 
+        setLoaderMessage
+      )
+    }else {
+      withdraw(
+        setUserVaultBalance,
+        currentWallet,
+        setSuccess,
+        setSecondaryMessage,
+        pool,
+        withdrawAmt,
+        setWithdrawAmt,
+        setLoading,
+        setLoaderMessage
+      )
+    }
   }
 
   function withdrawMax() {
