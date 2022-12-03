@@ -161,7 +161,7 @@ export default function CreatePool({ lightMode }: any) {
         }).then((value) => {
           switch (value) {
             case "Transaction":
-              window.open(`https://arbiscan.io/tx${hx.hash}`, "_blank");
+              window.open(`https://arbiscan.io/tx/${hx.hash}`, "_blank");
               break;
             default:
           }
