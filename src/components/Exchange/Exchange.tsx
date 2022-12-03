@@ -54,7 +54,7 @@ function Exchange({ lightMode, currentWallet }: any) {
 
 
   useEffect(() => {
-    fetch('https://testing.contrax.finance/api/pools.json') //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
+    fetch('http://localhost:3000/api/poolswap.json') //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
       .then((response) => response.json())
       .then((data) => {
         setTokens(data);
