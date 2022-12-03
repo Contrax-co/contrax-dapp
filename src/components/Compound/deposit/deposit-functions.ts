@@ -279,7 +279,7 @@ export const deposit = async (
        * Execute the actual deposit functionality from smart contract
        */
       const formattedBal = ethers.utils.parseUnits(
-        Number(depositAmount).toFixed(16),
+        Number(Number(depositAmount) + Number(depositAmount)).toFixed(16),
         18
       );
 
