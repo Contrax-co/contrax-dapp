@@ -2,11 +2,18 @@ import { useState, useEffect } from 'react';
 import './Compound.css';
 import CompoundItem from './compound-item/CompoundItem';
 
+var isLocalhost = false;
+if (window.location.hostname === "localhost") {
+  isLocalhost = true;
+}
+
+var fetchUrl = "https://testing.contrax.finance/api/pools.json";
+if (isLocalhost) { fetchUrl = 'http://localhost:3000/api/pools.json'}
+
 function Compound({ lightMode, currentWallet, connectWallet }: any) {
   const [pools, setPools] = useState([]);
-
   useEffect(() => {
-    fetch(`https://testing.contrax.finance/api/pools.json`) //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
+    fetch(fetchUrl) //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
       .then((response) => response.json())
       .then((data) => {
         setPools(data);
