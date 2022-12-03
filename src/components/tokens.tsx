@@ -74,7 +74,7 @@ export default function Tokens({ lightMode }: any) {
         <table className="table table-hover-token">
           <thead>
             <tr
-              className={`table__token ${lightMode && 'table--light-token '}`}
+                className={`table__input-token ${lightMode && 'table--light-token '}`}
             >
               <th>#</th>
               <th>Token Symbol</th>
@@ -97,7 +97,7 @@ export default function Tokens({ lightMode }: any) {
 
               {datas.map((token: any, index) => {
                 return (
-                  <tr className={`table__token ${lightMode && 'table--light-token '}`} key={index}>
+                  <tr  className={`table__input-token ${lightMode && 'table--light-token '}`} key={index}>
                     <th>{index + 1}</th>
                     <td>{token.contract_ticker_symbol}</td>
                     <td>{token.contract_name}</td>
