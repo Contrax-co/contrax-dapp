@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import './Compound.css';
 import CompoundItem from './compound-item/CompoundItem';
 
-function locationType(){
-  if( window.location.protocol == 'file:' ){ return 0; }
-  if( !window.location.host.replace( /localhost|127\.0\.0\.1/i, '' ) ){ return 2; }
-  return 1;
+var isLocalhost = false;
+if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") {
+  isLocalhost = true;
 }
 
-console.log("Location: " + locationType());
+console.log("isLocalhost: " + isLocalhost);
 
 
 function Compound({ lightMode, currentWallet, connectWallet }: any) {
