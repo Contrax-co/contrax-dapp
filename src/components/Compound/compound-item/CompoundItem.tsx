@@ -178,11 +178,16 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                     <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
                       {(apyVisionCompound + rewardAPY + feeAPY).toFixed(2)}%
                     </p>
+                
                     <CgInfo className={`apy_info ${lightMode && 'apy_info--light'}`}/>
+                    <div className={`apy_hidden ${lightMode && 'apy_hidden--light'}`}>
+                      <p>reward apy: {rewardAPY.toFixed(2)}%</p>
+                      <p>fee apy: {feeAPY.toFixed(2)}%</p>
+                      <p>compound apy: {apyVisionCompound.toFixed(2)}%</p>
+                    </div>
+              
                   </div>
-                  <div className={`overlay_apy ${lightMode && 'overlay_apy--light'}`}>
-                    <p>info that pops up on hover</p>
-                  </div>
+                
                 </div>
               ) : (
                 <div className={`container1_apy ${lightMode && 'container1_apy--light'}`}>
@@ -191,10 +196,12 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                       {(compoundAPY+ Number(pool.apy)).toFixed(2)}%
                     </p>
                     <CgInfo className={`apy_info ${lightMode && 'apy_info--light'}`}/>
+                    <div className={`apy_hidden ${lightMode && 'apy_hidden--light'}`}>
+                      <p>rewards apy: {Number(pool.apy).toFixed(2)}%</p>
+                      <p>compound apy: {compoundAPY.toFixed(2)}%</p>
+                    </div>
                   </div>
-                  <div className={`overlay_apy ${lightMode && 'overlay_apy--light'}`}>
-                    <p>info that pops up on hover</p>
-                  </div>
+                 
                 </div>
               )}
             </div>

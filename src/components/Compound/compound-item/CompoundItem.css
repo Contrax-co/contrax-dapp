@@ -227,7 +227,7 @@
 
 .apy_info{
   color: rgb(237, 232, 232);
-  font-size:13px;
+  font-size:15px;
   margin-left:5px;
 }
 
@@ -236,10 +236,30 @@
 }
 
 .overlay_apy{
+  position: relative;
+}
+.apy_hidden{
   position:absolute;
   display:none;
 }
 
-.overlay_apy:hover{
+.apy_info:hover + .apy_hidden{
   display:flex;
+  flex-direction: column;
+  background-color: #032a51;
+  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%);
+  color:white;
+  padding: 10px;
+  width:200px;
+  border-radius:10px;
+}
+
+.apy_info:hover + .apy_hidden > p{
+  margin:0;
+}
+
+.apy_info:hover + .apy_hidden--light{
+  display:flex;
+  background-color: white;
+  color:black;
 }
