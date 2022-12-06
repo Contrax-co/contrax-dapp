@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import { apyPool, calculateFarmAPY, calculateFeeAPY, findCompoundAPY } from '../../Compound/compound-item/compound-functions';
 import { priceOfToken, totalVault, userVaultTokens } from './vault-functions';
 import "./VaultItem.css";
 
@@ -7,6 +8,12 @@ function VaultItem({lightMode, currentWallet, vault, setSinglePrice, singlePrice
   const [price, setPrice] = useState(0); 
 
   const [vaultAmount, setVaultAmount] = useState(0);
+  const [feeAPY, setFeeAPY] = useState(0);
+
+  const [rewardAPY, setRewardApy] = useState(0);
+  const [apyVisionCompound, setAPYVisionCompound] = useState(0); 
+  const [compoundAPY, setCompoundAPY] = useState(0);
+
 
   useEffect(() => {
 
@@ -16,7 +23,13 @@ function VaultItem({lightMode, currentWallet, vault, setSinglePrice, singlePrice
     totalVault(vault.vault_address, vault.vault_abi, setVaultAmount); 
     setSinglePrice([...singlePrice, (tokenAmount * price)]); 
 
-  }, [currentWallet, vault, tokenAmount, price]);
+    apyPool(vault.lp_address, setRewardApy);
+    calculateFeeAPY(vault.lp_address, setFeeAPY);
+    
+    calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound);
+    findCompoundAPY(vault.apy, setCompoundAPY); 
+
+  }, [currentWallet, vault, tokenAmount, price, rewardAPY, feeAPY]);
   
 
 
@@ -56,16 +69,12 @@ function VaultItem({lightMode, currentWallet, vault, setSinglePrice, singlePrice
 
             <div className={`vault_items_bottom_row`}>
               <div className={`vault_items_bottom_categories`}>
-                <p className={`vault_items_title ${lightMode && 'vault_items_title--light'}`}>Rewards</p>
-                <div className={`vault_rewards_images`}>
-                  {vault.rewards1 ? (
-                    <img className={`vault_rewards`} src={vault.rewards1} alt={vault.rewards1_alt} />
-                  ): null}
-
-                  {vault.rewards2 ? (
-                    <img className={`vault_rewards`} src={vault.rewards2} alt={vault.rewards2_alt} />
-                  ): null}
-                </div>
+                <p className={`vault_items_title ${lightMode && 'vault_items_title--light'}`}>APY</p>
+                  {!vault.apy ? (
+                    <p> {(apyVisionCompound + rewardAPY + feeAPY).toFixed(2)}%</p>
+                  ): (
+                    <p> {(compoundAPY+ Number(vault.apy)).toFixed(2)}%</p>
+                  )}
                 
               </div>
 

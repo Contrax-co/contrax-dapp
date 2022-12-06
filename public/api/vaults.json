@@ -56,6 +56,8 @@
     "vault_address": "0xAE24d2C3bb42Dab0cC54478Bb7868f54b7a91DF9",
     "name": "GMX", 
     "alt1": "Gmx logo",
+    "apy": "15.93",
+    "rewards_apy": "15.25", 
     "logo1": "https://static.metaswap.codefi.network/api/v1/tokenIcons/42161/0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a.png",
     "lp_address": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
     "rewards1": "https://static.metaswap.codefi.network/api/v1/tokenIcons/42161/0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a.png",
