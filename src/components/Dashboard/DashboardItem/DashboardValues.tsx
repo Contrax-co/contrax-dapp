@@ -13,7 +13,7 @@ function DashboardValues({currentWallet, vault}: any) {
 
   return (
     <div>
-      <p>Walletts</p>
+      <p>Wallets</p>
       <div>{userVaultBalance.toFixed(5)}</div>
     </div>
     
