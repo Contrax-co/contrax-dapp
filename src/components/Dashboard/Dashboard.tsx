@@ -6,6 +6,14 @@ import "./Dashboard.css";
 import WalletItem from './WalletItem/WalletItem';
 import Vaults from './JoinedVaults/Vaults';
 
+var isLocalhost = false;
+if (window.location.hostname === "localhost") {
+  isLocalhost = true;
+}
+
+var fetchUrl = "https://testing.contrax.finance/api/vaults.json";
+if (isLocalhost) { fetchUrl = 'http://localhost:3000/api/vaults.json'}
+
 function Dashboard({lightMode, currentWallet}:any) {
   const [copied, setCopied] = useState(false);
   const [vaults, setVaults] = useState([]);
@@ -23,7 +31,7 @@ function Dashboard({lightMode, currentWallet}:any) {
   };
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/vaults.json') //`http://localhost:3000/api/vaults.json` or `https://testing.contrax.finance/api/vaults.json` for when we want it done locally
+    fetch(fetchUrl) //`http://localhost:3000/api/vaults.json` or `https://testing.contrax.finance/api/vaults.json` for when we want it done locally
       .then((response) => response.json())
       .then((data) => {
         setVaults(data);
