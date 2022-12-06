@@ -14,6 +14,14 @@ import Confirm from './Confirm';
 import {AiOutlineCheckCircle} from "react-icons/ai";
 import {MdOutlineErrorOutline} from "react-icons/md";
 
+var isLocalhost = false;
+if (window.location.hostname === "localhost") {
+  isLocalhost = true;
+}
+
+var fetchUrl = "https://testing.contrax.finance/api/poolswap.json";
+if (isLocalhost) { fetchUrl = 'http://localhost:3000/api/poolswap.json'}
+
 function Exchange({ lightMode, currentWallet }: any) {
   const [openModalFrom, setOpenModalFrom] = useState(false);
   const [openModalTo, setOpenModalTo] = useState(false);
@@ -54,7 +62,7 @@ function Exchange({ lightMode, currentWallet }: any) {
 
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/poolswap.json') //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
+    fetch(fetchUrl) //`http://localhost:3000/api/poolswap.json` or `https://testing.contrax.finance/api/poolswap.json` for when we want it done locally
       .then((response) => response.json())
       .then((data) => {
         setTokens(data);
