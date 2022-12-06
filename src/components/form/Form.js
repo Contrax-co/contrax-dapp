@@ -3,7 +3,7 @@ import { StyledCheckbox, StyledForm, StyledInput } from './Form.styles';
 import * as colors from '../../theme/colors';
 import { weight } from '../../theme/fonts';
 import { Block, Row } from '../blocks/Blocks';
-import "./form.css";
+import "./Form.css";
 export const Form = (props) => {
   const { children, ...remainingProps } = props;
 
@@ -30,7 +30,7 @@ export const FormInput = (props) => {
       <StyledInput
         variant={variant}
         onClick={!onClick ? undefined : onClick}
-         className={`form-control from__input ${lightMode && 'form-control from__input--light'}`}
+         className={`form-control form__input ${lightMode && 'form-control form__input--light'}`}
      
         type={type || 'text'}
         {...remainingProps}

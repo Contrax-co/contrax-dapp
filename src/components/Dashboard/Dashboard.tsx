@@ -56,9 +56,9 @@ function Dashboard({lightMode, currentWallet}:any) {
         <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet)} />
 
         <div className={`dashboard_middle`}>
-          <div>
+          <div className={`dashboard_left ${lightMode && 'dashboard_left--light'}`}>
             <div className={`dashboard_address_header ${lightMode && 'dashboard_address_header--light'}`} onClick={copyToClipboard}>
-              <p className={`dashboard_address ${lightMode && 'dashboard_address--light'}`} style={{marginRight:"10px"}}>
+              <p className={`dashboard_address ${lightMode && 'dashboard_address--light'}`}>
                 {currentWallet.substring(0, 6)}...
                 {currentWallet.substring(currentWallet.length - 5)}
               </p>

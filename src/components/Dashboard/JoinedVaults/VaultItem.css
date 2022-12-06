@@ -3,8 +3,8 @@
   border-radius: 20px;
   color:white;
   background-color: #08315a;
-  width:270px;
-  height:200px;
+  width:300px;
+  height:fit-content;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 2px 18px #030d16;
@@ -18,7 +18,7 @@
 .vault_item_images{
   width: 100%;
   display: flex;
-  margin-bottom: 5px;
+  align-items: center;
 }
 
 .vault_item:hover{
