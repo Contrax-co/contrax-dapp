@@ -33,7 +33,7 @@
   padding: 15px;
   border-radius: 20px;
   width: 60vw;
-  height: 60vh;
+  height: 70vh;
   justify-content: space-around;
 }
 
@@ -83,7 +83,7 @@
 
 .exchange_button {
   background-color: rgb(89, 179, 247);
-  padding: 15px;
+  padding-top: 15px;
   border-radius: 15px;
   font-weight: bold;
   font-size: 20px;
@@ -99,7 +99,7 @@
 
 .exchange_button_disable {
   background-color: rgb(156, 178, 193);
-  padding: 15px;
+  padding-top: 15px;
   border-radius: 15px;
   font-weight: bold;
   font-size: 20px;

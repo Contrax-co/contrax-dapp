@@ -1,104 +1,67 @@
 // @ts-nocheck
-import { useState, useEffect } from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { ethers } from 'ethers';
-import swal from 'sweetalert';
-import { getUserSession } from '../store/localStorage';
+import { useState, useEffect } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { ethers } from "ethers";
+import swal from "sweetalert";
+import { getUserSession } from "../store/localStorage";
+import "./createToken.css";
+import BottomBar from "../components/bottomBar/BottomBar";
+import Button from "../components/button/Button";
+import { H2, H3 } from "../components/text/Text";
+import { Col, Container, Row } from "../components/blocks/Blocks";
+import { Form } from "../components/form/Form";
+import { StyledDropBtn } from "../components/form/dropdownInput/DropdownInput.styles";
+import TokenModal from "../components/OwnTokenModal";
+import TokenModal1 from "../components/CustomToken";
+import Pools from "../components/pools";
 
-import BottomBar from '../components/bottomBar/BottomBar';
-import Button from '../components/button/Button';
-import { H2, H3 } from '../components/text/Text';
-import { Col, Container, Row } from '../components/blocks/Blocks';
-import { Form } from '../components/form/Form';
-import { StyledDropBtn } from '../components/form/dropdownInput/DropdownInput.styles';
-import TokenModal from '../components/TokenModal';
-import TokenModal1 from '../components/TokenModal1';
-import Pools from '../components/pools';
+import abi from "../config/sushiswap.json";
+import ercabi from "../config/erc20.json";
+import factory from "../config/pool.json";
 
-import abi from '../config/sushiswap.json';
-import ercabi from '../config/erc20.json';
-import factory from '../config/factory.json';
-
-const FETCH = gql`
-  query MyQuery($chainId: String!, $userwallet: String!) {
-    tokens(
-      where: {
-        chainId: { _like: $chainId }
-        userwallet: { _like: $userwallet }
-      }
-    ) {
-      userwallet
-      totalSupply
-      tokenaddress
-      chainId
-      decimal
-      id
-      tokenName
-      tokenSymbol
-    }
-  }
-`;
-
-export default function CreatePool() {
+export default function CreatePool({ lightMode }: any) {
   const { ethereum } = window;
 
   const [tokenOne, setTokenOne] = useState<any | null>(null);
   const [tokenTwo, setTokenTwo] = useState<any | null>(null);
   const [walletAddress, setWalletAddress] = useState(null);
 
-  const [tokenOneAmount, setTokenOneAmount] = useState('');
-  const [tokenTwoAmount, setTokenTwoAmount] = useState('');
+  const [tokenOneAmount, setTokenOneAmount] = useState("");
+  const [tokenTwoAmount, setTokenTwoAmount] = useState("");
 
   const [dtoken, setDTokens] = useState<any[]>([]);
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState([]);
 
-  const { data } = useQuery(FETCH, {
-    variables: {
-      chainId: '421611',
-      userwallet: wallet,
-    },
-  });
   useEffect(() => {
     let walletData: any;
     let sessionData = getUserSession();
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address);
-      const a = data;
-      if (typeof a !== 'undefined') {
-        console.log(a.tokens);
-        setValues(a.tokens);
-        console.log(values);
-      }
     }
   });
 
   const StableTOKEN = [
     {
-      id: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
-      name: 'USDC',
-      symbol: 'USDC',
+      id: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+      name: "USDC",
+      symbol: "USDC",
     },
     {
-      id: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
-      name: 'USDT',
-      symbol: 'USDT',
+      id: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+      name: "USDT",
+      symbol: "USDT",
     },
     {
-      id: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
-      name: 'DAI',
-      symbol: 'DAI',
+      id: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+      name: "DAI",
+      symbol: "DAI",
     },
     {
-      id: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
-      name: 'WETH',
-      symbol: 'WETH',
-    },
-    {
-      id: '0x9D575a9bF57a5e24a99D29724B86ca021A2b0435',
-      name: 'ETH',
-      symbol: 'ETH',
+      id: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      name: "WETH",
+      symbol: "WETH",
     },
   ];
 
@@ -122,29 +85,51 @@ export default function CreatePool() {
 
   useEffect(() => {
     getApiDetails();
+    getBalance();
   }, []);
 
+  async function getBalance(item) {
+    try {
+      const tokenABI = ercabi.abi;
+      const tokenAddress: any = tokenOne.contract_address;
+      const tokenAddressb: any = tokenTwo.id;
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const TOKEN = new ethers.Contract(
+        item.contract_address,
+        tokenABI,
+        signer
+      );
+      const TOKENB = new ethers.Contract(item, tokenABI, signer);
+      const a = await TOKEN.balanceOf(wallet);
+      const bc = ethers.utils.formatEther(a);
+      const b = await TOKEN.balanceOf(wallet);
+      console.log(bc, b);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async function handleCreatePool() {
     console.log(
       tokenOneAmount,
       tokenTwoAmount,
-      tokenOne.tokenaddress,
+      tokenOne.contract_address,
       tokenTwo.id
     );
-    const contractAddress = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
-    const factoryAddress = '0xc35DADB65012eC5796536bD9864eD8773aBc74C4';
-    const contractABI = abi;
+    const contractAddress = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506";
+    const factoryAddress = "0x87e49e9B403C91749dCF89be4ab1d400CBD4068C";
+    const contractABI = factory;
     const tokenABI = ercabi.abi;
-    const factoryABI = factory;
-    const tokenAddress: any = tokenOne.tokenaddress;
+    // const factoryABI = factory;
+    const tokenAddress: any = tokenOne.contract_address;
     const tokenAddressb: any = tokenTwo.id;
     console.log(tokenAddress, tokenAddressb);
     const amount1: any = tokenOneAmount;
     const amount2: any = tokenTwoAmount;
 
-    if (amount1 === amount2) {
-      const amount1min: any = amount1 - 1;
-      const amount2min: any = amount2 - 1;
+    try {
+      const amount1min: any = 0;
+      const amount2min: any = 0;
 
       const amountIn1 = ethers.utils.parseEther(amount1.toString());
       const amountIn2 = ethers.utils.parseEther(amount2.toString());
@@ -159,54 +144,95 @@ export default function CreatePool() {
 
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
-      const router = new ethers.Contract(contractAddress, contractABI, signer);
-      const factory = new ethers.Contract(factoryAddress, factoryABI, signer);
+      // const router = new ethers.Contract(contractAddress, contractABI, signer);
+      const factory = new ethers.Contract(factoryAddress, contractABI, signer);
       const TOKEN = new ethers.Contract(tokenAddress, tokenABI, signer);
       const TOKENB = new ethers.Contract(tokenAddressb, tokenABI, signer);
 
-      await factory.createPair(tokenAddress, tokenAddressb);
+      // await factory.createPair(tokenAddress, tokenAddressb);
 
-      await TOKEN.approve(contractAddress, amountIn1);
-      await TOKENB.approve(contractAddress, amountIn2);
-
-      const hx = await router.addLiquidity(
+      await TOKEN.approve(factoryAddress, amountIn1);
+      await TOKENB.approve(factoryAddress, amountIn2);
+      console.log(amountIn1, amountIn2, amount1Min, amount2Min);
+      const hx = await factory.createLp(
         tokenAddress,
         tokenAddressb,
         amountIn1,
         amountIn2,
         amount1Min,
         amount2Min,
-        userAddress,
-        deadline,
         {
-          gasLimit: 300000,
+          gasLimit: provider.getGasPrice(),
         }
       );
 
-      const hash = hx.wait();
-      console.log(hash);
+      const hash = await hx.wait();
+      console.log(hash, hx);
+      if (hash) {
+        swal({
+          title: "Pool Deployed",
+          text: "Your Pool is Deployed.",
+          icon: "success",
 
-      swal('Create Pool Transaction is in Process', 'Please Follow Metamask ');
-    } else {
-      swal('TokenA Amount  and TokenB Amount Should be same ');
-    }
+          buttons: {
+            ok: "CLOSE!",
+            Transaction: {
+              value: "Transaction",
+            },
+          },
+        }).then((value) => {
+          switch (value) {
+            case "Transaction":
+              window.open(`https://arbiscan.io/tx/${hx.hash}`, "_blank");
+              break;
+            default:
+          }
+        });
+      }
+    } catch (e) {}
+
+    // swal('Create Pool Transaction is in Process', 'Please Follow Metamask ');
   }
   return (
     <>
       <Container className="h-100 pool">
         <Row>
           <Col size="12" className="pt-5">
-            <Form className="px-4 my-5">
+            <div
+              className={`pool__container ${
+                lightMode && "pool__container--light"
+              }`}
+            >
+              {/* <Form 
+            
+            className='shadow px-4 my-5 bg-dark'
+            > */}
               <Row>
                 <Col size="12" className="my-2 create-pool-title">
-                  <H2>Create Pool</H2>
+                  <H2>
+                    <div
+                      className={`swap_title ${
+                        lightMode && "swap_title--light"
+                      }`}
+                    >
+                      Create Pool
+                    </div>
+                  </H2>
                 </Col>
                 <Row>
                   <Col size="1" />
                   <Col size="10" className="my-2">
                     <Col size="12">
                       <Col className="mb-22">
-                        <H3>Select Pair</H3>
+                        <H3>
+                          <div
+                            className={`swap_title ${
+                              lightMode && "swap_title--light"
+                            }`}
+                          >
+                            Select Pair
+                          </div>
+                        </H3>
                       </Col>
                       <Row>
                         <Col>
@@ -216,14 +242,14 @@ export default function CreatePool() {
                             data-bs-target="#tokenModal"
                             data-bs-toggle="modal"
                             aria-expanded="false"
-                            style={{ width: '100%', borderRadius: 4 }}
+                            style={{ width: "100%", borderRadius: 4 }}
                           >
                             <div className="create-pool-tokenDropdown">
                               {tokenOne
-                                ? String(tokenOne['tokenName'])
-                                    .split(' ')[0]
+                                ? String(tokenOne["contract_name"])
+                                    .split(" ")[0]
                                     .trim()
-                                : 'Select a token'}
+                                : "Select a token"}
                             </div>
                           </StyledDropBtn>
                         </Col>
@@ -234,14 +260,14 @@ export default function CreatePool() {
                             data-bs-target="#tokenModalTwo"
                             data-bs-toggle="modal"
                             aria-expanded="false"
-                            style={{ width: '100%', borderRadius: 4 }}
+                            style={{ width: "100%", borderRadius: 4 }}
                           >
                             <div className="create-pool-tokenDropdown">
                               {tokenTwo
-                                ? String(tokenTwo['symbol'])
-                                    .split(' ')[0]
+                                ? String(tokenTwo["symbol"])
+                                    .split(" ")[0]
                                     .trim()
-                                : 'Select a token'}
+                                : "Select a token"}
                             </div>
                           </StyledDropBtn>
                         </Col>
@@ -249,30 +275,48 @@ export default function CreatePool() {
                     </Col>
                     <Col size="12" className="depositAmount">
                       <Col className="mb-22">
-                        <H3>Deposit Amount</H3>
+                        <H3>
+                          <div
+                            className={`mt-3 swap_title ${
+                              lightMode && "swap_title--light"
+                            }`}
+                          >
+                            Deposit Amount
+                          </div>
+                        </H3>
                       </Col>
                       <Col>
                         {tokenOne ? (
                           <div className="depositAmount-group">
-                            <div className="selectedToken-div">
+                            <div
+                              className={`selectedToken-div swap_title ${
+                                lightMode && "swap_title--light"
+                              }`}
+                            >
                               {tokenOne &&
-                                String(tokenOne['tokenName'])
-                                  .split(' ')[0]
+                                String(tokenOne["contract_name"])
+                                  .split(" ")[0]
                                   .trim()}
                             </div>
+
                             <input
-                              value={tokenOne['tokenaddress']}
+                              value={tokenOne["tokenaddress"]}
                               onChange={(e) => setTokenOne(e.target.value)}
-                              type={'hidden'}
-                              className="depositAmount-input"
+                              type={"hidden"}
+                              className={`from__inputs ${
+                                lightMode && "from__input--lights"
+                              }`}
                             />
+
                             <input
                               onChange={(e) =>
                                 setTokenOneAmount(e.target.value)
                               }
                               placeholder="0.0"
-                              type={'number'}
-                              className="depositAmount-input"
+                              type={"number"}
+                              className={`from__input-pools ${
+                                lightMode && "from__input--light-pools"
+                              }`}
                             />
                           </div>
                         ) : (
@@ -282,34 +326,44 @@ export default function CreatePool() {
                       <Col>
                         {tokenTwo ? (
                           <div className="depositAmount-group">
-                            <span className="selectedToken-div">
+                            <span
+                              className={`selectedToken-div swap_title ${
+                                lightMode && "swap_title--light"
+                              }`}
+                            >
                               {tokenTwo &&
-                                String(tokenTwo['symbol']).split(' ')[0].trim()}
+                                String(tokenTwo["symbol"]).split(" ")[0].trim()}
                             </span>
-                            <input
-                              value={tokenTwo['id']}
-                              onChange={(e) => setTokenTwo(e.target.value)}
-                              type={'hidden'}
-                              className="depositAmount-input"
-                            />
-                            <input
-                              onChange={(e) =>
-                                setTokenTwoAmount(e.target.value)
-                              }
-                              placeholder="0.0"
-                              type={'number'}
-                              className="depositAmount-input"
-                            />
+                            <div>
+                              <input
+                                value={tokenTwo["id"]}
+                                onChange={(e) => setTokenTwo(e.target.value)}
+                                type={"hidden"}
+                                className={`from__inputs ${
+                                  lightMode && "from__input--lights"
+                                }`}
+                              />
+                              <input
+                                onChange={(e) =>
+                                  setTokenTwoAmount(e.target.value)
+                                }
+                                placeholder="0.0"
+                                type={"number"}
+                                className={`from__input-pools ${
+                                  lightMode && "from__input--light-pools"
+                                }`}
+                              />
+                            </div>
                           </div>
                         ) : (
                           <div className="select-a-token">Select a Token</div>
                         )}
                       </Col>
                       <Col>
-                        {' '}
+                        {" "}
                         <Button
                           className="row justify-content-center mt-2 mb-2 btnCreatePool"
-                          label={'Create Pool'}
+                          label={"Create Pool"}
                           primary
                           onClick={handleCreatePool}
                         />
@@ -319,24 +373,31 @@ export default function CreatePool() {
                   <Col size="1" />
                 </Row>
               </Row>
-            </Form>
+            </div>
+            {/* </Form> */}
           </Col>
         </Row>
-        <Pools />
+        <div className="mt-5">
+          <Pools lightMode={lightMode} />
+        </div>
       </Container>
       <BottomBar />
       <TokenModal
         id="tokenModal"
+        lightMode={lightMode}
         standardTokens={values}
         onSelection={(item: any) => {
           setTokenOne(item);
+          getBalance(item);
         }}
       />
       <TokenModal1
         id="tokenModalTwo"
+        lightMode={lightMode}
         standardTokens={dtoken}
         onSelection={(item: any) => {
           setTokenTwo(item);
+          getBalance(item);
         }}
       />
     </>

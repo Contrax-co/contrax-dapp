@@ -58,6 +58,7 @@
 }
 
 .details_single_token{
+  padding: 2%;
   color:white;
   padding-left:9px;
   background-color: #001428;
@@ -83,6 +84,7 @@
   color:white;
   background-color: #001428; 
   border-radius: 15px;
+  padding: 3%;
 }
 
 .detailed_position--light{
@@ -94,6 +96,7 @@
   display:flex;
   justify-self: space-between;
   padding:40px;
+  
 }
 
 .detailed_position_total{

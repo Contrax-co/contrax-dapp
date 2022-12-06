@@ -5,9 +5,112 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f6fa;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+
+
+/* added usman css */
+
+.page.page--light {
+  position: relative;
+}
+.page.page {
+  position: relative;
+}
+
+
+.dropdown-input .dropdown {
+  display: block;
+  width: 100%;
+}
+.dropdown-input button.btn {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  width: 90px;
+  margin-top: -9px;
+}
+.dropdown-input .dropdown-menu.show {
+  width: 100%;
+}
+.dropdown-input input:focus-visible,
+.dropdown-input button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+.create-pool-tokenDropdown {
+  width: 80%;
+  text-align: left;
+  float: left;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.create-pool-title {
+  border-bottom: 1px solid #eeeeee;
+  padding-bottom: 5px;
+  text-align: center;
+}
+
+.create-pool-title h2 {
+  padding-bottom: 16px;
+  padding-top: 16px;
+}
+
+.tokenModal-content {
+  max-height: 350px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+
+
+.select-a-token {
+  margin-top: 22px;
+  margin-bottom: 32px;
+  background-color: lightgray;
+  text-align: center;
+  border-radius: 4px;
+  padding: 10px;
+  color: #818182;
+}
+
+.selectedToken-div {
+  width: 110px;
+  border-right: 1px solid #eee;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.pool-deatil-table {
+  margin-top: 1rem;
+}
+.pool-deatil-tr th {
+  padding-bottom: 1rem !important;
+  padding-top: 1rem !important;
+}
+
+.pool {
+  max-width: 885px !important;
+}
+.pool-title {
+  font-size: 2.15rem !important;
+  text-align: center;
+}
+.btnCreatePool {
+  font-size: 16px;
+  color: #fff;
+  width: 100%;
+  margin-left: 2% !important;
+}
+
+.mb-22 {
+  margin-bottom: 22px;
 }

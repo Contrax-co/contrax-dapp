@@ -4,8 +4,8 @@ import { getUserSession } from '../store/localStorage';
 import axios from 'axios';
 import { B1, Link } from './text/Text';
 import { Badge } from './badge/Badge';
-
-export default function Pools() {
+import "./token.css"
+export default function Pools({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState<any>([]);
   // const [isLoading, setIsLoading] = useState(false);
@@ -67,24 +67,31 @@ export default function Pools() {
   return (
     <>
       <div className="table-responsive">
-        <table className="table table-hover">
+        <table 
+        className="table table-hover-token">
           <thead>
-            <tr className="table-light">
+            <tr 
+            className={`table__input-token ${lightMode && 'table--light-token '}`}
+           >
               <th>#</th>
               <th>Pool Address</th>
               <th>Tokens</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody  className={`table__input-token ${lightMode && 'table--light-token '}`}>
             {values.map((item: any, index: any) => (
               <tr>
                 <th>{index + 1}</th>
                 <td>
                   <Row>
                     <span>
-                      <B1>{item.id}</B1>{' '}
+                      <B1>
+                      <span className={`swap_title ${lightMode && 'swap_title--light'}`}>
+                        {item.id}
+                        </span>
+                        </B1>{' '}
                       <Link
-                        link={'https://arbiscan.io/address/' + item.id}
+                        link={'https://app.sushi.com/analytics/pools/' + item.id+'?chainId=42161'}
                         target="_blank"
                         rel="noreferrer"
                       >

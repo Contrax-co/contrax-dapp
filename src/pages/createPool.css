@@ -1,0 +1,48 @@
+.pool__containers {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-self: center;
+  background-color: #012243;
+  padding: 15px;
+  border-radius: 20px;
+ width: auto;
+ height: auto;
+}
+
+.pool__containers--light {
+  background-color: white;
+  box-shadow: 2px 2px 18px lightgrey;
+}
+
+
+
+.from__inputs {
+  display: flex;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+.from__inputs--light {
+  background-color: rgb(233, 237, 245);
+  color: lightgrey;
+}
+
+.from__inputs-pool {
+ width: 100%;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
+}
+
+.from__inputs--light-pool {
+  background-color: rgb(233, 237, 245);
+  color: black;
+}
+

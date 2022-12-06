@@ -12,11 +12,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Application />} />
 
-        <Route path="/create-a-token" element={<CreateToken />} />
+        {/* <Route path="/create-a-token" element={<CreateToken />} />
 
         <Route path="/manage-token" element={<ManageToken />} />
 
-        <Route path="/create-pool" element={<CreatePool />} />
+        <Route path="/create-pool" element={<CreatePool />} /> */}
 
         {/* <Route path="/exchange" element={<Exchange />} /> */}
       </Routes>

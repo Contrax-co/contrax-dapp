@@ -1,21 +1,23 @@
 .page {
   background-color: #001428;
   width: 100vw;
-  height: 100vh;
+  height: auto;
   top: 0;
   bottom: 0;
   position: fixed;
 }
-
+.modal-content{
+  z-index: 9999999999f !important;
+}
 .page--light {
   background-color: #f5f6fa;
   width: 100vw;
-  height: 100vh;
+  height: auto;
 }
 
 .ac_page {
   width: 100vw;
-  height: 100vh;
+  height: auto;
   display: flex;
   flex-direction: row;
 }
