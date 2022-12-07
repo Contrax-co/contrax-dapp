@@ -63,9 +63,9 @@ function Dashboard({lightMode, currentWallet}:any) {
                 {currentWallet.substring(currentWallet.length - 5)}
               </p>
               {!copied ? (
-              <FiCopy />
+              <FiCopy style={{marginTop:"-15px"}}/>
               ): (
-                  <BsCheckCircle />
+                  <BsCheckCircle style={{marginTop:"-15px"}}/>
               )}
             </div>
 
@@ -78,7 +78,7 @@ function Dashboard({lightMode, currentWallet}:any) {
               }
             >
               <p style={{marginRight:"10px"}}>View on Arbiscan</p>
-              <FiExternalLink />
+              <FiExternalLink style={{marginTop:"-15px"}}/>
             </div>
 
           </div>

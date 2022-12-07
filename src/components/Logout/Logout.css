@@ -109,17 +109,20 @@
 }
 
 .logout__button{
+    display: flex;
     margin-top:5%;
     background-color: #7cc4eb;
     color:white;
     font-weight:700;
     font-size:17px;
     border-radius:15px;
-    padding: 20px;
     width:fit-content;
     padding-left: 70px;
     padding-right: 70px;
     align-self: center;
+    align-items: center;
+    padding-top:30px;
+    padding-bottom:20px;
 }
 
 .logout__button:hover{
