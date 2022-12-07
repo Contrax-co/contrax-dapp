@@ -131,7 +131,7 @@ function Details({lightMode, currentWallet, pool, ...props}:any) {
      
       <div className={`details_retract ${lightMode && 'details_retract--light'}`} onClick={props.onClick}>
         <p className={`details_retract_description ${lightMode && 'details_retract_description--light'}`}>See Less</p>
-        <RiArrowUpSLine />
+        <RiArrowUpSLine style={{marginTop:"-15px"}} />
       </div>
   
 

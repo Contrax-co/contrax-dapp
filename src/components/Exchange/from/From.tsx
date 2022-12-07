@@ -61,8 +61,8 @@ function From({
     };
 
     function setMax() {
-        setSwapAmount(fromAmt);
-        setValue(fromAmt);
+        setSwapAmount(fromAmt * 999/1000);
+        setValue(fromAmt * 999/1000);
     }
       
 
