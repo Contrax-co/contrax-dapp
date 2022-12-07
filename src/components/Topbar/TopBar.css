@@ -72,7 +72,6 @@
 .connected_wallet {
   padding-left: 5px;
   padding-right: 5px;
-  padding-top: 10px;
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -104,5 +103,6 @@
 }
 
 .address {
+  margin-top: 10px;
   font-weight: 400;
 }
