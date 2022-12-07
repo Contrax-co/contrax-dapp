@@ -121,8 +121,8 @@
     padding-right: 70px;
     align-self: center;
     align-items: center;
-    padding-top:30px;
-    padding-bottom:20px;
+    padding-top:20px;
+    padding-bottom: 20px;
 }
 
 .logout__button:hover{

@@ -4,7 +4,6 @@
   background-color: #012243;
   border-radius: 20px;
   margin-bottom: 7px;
-  padding-top:10px;
 }
 
 .pools--light {
@@ -119,7 +118,6 @@
 .farm_type {
   color: white;
   font-size: 13px;
-  margin-top: 20%;
   margin-right: 5px;
 }
 
@@ -231,7 +229,6 @@
   color: rgb(237, 232, 232);
   font-size:15px;
   margin-left:5px;
-  margin-top: -15px;
 }
 
 .apy_info--light{
