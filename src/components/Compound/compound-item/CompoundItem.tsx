@@ -251,7 +251,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
           {details === false ? (
             <div className={`see_details_dropdown ${lightMode && 'see_details_dropdown--light'}`} onClick={() => setDetails(true)}>
               <p className={`see_details_description ${lightMode && 'see_details_description--light'}`}>See more details</p>        
-              <RiArrowDownSLine style={{marginTop: "-15px"}} />
+              <RiArrowDownSLine />
             </div>
           ): (
             <Details 

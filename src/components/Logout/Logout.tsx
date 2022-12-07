@@ -66,7 +66,7 @@ function Logout({
               className={`logout__copy ${lightMode && 'logout__copy--light'}`}
               onClick={copyToClipboard}
             >
-              <FiCopy style={{marginTop:"-15px"}}/>
+              <FiCopy/>
               <p style={{ marginLeft: '5px' }}>Copy Address</p>
             </div>
           ) : (
@@ -74,7 +74,7 @@ function Logout({
               className={`logout__copy ${lightMode && 'logout__copy--light'}`}
               onClick={copyToClipboard}
             >
-              <BsCheckCircle style={{marginTop:"-15px"}}/>
+              <BsCheckCircle/>
               <p style={{ marginLeft: '5px' }}>Copied</p>
             </div>
           )}
@@ -90,7 +90,7 @@ function Logout({
               )
             }
           >
-            {<FiExternalLink style={{marginTop:"-15px"}} />}
+            {<FiExternalLink />}
             <p className="logout__view">View on Arbiscan</p>
           </div>
 

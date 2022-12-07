@@ -32,7 +32,6 @@
 }
 
 .swap_max{
-    padding-top: 10px;
     padding-right:10px;
     font-weight:700;
     color:white;
@@ -72,11 +71,6 @@
 .dropdown__from--light {
     color: black;
     border-left: 1px solid lightgrey;
-}
-
-
-.dropdown__from > p{
-    padding-top: 10px;
 }
 
 .swap__logo {
