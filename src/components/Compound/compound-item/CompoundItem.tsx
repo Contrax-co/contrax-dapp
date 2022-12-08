@@ -32,6 +32,8 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [apyVisionCompound, setAPYVisionCompound] = useState(0); 
   const [compoundAPY, setCompoundAPY] = useState(0);
 
+  const [hover, setHover] = useState(false);
+
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
     getTotalVaultBalance(pool, setTotalVaultBalance);
@@ -44,6 +46,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
     calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound); 
     findCompoundAPY(pool.apy, setCompoundAPY);
   }, [pool, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
+
 
   return (
     <div className={`pools ${lightMode && 'pools--light'}`}>
@@ -174,13 +177,16 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                     <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
                       {(apyVisionCompound + rewardAPY + feeAPY).toFixed(2)}%
                     </p>
-                
-                    <CgInfo className={`apy_info ${lightMode && 'apy_info--light'}`}/>
-                    <div className={`apy_hidden ${lightMode && 'apy_hidden--light'}`}>
-                      <p>reward apy: {rewardAPY.toFixed(2)}%</p>
-                      <p>fee apy: {feeAPY.toFixed(2)}%</p>
-                      <p>compound apy: {apyVisionCompound.toFixed(2)}%</p>
-                    </div>
+                    
+                    <CgInfo className={`apy_info ${lightMode && 'apy_info--light'}`} onMouseOver ={() => setHover(true)} onMouseLeave={() => setHover(false)}/>
+                    {hover ? (
+                      <div className={`apy_show ${lightMode && 'apy_show--light'}`}>
+                        <p>reward apy: {rewardAPY.toFixed(2)}%</p>
+                        <p>fee apy: {feeAPY.toFixed(2)}%</p>
+                        <p>compound apy: {apyVisionCompound.toFixed(2)}%</p>
+                      </div>
+                    ) : null}
+                   
               
                   </div>
                 
@@ -191,11 +197,14 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                     <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
                       {(compoundAPY+ Number(pool.apy)).toFixed(2)}%
                     </p>
-                    <CgInfo className={`apy_info ${lightMode && 'apy_info--light'}`}/>
-                    <div className={`apy_hidden ${lightMode && 'apy_hidden--light'}`}>
-                      <p>rewards apy: {Number(pool.apy).toFixed(2)}%</p>
-                      <p>compound apy: {compoundAPY.toFixed(2)}%</p>
-                    </div>
+                    <CgInfo className={`apy_info ${lightMode && 'apy_info--light'}`} onMouseOver ={() => setHover(true)} onMouseLeave={() => setHover(false)}/>
+                    {hover ? (
+                      <div className={`apy_show ${lightMode && 'apy_show--light'}`}>
+                        <p>rewards apy: {Number(pool.apy).toFixed(2)}%</p>
+                        <p>compound apy: {compoundAPY.toFixed(2)}%</p>
+                      </div>
+                    ) : null}
+                    
                   </div>
                  
                 </div>
