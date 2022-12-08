@@ -49,12 +49,14 @@
 
 .farm__asset {
   flex: 2;
+  align-items: center;
 }
 
 .farm__second__title {
-  flex: 5;
+  flex: 8;
   display: flex;
   justify-content: space-around;
+  align-items: center;
 }
 
 .pools_list {
