@@ -92,6 +92,34 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
             </div>
           </div>
 
+           {/* How much the user has deposited */}
+
+           {(userVaultBal * priceOfSingleToken) < 0.01 ? (
+                <div className={`container ${lightMode && 'container--light'}`}>
+                  <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                   
+                  </p>
+                  <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>
+                   
+                  </p>
+
+                </div>
+              ): (
+
+                <div className={`container ${lightMode && 'container--light'}`}>
+                    <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                      {(userVaultBal * priceOfSingleToken).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
+                    </p>
+                    <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>
+                      {userVaultBal.toFixed(10)}
+                    </p>
+
+                </div>
+              )}
+
           <div className="pool_info">
             <div
               className={`container__apy ${
@@ -138,39 +166,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                 </p>
               </div>
             )}
-
-            
-
-            {/* How much the user has deposited */}
-
-              {(userVaultBal * priceOfSingleToken) < 0.01 ? (
-                <div className={`container ${lightMode && 'container--light'}`}>
-                  <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                   
-                  </p>
-                  <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>
-                   
-                  </p>
-
-                </div>
-              ): (
-
-                <div className={`container ${lightMode && 'container--light'}`}>
-                    <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                      {(userVaultBal * priceOfSingleToken).toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                      })}
-                    </p>
-                    <p className={`tvlLP ${lightMode && 'tvlLP--light'}`}>
-                      {userVaultBal.toFixed(10)}
-                    </p>
-
-                </div>
-              )}
-             
           
-
             <div className={`container1 ${lightMode && 'container1--light'}`}>
               {!pool.apy ? (
                 <div className={`container1_apy ${lightMode && 'container1_apy--light'}`}>
