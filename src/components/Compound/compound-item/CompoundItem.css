@@ -229,37 +229,34 @@
   color: rgb(237, 232, 232);
   font-size:15px;
   margin-left:5px;
+  position: relative;
 }
 
 .apy_info--light{
   color:black;
 }
 
-.overlay_apy{
-  position: relative;
-}
-.apy_hidden{
+.apy_show{
   position:absolute;
-  display:none;
-}
-
-.apy_info:hover + .apy_hidden{
+  box-sizing: border-box;
+  z-index:999;
   display:flex;
   flex-direction: column;
   background-color: #032a51;
   box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%);
   color:white;
   padding: 10px;
-  width:200px;
+  width:180px;
   border-radius:10px;
 }
 
-.apy_info:hover + .apy_hidden > p{
-  margin:0;
+.apy_show--light{
+  color:black;
+  background-color: white;
 }
 
-.apy_info:hover + .apy_hidden--light{
-  display:flex;
-  background-color: white;
-  color:black;
+.apy_show> p {
+  margin: 0;
+  font-size:13px;
+  font-weight:bold;
 }
