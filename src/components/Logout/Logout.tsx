@@ -66,7 +66,7 @@ function Logout({
               className={`logout__copy ${lightMode && 'logout__copy--light'}`}
               onClick={copyToClipboard}
             >
-              <FiCopy />
+              <FiCopy/>
               <p style={{ marginLeft: '5px' }}>Copy Address</p>
             </div>
           ) : (
@@ -74,7 +74,7 @@ function Logout({
               className={`logout__copy ${lightMode && 'logout__copy--light'}`}
               onClick={copyToClipboard}
             >
-              <BsCheckCircle />
+              <BsCheckCircle/>
               <p style={{ marginLeft: '5px' }}>Copied</p>
             </div>
           )}

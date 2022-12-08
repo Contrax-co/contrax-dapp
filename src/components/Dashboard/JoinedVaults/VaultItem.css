@@ -3,8 +3,8 @@
   border-radius: 20px;
   color:white;
   background-color: #08315a;
-  width:270px;
-  height:230px;
+  width:250px;
+  height:fit-content;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 2px 18px #030d16;

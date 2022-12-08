@@ -84,7 +84,7 @@
   color:white;
   background-color: #001428; 
   border-radius: 15px;
-  padding: 3%;
+
 }
 
 .detailed_position--light{
@@ -119,14 +119,14 @@
   font-weight: 700;
   display: flex;
   flex-direction: column;
-  margin-top: -10px;
+  margin:0;
 }
 
 .unstaked_details{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: -10px;
+  margin:0;
 }
 
 .detailed_unstaked_pairs{

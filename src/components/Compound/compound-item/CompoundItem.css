@@ -118,7 +118,6 @@
 .farm_type {
   color: white;
   font-size: 13px;
-  margin-top: 20%;
   margin-right: 5px;
 }
 
@@ -128,19 +127,19 @@
 
 .pool_info {
   display: flex;
-  flex: 5;
-  justify-content: space-evenly;
+  flex: 6;
+  justify-content: space-around;
 }
 
 .container {
-  flex: 1;
+  flex: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .container__apy {
-  flex: 1;
+  flex: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -199,7 +198,7 @@
 }
 
 .container1{
-  flex: 1;
+  flex: 2;
   display: flex;
   justify-content:center;
   align-items: center;

@@ -83,7 +83,6 @@
 
 .exchange_button {
   background-color: rgb(89, 179, 247);
-  padding-top: 15px;
   border-radius: 15px;
   font-weight: bold;
   font-size: 20px;
@@ -99,7 +98,6 @@
 
 .exchange_button_disable {
   background-color: rgb(156, 178, 193);
-  padding-top: 15px;
   border-radius: 15px;
   font-weight: bold;
   font-size: 20px;

@@ -52,6 +52,10 @@
     color: black;
 }
 
+.dropdown__to > p {
+
+}
+
 .swap__logo {
     width: 30px;
 }

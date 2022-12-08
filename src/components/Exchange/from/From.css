@@ -55,6 +55,7 @@
     color: white;
     border-left: 1px solid #043b71;
     padding-left:10px;
+    text-align:center;
 }
   
 .dropdown__from:hover {
