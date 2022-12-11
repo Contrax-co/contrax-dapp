@@ -1,21 +1,17 @@
-.pages {
-
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  bottom: 0;
-  position: fixed;
-  overflow-y: scroll;
+.whole__exchange__container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .containers{
- 
-  background-color: #012243;
+  background-color: #001428;
   width: 50%;
   min-width: 420px;
   padding: 35px 50px;
   transform: translate(-50%,-50%);
   position: absolute;
-  left: 40%;
+  left: 60%;
   top: 55%;
   right: 50%;
   border-radius: 10px;
