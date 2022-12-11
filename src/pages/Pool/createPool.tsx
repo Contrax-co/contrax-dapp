@@ -5,8 +5,8 @@ import { ethers } from "ethers";
 import swal from "sweetalert";
 import { getUserSession } from "../../store/localStorage";
 import LoadingSpinner from "../../components/spinner/spinner";
+import { CustomDialog, useDialog } from "react-st-modal";
 
-// import "./createToken.css";
 import BottomBar from "../../components/bottomBar/BottomBar";
 import Button from "../../components/button/Button";
 import { H2, H3 } from "../../components/text/Text";
@@ -15,15 +15,18 @@ import { Form } from "../../components/form/Form";
 import { StyledDropBtn } from "../../components/form/dropdownInput/DropdownInput.styles";
 import TokenModal from "../../components/OwnTokenModal";
 import TokenModal1 from "../../components/CustomToken";
-import Pools from "../../components/pools";
+import Pools from "./Pools";
 
 import abi from "../../config/sushiswap.json";
 import ercabi from "../../config/erc20.json";
 import factory from "../../config/pool.json";
-
+import Modals from "./modal/modal";
+import OwnModals from "./modal/OwnModal";
+import "./createPool.css";
 export default function CreatePools({ lightMode }: any) {
   const { ethereum } = window;
-
+  const [openModalFrom, setOpenModalFrom] = useState(false);
+  const [openModalTo, setOpenModalTo] = useState(false);
   const [tokenOne, setTokenOne] = useState<any | null>(null);
   const [tokenTwo, setTokenTwo] = useState<any | null>(null);
   const [walletAddress, setWalletAddress] = useState(null);
@@ -34,7 +37,11 @@ export default function CreatePools({ lightMode }: any) {
   const [dtoken, setDTokens] = useState<any[]>([]);
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState([]);
-
+  const [data, setData] = useState([]);
+  const [tokenId1, setTokenId1] = useState<any | null>(null);
+  const [tokenSymbol, setTokenSymbols] = useState<any | null>(null);
+  const [tokenId2, setTokenId2] = useState<any | null>(null);
+  const [tokenSymbols, setTokenSymbolss] = useState<any | null>(null);
   useEffect(() => {
     let walletData: any;
     let sessionData = getUserSession();
@@ -90,8 +97,30 @@ export default function CreatePools({ lightMode }: any) {
     getBalance();
   }, []);
 
+  useEffect(() => {
+    fetch(
+      `https://api.covalenthq.com/v1/42161/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=true/`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Basic Y2tleV81YzcwODllZTFiMTQ0NWM3Yjg0NjcyYmFlM2Q6",
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((items) => {
+        console.log(items.data.items);
+        setData(items.data.items);
+      })
+      .catch((error) => {
+        console.log("sorry");
+        console.log(error);
+      });
+  }, [wallet]);
   async function getBalance(item) {
     try {
+      console.log(tokenId1, tokenSymbol);
       const tokenABI = ercabi.abi;
       const tokenAddress: any = tokenOne.contract_address;
       const tokenAddressb: any = tokenTwo.id;
@@ -115,16 +144,16 @@ export default function CreatePools({ lightMode }: any) {
     console.log(
       tokenOneAmount,
       tokenTwoAmount,
-      tokenOne.contract_address,
-      tokenTwo.id
+      tokenId1,
+      tokenId2
     );
     const contractAddress = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506";
     const factoryAddress = "0x87e49e9B403C91749dCF89be4ab1d400CBD4068C";
     const contractABI = factory;
     const tokenABI = ercabi.abi;
     // const factoryABI = factory;
-    const tokenAddress: any = tokenOne.contract_address;
-    const tokenAddressb: any = tokenTwo.id;
+    const tokenAddress: any =tokenId1;
+    const tokenAddressb: any =    tokenId2;
     console.log(tokenAddress, tokenAddressb);
     const amount1: any = tokenOneAmount;
     const amount2: any = tokenTwoAmount;
@@ -197,71 +226,101 @@ export default function CreatePools({ lightMode }: any) {
   }
   return (
     <>
-    <div className="whole__exchange__container">
-       <div className={`containers ${lightMode && "containers-light"}`}>
-         
-         <h1>Enter Token Parameters</h1>
- 
-         <form className="forms">
-           <div className="rows">
-             <div className="column">
-               <label>Token Name</label>
-               <input
-                 className={`inputs ${lightMode && "inputs-light"}`}
-                 type="text"
-                 id="name"
-                 placeholder="Token Name"
-                 onChange={(e) => setTokenName(e.target.value)}
-               />
-             </div>
-             <div className="column">
-               <label htmlFor="email">Token Symbol</label>
-               <input
-                 className={`inputs ${lightMode && "inputs-light"}`}
-                 type="text"
-                 id="email"
-                 placeholder="Token Symbol"
-                 onChange={(e) => setTokenSymbol(e.target.value)}
-               />
-             </div>
-           </div>
-           <div className="rows">
-             <div className="column">
-               <label htmlFor="subject">Token Supply</label>
-               <input
-                 className={`inputs ${lightMode && "inputs-light"}`}
-                 type="number"
-                 id="subject"
-                 placeholder="Total Supply"
-                 onChange={(e) => setTokenSupply(e.target.value)}
-               />
-             </div>
-             <div className="column">
-               <label htmlFor="contact">Decimals</label>
-               <input
-                 className={`inputs ${lightMode && "inputs-light"}`}
-                 type="number"
-                 id="contact"
-                 placeholder="Decimals"
-                 onChange={(e) => setTokenDecimal(e.target.value)}
-               />
-             </div>
-           </div>
-         
-         </form>
-         <div className="buttons">
- 
-           <button type="button" className="buttonss">
-             Create a Token
-           </button>
+      <div className="pages">
+        <div className={`containeres ${lightMode && "containeres-light"}`}>
+          <h1>Create a Pool</h1>
        
-         </div>
-         
-       </div>
-       
- {/* <Pools lightMode={lightMode}/> */}
- </div>
-       {/* <BottomBar /> */}
-     </>
+          <form className="forms">
+            <div className="rows">
+              <div className="column">
+                <button
+                  type="button"
+                  onClick={() => setOpenModalFrom(true)}
+                  className={`inputes ${lightMode && "inputes-light"}`}
+                >
+                  {tokenSymbol ? tokenSymbol : "Select Token"}
+                </button>
+              </div>
+              <div className="column">
+                <button
+                  type="button"
+                  onClick={() => setOpenModalTo(true)}
+                  className={`inputes ${lightMode && "inputes-light"}`}
+                >
+                  {tokenSymbols ? tokenSymbols : "Select Token"}
+                </button>
+              </div>
+            </div>
+
+            <label htmlFor="subject">{tokenSymbol} Amount</label>
+            {tokenSymbol ? (
+              <input
+                className={`inputes ${lightMode && "inputes-light"}`}
+                type="number"
+                id="subject"
+                placeholder="0"
+                onChange={(e) => setTokenOneAmount(e.target.value)}
+              />
+            ) : (
+              <input
+                className={`inputes ${lightMode && "inputes-light"}`}
+                type="number"
+                id="subject"
+                placeholder="0%"
+               
+                disabled="disabled"
+              />
+            )}
+
+            <label htmlFor="subject">{tokenSymbols} Amount</label>
+            {tokenSymbols ? (
+              <input
+                className={`inputes ${lightMode && "inputes-light"}`}
+                type="number"
+                id="subject"
+                placeholder="0"
+                onChange={(e) => setTokenTwoAmount(e.target.value)}
+              />
+            ) : (
+              <input
+                className={`inputes ${lightMode && "inputes-light"}`}
+                type="number"
+                id="subject"
+                placeholder="0%"
+               
+                disabled="disabled"
+              />
+            )}
+          </form>
+          <div className="buttones">
+            <button type="button" onClick={handleCreatePool} className="buttonsss">
+              Create a Pool
+            </button>
+          </div>
+        </div>
+
+        {openModalFrom ? (
+          <Modals
+            tokens={StableTOKEN}
+            setOpenModal={setOpenModalFrom}
+            lightMode={lightMode}
+            setTokenId={setTokenId1}
+            setTokenSymbol={setTokenSymbols}
+          />
+        ) : null}
+        {openModalTo ? (
+          <OwnModals
+            tokens={data}
+            setOpenModal={setOpenModalTo}
+            lightMode={lightMode}
+            setTokenId={setTokenId2}
+            setTokenSymbol={setTokenSymbolss}
+          />
+        ) : null}
+
+        <Pools lightMode={lightMode}/>
+      </div>
+      {/* <BottomBar /> */}
+    </>
   );
 }
