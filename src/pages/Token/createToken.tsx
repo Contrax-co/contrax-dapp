@@ -144,7 +144,7 @@ export default function CreateToken({ lightMode }: any) {
 
   return (
     <>
-   <div className="whole__exchange__container">
+<div className="pages">
       <div className={`containers ${lightMode && "containers-light"}`}>
         
         <h1>Enter Token Parameters</h1>
