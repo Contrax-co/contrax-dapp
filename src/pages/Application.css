@@ -5,6 +5,7 @@
   top: 0;
   bottom: 0;
   position: fixed;
+  overflow-y: auto;
 }
 .modal-content{
   z-index: 9999999999f !important;
