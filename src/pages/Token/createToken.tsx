@@ -117,8 +117,8 @@ export default function CreateToken({ lightMode }: any) {
               setIsLoading(false);
 
               swal({
-                title: "Good job!",
-                text: "Token Created SuccessFully.Please allow a few minutes for your token to appear in the Token Table ",
+                title: "Token Created!",
+                text: "Please allow a few minutes for your token to appear in the Token Table ",
                 icon: "success",
               }).then((data) => {});
             }
