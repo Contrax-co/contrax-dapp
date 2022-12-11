@@ -8,7 +8,7 @@ import { getUserSession, setUserSession } from '../store/localStorage';
 import Logout from '../components/Logout/Logout';
 import Exchange from '../components/Exchange/Exchange';
 import Compound from '../components/Compound/Compound';
-import CreateToken from './createToken';
+import CreateToken from './Token/createToken';
 import CreatePool from './createPool';
 import * as ethers from 'ethers';
 import Dashboard from '../components/Dashboard/Dashboard';
