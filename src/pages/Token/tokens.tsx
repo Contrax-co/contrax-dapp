@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { getUserSession } from '../store/localStorage';
+import { getUserSession } from '../../store/localStorage';
 import { gql, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import LoadingSpinner from './spinner/spinner';
-import "./token.css"
+import LoadingSpinner from '../../components/spinner/spinner';
+import "./tokens.css"
 import { ethers } from 'ethers';
-const contractFile = require('../config/erc20.json');
+const contractFile = require('../../config/erc20.json');
 
 
 
@@ -70,13 +70,14 @@ export default function Tokens({ lightMode }: any) {
 
   return (
     <>
+    <div className={`table-containers ${lightMode && "table-containers-light"}`}>
       <div className="table-responsive">
         <table className="table table-hover-token">
           <thead>
             <tr
                 className={`table__input-token ${lightMode && 'table--light-token '}`}
             >
-              <th>#</th>
+              <th className={`th ${lightMode && "th-light"}`}>#</th>
               <th>Token Symbol</th>
               <th>Token Name</th>
               <th>Decimal</th>
@@ -111,6 +112,7 @@ export default function Tokens({ lightMode }: any) {
             </tbody>
           )}
         </table>
+      </div>
       </div>
     </>
   );

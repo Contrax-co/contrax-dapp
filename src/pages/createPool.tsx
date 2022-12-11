@@ -4,7 +4,7 @@ import { gql, useQuery } from "@apollo/client";
 import { ethers } from "ethers";
 import swal from "sweetalert";
 import { getUserSession } from "../store/localStorage";
-import "./createToken.css";
+// import "./createToken.css";
 import BottomBar from "../components/bottomBar/BottomBar";
 import Button from "../components/button/Button";
 import { H2, H3 } from "../components/text/Text";
