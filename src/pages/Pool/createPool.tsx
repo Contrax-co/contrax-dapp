@@ -158,7 +158,7 @@ export default function CreatePools({ lightMode }: any) {
       if (hash) {
         setIsLoading(false);
         swal({
-          title: "Pool Deployed",
+          title: "Pool Deployed!",
           text: "Please allow a few minutes to see your pool in the table, and another day or two from SushiSwap to actually display the pool.",
           icon: "success",
 
