@@ -4,6 +4,7 @@ import { GiFarmTractor, GiToken } from 'react-icons/gi';
 import { HiDocumentText } from 'react-icons/hi';
 import { AiOutlineExport } from 'react-icons/ai';
 import { FaExchangeAlt } from 'react-icons/fa';
+import {RiFundsLine} from 'react-icons/ri'
 import logo from '../../images/logo.png';
 import logo2 from '../../images/logo-4x.png';
 import LightModeToggle from '../LightModeToggle';
@@ -53,7 +54,7 @@ function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
 
         <SidebarItem
           title="Create pool"
-          icon={<GiToken />}
+          icon={<RiFundsLine />}
           onClick={() => setMenuItem('Create pool')}
           active={menuItem === 'Create pool'}
           lightMode={lightMode}

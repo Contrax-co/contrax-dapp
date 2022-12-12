@@ -6,7 +6,6 @@
   position: fixed;
   overflow-y: scroll;
 }
-
 .containers {
   background-color: #012243;
   width: 50%;
@@ -17,7 +16,7 @@
   left: 40%;
   top: 55%;
   right: 50%;
-  border-radius: 10px;
+  border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
   color: white;
 }
@@ -32,7 +31,6 @@
   position: relative;
   margin: 30px auto 0 auto;
 }
-
 .rows {
   width: 100%;
   display: grid;
@@ -40,23 +38,19 @@
   grid-gap: 30px 30px;
   margin-bottom: 50px;
 }
-
 .rows-check {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 0.5fr));
   grid-gap: 0% 0%;
 }
-
 .one {
   width: 150%;
 }
-
 .two {
   width: 20%;
   background-color: gray;
 }
-
 label {
   font-size: larger;
   font-weight: bolder;
@@ -74,7 +68,6 @@ label {
   background-color: #001428;
   color: white;
 }
-
 .inputs-light {
   width: 100%;
   font-weight: 400;
@@ -140,6 +133,18 @@ label {
   padding: 25px 20px;
   width: 50%;
   background-color: #63cce0;
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: larger;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.buttonss-disabled {
+  border: 2px solid;
+  padding: 25px 20px;
+  width: 50%;
+  background-color: rgb(156, 178, 193);
   color: #ffffff;
   border-radius: 10px;
   font-size: larger;

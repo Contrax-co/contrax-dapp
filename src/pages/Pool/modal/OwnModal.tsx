@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import './modal.css';
+import { useRef } from "react";
+import "./modal.css";
 
 function OwnModals({
   lightMode,
@@ -26,8 +26,8 @@ function OwnModals({
 
   return (
     <div className={`modal__containers`} ref={modalRef} onClick={closeModal}>
-      <div className={`swap__modals ${lightMode && 'swap__modal--lights'}`}>
-        <div className={`modal__titles ${lightMode && 'modal__title--lights'}`}>
+      <div className={`swap__modals ${lightMode && "swap__modal--lights"}`}>
+        <div className={`modal__titles ${lightMode && "modal__title--lights"}`}>
           <p>Select Own token</p>
         </div>
 
@@ -36,14 +36,14 @@ function OwnModals({
             <div
               key={token.contract_address}
               className={`exchange_itemss ${
-                lightMode && 'exchange_itemss--light'
+                lightMode && "exchange_itemss--light"
               }`}
               onClick={() => {
                 setId(token.contract_address, token.contract_ticker_symbol);
               }}
             >
               <div
-                className={`pad_optionss ${lightMode && 'pad_options--lights'}`}
+                className={`pad_optionss ${lightMode && "pad_options--lights"}`}
               >
                 <p>{token.contract_name}</p>
                 <p className="mini">{token.contract_ticker_symbol}</p>
