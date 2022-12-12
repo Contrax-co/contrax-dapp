@@ -1,4 +1,3 @@
-// TODO - Need to update this file. It's only a sample template at the moment
 import { weight, family } from './fonts';
 
 const baseStyles = (fontSize, fontWeight, lineHeight) => ({
