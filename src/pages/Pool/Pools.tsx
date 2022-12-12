@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { getUserSession } from '../../store/localStorage';
+import { Link } from '../../components/text/Text';
 import LoadingSpinner from '../../components/spinner/spinner';
 import './Pools.css';
+import { BiLinkExternal } from 'react-icons/bi';
 import axios from 'axios';
 
 export default function Pools({ lightMode }: any) {
@@ -10,8 +12,6 @@ export default function Pools({ lightMode }: any) {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // TODO - useEffect has a missing dependency: 'pools'
-  // either include it or remove the dependency array
   useEffect(() => {
     let sessionData = getUserSession();
     let walletData: any;
@@ -104,13 +104,17 @@ export default function Pools({ lightMode }: any) {
                       <td>{token.id}</td>
                       <td>{token.name}</td>
                       <td>
-                        <a
-                          href={`'https://app.sushi.com/analytics/pools/' + ${token.id}+'?chainId=42161'`}
+                        <Link
+                          link={
+                            'https://app.sushi.com/analytics/pools/' +
+                            token.id +
+                            '?chainId=42161'
+                          }
                           target="_blank"
-                          rel="noopener noreferrer"
+                          rel="noreferrer"
                         >
-                          Click here
-                        </a>
+                          {'View on Sushiswap'} <BiLinkExternal />
+                        </Link>{' '}
                       </td>
                     </tr>
                   );
