@@ -202,11 +202,11 @@ export default function CreatePools({ lightMode }: any) {
       if (hash) {
         swal({
           title: "Pool Deployed",
-          text: "Your Pool is Deployed.",
+          text: "Success! Please allow a few minutes to show up in the table, and a few hours for SushiSwap to add it.",
           icon: "success",
 
           buttons: {
-            ok: "CLOSE!",
+            ok: "Close",
             Transaction: {
               value: "Transaction",
             },
