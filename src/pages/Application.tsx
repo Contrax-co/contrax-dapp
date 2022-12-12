@@ -54,6 +54,7 @@ function Application() {
 
   useEffect(() => {
     network();
+  
     wallet();
   });
 
@@ -71,33 +72,37 @@ function Application() {
     }
   }, []);
 
-  async function network() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
-    const { chainId } = await provider.getNetwork();
-    console.log(chainId);
 
-    if (chainId !== 42161) {
-      console.log(networkId, 'ok');
-      window.ethereum.request({
-        method: 'wallet_addEthereumChain',
-        params: [
-          {
-            chainId: '0xA4B1',
-            rpcUrls: ['https://arb1.arbitrum.io/rpc/'],
-            chainName: 'Arbitrum',
-            nativeCurrency: {
-              name: 'ETH',
-              symbol: 'ETH',
-              decimals: 18,
-            },
-            blockExplorerUrls: ['https://arbiscan.io/'],
-          },
-        ],
+
+
+async function network(){
+  const chainId = 42161
+  if (window.ethereum.networkVersion !== chainId) {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId:'0xA4B1' }]
       });
-    } else {
-      console.log(networkId, 'sorry');
+    } catch (err:any) {
+        // This error code indicates that the chain has not been added to MetaMask
+      
+        if (err.code === 4902) {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainName: 'Arbitrum One',
+              chainId: '0xA4B1',
+              nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
+              rpcUrls: ['https://arb1.arbitrum.io/rpc/']
+            }
+          ]
+        });
+      }
     }
   }
+}
+
 
   async function wallet() {
     const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
