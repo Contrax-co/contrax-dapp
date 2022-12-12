@@ -1,9 +1,6 @@
 import styled, { css } from 'styled-components/macro';
 import * as colors from '../../theme/colors';
 
-// export const StyledCard = styled('div')((props) => ({
-// }));
-
 export const StyledCard = styled.div.attrs((props) => {
   return {
     className: 'card ' + props.className,

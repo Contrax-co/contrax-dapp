@@ -3,12 +3,14 @@ import './Compound.css';
 import CompoundItem from './compound-item/CompoundItem';
 
 var isLocalhost = false;
-if (window.location.hostname === "localhost") {
+if (window.location.hostname === 'localhost') {
   isLocalhost = true;
 }
 
-var fetchUrl = "https://testing.contrax.finance/api/pools.json";
-if (isLocalhost) { fetchUrl = 'http://localhost:3000/api/pools.json'}
+var fetchUrl = 'https://testing.contrax.finance/api/pools.json';
+if (isLocalhost) {
+  fetchUrl = 'http://localhost:3000/api/pools.json';
+}
 
 function Compound({ lightMode, currentWallet, connectWallet }: any) {
   const [pools, setPools] = useState([]);

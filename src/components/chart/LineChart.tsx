@@ -1,4 +1,3 @@
-import React from 'react';
 import { Chart } from 'react-google-charts';
 import * as colors from '../../theme/colors';
 

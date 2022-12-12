@@ -53,7 +53,6 @@
   width: 60px;
   height: 60px;
   margin-right: -10px;
-
 }
 
 .logo {
@@ -170,93 +169,93 @@
   padding-bottom: 10px;
 }
 
-.see_details_dropdown{
+.see_details_dropdown {
   display: flex;
   align-items: center;
   width: 100%;
   justify-content: center;
-  color:white;
+  color: white;
 }
 
-.see_details_dropdown:hover{
+.see_details_dropdown:hover {
   cursor: pointer;
 }
 
-.see_details_dropdown--light{
-  color:black;
+.see_details_dropdown--light {
+  color: black;
 }
 
-.see_details_description{
-  color:white;
-  font-size:17px;
-  font-weight:600;
-  margin-right:5px;
+.see_details_description {
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  margin-right: 5px;
 }
 
-.see_details_description--light{
-  color:black;
+.see_details_description--light {
+  color: black;
 }
 
-.container1{
+.container1 {
   flex: 2;
   display: flex;
-  justify-content:center;
+  justify-content: center;
   align-items: center;
 }
 
-.container_rewards{
+.container_rewards {
   width: 20px;
   height: 20px;
 }
 
-.reward_apy{
+.reward_apy {
   color: lightgrey;
   font-size: 15px;
   font-weight: 600;
 }
 
-.reward_apy--light{
+.reward_apy--light {
   color: #8798ad;
 }
 
-.container1_apy{
+.container1_apy {
   display: flex;
   align-items: center;
-  position :relative;
-}
-
-.apy_info{
-  color: rgb(237, 232, 232);
-  font-size:15px;
-  margin-left:5px;
   position: relative;
 }
 
-.apy_info--light{
-  color:black;
+.apy_info {
+  color: rgb(237, 232, 232);
+  font-size: 15px;
+  margin-left: 5px;
+  position: relative;
 }
 
-.apy_show{
-  position:absolute;
+.apy_info--light {
+  color: black;
+}
+
+.apy_show {
+  position: absolute;
   box-sizing: border-box;
-  z-index:999;
-  display:flex;
+  z-index: 999;
+  display: flex;
   flex-direction: column;
   background-color: #032a51;
   box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%);
-  color:white;
+  color: white;
   padding: 10px;
-  width:180px;
-  border-radius:10px;
+  width: 180px;
+  border-radius: 10px;
 }
 
-.apy_show--light{
-  color:black;
+.apy_show--light {
+  color: black;
   background-color: white;
 }
 
-.apy_show> p {
+.apy_show > p {
   margin: 0;
-  font-size:13px;
-  font-weight:bold;
+  font-size: 13px;
+  font-weight: bold;
 }

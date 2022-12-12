@@ -1,83 +1,82 @@
 .to__input {
-    display: flex;
-    background-color: #001428;
-    color: white;
-    height: 60px;
-    padding: 5px;
-    border-radius: 15px;
-  }
-  
+  display: flex;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
+}
+
 .to__input--light {
-    background-color: rgb(233, 237, 245);
-    color: lightgrey;
+  background-color: rgb(233, 237, 245);
+  color: lightgrey;
 }
 
 .to__amount {
-    flex: 7;
-    border: none;
-    height: 100%;
-    border-right: 1px solid #043b71;
-    font-size: 25px;
-    background-color: #001428;
-    color: white;
+  flex: 7;
+  border: none;
+  height: 100%;
+  border-right: 1px solid #043b71;
+  font-size: 25px;
+  background-color: #001428;
+  color: white;
 }
-  
+
 .to__amount--light {
-    background-color: rgb(233, 237, 245);
-    border-right: 1px solid lightgrey;
-    color: black;
+  background-color: rgb(233, 237, 245);
+  border-right: 1px solid lightgrey;
+  color: black;
 }
 
 .dropdown__to {
-    flex: 2;
-    display: flex;
-    float: right;
-    align-items: center;
-    justify-content: center;
-    justify-content: space-evenly;
-    color: white;
+  flex: 2;
+  display: flex;
+  float: right;
+  align-items: center;
+  justify-content: center;
+  justify-content: space-evenly;
+  color: white;
 }
-  
+
 .dropdown__to--light:hover {
-    cursor: pointer;
-    color: #009aff;
+  cursor: pointer;
+  color: #009aff;
 }
 
 .dropdown__to:hover {
-    cursor: pointer;
-    color: #009aff;
+  cursor: pointer;
+  color: #009aff;
 }
 
 .dropdown__to--light {
-    color: black;
+  color: black;
 }
 
-.dropdown__to > p {
-
-}
+/* .dropdown__to > p {
+} */
 
 .swap__logo {
-    width: 30px;
+  width: 30px;
 }
 
-.to_div{
-    display: flex;
-    justify-content: space-between;
+.to_div {
+  display: flex;
+  justify-content: space-between;
 }
 
-.to_values{
-    margin:0;
-    display:flex;
-    flex-direction: column;
-    text-align:right;
+.to_values {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  text-align: right;
 }
 
-.to_usd{
-    font-weight: 700;
-    font-size: 18px;
-    margin:0;
+.to_usd {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0;
 }
 
-.to_usd--light{
-    color: black;
+.to_usd--light {
+  color: black;
 }

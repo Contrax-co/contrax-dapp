@@ -230,41 +230,41 @@
   border-radius: 10px;
   right: 20px;
   height: 130px;
-  width:300px;
+  width: 300px;
   display: flex;
   flex-direction: column;
   background-color: #032a51;
-  color:white;
+  color: white;
 }
 
-.withdraw_spinner--light{
+.withdraw_spinner--light {
   background-color: white;
-  box-shadow:0 4px 8px 0 rgb(0 0 0 / 20%);
-  color:black;
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%);
+  color: black;
 }
 
-.withdraw_spinner_top{
+.withdraw_spinner_top {
   display: flex;
   flex-direction: row;
-  height:90px;
-  width:100%;
+  height: 90px;
+  width: 100%;
 }
 
-.withdraw_spinner-left{
+.withdraw_spinner-left {
   margin-top: 20px;
   margin-left: 10px;
 }
 
-.withdraw_spinner_right{
+.withdraw_spinner_right {
   display: flex;
   flex-direction: column;
-  margin-left:15px;
-  width:100%;
+  margin-left: 15px;
+  width: 100%;
 }
 
-.withdraw_second{
-  margin-top:0;
-  max-width:80%;
+.withdraw_second {
+  margin-top: 0;
+  max-width: 80%;
   font-size: 13px;
   display: inline-block;
   white-space: nowrap;
@@ -272,9 +272,9 @@
   text-overflow: ellipsis;
 }
 
-.withdraw_spinner_bottom{
+.withdraw_spinner_bottom {
   display: flex;
-  height:40px;
+  height: 40px;
   width: 100%;
   border-top: 1px solid rgb(218, 216, 216);
   justify-content: center;
@@ -287,26 +287,26 @@
   width: 350px;
 }
 
-.withdraw_spinner_bottom:hover{
+.withdraw_spinner_bottom:hover {
   cursor: pointer;
 }
 
-.withdraw_withdraw{
+.withdraw_withdraw {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.withdraw_all{
+.withdraw_all {
   text-decoration: underline;
   margin-top: 5px;
 }
 
-.withdraw_all:hover{
+.withdraw_all:hover {
   cursor: pointer;
 }
 
-.withdraw_max:hover{
+.withdraw_max:hover {
   cursor: pointer;
 }
 
@@ -334,6 +334,5 @@
 }
 
 .withdraw_zap1_button_disable:hover {
-  cursor:not-allowed;
+  cursor: not-allowed;
 }
-

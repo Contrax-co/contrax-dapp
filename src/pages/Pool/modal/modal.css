@@ -1,0 +1,82 @@
+.modal__containers {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.swap__modals {
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  background-color: #012243;
+  width: 30%;
+  height: 60%;
+  border-radius: 15px;
+  position: relative;
+  animation: animate 0.3s;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.swap__modal--lights {
+  background-color: white;
+}
+
+.modal__titles {
+  width: 100%;
+  display: flex;
+  padding: 10px;
+  font-weight: bold;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.modal__title--lights {
+  color: black;
+}
+
+.exchange__logo2s {
+  width: 40px;
+  height: 40px;
+}
+
+.exchange_itemss {
+  display: flex;
+  font-weight: bold;
+  align-items: center;
+}
+
+.pad_optionss {
+  display: flex;
+  padding: 10px;
+  align-items: center;
+  color: white;
+}
+
+.pad_options--lights {
+  color: black;
+}
+
+.exchange_itemss:hover {
+  background-color: #032a51;
+  cursor: pointer;
+}
+
+.exchange_itemss--light:hover {
+  background-color: rgb(233, 237, 245);
+}
+
+.minis {
+  font-weight: normal;
+  font-size: 15px;
+  color: rgb(116, 114, 114);
+  margin-left: 10px;
+}

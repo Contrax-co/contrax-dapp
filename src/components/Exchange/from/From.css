@@ -1,103 +1,102 @@
-.from_div{
-    display: flex;
-    justify-content: space-between;
+.from_div {
+  display: flex;
+  justify-content: space-between;
 }
 
 .from__input {
-    display: flex;
-    background-color: #001428;
-    color: white;
-    height: 60px;
-    padding: 5px;
-    border-radius: 15px;
+  display: flex;
+  background-color: #001428;
+  color: white;
+  height: 60px;
+  padding: 5px;
+  border-radius: 15px;
 }
-  
+
 .from__input--light {
-    background-color: rgb(233, 237, 245);
-    color: lightgrey;
+  background-color: rgb(233, 237, 245);
+  color: lightgrey;
 }
 
 .from__amount {
-    flex: 7;
-    border: none;
-    height: 100%;
-    font-size: 25px;
-    background-color: #001428;
-    color: white;
+  flex: 7;
+  border: none;
+  height: 100%;
+  font-size: 25px;
+  background-color: #001428;
+  color: white;
 }
-  
+
 .from__amount--light {
-    background-color: rgb(233, 237, 245);
-    color: black;
+  background-color: rgb(233, 237, 245);
+  color: black;
 }
 
-.swap_max{
-    padding-right:10px;
-    font-weight:700;
-    color:white;
+.swap_max {
+  padding-right: 10px;
+  font-weight: 700;
+  color: white;
 }
 
-.swap_max:hover{
-    cursor: pointer;
+.swap_max:hover {
+  cursor: pointer;
 }
 
 .swap_max--light {
-    color: #009aff;
+  color: #009aff;
 }
 
 .dropdown__from {
-    flex: 2;
-    float: right;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    justify-content: space-evenly;
-    color: white;
-    border-left: 1px solid #043b71;
-    padding-left:10px;
-    text-align:center;
+  flex: 2;
+  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-content: space-evenly;
+  color: white;
+  border-left: 1px solid #043b71;
+  padding-left: 10px;
+  text-align: center;
 }
-  
+
 .dropdown__from:hover {
-    cursor: pointer;
-    color: #009aff;
+  cursor: pointer;
+  color: #009aff;
 }
 
 .dropdown__from--light:hover {
-    cursor: pointer;
-    color: #009aff;
+  cursor: pointer;
+  color: #009aff;
 }
 
 .dropdown__from--light {
-    color: black;
-    border-left: 1px solid lightgrey;
+  color: black;
+  border-left: 1px solid lightgrey;
 }
 
 .swap__logo {
-    width: 30px;
+  width: 30px;
 }
 
-.swap_amount:hover{
-    cursor: pointer;
+.swap_amount:hover {
+  cursor: pointer;
 }
 
-.from_values{
-    display:flex;
-    flex-direction: column;
-    text-align:right;
+.from_values {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
 }
 
-.from_usd{
-    font-weight: 700;
-    font-size: 18px;
-    margin: 0;
+.from_usd {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0;
 }
 
-.from_usd--light{
-    color: black;
+.from_usd--light {
+  color: black;
 }
 
-.swap_amount{
-    margin-top:0;
+.swap_amount {
+  margin-top: 0;
 }
-  

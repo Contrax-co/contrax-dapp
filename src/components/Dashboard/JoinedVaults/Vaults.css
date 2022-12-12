@@ -1,8 +1,8 @@
-.vaults_container{
-  width:100%;
+.vaults_container {
+  width: 100%;
   display: flex;
 }
 
-.vaults{
-  margin:5px;
+.vaults {
+  margin: 5px;
 }
