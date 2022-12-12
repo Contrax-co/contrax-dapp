@@ -100,25 +100,20 @@ export default function CreatePools({ lightMode }: any) {
         console.log(error);
       });
   }, [wallet]);
- 
+
   async function handleCreatePool() {
-    console.log(
-      tokenOneAmount,
-      tokenTwoAmount,
-      tokenId1,
-      tokenId2
-    );
+    console.log(tokenOneAmount, tokenTwoAmount, tokenId1, tokenId2);
     const contractAddress = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506";
     const factoryAddress = "0x87e49e9B403C91749dCF89be4ab1d400CBD4068C";
     const contractABI = factory;
     const tokenABI = ercabi.abi;
     // const factoryABI = factory;
-    const tokenAddress: any =tokenId1;
-    const tokenAddressb: any =    tokenId2;
+    const tokenAddress: any = tokenId1;
+    const tokenAddressb: any = tokenId2;
     console.log(tokenAddress, tokenAddressb);
     const amount1: any = tokenOneAmount;
     const amount2: any = tokenTwoAmount;
-setIsLoading(true);
+    setIsLoading(true);
     try {
       const amount1min: any = 0;
       const amount2min: any = 0;
@@ -193,10 +188,9 @@ setIsLoading(true);
       <div className="pages">
         <div className={`containeres ${lightMode && "containeres-light"}`}>
           <h1>Create a Pool</h1>
-       
+
           <form className="forms">
             <div className="rows">
-              
               <div className="column">
                 <button
                   type="button"
@@ -217,8 +211,6 @@ setIsLoading(true);
               </div>
             </div>
 
-          
-
             <label htmlFor="subject">{tokenSymbols} Amount</label>
             {tokenSymbols ? (
               <input
@@ -238,8 +230,7 @@ setIsLoading(true);
               />
             )}
 
-
-<label htmlFor="subject">{tokenSymbol} Amount</label>
+            <label htmlFor="subject">{tokenSymbol} Amount</label>
             {tokenSymbol ? (
               <input
                 className={`inputes ${lightMode && "inputes-light"}`}
@@ -254,27 +245,31 @@ setIsLoading(true);
                 type="number"
                 id="subject"
                 placeholder="0"
-               
                 disabled="disabled"
               />
             )}
           </form>
-          {isLoading ?
-             <div style={{ marginLeft: "45%" }}>
-          <LoadingSpinner/> </div> :
-          <div className="buttones">
-            {tokenOneAmount && tokenTwoAmount ? 
-             <button type="button" onClick={handleCreatePool} className="buttonsss">
-             Create a Pool
-           </button>
-           :
-           <button type="button"  className="buttonss-disabled" disabled>
-          Create a Pool
-         </button>
-          }
-           
-          </div>
-}
+          {isLoading ? (
+            <div style={{ marginLeft: "45%" }}>
+              <LoadingSpinner />{" "}
+            </div>
+          ) : (
+            <div className="buttones">
+              {tokenOneAmount && tokenTwoAmount ? (
+                <button
+                  type="button"
+                  onClick={handleCreatePool}
+                  className="buttonsss"
+                >
+                  Create a Pool
+                </button>
+              ) : (
+                <button type="button" className="buttonss-disabled" disabled>
+                  Create a Pool
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {openModalFrom ? (
@@ -296,7 +291,7 @@ setIsLoading(true);
           />
         ) : null}
 
-        <Pools lightMode={lightMode}/>
+        <Pools lightMode={lightMode} />
       </div>
       {/* <BottomBar /> */}
     </>

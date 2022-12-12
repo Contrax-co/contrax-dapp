@@ -16,18 +16,16 @@ declare global {
 }
 
 export default function CreateToken({ lightMode }: any) {
-  const [tokenSymbol,setTokenSymbol] = useState("");
-  const [tokenSupply,setTokenSupply] = useState("");
-  const [tokenName,setTokenName] = useState("");
-  const [tokenDecimal,setTokenDecimal] = useState("");
-  const [tokenBurn,setTokenBurn] = useState(false);
-  const [tokenBurnValue,setTokenBurnValue] = useState("");
-  const [tokenTradingFee,setTokenTradingFee] = useState(false);
-  const [tokenTradingFeeValue,setTradingFeeValue] = useState("");
-  const [tokenSupportSupplyIncrease,setTokenSupportSupplyIncrease] = useState(false);
-
-
-
+  const [tokenSymbol, setTokenSymbol] = useState("");
+  const [tokenSupply, setTokenSupply] = useState("");
+  const [tokenName, setTokenName] = useState("");
+  const [tokenDecimal, setTokenDecimal] = useState("");
+  const [tokenBurn, setTokenBurn] = useState(false);
+  const [tokenBurnValue, setTokenBurnValue] = useState("");
+  const [tokenTradingFee, setTokenTradingFee] = useState(false);
+  const [tokenTradingFeeValue, setTradingFeeValue] = useState("");
+  const [tokenSupportSupplyIncrease, setTokenSupportSupplyIncrease] =
+    useState(false);
 
   const [tokenAddress, setTokenAddress] = useState();
   const [wallet, setWallet] = useState();
@@ -45,7 +43,6 @@ export default function CreateToken({ lightMode }: any) {
   }, []);
 
   const handleSubmit = async () => {
-
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
@@ -136,129 +133,143 @@ export default function CreateToken({ lightMode }: any) {
 
   return (
     <>
-<div className="pages">
-      <div className={`containers ${lightMode && "containers-light"}`}>
-        
-        <h1>Enter Token Parameters</h1>
+      <div className="pages">
+        <div className={`containers ${lightMode && "containers-light"}`}>
+          <h1>Enter Token Parameters</h1>
 
-        <form className="forms">
-          <div className="rows">
-            <div className="column">
-              <label>Token Name</label>
-              <input
-                className={`inputs ${lightMode && "inputs-light"}`}
-                type="text"
-                id="name"
-                placeholder="Token Name"
-                onChange={(e) => setTokenName(e.target.value)}
-              />
+          <form className="forms">
+            <div className="rows">
+              <div className="column">
+                <label>Token Name</label>
+                <input
+                  className={`inputs ${lightMode && "inputs-light"}`}
+                  type="text"
+                  id="name"
+                  placeholder="Token Name"
+                  onChange={(e) => setTokenName(e.target.value)}
+                />
+              </div>
+              <div className="column">
+                <label htmlFor="email">Token Symbol</label>
+                <input
+                  className={`inputs ${lightMode && "inputs-light"}`}
+                  type="text"
+                  id="email"
+                  placeholder="Token Symbol"
+                  onChange={(e) => setTokenSymbol(e.target.value)}
+                />
+              </div>
             </div>
-            <div className="column">
-              <label htmlFor="email">Token Symbol</label>
-              <input
-                className={`inputs ${lightMode && "inputs-light"}`}
-                type="text"
-                id="email"
-                placeholder="Token Symbol"
-                onChange={(e) => setTokenSymbol(e.target.value)}
-              />
+            <div className="rows">
+              <div className="column">
+                <label htmlFor="subject">Token Supply</label>
+                <input
+                  className={`inputs ${lightMode && "inputs-light"}`}
+                  type="number"
+                  id="subject"
+                  placeholder="Total Supply"
+                  onChange={(e) => setTokenSupply(e.target.value)}
+                />
+              </div>
+              <div className="column">
+                <label htmlFor="contact">Decimals</label>
+                <input
+                  className={`inputs ${lightMode && "inputs-light"}`}
+                  type="number"
+                  id="contact"
+                  placeholder="Decimals"
+                  onChange={(e) => setTokenDecimal(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-          <div className="rows">
-            <div className="column">
-              <label htmlFor="subject">Token Supply</label>
+            <h1>Special Features</h1>
+            <div className="rows-check">
+              <div className="one">
+                <label className="form-controlss">
+                  <input
+                    onChange={(e) => setTokenBurn(true)}
+                    type="checkbox"
+                    name="checkbox"
+                  />{" "}
+                  Burn
+                </label>
+                <p>
+                  A percentage of tokens will be sent to the burn address for
+                  each on-chain transfer
+                </p>
+              </div>
+
               <input
-                className={`inputs ${lightMode && "inputs-light"}`}
-                type="number"
-                id="subject"
-                placeholder="Total Supply"
-                onChange={(e) => setTokenSupply(e.target.value)}
-              />
-            </div>
-            <div className="column">
-              <label htmlFor="contact">Decimals</label>
-              <input
-                className={`inputs ${lightMode && "inputs-light"}`}
+                className={`inputs-check ${lightMode && "inputs-check-light"}`}
                 type="number"
                 id="contact"
-                placeholder="Decimals"
-                onChange={(e) => setTokenDecimal(e.target.value)}
+                placeholder="0%"
+                onChange={(e) => setTokenBurnValue(e.target.value)}
               />
             </div>
-          </div>
-          <h1>Special Features</h1>
-          <div className="rows-check">
-            <div className="one">
-              <label className="form-controlss">
-                <input onChange={(e) => setTokenBurn(true)} type="checkbox" name="checkbox" /> Burn
-              </label>
-              <p>
-                A percentage of tokens will be sent to the burn address for each
-                on-chain transfer
-              </p>
+            <div className="rows-check">
+              <div className="one">
+                <label className="form-controlss">
+                  <input
+                    onChange={(e) => setTokenTradingFee(true)}
+                    type="checkbox"
+                    name="checkbox"
+                  />
+                  Trading Fees
+                </label>
+                <p>
+                  A percentage of tokens will be sent to the creators address
+                  for each on-chain transfer
+                </p>
+              </div>
+              <input
+                className={`inputs-check ${lightMode && "inputs-check-light"}`}
+                type="number"
+                id="contact"
+                placeholder="0%"
+                onChange={(e) => setTradingFeeValue(e.target.value)}
+              />
             </div>
+            <label className="form-controlss">
+              <input
+                onChange={(e) => setTokenSupportSupplyIncrease(true)}
+                type="checkbox"
+                name="checkbox"
+              />
+              Supports Supply Increase
+            </label>
+            <p>
+              Allows the creator to issue additional tokens after the token
+              creation
+            </p>
+          </form>
+          <div className="buttons">
+            {!isLoading ? (
+              <div>
+                {tokenName && tokenDecimal && tokenSupply && tokenSymbol ? (
+                  <button
+                    onClick={handleSubmit}
+                    type="button"
+                    className="buttonss"
+                  >
+                    Create a Token
+                  </button>
+                ) : (
+                  <button type="button" className="buttonss-disabled">
+                    Create a Token
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div style={{ marginLeft: "20%" }}>
+                <LoadingSpinner />
+              </div>
+            )}
+          </div>
+        </div>
 
-            <input
-              className={`inputs-check ${lightMode && "inputs-check-light"}`}
-              type="number"
-              id="contact"
-              placeholder="0%"
-              onChange={(e) => setTokenBurnValue(e.target.value)}
-            />
-          </div>
-          <div className="rows-check">
-            <div className="one">
-              <label className="form-controlss">
-                <input onChange={(e) => setTokenTradingFee(true)} type="checkbox" name="checkbox" />
-                Trading Fees
-              </label>
-              <p>
-                A percentage of tokens will be sent to the creators address for
-                each on-chain transfer
-              </p>
-            </div>
-            <input
-              className={`inputs-check ${lightMode && "inputs-check-light"}`}
-              type="number"
-              id="contact"
-              placeholder="0%"
-              onChange={(e) => setTradingFeeValue(e.target.value)}
-            />
-          </div>
-          <label className="form-controlss">
-            <input onChange={(e) => setTokenSupportSupplyIncrease(true)} type="checkbox" name="checkbox" />
-            Supports Supply Increase
-          </label>
-          <p>
-            Allows the creator to issue additional tokens after the token
-            creation
-          </p>
-        </form>
-        <div className="buttons">
-        {!isLoading ? (
-      <div>
-        {tokenName && tokenDecimal && tokenSupply && tokenSymbol ?  
-          <button onClick={handleSubmit} type="button" className="buttonss">
-            Create a Token
-          </button>
-          :
-          <button  type="button" className="buttonss-disabled">
-     Create a Token
-        </button>
-}
-          </div>
-        ) : (
-          <div style={{ marginLeft: "20%" }}>
-          <LoadingSpinner />
-        </div>
-        )
-}
-        </div>
-        
+        <Tokens lightMode={lightMode} />
       </div>
-      
-<Tokens lightMode={lightMode}/>
-</div>
       {/* <BottomBar /> */}
     </>
   );

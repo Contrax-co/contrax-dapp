@@ -1,41 +1,42 @@
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-  }
-  /* Zebra striping */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+/* Zebra striping */
 
-  .th { 
-    background: #001428; 
-    color: white; 
-    font-weight: bold; 
-  }
-  .th-light { 
-    background: white; 
-    color: black; 
-    font-weight: bold; 
-  }
-  td, th { 
-    padding: 10px; 
-    border: 1px solid #ccc; 
-    text-align: left; 
-  }
+.th {
+  background: #001428;
+  color: white;
+  font-weight: bold;
+}
+.th-light {
+  background: white;
+  color: black;
+  font-weight: bold;
+}
+td,
+th {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
 
-  .table-containers{
-    background-color: #001428;
-    width: 50%;
-    min-width: 420px;
-    padding: 15px 30px;
-    transform: translate(-50%,-10%);
-    position: absolute;
-    left: 40%;
-    top: 105%;
-    right: 50%;
-    border-radius: 10px;
-    box-shadow: 20px 30px 25px rgba(0,0,0,0.15);
-    color: white;
-  }
-  
-  .table-containers-light{
-    background-color: #ffffff;
-    color: black;
-  }
+.table-containers {
+  background-color: #001428;
+  width: 50%;
+  min-width: 420px;
+  padding: 15px 30px;
+  transform: translate(-50%, -10%);
+  position: absolute;
+  left: 40%;
+  top: 105%;
+  right: 50%;
+  border-radius: 10px;
+  box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
+  color: white;
+}
+
+.table-containers-light {
+  background-color: #ffffff;
+  color: black;
+}
