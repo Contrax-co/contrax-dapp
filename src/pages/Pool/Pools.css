@@ -9,13 +9,11 @@ table {
   color: white;
   font-weight: bold;
 }
-
 .th-light {
   background: white;
   color: black;
   font-weight: bold;
 }
-
 td,
 th {
   padding: 10px;
