@@ -43,6 +43,10 @@ function VaultItem({
     calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound);
     findCompoundAPY(vault.apy, setCompoundAPY);
   }, [currentWallet, vault, tokenAmount, price, rewardAPY, feeAPY]);
+  // TODO - useEffect has missing dependencies: 'setSinglePrice' and 'singlePrice'.
+  // Either include them or remove the dependency array. If 'setSinglePrice'
+  // changes too often, find the parent component that defines it and wrap
+  // that definition in useCallback()
 
   return (
     <div>
