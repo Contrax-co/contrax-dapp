@@ -37,7 +37,7 @@ export default function CreatePools({ lightMode }: any) {
   const StableTOKEN = [
     {
       id: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
-      name: "USD Stablecoin",
+      name: "USD Coin",
       symbol: "USDC",
     },
     {
