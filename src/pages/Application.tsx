@@ -102,6 +102,7 @@ function Application() {
   async function wallet() {
     const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
     let accounts = await provider.send('eth_requestAccounts', []);
+    // TODO - 'account' variable assigned a value but never used
     let account = accounts[0];
     provider.on('accountsChanged', function (accounts) {
       account = accounts[0];

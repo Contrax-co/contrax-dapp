@@ -1,12 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getUserSession } from '../../store/localStorage';
-import { gql, useQuery } from '@apollo/client';
-import { Link } from 'react-router-dom';
 import LoadingSpinner from '../../components/spinner/spinner';
 import './Pools.css';
-import { ethers } from 'ethers';
 import axios from 'axios';
-const contractFile = require('../../config/erc20.json');
 
 export default function Pools({ lightMode }: any) {
   const [wallet, setWallet] = useState();
@@ -14,7 +10,8 @@ export default function Pools({ lightMode }: any) {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // TODO - Switch to useQuery()
+  // TODO - useEffect has a missing dependency: 'pools'
+  // either include it or remove the dependency array
   useEffect(() => {
     let sessionData = getUserSession();
     let walletData: any;
@@ -110,7 +107,7 @@ export default function Pools({ lightMode }: any) {
                         <a
                           href={`'https://app.sushi.com/analytics/pools/' + ${token.id}+'?chainId=42161'`}
                           target="_blank"
-                          rel="noopener"
+                          rel="noopener noreferrer"
                         >
                           Click here
                         </a>
