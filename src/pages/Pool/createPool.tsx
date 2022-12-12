@@ -1,47 +1,30 @@
 // @ts-nocheck
 import { useState, useEffect } from "react";
-import { gql, useQuery } from "@apollo/client";
 import { ethers } from "ethers";
 import swal from "sweetalert";
 import { getUserSession } from "../../store/localStorage";
-import LoadingSpinner from "../../components/spinner/spinner";
-import { CustomDialog, useDialog } from "react-st-modal";
-
-import BottomBar from "../../components/bottomBar/BottomBar";
-import Button from "../../components/button/Button";
-import { H2, H3 } from "../../components/text/Text";
-import { Col, Container, Row } from "../../components/blocks/Blocks";
-import { Form } from "../../components/form/Form";
-import { StyledDropBtn } from "../../components/form/dropdownInput/DropdownInput.styles";
-import TokenModal from "../../components/OwnTokenModal";
-import TokenModal1 from "../../components/CustomToken";
 import Pools from "./Pools";
-
-import abi from "../../config/sushiswap.json";
 import ercabi from "../../config/erc20.json";
 import factory from "../../config/pool.json";
 import Modals from "./modal/modal";
 import OwnModals from "./modal/OwnModal";
 import "./createPool.css";
+import LoadingSpinner from "../../components/spinner/spinner";
 export default function CreatePools({ lightMode }: any) {
   const { ethereum } = window;
   const [openModalFrom, setOpenModalFrom] = useState(false);
   const [openModalTo, setOpenModalTo] = useState(false);
-  const [tokenOne, setTokenOne] = useState<any | null>(null);
-  const [tokenTwo, setTokenTwo] = useState<any | null>(null);
   const [walletAddress, setWalletAddress] = useState(null);
-
   const [tokenOneAmount, setTokenOneAmount] = useState("");
   const [tokenTwoAmount, setTokenTwoAmount] = useState("");
-
   const [dtoken, setDTokens] = useState<any[]>([]);
   const [wallet, setWallet] = useState();
-  const [values, setValues] = useState([]);
   const [data, setData] = useState([]);
   const [tokenId1, setTokenId1] = useState<any | null>(null);
   const [tokenSymbol, setTokenSymbols] = useState<any | null>(null);
   const [tokenId2, setTokenId2] = useState<any | null>(null);
   const [tokenSymbols, setTokenSymbolss] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     let walletData: any;
     let sessionData = getUserSession();
@@ -94,7 +77,6 @@ export default function CreatePools({ lightMode }: any) {
 
   useEffect(() => {
     getApiDetails();
-    getBalance();
   }, []);
 
   useEffect(() => {
@@ -118,28 +100,7 @@ export default function CreatePools({ lightMode }: any) {
         console.log(error);
       });
   }, [wallet]);
-  async function getBalance(item) {
-    try {
-      console.log(tokenId1, tokenSymbol);
-      const tokenABI = ercabi.abi;
-      const tokenAddress: any = tokenOne.contract_address;
-      const tokenAddressb: any = tokenTwo.id;
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
-      const TOKEN = new ethers.Contract(
-        item.contract_address,
-        tokenABI,
-        signer
-      );
-      const TOKENB = new ethers.Contract(item, tokenABI, signer);
-      const a = await TOKEN.balanceOf(wallet);
-      const bc = ethers.utils.formatEther(a);
-      const b = await TOKEN.balanceOf(wallet);
-      console.log(bc, b);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+ 
   async function handleCreatePool() {
     console.log(
       tokenOneAmount,
@@ -157,7 +118,7 @@ export default function CreatePools({ lightMode }: any) {
     console.log(tokenAddress, tokenAddressb);
     const amount1: any = tokenOneAmount;
     const amount2: any = tokenTwoAmount;
-
+setIsLoading(true);
     try {
       const amount1min: any = 0;
       const amount2min: any = 0;
@@ -200,6 +161,7 @@ export default function CreatePools({ lightMode }: any) {
       const hash = await hx.wait();
       console.log(hash, hx);
       if (hash) {
+        setIsLoading(false);
         swal({
           title: "Pool Deployed",
           text: "Your Pool is Deployed.",
@@ -220,7 +182,9 @@ export default function CreatePools({ lightMode }: any) {
           }
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      setIsLoading(false);
+    }
 
     // swal('Create Pool Transaction is in Process', 'Please Follow Metamask ');
   }
@@ -232,45 +196,28 @@ export default function CreatePools({ lightMode }: any) {
        
           <form className="forms">
             <div className="rows">
-              <div className="column">
-                <button
-                  type="button"
-                  onClick={() => setOpenModalFrom(true)}
-                  className={`inputes ${lightMode && "inputes-light"}`}
-                >
-                  {tokenSymbol ? tokenSymbol : "Select Token"}
-                </button>
-              </div>
+              
               <div className="column">
                 <button
                   type="button"
                   onClick={() => setOpenModalTo(true)}
-                  className={`inputes ${lightMode && "inputes-light"}`}
+                  className={`inputesbtn ${lightMode && "inputesbtn-light"}`}
                 >
-                  {tokenSymbols ? tokenSymbols : "Select Token"}
+                  {tokenSymbols ? tokenSymbols : "Select Custom Token"}
+                </button>
+              </div>
+              <div className="column">
+                <button
+                  type="button"
+                  onClick={() => setOpenModalFrom(true)}
+                  className={`inputesbtn ${lightMode && "inputesbtn-light"}`}
+                >
+                  {tokenSymbol ? tokenSymbol : "Select Secondary Token"}
                 </button>
               </div>
             </div>
 
-            <label htmlFor="subject">{tokenSymbol} Amount</label>
-            {tokenSymbol ? (
-              <input
-                className={`inputes ${lightMode && "inputes-light"}`}
-                type="number"
-                id="subject"
-                placeholder="0"
-                onChange={(e) => setTokenOneAmount(e.target.value)}
-              />
-            ) : (
-              <input
-                className={`inputes ${lightMode && "inputes-light"}`}
-                type="number"
-                id="subject"
-                placeholder="0%"
-               
-                disabled="disabled"
-              />
-            )}
+          
 
             <label htmlFor="subject">{tokenSymbols} Amount</label>
             {tokenSymbols ? (
@@ -286,17 +233,48 @@ export default function CreatePools({ lightMode }: any) {
                 className={`inputes ${lightMode && "inputes-light"}`}
                 type="number"
                 id="subject"
-                placeholder="0%"
+                placeholder="0"
+                disabled="disabled"
+              />
+            )}
+
+
+<label htmlFor="subject">{tokenSymbol} Amount</label>
+            {tokenSymbol ? (
+              <input
+                className={`inputes ${lightMode && "inputes-light"}`}
+                type="number"
+                id="subject"
+                placeholder="0"
+                onChange={(e) => setTokenOneAmount(e.target.value)}
+              />
+            ) : (
+              <input
+                className={`inputes ${lightMode && "inputes-light"}`}
+                type="number"
+                id="subject"
+                placeholder="0"
                
                 disabled="disabled"
               />
             )}
           </form>
+          {isLoading ?
+             <div style={{ marginLeft: "45%" }}>
+          <LoadingSpinner/> </div> :
           <div className="buttones">
-            <button type="button" onClick={handleCreatePool} className="buttonsss">
-              Create a Pool
-            </button>
+            {tokenOneAmount && tokenTwoAmount ? 
+             <button type="button" onClick={handleCreatePool} className="buttonsss">
+             Create a Pool
+           </button>
+           :
+           <button type="button"  className="buttonss-disabled" disabled>
+          Create a Pool
+         </button>
+          }
+           
           </div>
+}
         </div>
 
         {openModalFrom ? (

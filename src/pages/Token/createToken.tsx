@@ -1,17 +1,9 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
-import { gql, useMutation } from "@apollo/client";
 import { ethers } from "ethers";
 import swal from "sweetalert";
-import { useInput } from "rooks";
 import { getUserSession } from "../../store/localStorage";
 import "./createToken.css";
-import BottomBar from "../../components/bottomBar/BottomBar";
-import Button from "../../components/button/Button";
-import { Title, Desc, DescSpan, H3 } from "../../components/text/Text";
-import { Col, Container, Row } from "../../components/blocks/Blocks";
-import { FormInput, FormCheckbox, Form } from "../../components/form/Form";
-import { Modal } from "../../components/modal/Modal";
 import Tokens from "./tokens";
 import LoadingSpinner from "../../components/spinner/spinner";
 
@@ -244,9 +236,17 @@ export default function CreateToken({ lightMode }: any) {
         </form>
         <div className="buttons">
         {!isLoading ? (
+      <div>
+        {tokenName && tokenDecimal && tokenSupply && tokenSymbol ?  
           <button onClick={handleSubmit} type="button" className="buttonss">
             Create a Token
           </button>
+          :
+          <button  type="button" className="buttonss-disabled">
+     Create a Token
+        </button>
+}
+          </div>
         ) : (
           <div style={{ marginLeft: "20%" }}>
           <LoadingSpinner />

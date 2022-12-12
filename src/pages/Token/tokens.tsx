@@ -1,17 +1,13 @@
 import { useEffect, useState } from 'react';
 import { getUserSession } from '../../store/localStorage';
-import { gql, useQuery } from '@apollo/client';
-import { Link } from 'react-router-dom';
 import LoadingSpinner from '../../components/spinner/spinner';
 import "./tokens.css"
-import { ethers } from 'ethers';
-const contractFile = require('../../config/erc20.json');
+
 
 
 
 export default function Tokens({ lightMode }: any) {
   const [wallet, setWallet] = useState();
-  const [values, setValues] = useState([]);
   const [datas, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 

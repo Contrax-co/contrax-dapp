@@ -18,7 +18,7 @@
   left: 40%;
   top: 55%;
   right: 50%;
-  border-radius: 10px;
+  border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0,0,0,0.15);
   color: white;
 }
@@ -59,6 +59,7 @@
 label{
 font-size: larger;
 font-weight: bolder; 
+
 }
 
 .inputes{
@@ -73,6 +74,7 @@ font-weight: bolder;
   height: 90%;
   background-color: #001428;
   color: white;
+  margin-bottom: 2%;
 }
 .inputes-light{
   width: 95%;
@@ -85,6 +87,7 @@ font-weight: bolder;
   height: 90%;
   background-color: white;
   color: black;
+  margin-bottom: 2%;
 }
 
 .inputes:focus{
@@ -122,4 +125,50 @@ font-weight: bolder;
   border-radius: 10px;
   font-size: larger;
   font-weight: bold;
+  cursor: pointer;
+}
+.buttonss-disabled{
+  border: 2px solid;
+  padding: 25px 20px;
+  width: 50%;
+  background-color: rgb(156, 178, 193);
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: larger;
+  font-weight: bold;
+  
+}
+
+
+.inputesbtn{
+  width: 95%;
+  height: 100%;
+  font-weight: 600;
+  font-size: larger;
+  padding: 20px 10px;
+  border-radius: 5px;
+  border: 1.2px solid #232323;
+  margin-top: 5px;
+  height: 90%;
+  background-color: #001428;
+  color: white;
+  cursor: pointer;
+}
+.inputesbtn-light{
+  width: 95%;
+  font-weight: 400;
+  font-size: larger;
+  padding: 20px 10px;
+  border-radius: 5px;
+  border: 1.2px solid #c4cae0;
+  margin-top: 5px;
+  height: 90%;
+  background-color: white;
+  color: black;
+  cursor: pointer;
+}
+
+.inputesbtn:focus{
+  outline: none;
+  border-color: #6f6df4;
 }

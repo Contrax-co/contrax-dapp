@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { getUserSession } from '../../store/localStorage';
 import { gql, useQuery } from '@apollo/client';
-import { Link } from 'react-router-dom';
+import { Link } from '../../components/text/Text';
 import LoadingSpinner from '../../components/spinner/spinner';
 import "./Pools.css"
 import { ethers } from 'ethers';
+import {BiLinkExternal} from 'react-icons/bi'
 import axios from 'axios';
 const contractFile = require('../../config/erc20.json');
 
@@ -104,7 +105,15 @@ export default function Pools({ lightMode }: any) {
                     <th>{index + 1}</th>
                     <td>{token.id}</td>
                     <td>{token.name}</td>
-                   <td><a href={`'https://app.sushi.com/analytics/pools/' + ${token.id}+'?chainId=42161'`} target="_blank" rel="noopener">Click here</a></td>
+                   <td>
+                   <Link
+                        link={'https://app.sushi.com/analytics/pools/' + token.id+'?chainId=42161'}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                   {'View on Sushiswap'} <BiLinkExternal/>
+                      </Link>{' '}
+                   </td>
                   </tr>
                 );
               })}

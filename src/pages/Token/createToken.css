@@ -18,7 +18,7 @@
   left: 40%;
   top: 55%;
   right: 50%;
-  border-radius: 10px;
+  border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0,0,0,0.15);
   color: white;
 }
@@ -144,4 +144,18 @@ font-weight: bolder;
   border-radius: 10px;
   font-size: larger;
   font-weight: bold;
+  cursor: pointer;
 }
+
+.buttonss-disabled{
+  border: 2px solid;
+  padding: 25px 20px;
+  width: 50%;
+  background-color: rgb(156, 178, 193);
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: larger;
+  font-weight: bold;
+  
+}
+
