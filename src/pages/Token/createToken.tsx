@@ -1,17 +1,9 @@
 // @ts-nocheck
 import { useEffect, useState } from 'react';
-import { gql, useMutation } from '@apollo/client';
 import { ethers } from 'ethers';
 import swal from 'sweetalert';
-import { useInput } from 'rooks';
 import { getUserSession } from '../../store/localStorage';
 import './createToken.css';
-import BottomBar from '../../components/bottomBar/BottomBar';
-import Button from '../../components/button/Button';
-import { Title, Desc, DescSpan, H3 } from '../../components/text/Text';
-import { Col, Container, Row } from '../../components/blocks/Blocks';
-import { FormInput, FormCheckbox, Form } from '../../components/form/Form';
-import { Modal } from '../../components/modal/Modal';
 import Tokens from './tokens';
 import LoadingSpinner from '../../components/spinner/spinner';
 
@@ -247,8 +239,7 @@ export default function CreateToken({ lightMode }: any) {
               Supports Supply Increase
             </label>
             <p>
-              Allows the creator to issue additional tokens after the token
-              creation
+              Allows the creator to issue additional tokens after token creation
             </p>
           </form>
           <div className="buttons">
@@ -266,7 +257,6 @@ export default function CreateToken({ lightMode }: any) {
 
         <Tokens lightMode={lightMode} />
       </div>
-      {/* <BottomBar /> */}
     </>
   );
 }

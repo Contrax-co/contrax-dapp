@@ -1,28 +1,15 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react';
-import { gql, useQuery } from '@apollo/client';
 import { ethers } from 'ethers';
 import swal from 'sweetalert';
 import { getUserSession } from '../../store/localStorage';
-import LoadingSpinner from '../../components/spinner/spinner';
-import { CustomDialog, useDialog } from 'react-st-modal';
-
-import BottomBar from '../../components/bottomBar/BottomBar';
-import Button from '../../components/button/Button';
-import { H2, H3 } from '../../components/text/Text';
-import { Col, Container, Row } from '../../components/blocks/Blocks';
-import { Form } from '../../components/form/Form';
-import { StyledDropBtn } from '../../components/form/dropdownInput/DropdownInput.styles';
-import TokenModal from '../../components/OwnTokenModal';
-import TokenModal1 from '../../components/CustomToken';
 import Pools from './Pools';
-
-import abi from '../../config/sushiswap.json';
 import ercabi from '../../config/erc20.json';
 import factory from '../../config/pool.json';
 import Modals from './modal/modal';
 import OwnModals from './modal/OwnModal';
 import './createPool.css';
+
 export default function CreatePools({ lightMode }: any) {
   const { ethereum } = window;
   const [openModalFrom, setOpenModalFrom] = useState(false);
@@ -36,12 +23,16 @@ export default function CreatePools({ lightMode }: any) {
 
   const [dtoken, setDTokens] = useState<any[]>([]);
   const [wallet, setWallet] = useState();
-  const [values, setValues] = useState([]);
+  // const [values, setValues] = useState([]);
   const [data, setData] = useState([]);
   const [tokenId1, setTokenId1] = useState<any | null>(null);
   const [tokenSymbol, setTokenSymbols] = useState<any | null>(null);
   const [tokenId2, setTokenId2] = useState<any | null>(null);
   const [tokenSymbols, setTokenSymbolss] = useState<any | null>(null);
+
+  // TODO - useEffect contains a call to 'setWallet'. Without a list of dependencies
+  // this can lead to an infinite chain of updates. To fix this, pass [] as a second
+  // argument to the useEffect Hook.
   useEffect(() => {
     let walletData: any;
     let sessionData = getUserSession();
@@ -118,6 +109,8 @@ export default function CreatePools({ lightMode }: any) {
         console.log(error);
       });
   }, [wallet]);
+
+  // TODO - review all unused variables and remove those which are deemed unnecessary
   async function getBalance(item) {
     try {
       console.log(tokenId1, tokenSymbol);
@@ -216,8 +209,6 @@ export default function CreatePools({ lightMode }: any) {
         });
       }
     } catch (e) {}
-
-    // swal('Create Pool Transaction is in Process', 'Please Follow Metamask ');
   }
   return (
     <>
@@ -317,7 +308,6 @@ export default function CreatePools({ lightMode }: any) {
 
         <Pools lightMode={lightMode} />
       </div>
-      {/* <BottomBar /> */}
     </>
   );
 }
