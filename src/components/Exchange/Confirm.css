@@ -11,7 +11,7 @@
   background: rgba(0, 0, 0, 0.7);
 }
 
-.confirm_modal{
+.confirm_modal {
   display: flex;
   flex-direction: column;
   z-index: 200;
@@ -26,127 +26,126 @@
   align-items: center;
 }
 
-.confirm_modal--light{
+.confirm_modal--light {
   background-color: white;
 }
-
 
 .confirmation_header {
   display: flex;
   padding: 20px;
 }
 
-.confirm_title{
+.confirm_title {
   color: white;
   font-size: 20px;
   font-weight: 700;
 }
 
-.confirm_title--light{
-  color:black;
+.confirm_title--light {
+  color: black;
 }
 
-.confirmation_close{
+.confirmation_close {
   position: absolute;
-  right: 2vh; 
-  color:white;
-  font-size:20px;
+  right: 2vh;
+  color: white;
+  font-size: 20px;
 }
 
-.confirmation_close:hover{
+.confirmation_close:hover {
   cursor: pointer;
 }
 
-.confirmation_close--light{
-  color:black;
+.confirmation_close--light {
+  color: black;
 }
 
-.confirmation_logo_container{
+.confirmation_logo_container {
   display: flex;
   margin-bottom: 5px;
 }
 
-.confirmation_logo{
+.confirmation_logo {
   width: 40px;
   height: 40px;
   margin-right: -10px;
   border-radius: 999px;
 }
 
-.confirmation_block{
+.confirmation_block {
   display: flex;
   flex-direction: column;
   padding: 3vh;
   align-items: center;
-  justify-content:center;
+  justify-content: center;
 }
 
-.transaction_details{
-  display:flex;
+.transaction_details {
+  display: flex;
   flex-direction: column;
   width: 100%;
   align-items: center;
-  color:white;
+  color: white;
 }
 
-.transaction_details--light{
-  color:black;
+.transaction_details--light {
+  color: black;
 }
 
 .transaction_value {
-  margin:0;
-  font-weight:700;
+  margin: 0;
+  font-weight: 700;
 }
 
-.transaction_usd{
-  margin:0;
-  font-weight:700;
+.transaction_usd {
+  margin: 0;
+  font-weight: 700;
 }
 
-.confirm_arrow{
-  color:white;
+.confirm_arrow {
+  color: white;
   padding: 20px;
   font-weight: 800;
 }
 
-.confirm_arrow--light{
-  color:black;
+.confirm_arrow--light {
+  color: black;
 }
 
-.confirm_retrieve{
+.confirm_retrieve {
   font-size: 20px;
-  color:white;
+  color: white;
 }
 
-.confirm_retrieve--light{
-  color:black;
+.confirm_retrieve--light {
+  color: black;
 }
 
-.confirmation_button{
+.confirmation_button {
   position: absolute;
   bottom: 4vh;
-  padding-top: 2%; 
+  padding-top: 2%;
   width: 90%;
   height: 80px;
-  display:flex;
-  justify-content:center;
+  display: flex;
+  justify-content: center;
 }
 
-.button_container{
+.button_container {
   display: flex;
-  margin:10px;
+  margin: 10px;
   padding-top: 1%;
-  background-color: rgb(89, 179, 247); 
-  height:100%;
-  width:100%;
+  background-color: rgb(89, 179, 247);
+  height: 100%;
+  width: 100%;
   align-items: center;
   justify-content: center;
-  color:white;
+  color: white;
   font-weight: 700;
   border-radius: 10px;
 }
 
-.button_container:hover{
-  cursor:pointer;
-  background-color:rgb(67, 161, 233);
+.button_container:hover {
+  cursor: pointer;
+  background-color: rgb(67, 161, 233);
 }

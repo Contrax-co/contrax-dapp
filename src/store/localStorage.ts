@@ -12,7 +12,7 @@ export function getUserPreferences() {
   return window.localStorage.getItem('userPreferences');
 }
 
-export function setUserPreferences(data:any) {
+export function setUserPreferences(data: any) {
   return window.localStorage.setItem('userPreferences', JSON.stringify(data));
 }
 

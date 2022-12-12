@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { getUserSession } from "../store/localStorage";
-import { Col, Row } from "./blocks/Blocks";
+import React, { useEffect, useState } from 'react';
+import { getUserSession } from '../store/localStorage';
+import { Col, Row } from './blocks/Blocks';
 import {
   ListSubTitle,
   StyledListBtn,
-} from "./form/dropdownInput/DropdownInput.styles";
-import { FormInput } from "./form/Form";
-import { Image } from "./image/Image";
-import { Modal } from "./modal/Modal";
-import { Desc, DescSpan } from "./text/Text";
-import tokenlogo from "../images/tokenlogo.png";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { ethers } from "ethers";
-import "./modal/modal.css";
-import abi from "../config/erc20.json";
+} from './form/dropdownInput/DropdownInput.styles';
+import { FormInput } from './form/Form';
+import { Image } from './image/Image';
+import { Modal } from './modal/Modal';
+import { Desc, DescSpan } from './text/Text';
+import tokenlogo from '../images/tokenlogo.png';
+import { gql, useMutation, useQuery } from '@apollo/client';
+import { ethers } from 'ethers';
+import './modal/modal.css';
+import abi from '../config/erc20.json';
 
 const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
   console.log(standardTokens);
@@ -28,24 +28,24 @@ const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
   const [div, setDiv] = useState(false);
   const StableTOKEN = [
     {
-      id: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
-      name: "USDC",
-      symbol: "USDC",
+      id: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+      name: 'USDC',
+      symbol: 'USDC',
     },
     {
-      id: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
-      name: "USDT",
-      symbol: "USDT",
+      id: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+      name: 'USDT',
+      symbol: 'USDT',
     },
     {
-      id: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-      name: "DAI",
-      symbol: "DAI",
+      id: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
+      name: 'DAI',
+      symbol: 'DAI',
     },
     {
-      id: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
-      name: "WETH",
-      symbol: "WETH",
+      id: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+      name: 'WETH',
+      symbol: 'WETH',
     },
   ];
   useEffect(() => {
@@ -67,7 +67,7 @@ const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
 
     console.log(userValue);
     try {
-      console.log("call");
+      console.log('call');
       const contractAddress = userValue;
       console.log(contractAddress);
       const contractABI = abi;
@@ -87,8 +87,8 @@ const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
       const name = await dummyContract.name();
       const symbol = await dummyContract.symbol();
       console.log(balance, name, symbol);
-      if (balance == "" && name == "" && symbol == "") {
-        console.log("ok");
+      if (balance == '' && name == '' && symbol == '') {
+        console.log('ok');
       } else {
         //        setBalance(balance);
         //        setName(name);
@@ -137,7 +137,7 @@ const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
                         >
                           <p
                             style={{
-                              color: `${lightMode ? "black" : "white"}`,
+                              color: `${lightMode ? 'black' : 'white'}`,
                             }}
                           >
                             {item.name}
@@ -167,11 +167,11 @@ const TokenModal1 = ({ id, onSelection, standardTokens, lightMode }: any) => {
                         >
                           <p
                             style={{
-                              color: `${lightMode ? "black" : "white"}`,
+                              color: `${lightMode ? 'black' : 'white'}`,
                             }}
                           >
-                            {" "}
-                            {item.name}{" "}
+                            {' '}
+                            {item.name}{' '}
                           </p>
                         </StyledListBtn>
                       </Col>

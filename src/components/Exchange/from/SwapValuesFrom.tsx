@@ -2,7 +2,6 @@ import { useRef } from 'react';
 import './SwapValuesFrom.css';
 
 function SwapValuesFrom({ lightMode, setOpenModal, tokens, setTokenId }: any) {
-
   // close the modal when clicking outside the modal.
   const modalRef: any = useRef();
 
@@ -15,7 +14,7 @@ function SwapValuesFrom({ lightMode, setOpenModal, tokens, setTokenId }: any) {
   const setId = (ids: any) => {
     setOpenModal(false);
     setTokenId(ids);
-  }
+  };
 
   return (
     <div className={`modal__container`} ref={modalRef} onClick={closeModal}>
@@ -28,22 +27,26 @@ function SwapValuesFrom({ lightMode, setOpenModal, tokens, setTokenId }: any) {
           {tokens.map((token: any) => (
             <div
               key={token.id}
-              className={`exchange_items ${lightMode && 'exchange_items--light'}`}
-              onClick={() => {setId(token.id);}}
+              className={`exchange_items ${
+                lightMode && 'exchange_items--light'
+              }`}
+              onClick={() => {
+                setId(token.id);
+              }}
             >
-         
-                <div className={`pad_options ${lightMode && 'pad_options--light'}`}>
-                  <img
-                    alt={token.token_alt}
-                    className={`exchange__logo2 ${
-                      lightMode && 'exchange__logo2--light'
-                    }`}
-                    src={token.token_logo}
-                  />
-                  <p>{token.token_name}</p>
-                  <p className="mini">{token.token_sub}</p>
-                </div>
-
+              <div
+                className={`pad_options ${lightMode && 'pad_options--light'}`}
+              >
+                <img
+                  alt={token.token_alt}
+                  className={`exchange__logo2 ${
+                    lightMode && 'exchange__logo2--light'
+                  }`}
+                  src={token.token_logo}
+                />
+                <p>{token.token_name}</p>
+                <p className="mini">{token.token_sub}</p>
+              </div>
             </div>
           ))}
         </div>

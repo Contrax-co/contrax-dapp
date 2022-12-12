@@ -30,20 +30,19 @@ const onboard = Onboard({
 });
 
 function Application() {
-
   const [menuItem, setMenuItem] = useState(() => {
     const data = window.sessionStorage.getItem('menuItem');
-    if(data != null){
+    if (data != null) {
       return JSON.parse(data);
-    }else{
+    } else {
       return 'Dashboard';
     }
   });
   const [lightMode, setLightMode] = useState(() => {
     const data = window.sessionStorage.getItem('lightMode');
-    if(data != null){
+    if (data != null) {
       return JSON.parse(data);
-    }else{
+    } else {
       return false;
     }
   });
@@ -56,14 +55,12 @@ function Application() {
   useEffect(() => {
     network();
     wallet();
-
   });
 
   useEffect(() => {
     window.sessionStorage.setItem('lightMode', JSON.stringify(lightMode));
     window.sessionStorage.setItem('menuItem', JSON.stringify(menuItem));
-  }, [lightMode, menuItem])
-
+  }, [lightMode, menuItem]);
 
   useEffect(() => {
     const data = getUserSession();
@@ -75,36 +72,36 @@ function Application() {
   }, []);
 
   async function network() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-    const { chainId } = await provider.getNetwork()
-    console.log(chainId)
-
+    const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
+    const { chainId } = await provider.getNetwork();
+    console.log(chainId);
 
     if (chainId !== 42161) {
-      console.log(networkId, 'ok')
+      console.log(networkId, 'ok');
       window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [{
-          chainId: "0xA4B1",
-          rpcUrls: ["https://arb1.arbitrum.io/rpc/"],
-          chainName: "Arbitrum",
-          nativeCurrency: {
-            name: "ETH",
-            symbol: "ETH",
-            decimals: 18
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: '0xA4B1',
+            rpcUrls: ['https://arb1.arbitrum.io/rpc/'],
+            chainName: 'Arbitrum',
+            nativeCurrency: {
+              name: 'ETH',
+              symbol: 'ETH',
+              decimals: 18,
+            },
+            blockExplorerUrls: ['https://arbiscan.io/'],
           },
-          blockExplorerUrls: ["https://arbiscan.io/"]
-        }]
+        ],
       });
     } else {
-      console.log(networkId, 'sorry')
+      console.log(networkId, 'sorry');
     }
   }
 
-
   async function wallet() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-    let accounts = await provider.send("eth_requestAccounts", []);
+    const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
+    let accounts = await provider.send('eth_requestAccounts', []);
     let account = accounts[0];
     provider.on('accountsChanged', function (accounts) {
       account = accounts[0];
@@ -121,14 +118,12 @@ function Application() {
     if (data) {
       const userInfo = JSON.parse(data);
       if (address.toLowerCase() !== userInfo.address) {
-        connectWallet()
-        console.log('call')
+        connectWallet();
+        console.log('call');
       } else {
-        console.log('Sorry')
+        console.log('Sorry');
       }
     }
-
-
   }
   const connectWallet = async () => {
     const wallets = await onboard.connectWallet();
@@ -171,11 +166,9 @@ function Application() {
               logout={() => setLogout(true)}
             />
           </div>
-          {menuItem === 'Dashboard' &&
-            <Dashboard
-              lightMode={lightMode}
-              currentWallet={currentWallet}
-            />}
+          {menuItem === 'Dashboard' && (
+            <Dashboard lightMode={lightMode} currentWallet={currentWallet} />
+          )}
           {menuItem === 'Farms' && (
             <Compound
               lightMode={lightMode}
@@ -183,15 +176,11 @@ function Application() {
               connectWallet={connectWallet}
             />
           )}
-        {menuItem === 'Create token' && <CreateToken
-              lightMode={lightMode}
-            />}
-           
-           {menuItem === 'Create pool' && <CreatePool
-              lightMode={lightMode}
-            />}
+          {menuItem === 'Create token' && <CreateToken lightMode={lightMode} />}
+
+          {menuItem === 'Create pool' && <CreatePool lightMode={lightMode} />}
           {menuItem === 'Exchange' && (
-          <Exchange lightMode={lightMode} currentWallet={currentWallet} /> 
+            <Exchange lightMode={lightMode} currentWallet={currentWallet} />
           )}
         </div>
       </div>

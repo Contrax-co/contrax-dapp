@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLocation } from 'react-router-dom';
 import BottomBar from '../bottomBar/BottomBar';
 import { Col, Row } from '../blocks/Blocks';
@@ -12,7 +11,6 @@ import githubLogo from '../../images/github.png';
 import mediumLogo from '../../images/medium.png';
 import { Image } from '../image/Image';
 import { H3 } from '../text/Text';
-// import Button from '../button/Button';
 
 export default function Footer() {
   const location = useLocation();

@@ -6,9 +6,11 @@
   bottom: 0;
   position: fixed;
 }
-.modal-content{
+
+.modal-content {
   z-index: 9999999999f !important;
 }
+
 .page--light {
   background-color: #f5f6fa;
   width: 100vw;
@@ -32,7 +34,6 @@
   display: flex;
   flex-direction: column;
   padding-top: 30px;
- 
 }
 
 .rightside > p {

@@ -1,5 +1,4 @@
 .pages {
-
   width: 100vw;
   height: 100vh;
   top: 0;
@@ -7,61 +6,63 @@
   position: fixed;
   overflow-y: scroll;
 }
-.containers{
- 
+
+.containers {
   background-color: #012243;
   width: 50%;
   min-width: 420px;
   padding: 35px 50px;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   position: absolute;
   left: 40%;
   top: 55%;
   right: 50%;
   border-radius: 10px;
-  box-shadow: 20px 30px 25px rgba(0,0,0,0.15);
+  box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
   color: white;
 }
 
-.containers-light{
+.containers-light {
   background-color: #ffffff;
   color: black;
 }
 
-.forms{
+.forms {
   width: 100%;
   position: relative;
   margin: 30px auto 0 auto;
 }
-.rows{
+
+.rows {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   grid-gap: 30px 30px;
   margin-bottom: 50px;
 }
-.rows-check{
+
+.rows-check {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px,0.5fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 0.5fr));
   grid-gap: 0% 0%;
-
-
 }
-.one{
+
+.one {
   width: 150%;
-
 }
-.two{
+
+.two {
   width: 20%;
   background-color: gray;
 }
-label{
-font-size: larger;
-font-weight: bolder; 
+
+label {
+  font-size: larger;
+  font-weight: bolder;
 }
 
-.inputs{
+.inputs {
   width: 100%;
   font-weight: 600;
   font-size: larger;
@@ -73,7 +74,8 @@ font-weight: bolder;
   background-color: #001428;
   color: white;
 }
-.inputs-light{
+
+.inputs-light {
   width: 100%;
   font-weight: 400;
   font-size: larger;
@@ -86,11 +88,10 @@ font-weight: bolder;
   color: black;
 }
 
-.inputs:focus{
+.inputs:focus {
   outline: none;
   border-color: #6f6df4;
 }
-
 
 .form-controlss {
   font-family: system-ui, sans-serif;
@@ -102,8 +103,7 @@ font-weight: bolder;
   gap: 0.5em;
 }
 
-
-.inputs-check{
+.inputs-check {
   width: 20%;
   font-weight: 600;
   padding: 8px 10px;
@@ -116,7 +116,7 @@ font-weight: bolder;
   color: white;
 }
 
-.inputs-check-light{
+.inputs-check-light {
   width: 20%;
   font-weight: 600;
   padding: 8px 10px;
@@ -129,17 +129,17 @@ font-weight: bolder;
   color: #001428;
 }
 
-.buttons{
+.buttons {
   justify-content: center;
   margin-left: 30%;
   height: auto;
 }
 
-.buttonss{
+.buttonss {
   border: 2px solid;
   padding: 25px 20px;
   width: 50%;
-  background-color: #63CCE0;
+  background-color: #63cce0;
   color: #ffffff;
   border-radius: 10px;
   font-size: larger;
