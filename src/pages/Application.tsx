@@ -11,6 +11,7 @@ import Compound from '../components/Compound/Compound';
 import CreateToken from './Token/createToken';
 import CreatePool from './Pool/createPool';
 import * as ethers from 'ethers';
+import logo from '../images/logo-4x.png';
 import Dashboard from '../components/Dashboard/Dashboard';
 
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
@@ -27,6 +28,16 @@ const onboard = Onboard({
       rpcUrl: ARBITRUM_MAINNET,
     },
   ],
+  appMetadata: {
+    name: 'Contrax dAPP',
+    icon: logo, 
+    logo: logo, 
+    description: 'Contrax dAPP',
+    agreement: { 
+      version: '1.0.0',
+      termsUrl: 'https://testing.contrax.finance/termsofuse.pdf'
+    }
+  },
 });
 
 function Application() {
@@ -148,7 +159,6 @@ async function network(){
   const toggleLight = () => {
     setLightMode(!lightMode);
 
-    window.localStorage.setItem('light', JSON.stringify(!lightMode));
   };
   return (
     <div className={`page ${lightMode && 'page--light'}`}>

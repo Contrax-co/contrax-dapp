@@ -17,8 +17,6 @@ function Vaults({
             lightMode={lightMode}
             currentWallet={currentWallet}
             vault={vault}
-            singlePrice={singlePrice}
-            setSinglePrice={setSinglePrice}
           />
         </div>
       ))}
