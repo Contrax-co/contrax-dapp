@@ -60,15 +60,12 @@ export default function CreatePools({ lightMode }: any) {
   const getApiDetails = async () => {
     try {
       setDTokens(StableTOKEN);
-      console.log(dtoken);
     } catch (error) {
       console.error(error);
     }
   };
   useEffect(() => {
     const tempData = getUserSession();
-    console.log(tempData);
-
     if (tempData) {
       const walletData = JSON.parse(tempData);
       setWalletAddress(walletData.address);
@@ -92,25 +89,20 @@ export default function CreatePools({ lightMode }: any) {
     )
       .then((response) => response.json())
       .then((items) => {
-        console.log(items.data.items);
         setData(items.data.items);
       })
       .catch((error) => {
-        console.log("sorry");
         console.log(error);
       });
   }, [wallet]);
 
   async function handleCreatePool() {
-    console.log(tokenOneAmount, tokenTwoAmount, tokenId1, tokenId2);
-    const contractAddress = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506";
     const factoryAddress = "0x87e49e9B403C91749dCF89be4ab1d400CBD4068C";
     const contractABI = factory;
     const tokenABI = ercabi.abi;
     // const factoryABI = factory;
     const tokenAddress: any = tokenId1;
     const tokenAddressb: any = tokenId2;
-    console.log(tokenAddress, tokenAddressb);
     const amount1: any = tokenOneAmount;
     const amount2: any = tokenTwoAmount;
     setIsLoading(true);
@@ -140,7 +132,6 @@ export default function CreatePools({ lightMode }: any) {
 
       await TOKEN.approve(factoryAddress, amountIn1);
       await TOKENB.approve(factoryAddress, amountIn2);
-      console.log(amountIn1, amountIn2, amount1Min, amount2Min);
       const hx = await factory.createLp(
         tokenAddress,
         tokenAddressb,
@@ -154,7 +145,6 @@ export default function CreatePools({ lightMode }: any) {
       );
 
       const hash = await hx.wait();
-      console.log(hash, hx);
       if (hash) {
         setIsLoading(false);
         swal({
@@ -185,7 +175,7 @@ export default function CreatePools({ lightMode }: any) {
   }
   return (
     <>
-      <div className="pages">
+      <div className="pagess">
         <div className={`containeres ${lightMode && "containeres-light"}`}>
           <h1>Create a Pool</h1>
 
