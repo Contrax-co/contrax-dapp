@@ -29,8 +29,9 @@ th {
   transform: translate(-50%, -10%);
   position: absolute;
   left: 40%;
-  top: 105%;
+  top: 85%;
   right: 50%;
+
   border-radius: 10px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
   color: white;
