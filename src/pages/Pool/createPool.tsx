@@ -9,7 +9,6 @@ import factory from "../../config/pool.json";
 import Modals from "./modal/modal";
 import OwnModals from "./modal/OwnModal";
 import "./createPool.css";
-import { factoryAddress } from "../../config/address";
 import LoadingSpinner from "../../components/spinner/spinner";
 export default function CreatePools({ lightMode }: any) {
   const { ethereum } = window;
@@ -98,7 +97,7 @@ export default function CreatePools({ lightMode }: any) {
   }, [wallet]);
 
   async function handleCreatePool() {
-    const factoryAddress = factoryAddress;
+    const factoryAddress = "0x87e49e9B403C91749dCF89be4ab1d400CBD4068C";
     const contractABI = factory;
     const tokenABI = ercabi.abi;
     // const factoryABI = factory;
@@ -176,7 +175,7 @@ export default function CreatePools({ lightMode }: any) {
   }
   return (
     <>
-      <div className="pages">
+      <div className="pagess">
         <div className={`containeres ${lightMode && "containeres-light"}`}>
           <h1>Create a Pool</h1>
 

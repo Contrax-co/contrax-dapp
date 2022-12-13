@@ -5,6 +5,7 @@
   bottom: 0;
   position: fixed;
   overflow-y: scroll;
+  margin-top: 5%;
 }
 .containers {
   background-color: #012243;
@@ -14,7 +15,7 @@
   transform: translate(-50%, -50%);
   position: absolute;
   left: 40%;
-  top: 55%;
+  top: 45%;
   right: 50%;
   border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
