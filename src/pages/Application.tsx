@@ -13,13 +13,15 @@ import CreatePool from './Pool/createPool';
 import * as ethers from 'ethers';
 import logo from '../images/logo-4x.png';
 import Dashboard from '../components/Dashboard/Dashboard';
+import coinbaseWalletModule from '@web3-onboard/coinbase';
 
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
 
 const injected = injectedModule();
+const coinbaseWalletSdk = coinbaseWalletModule({ darkMode: true });
 
 const onboard = Onboard({
-  wallets: [injected],
+  wallets: [injected, coinbaseWalletSdk],
   chains: [
     {
       id: '0xA4B1',
