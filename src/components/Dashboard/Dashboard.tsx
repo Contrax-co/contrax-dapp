@@ -19,9 +19,6 @@ function Dashboard({ lightMode, currentWallet }: any) {
   const [copied, setCopied] = useState(false);
   const [vaults, setVaults] = useState([]);
 
-  const [totalUsd, setTotalUsd] = useState(0);
-  const [singlePrice, setSinglePrice] = useState([]);
-
   const copyToClipboard = () => {
     navigator.clipboard.writeText(currentWallet);
     setCopied(true);
@@ -38,15 +35,6 @@ function Dashboard({ lightMode, currentWallet }: any) {
         setVaults(data);
       });
   }, []);
-
-  useEffect(() => {
-    let total = 0;
-    for (let i = 0; i < singlePrice.length; i++) {
-      let price: number = Number(singlePrice[i]);
-      total += price;
-    }
-    setTotalUsd(total);
-  }, [currentWallet, singlePrice]);
 
   return (
     <div
@@ -93,25 +81,7 @@ function Dashboard({ lightMode, currentWallet }: any) {
             </div>
           </div>
 
-          <div
-            className={`dashboard_right ${
-              lightMode && 'dashboard_right--light'
-            }`}
-          >
-            <p
-              className={`dashboard_worth ${
-                lightMode && 'dashboard_worth--light'
-              }`}
-            >
-              Platform Value
-            </p>
-            <p className={`dashboard_all_prices`}>
-              {totalUsd.toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              })}
-            </p>
-          </div>
+         
         </div>
       </div>
 
@@ -127,8 +97,6 @@ function Dashboard({ lightMode, currentWallet }: any) {
           lightMode={lightMode}
           vaults={vaults}
           currentWallet={currentWallet}
-          singlePrice={singlePrice}
-          setSinglePrice={setSinglePrice}
         />
       </div>
     </div>

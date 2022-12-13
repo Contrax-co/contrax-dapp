@@ -37,22 +37,22 @@ export default function CreatePools({ lightMode }: any) {
   const StableTOKEN = [
     {
       id: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
-      name: "USDC",
+      name: "USD Coin",
       symbol: "USDC",
     },
     {
       id: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
-      name: "USDT",
+      name: "USD Tether",
       symbol: "USDT",
     },
     {
       id: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
-      name: "DAI",
+      name: "DAI Stablecoin",
       symbol: "DAI",
     },
     {
       id: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
-      name: "WETH",
+      name: "Wrapped ETH",
       symbol: "WETH",
     },
   ];
@@ -197,7 +197,7 @@ export default function CreatePools({ lightMode }: any) {
                   onClick={() => setOpenModalTo(true)}
                   className={`inputesbtn ${lightMode && "inputesbtn-light"}`}
                 >
-                  {tokenSymbols ? tokenSymbols : "Select Custom Token"}
+                  {tokenSymbols ? tokenSymbols : "Select Created Token"}
                 </button>
               </div>
               <div className="column">
@@ -206,7 +206,7 @@ export default function CreatePools({ lightMode }: any) {
                   onClick={() => setOpenModalFrom(true)}
                   className={`inputesbtn ${lightMode && "inputesbtn-light"}`}
                 >
-                  {tokenSymbol ? tokenSymbol : "Select Secondary Token"}
+                  {tokenSymbol ? tokenSymbol : "Select Existing Token"}
                 </button>
               </div>
             </div>

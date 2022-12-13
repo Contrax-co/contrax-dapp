@@ -11,9 +11,7 @@ import './VaultItem.css';
 function VaultItem({
   lightMode,
   currentWallet,
-  vault,
-  setSinglePrice,
-  singlePrice,
+  vault
 }: any) {
   const [tokenAmount, setTokenAmount] = useState(0);
   const [price, setPrice] = useState(0);
@@ -35,7 +33,6 @@ function VaultItem({
     priceOfToken(vault.lp_address, setPrice);
 
     totalVault(vault.vault_address, vault.vault_abi, setVaultAmount);
-    setSinglePrice([...singlePrice, tokenAmount * price]);
 
     apyPool(vault.lp_address, setRewardApy);
     calculateFeeAPY(vault.lp_address, setFeeAPY);
@@ -43,10 +40,7 @@ function VaultItem({
     calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound);
     findCompoundAPY(vault.apy, setCompoundAPY);
   }, [currentWallet, vault, tokenAmount, price, rewardAPY, feeAPY]);
-  // TODO - useEffect has missing dependencies: 'setSinglePrice' and 'singlePrice'.
-  // Either include them or remove the dependency array. If 'setSinglePrice'
-  // changes too often, find the parent component that defines it and wrap
-  // that definition in useCallback()
+
 
   return (
     <div>
