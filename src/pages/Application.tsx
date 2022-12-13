@@ -136,7 +136,6 @@ async function network(){
       const userInfo = JSON.parse(data);
       if (address.toLowerCase() !== userInfo.address) {
         connectWallet();
-        console.log('call');
       } else {
         console.log('Sorry');
       }
