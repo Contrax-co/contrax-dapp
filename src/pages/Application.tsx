@@ -13,35 +13,13 @@ import CreatePool from './Pool/createPool';
 import * as ethers from 'ethers';
 import logo from '../images/logo-4x.png';
 import Dashboard from '../components/Dashboard/Dashboard';
-import trezorModule from '@web3-onboard/trezor';
-import coinbaseWalletModule from '@web3-onboard/coinbase';
-import dcentModule from '@web3-onboard/dcent';
-import enrkypt from '@web3-onboard/enkrypt';
-import gnosisModule from '@web3-onboard/gnosis';
-import keystoneModule from '@web3-onboard/keystone';
-import mewWallet from '@web3-onboard/mew-wallet';
-import torusModule from '@web3-onboard/torus';
-import walletLinkModule from '@web3-onboard/walletlink';
 
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
 
 const injected = injectedModule();
-const trezor = trezorModule({
-  email: 'info@contrax.finance',
-  appUrl: 'https://testing.contrax.finance/'
-});
-const coinbaseWalletSdk = coinbaseWalletModule({ darkMode: true });
-const dcent = dcentModule(); 
-const enrkyptModule = enrkypt();
-const gnosis = gnosisModule();
-const keystone = keystoneModule();
-const mewWalletModule = mewWallet();
-const torus = torusModule();
-const walletLink = walletLinkModule({ darkMode: true });
-
 
 const onboard = Onboard({
-  wallets: [injected, trezor, coinbaseWalletSdk, dcent, enrkyptModule, gnosis, keystone, mewWalletModule, torus, walletLink],
+  wallets: [injected],
   chains: [
     {
       id: '0xA4B1',
