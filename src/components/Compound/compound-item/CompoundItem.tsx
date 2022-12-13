@@ -32,8 +32,6 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [apyVisionCompound, setAPYVisionCompound] = useState(0);
   const [compoundAPY, setCompoundAPY] = useState(0);
 
-  const [hover, setHover] = useState(false);
-
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
     getTotalVaultBalance(pool, setTotalVaultBalance);
@@ -173,27 +171,23 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                     lightMode && 'container1_apy--light'
                   }`}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p
-                      className={`pool_name ${lightMode && 'pool_name--light'}`}
-                    >
-                      {(apyVisionCompound + rewardAPY + feeAPY).toFixed(2)}%
+                  <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                    {(apyVisionCompound + rewardAPY + feeAPY).toFixed(2)}%
+                  </p>
+                  <CgInfo
+                    className={`apy_info hoverable ${
+                      lightMode && 'apy_info--light'
+                    }`}
+                  />
+                  <div
+                    className={`apy_hidden ${lightMode && 'apy_hidden--light'}`}
+                  >
+                    <p>
+                      <b>Base APRs</b>
                     </p>
-
-                    <CgInfo
-                      className={`apy_info ${lightMode && 'apy_info--light'}`}
-                      onMouseOver={() => setHover(true)}
-                      onMouseLeave={() => setHover(false)}
-                    />
-                    {hover ? (
-                      <div
-                        className={`apy_show ${lightMode && 'apy_show--light'}`}
-                      >
-                        <p>reward apy: {rewardAPY.toFixed(2)}%</p>
-                        <p>fee apy: {feeAPY.toFixed(2)}%</p>
-                        <p>compound apy: {apyVisionCompound.toFixed(2)}%</p>
-                      </div>
-                    ) : null}
+                    <p>LP Rewards: {rewardAPY.toFixed(2)}%</p>
+                    <p>Trading Fees: {feeAPY.toFixed(2)}%</p>
+                    <p>Compounding: {apyVisionCompound.toFixed(2)}%</p>
                   </div>
                 </div>
               ) : (
@@ -202,25 +196,22 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                     lightMode && 'container1_apy--light'
                   }`}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p
-                      className={`pool_name ${lightMode && 'pool_name--light'}`}
-                    >
-                      {(compoundAPY + Number(pool.apy)).toFixed(2)}%
+                  <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
+                    {(compoundAPY + Number(pool.apy)).toFixed(2)}%
+                  </p>
+                  <CgInfo
+                    className={`apy_info hoverable ${
+                      lightMode && 'apy_info--light'
+                    }`}
+                  />
+                  <div
+                    className={`apy_hidden ${lightMode && 'apy_hidden--light'}`}
+                  >
+                    <p>
+                      <b>Base APRs</b>
                     </p>
-                    <CgInfo
-                      className={`apy_info ${lightMode && 'apy_info--light'}`}
-                      onMouseOver={() => setHover(true)}
-                      onMouseLeave={() => setHover(false)}
-                    />
-                    {hover ? (
-                      <div
-                        className={`apy_show ${lightMode && 'apy_show--light'}`}
-                      >
-                        <p>rewards apy: {Number(pool.apy).toFixed(2)}%</p>
-                        <p>compound apy: {compoundAPY.toFixed(2)}%</p>
-                      </div>
-                    ) : null}
+                    <p>LP Rewards: {Number(pool.apy).toFixed(2)}%</p>
+                    <p>Compounding: {compoundAPY.toFixed(2)}%</p>
                   </div>
                 </div>
               )}
