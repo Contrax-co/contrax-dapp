@@ -1,24 +1,21 @@
-import { useEffect, useState } from 'react';
-import { getUserSession } from '../../store/localStorage';
-import { Link } from '../../components/text/Text';
-import LoadingSpinner from '../../components/spinner/spinner';
-import './Pools.css';
-import { BiLinkExternal } from 'react-icons/bi';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { getUserSession } from "../../store/localStorage";
+import { Link } from "../../components/text/Text";
+import LoadingSpinner from "../../components/spinner/spinner";
+import "./Pools.css";
+import { BiLinkExternal } from "react-icons/bi";
+import axios from "axios";
 
 export default function Pools({ lightMode }: any) {
   const [wallet, setWallet] = useState();
   const [values, setValues] = useState<any>([]);
-
   const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     let sessionData = getUserSession();
     let walletData: any;
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address);
-      console.log(wallet);
       pools();
     }
   }, [wallet]);
@@ -26,7 +23,7 @@ export default function Pools({ lightMode }: any) {
   const pools = async () => {
     try {
       const result = await axios.post(
-        'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange',
+        "https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange",
         {
           query: `
                   {
@@ -45,8 +42,6 @@ export default function Pools({ lightMode }: any) {
         }
       );
 
-      console.log(result.data.data.user.liquidityPositions);
-
       // TODO - variable assigned a value but never used.
       const a = result.data.data.user.liquidityPositions;
       let i: any;
@@ -59,7 +54,7 @@ export default function Pools({ lightMode }: any) {
       }
       console.log(arr);
       setValues(arr);
-      console.log(values, 'ok');
+      console.log(values, "ok");
     } catch (error) {
       console.error(error);
     }
@@ -68,25 +63,25 @@ export default function Pools({ lightMode }: any) {
   return (
     <>
       <div
-        className={`table-containers ${lightMode && 'table-containers-light'}`}
+        className={`table-containers ${lightMode && "table-containers-light"}`}
       >
         <div className="table-responsive">
           <table className="table table-hover-token">
             <thead>
               <tr
                 className={`table__input-token ${
-                  lightMode && 'table--light-token '
+                  lightMode && "table--light-token "
                 }`}
               >
-                <th className={`th ${lightMode && 'th-light'}`}>#</th>
+                <th className={`th ${lightMode && "th-light"}`}>#</th>
                 <th>Pool Address</th>
                 <th>Pool Name</th>
                 <th>View Sushiswap</th>
               </tr>
             </thead>
             {isLoading ? (
-              <div style={{ marginLeft: '50%' }}>
-                <div style={{ marginLeft: '500%' }}>
+              <div style={{ marginLeft: "50%" }}>
+                <div style={{ marginLeft: "500%" }}>
                   <LoadingSpinner />
                 </div>
               </div>
@@ -96,7 +91,7 @@ export default function Pools({ lightMode }: any) {
                   return (
                     <tr
                       className={`table__input-token ${
-                        lightMode && 'table--light-token '
+                        lightMode && "table--light-token "
                       }`}
                       key={index}
                     >
@@ -106,15 +101,15 @@ export default function Pools({ lightMode }: any) {
                       <td>
                         <Link
                           link={
-                            'https://app.sushi.com/analytics/pools/' +
+                            "https://app.sushi.com/analytics/pools/" +
                             token.id +
-                            '?chainId=42161'
+                            "?chainId=42161"
                           }
                           target="_blank"
                           rel="noreferrer"
                         >
-                          {'View on Sushiswap'} <BiLinkExternal />
-                        </Link>{' '}
+                          {"View on Sushiswap"} <BiLinkExternal />
+                        </Link>{" "}
                       </td>
                     </tr>
                   );

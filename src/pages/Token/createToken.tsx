@@ -6,7 +6,6 @@ import { getUserSession } from "../../store/localStorage";
 import "./createToken.css";
 import Tokens from "./tokens";
 import LoadingSpinner from "../../components/spinner/spinner";
-
 const contractFile = require("../../config/erc20.json");
 
 declare global {
@@ -26,7 +25,6 @@ export default function CreateToken({ lightMode }: any) {
   const [tokenTradingFeeValue, setTradingFeeValue] = useState("");
   const [tokenSupportSupplyIncrease, setTokenSupportSupplyIncrease] =
     useState(false);
-
   const [tokenAddress, setTokenAddress] = useState();
   const [wallet, setWallet] = useState();
   const [decimals, setDecimal] = useState();
@@ -47,7 +45,6 @@ export default function CreateToken({ lightMode }: any) {
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
     const { chainId } = await provider.getNetwork();
-    console.log(chainId);
     let name = tokenName;
     let symbol = tokenSymbol;
     let decimal = Number(tokenDecimal);
@@ -75,7 +72,6 @@ export default function CreateToken({ lightMode }: any) {
             setTotalSupply(ts);
 
             const metadata = contractFile;
-            console.log(metadata);
             const factory = new ethers.ContractFactory(
               metadata.abi,
               metadata.bytecode,
@@ -98,10 +94,8 @@ export default function CreateToken({ lightMode }: any) {
             const add = contract.address;
             setTokenAddress(add);
             const addd = await contract.deployTransaction.wait();
-            console.log(addd.blockNumber);
 
             if (!addd.blockNumber) {
-              console.log("something");
             } else {
               setIsLoading(false);
 
