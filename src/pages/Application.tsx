@@ -49,7 +49,6 @@ const onboard = Onboard({
     }
   },
 });
-
 function Application() {
   const [menuItem, setMenuItem] = useState(() => {
     const data = window.sessionStorage.getItem('menuItem');
