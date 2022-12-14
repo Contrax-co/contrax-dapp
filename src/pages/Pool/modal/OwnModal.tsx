@@ -32,7 +32,8 @@ function OwnModals({
         </div>
 
         <div>
-          {tokens.map((token: any) => (
+          {tokens.length == 0 ?  <div className={`modal__titles ${lightMode && "modal__title--lights"}`}><h3>Token List Fetching...</h3></div> : 
+          tokens.map((token: any) => (
             <div
               key={token.contract_address}
               className={`exchange_itemss ${
