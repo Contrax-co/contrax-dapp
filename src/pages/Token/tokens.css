@@ -1,9 +1,12 @@
 table {
-  width: 100%;
-  border-collapse: collapse;
+
+  overflow-x: scroll;
+  
 }
 /* Zebra striping */
-
+tbody{
+  overflow:scroll;
+}
 .th {
   background: #001428;
   color: white;
@@ -21,22 +24,61 @@ th {
   text-align: left;
 }
 
-.table-containers {
-  background-color: #001428;
-  width: 50%;
-  min-width: 420px;
+.table-containerss {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-self: center;
+  background-color: #012243;
   padding: 15px 30px;
-  transform: translate(-50%, -10%);
-  position: absolute;
-  left: 40%;
-  top: 105%;
-  right: 50%;
-  border-radius: 10px;
+  border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
-  color: white;
+  width:40%;
+  margin-top: 10%;
+  color: white; 
+  justify-content: space-around;
+
 }
 
-.table-containers-light {
+.table-containerss-light {
   background-color: #ffffff;
   color: black;
 }
+
+.scrollit {
+  overflow:scroll;
+  height:100%;
+}
+/* 
+@media only screen and (max-width: 600px) {
+
+  .table-containers{
+    margin-top: 130%;
+  }
+  }
+  @media only screen and (max-width: 400px) {
+
+    .table-containers{
+      margin-top: 280%;
+    }
+    }
+
+@media only screen and (max-width: 800px) {
+
+  .table-containers{
+    margin-top: 100%;
+  }
+  }
+
+  @media only screen and (max-width: 1200px) {
+
+    .table-containers{
+      margin-top: 60%;
+    }
+    }
+    @media only screen and (max-width: 2200px) {
+
+      .table-containers{
+        margin-top: 30%;
+      }
+      } */

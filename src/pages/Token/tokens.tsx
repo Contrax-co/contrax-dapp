@@ -46,9 +46,9 @@ export default function Tokens({ lightMode }: any) {
   return (
     <>
       <div
-        className={`table-containers ${lightMode && "table-containers-light"}`}
+        className={`table-containerss ${lightMode && "table-containerss-light"}`}
       >
-        <div className="table-responsive">
+        <div className="scrollit">
           <table className="table table-hover-token">
             <thead>
               <tr
