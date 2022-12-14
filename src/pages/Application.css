@@ -57,6 +57,7 @@
 
 
 @media (max-width: 768px) {
+  
   .ac_page{
     display: flex;
     flex-direction: column;
