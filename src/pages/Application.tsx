@@ -14,14 +14,22 @@ import * as ethers from 'ethers';
 import logo from '../images/logo-4x.png';
 import Dashboard from '../components/Dashboard/Dashboard';
 import coinbaseWalletModule from '@web3-onboard/coinbase';
+import enrkypt from '@web3-onboard/enkrypt';
+import gnosisModule from '@web3-onboard/gnosis';
+import mewWallet from '@web3-onboard/mew-wallet';
+import walletLinkModule from '@web3-onboard/walletlink';
 
 const ARBITRUM_MAINNET = 'https://arb1.arbitrum.io/rpc';
 
 const injected = injectedModule();
 const coinbaseWalletSdk = coinbaseWalletModule({ darkMode: true });
+const enrkyptModule = enrkypt();
+const gnosis = gnosisModule();
+const mewWalletModule = mewWallet();
+const walletLink = walletLinkModule({ darkMode: true });
 
 const onboard = Onboard({
-  wallets: [injected, coinbaseWalletSdk],
+  wallets: [injected, coinbaseWalletSdk, enrkyptModule, gnosis, mewWalletModule, walletLink],
   chains: [
     {
       id: '0xA4B1',
