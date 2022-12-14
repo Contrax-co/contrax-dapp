@@ -194,3 +194,21 @@
 .exchange_spinner_bottom:hover {
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .swap__container {
+    margin-top: 0;
+    padding:5px;
+    width: 85vw;
+    justify-content: space-evenly;
+  }
+
+  .from{
+    padding-top:0px;
+    padding-bottom: 0;
+  }
+
+  .exchange_icon {
+    display:none;
+  }
+}

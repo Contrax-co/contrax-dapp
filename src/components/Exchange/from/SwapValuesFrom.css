@@ -16,8 +16,8 @@
   flex-direction: column;
   z-index: 200;
   background-color: #012243;
-  width: 30%;
-  height: 60%;
+  width: 30vw;
+  height: 60vh;
   border-radius: 15px;
   position: relative;
   animation: animate 0.3s;
@@ -79,4 +79,22 @@
   font-size: 15px;
   color: rgb(116, 114, 114);
   margin-left: 10px;
+}
+
+
+@media (max-width: 768px) {
+  .swap__modal{
+    width: 70vw;
+  }
+
+  .exchange__logo2{
+    width:20px;
+    height: 20px;
+  }
+
+  .pad_options > p {
+    font-size:15px;
+  }
+
+
 }
