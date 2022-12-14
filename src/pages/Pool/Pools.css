@@ -1,9 +1,10 @@
 table {
-  width: 100%;
-  border-collapse: collapse;
+  overflow-x: scroll;
 }
 /* Zebra striping */
-
+tbody {
+  overflow: scroll;
+}
 .th {
   background: #001428;
   color: white;
@@ -22,22 +23,26 @@ th {
 }
 
 .table-containers {
-  background-color: #001428;
-  width: 50%;
-  min-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-self: center;
+  background-color: #012243;
   padding: 15px 30px;
-  transform: translate(-50%, -10%);
-  position: absolute;
-  left: 40%;
-  top: 85%;
-  right: 50%;
-
-  border-radius: 10px;
+  border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
+  width: 40%;
+  margin-top: 10%;
   color: white;
+  justify-content: space-around;
 }
 
 .table-containers-light {
   background-color: #ffffff;
   color: black;
+}
+
+.scrollit {
+  overflow: scroll;
+  height: 100%;
 }
