@@ -104,3 +104,78 @@
 .address {
   font-weight: 400;
 }
+
+.hamburger_menu {
+  display:none;
+}
+
+.topbar_menu{
+  display:none;
+}
+
+.dropdown_hamburger_menu {
+  display:flex;
+  flex-direction: column; 
+  text-align:center;
+  align-items:center;
+  justify-content:center;
+  width: 100vw;
+  height: 100vh;
+  background-color: #012243;
+  z-index:999;
+}
+
+.dropdown_hamburger_menu--light {
+  background-color:white;
+}
+
+.dropdown_hamburger_menu > a {
+  font-size: 20px;
+  color:white;
+}
+
+.dropdown_hamburger_menu > a:hover {
+  font-size: 25px;
+}
+
+.dropdown_hamburger_menu--light > a {
+  color:black;
+}
+
+
+@media (max-width: 768px) {
+  .topbar_placement{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    left: 0;
+    padding-top:10px;
+    padding-right: 20px;
+    padding-left:20px;
+  }
+
+  .topbar_menu {
+    display:revert;
+    font-size:50px;
+    color:white;
+    top: 20px;
+    left: 20px;
+    position: fixed;
+    z-index:1000;
+  }
+
+  .topbar_menu--light{
+    color:black;
+  }
+
+  .topbar_menu:hover{
+    cursor: pointer;
+  }
+
+  .connect_wallet{
+    top: 20px; 
+    right: 20px; 
+    position: fixed;
+  }
+
+}
