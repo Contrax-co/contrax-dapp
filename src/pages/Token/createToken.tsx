@@ -128,6 +128,9 @@ export default function CreateToken({ lightMode }: any) {
   return (
     <>
       <div className="pages">
+        <div className={`token__header ${lightMode && "token-header-light"}`}>
+          <h1>Token Creation</h1>
+        </div>
         <div className={`containers ${lightMode && "containers-light"}`}>
           <h1>Enter Token Parameters</h1>
 
@@ -249,7 +252,7 @@ export default function CreateToken({ lightMode }: any) {
                     Create a Token
                   </button>
                 ) : (
-                  <button type="button" className="buttonss-disabled">
+                  <button type="button" className="buttonssss-disabled">
                     Create a Token
                   </button>
                 )}
@@ -261,7 +264,6 @@ export default function CreateToken({ lightMode }: any) {
             )}
           </div>
         </div>
-
         <Tokens lightMode={lightMode} />
       </div>
       {/* <BottomBar /> */}
