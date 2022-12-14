@@ -49,3 +49,21 @@
 .topbar {
   margin-bottom: 50px;
 }
+
+.hamburger_menu{
+  display:none;
+}
+
+
+
+@media (max-width: 768px) {
+  .ac_page{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+}

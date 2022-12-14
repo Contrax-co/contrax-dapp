@@ -180,17 +180,20 @@ async function network(){
             onClick={toggleLight}
           />
         </div>
+        
 
         <div className={`rightside ${lightMode && 'rightside--light'}`}>
           <div className="topbar">
-            <TopBar
-              lightMode={lightMode}
-              currentWallet={currentWallet}
-              connectWallet={connectWallet}
-              networkId={networkId}
-              logout={() => setLogout(true)}
-            />
+              <TopBar
+                lightMode={lightMode}
+                currentWallet={currentWallet}
+                connectWallet={connectWallet}
+                networkId={networkId}
+                logout={() => setLogout(true)}
+                setMenuItem={setMenuItem}
+              />
           </div>
+
           {menuItem === 'Dashboard' && (
             <Dashboard lightMode={lightMode} currentWallet={currentWallet} />
           )}

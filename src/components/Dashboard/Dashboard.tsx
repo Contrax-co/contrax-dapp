@@ -38,7 +38,8 @@ function Dashboard({ lightMode, currentWallet }: any) {
 
   return (
     <div
-      className={`dashboard_top_bg ${lightMode && 'dashboard_top_bg--light'}`}
+      className={`dashboard_top_bg ${lightMode && 'dashboard_top_bg--light'}`} 
+      id="dashboard"
     >
       <div
         className={`dashboard_header ${lightMode && 'dashboard_header--light'}`}
