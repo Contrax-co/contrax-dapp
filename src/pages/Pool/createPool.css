@@ -19,7 +19,7 @@
   color: black;
 }
 .containeres {
-display: flex;
+  display: flex;
   flex-direction: column;
   align-self: center;
   justify-self: center;
@@ -174,7 +174,6 @@ label {
   border-color: #6f6df4;
 }
 
-
 @media only screen and (max-width: 600px) {
   .inputs {
     width: 60%;
@@ -185,10 +184,10 @@ label {
     margin-right: 5%;
   }
 
-  .inputesbtn{
+  .inputesbtn {
     width: 60%;
   }
-  .inputesbtn-light{
+  .inputesbtn-light {
     width: 60%;
   }
 }

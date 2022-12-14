@@ -1,11 +1,9 @@
 table {
-
   overflow-x: scroll;
-  
 }
 /* Zebra striping */
-tbody{
-  overflow:scroll;
+tbody {
+  overflow: scroll;
 }
 .th {
   background: #001428;
@@ -33,11 +31,10 @@ th {
   padding: 15px 30px;
   border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
-  width:40%;
+  width: 40%;
   margin-top: 10%;
-  color: white; 
+  color: white;
   justify-content: space-around;
-
 }
 
 .table-containerss-light {
@@ -46,8 +43,8 @@ th {
 }
 
 .scrollit {
-  overflow:scroll;
-  height:100%;
+  overflow: scroll;
+  height: 100%;
 }
 /* 
 @media only screen and (max-width: 600px) {

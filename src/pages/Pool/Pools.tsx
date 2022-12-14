@@ -65,7 +65,7 @@ export default function Pools({ lightMode }: any) {
       <div
         className={`table-containers ${lightMode && "table-containers-light"}`}
       >
-        <div  className="scrollit">
+        <div className="scrollit">
           <table className="table table-hover-token">
             <thead>
               <tr
