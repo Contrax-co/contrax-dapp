@@ -123,3 +123,18 @@
   padding: 30px;
   width: 100%;
 }
+
+@media (max-height: 600px) {
+  .dashboard_wallet_title {
+    font-size: 20px;
+  }
+
+  .dashboard_address {
+    font-size:15px;
+  }
+
+
+  .dashboard_copy {
+    height: 0px;
+  }
+}
