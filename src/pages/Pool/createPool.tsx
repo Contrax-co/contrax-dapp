@@ -177,8 +177,9 @@ export default function CreatePools({ lightMode }: any) {
     <>
       <div className="pagess">
         <div className={`pool__header ${lightMode && "pool-header-light"}`}>
-          <h1>Create Pool</h1>
+     
         </div>
+   
         <div className={`containeres ${lightMode && "containeres-light"}`}>
           <h1>Create a Pool</h1>
 
@@ -264,7 +265,7 @@ export default function CreatePools({ lightMode }: any) {
             </div>
           )}
         </div>
-
+  
         {openModalFrom ? (
           <Modals
             tokens={StableTOKEN}
