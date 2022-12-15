@@ -100,3 +100,16 @@
 .swap_amount {
   margin-top: 0;
 }
+
+@media (max-width: 768px) {
+  .swap__logo {
+    width: 25px;
+  }
+
+  .dropdown__from {
+    font-size: 12px;
+    font-weight: 700;
+  }
+  
+  
+}

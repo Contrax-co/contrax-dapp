@@ -180,7 +180,7 @@ async function network(){
           />
         </div>
         
-
+        
         <div className={`rightside ${lightMode && 'rightside--light'}`}>
           <div className="topbar">
               <TopBar
