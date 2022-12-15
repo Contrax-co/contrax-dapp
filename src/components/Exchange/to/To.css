@@ -80,3 +80,16 @@
 .to_usd--light {
   color: black;
 }
+
+@media (max-width: 768px) {
+  .swap__logo {
+    width: 25px;
+  }
+
+  .dropdown__to {
+    font-size: 12px;
+    font-weight: 700;
+  }
+  
+  
+}
