@@ -38,7 +38,7 @@ function TopBar({
 
       {currentWallet ? (
         <div
-          className={`wallet_address ${lightMode && 'wallet_address--light'}`}
+          className={`connect_wallet2 ${lightMode && 'connect_wallet2--light'}`}
         >
           {networkId === '0xa4b1' || networkId === 'a4b1' ? (
             <div className={`ethBal ${lightMode && 'ethBal--light'}`}>

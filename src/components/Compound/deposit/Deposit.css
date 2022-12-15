@@ -52,7 +52,7 @@
 }
 
 .addliquidity_tab {
-  flex: 1;
+  width: 50%;
   height: 100%;
   border: 0.5px solid #043b71;
   border-radius: 10px;
@@ -62,7 +62,6 @@
   color: white;
   font-weight: bold;
   margin-right: 70px;
-  position: relative !important;
 }
 
 .addliquidity_tab--light {
