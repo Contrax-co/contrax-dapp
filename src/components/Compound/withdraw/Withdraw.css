@@ -336,3 +336,31 @@
 .withdraw_zap1_button_disable:hover {
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) { 
+  .detail_container{
+    flex-direction: column;
+    width: 100%;
+    margin-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    justify-content: center;
+  }
+
+  .withdrawal_title{
+    font-size:13px;
+  }
+
+  .withdrawal_description2{
+    font-size: 13px;
+  }
+
+  .withdraw_tab {
+    width: 90%;
+    margin: 0;
+  }
+
+  .lp_bal > p {
+    font-size:13px;
+  }
+}
