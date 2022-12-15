@@ -72,5 +72,13 @@
   padding-right:10px;
   font-size:11px;
  }
+
+ .farm_header > p {
+  font-size:20px;
+ }
+
+ .pools_list{
+  margin-top:5px;
+ }
 }
 
