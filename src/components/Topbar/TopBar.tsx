@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import {TbMenu2} from "react-icons/tb";
 import './TopBar.css';
+import LightModeToggle from '../LightModeToggle';
 
 function TopBar({
   lightMode,
@@ -33,6 +34,9 @@ function TopBar({
             setShow(!show)
             }
           }><p>Docs</p></a>
+            <div>
+              <LightModeToggle onClick={props.onClick} lightMode={lightMode}/>
+            </div>
           </div>
         ) : null}
 

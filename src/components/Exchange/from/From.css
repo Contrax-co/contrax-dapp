@@ -110,7 +110,26 @@
     font-weight: 700;
   }
   
-  
+}
+
+@media (max-width: 600px) {
+  .from__amount {
+    width: 60%;
+  }
+
+  .dropdown__from{
+    width:40%;
+  }
+}
+
+@media (max-width: 470px) {
+  .from__amount {
+    width: 60%;
+  }
+
+  .dropdown__from{
+    width: 40%;
+  }
 }
 
 @media (max-height: 800px) {

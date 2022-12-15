@@ -190,6 +190,7 @@ async function network(){
                 networkId={networkId}
                 logout={() => setLogout(true)}
                 setMenuItem={setMenuItem}
+                onClick={toggleLight}
               />
           </div>
 
