@@ -211,4 +211,9 @@
   .exchange_icon {
     display:none;
   }
+
+  .whole__container__title {
+    font-size: 25px;
+    font-weight: bold;
+  }
 }

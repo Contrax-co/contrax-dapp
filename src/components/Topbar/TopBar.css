@@ -142,7 +142,7 @@
   width: 100vw;
   height: 100vh;
   background-color: #012243;
-  z-index:999;
+  z-index:999 !important;
 }
 
 .dropdown_hamburger_menu--light {
