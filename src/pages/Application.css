@@ -33,7 +33,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding-top: 30px;
+  padding-top: 20px;
 }
 
 .rightside > p {
@@ -47,7 +47,7 @@
 }
 
 .topbar {
-  margin-bottom: 50px;
+  margin-bottom: 70px;
 }
 
 .hamburger_menu{
