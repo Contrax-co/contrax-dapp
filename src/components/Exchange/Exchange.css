@@ -217,3 +217,34 @@
     font-weight: bold;
   }
 }
+
+@media (max-height: 900px) {
+  .whole__container__title{
+    font-size: 25px;
+  }
+
+  .swap__container{
+    margin-top: 10px;
+    height: 60vh;
+  }
+
+}
+
+@media (max-height: 800px) {
+  .exchange_icon{
+    display: none;
+  }
+}
+
+@media (max-height: 700px) {
+  .from{
+    margin: 0;
+    padding-top: 0px;
+  }
+}
+
+@media (max-height: 600px) {
+  .whole__exchange__container {
+    overflow: scroll;
+  }
+}
