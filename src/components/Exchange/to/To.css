@@ -90,6 +90,20 @@
     font-size: 12px;
     font-weight: 700;
   }
-  
-  
 }
+
+@media (max-height: 800px) {
+  .to__input{
+    height: 40px;
+    padding: 3px;
+  }
+
+  .swap__logo {
+    width: 20px;
+  }
+
+  .dropdown__to{
+    font-size: 15px;
+  }
+}
+

@@ -129,3 +129,55 @@
   cursor: pointer;
   background-color: #68b4c9;
 }
+
+@media (max-width: 768px) {
+  .logout__modal{
+    width: 70vw;
+  }
+}
+
+@media (max-height: 900px) {
+  .logout__modal{
+    height: 60vh;
+  }
+}
+
+@media (max-height: 800px) {
+  .logout__modal{
+    height: 70vh;
+  }
+}
+
+@media (max-height: 750px) {
+  .logout__modal{
+    height: 80vh;
+  }
+
+  .logout__button{
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top:10px;
+    padding-bottom: 10px;
+  }
+}
+
+@media (max-height: 700px) {
+  .logout__icon {
+    padding-top: 5px;;
+  }
+
+  .logout__address {
+    padding: 5px;
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .logout__info{
+    padding: 5px;
+  }
+
+  .logout__view{
+    margin: 0;
+  }
+}

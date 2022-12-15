@@ -105,11 +105,29 @@
   .swap__logo {
     width: 25px;
   }
-
   .dropdown__from {
     font-size: 12px;
     font-weight: 700;
   }
   
   
+}
+
+@media (max-height: 800px) {
+  .from__input{
+    height: 40px;
+    padding: 3px;
+  }
+
+  .swap__logo {
+    width: 20px;
+  }
+
+  .dropdown__from{
+    font-size: 15px;
+  }
+
+  .swap_max{
+    font-size:13px;
+  }
 }
