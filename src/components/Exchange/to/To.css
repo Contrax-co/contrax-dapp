@@ -92,6 +92,26 @@
   }
 }
 
+@media (max-width: 600px) {
+  .to__amount {
+    width: 60%;
+  }
+
+  .dropdown__to{
+    width: 40%;
+  }
+}
+
+@media (max-width: 470px) {
+  .to__amount {
+    width: 60%;
+  }
+
+  .dropdown__to{
+    width: 40%;
+  }
+}
+
 @media (max-height: 800px) {
   .to__input{
     height: 40px;
