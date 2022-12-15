@@ -6,3 +6,10 @@
 .vaults {
   margin: 5px;
 }
+
+@media (max-width: 768px) {
+  .vaults_container{
+    display: flex;
+    flex-direction: column;
+  }
+}
