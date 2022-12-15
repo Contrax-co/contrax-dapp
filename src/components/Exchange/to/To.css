@@ -96,6 +96,7 @@
   .to__input{
     height: 40px;
     padding: 3px;
+    margin:0;
   }
 
   .swap__logo {
@@ -104,6 +105,14 @@
 
   .dropdown__to{
     font-size: 15px;
+  }
+
+  .to_usd{
+    font-size:15px;
+  }
+
+  .swap_amount{
+    font-size:14px;
   }
 }
 
