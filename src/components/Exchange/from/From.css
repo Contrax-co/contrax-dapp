@@ -130,4 +130,12 @@
   .swap_max{
     font-size:13px;
   }
+
+  .from_usd{
+    font-size:15px;
+  }
+
+  .swap_amount{
+    font-size:14px;
+  }
 }
