@@ -5,6 +5,8 @@
   flex-direction: column;
   overflow-y: scroll;
   margin-top: 5%;
+  overflow-x: hidden;
+ 
 }
 .pool__header {
   display: flex;
@@ -30,6 +32,7 @@
   width: 50%;
   color: white;
   justify-content: space-around;
+
 }
 
 .containeres-light {
@@ -178,16 +181,28 @@ label {
   .inputs {
     width: 60%;
     margin-right: 5%;
+    position:relative;
+    z-index:0;
+ 
   }
   .inputs-light {
     width: 60%;
     margin-right: 5%;
+   
   }
 
+.forms{
+  position: relative;
+}
   .inputesbtn {
     width: 60%;
   }
   .inputesbtn-light {
     width: 60%;
+  }
+  .containeres{
+    z-index:-999;
+    position: relative;
+    clear: left;
   }
 }

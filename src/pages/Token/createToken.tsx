@@ -129,7 +129,7 @@ export default function CreateToken({ lightMode }: any) {
     <>
       <div className="pages">
         <div className={`token__header ${lightMode && "token-header-light"}`}>
-          <h1>Token Creation</h1>
+        
         </div>
         <div className={`containers ${lightMode && "containers-light"}`}>
           <h1>Enter Token Parameters</h1>
@@ -168,7 +168,7 @@ export default function CreateToken({ lightMode }: any) {
                   onChange={(e) => setTokenSupply(e.target.value)}
                 />
               </div>
-              <div className="column">
+              <div className="columnss">
                 <label htmlFor="contact">Decimals</label>
                 <input
                   className={`inputs ${lightMode && "inputs-light"}`}
