@@ -149,3 +149,101 @@
   cursor: pointer;
   background-color: rgb(67, 161, 233);
 }
+
+@media (max-width: 560px) { 
+  .confirm_modal{
+    width:80vw;
+  }
+
+}
+
+@media (max-width: 420px) { 
+  .confirm_title{
+    font-size:15px;
+  }
+
+  .confirmation_logo{
+    width: 25px;
+    height: 25px;
+  }
+
+  .confirmation_header{
+    padding:7px;
+  }
+
+}
+
+@media (max-width: 360px) { 
+  .transaction_value{
+    font-size:13px;
+    font-weight: 600;
+  }
+
+  .transaction_usd {
+    font-size:13px;
+    font-weight: 600;
+  }
+  
+}
+
+@media (max-height: 760px) { 
+  .confirm_modal{
+    height:60vh;
+  }
+}
+
+@media (max-height: 700px) { 
+  .confirmation_button {
+    position: relative;
+    bottom: 2px;
+    padding-top: 5px;
+    width: 90%;
+    height: fit-content;
+  
+  }
+
+  .button_container {
+    margin: 5px;
+    padding-top: 1%;
+    height: fit-content;
+    width: 100%;
+    font-weight: 700;
+  }
+}
+
+@media (max-height: 700px) {
+  .confirmation_block{
+    padding: 5px;
+  }
+
+  .confirm_arrow{
+    padding:5px;
+  }
+}
+
+@media (max-height: 490px) {
+  .confirmation_logo{
+    width:25px;
+    height:25px;
+  }
+
+  .transaction_value{
+    font-size:13px;
+    font-weight: 600;
+  }
+
+  .transaction_usd {
+    font-size:13px;
+    font-weight: 600;
+  }
+
+  .confirm_title{
+    font-size:15px;
+  }
+
+  .button_container{
+    font-weight:600;
+    margin: 2px;
+    padding-top: 0;;
+  }
+}

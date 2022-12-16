@@ -456,3 +456,27 @@ input::-webkit-inner-spin-button {
     font-size:13px;
   }
 }
+
+@media (max-width: 500px) {
+  .deposit_tab{
+    display:flex;
+    flex-direction:column;
+  }
+
+  .weth_deposit_amount{
+    width:100%;
+  }
+
+  .deposit_deposits{
+    margin-top:10px;
+
+  }
+
+  .deposit_zap1_button_disable{
+    width:100%;
+  }
+
+  .deposit_zap_button{
+    width:100%;
+  }
+}
