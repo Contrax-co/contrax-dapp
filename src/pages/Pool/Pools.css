@@ -1,10 +1,4 @@
-table {
-  overflow-x: scroll;
-}
-/* Zebra striping */
-tbody {
-  overflow: scroll;
-}
+
 .th {
   background: #001428;
   color: white;
@@ -42,7 +36,18 @@ th {
   color: black;
 }
 
-.scrollit {
-  overflow: scroll;
-  height: 100%;
-}
+
+
+@media only screen and (max-width: 600px) {
+  .scrollit {
+    overflow: scroll;
+    height: 100%;
+  }
+  table {
+    overflow-x: scroll;
+  }
+  /* Zebra striping */
+  tbody {
+    overflow: scroll;
+  }
+}  
