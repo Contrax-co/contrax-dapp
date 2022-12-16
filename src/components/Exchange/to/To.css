@@ -119,6 +119,11 @@
     margin:0;
   }
 
+  .to__amount {
+    align-self:center;
+    height:30px;
+  }
+
   .swap__logo {
     width: 20px;
   }
