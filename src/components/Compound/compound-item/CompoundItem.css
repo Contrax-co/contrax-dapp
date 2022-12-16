@@ -324,3 +324,33 @@
   }
 
 }
+
+@media (max-width: 650px) {
+  .apy_info {
+    font-size: 11px;
+    margin-left:0px;
+  }
+
+  .pool_name {
+    margin-bottom:2px;
+    max-width: 80px;
+  }
+  .tvlLP{
+    margin:0;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .container {
+    max-width: 100px;
+  }
+
+  .container1 {
+    max-width: 100px;
+  }
+
+  .container__apy{
+    max-width: 100px;
+  }
+}
