@@ -364,3 +364,25 @@
     font-size:13px;
   }
 }
+
+@media (max-width: 500px) {
+  .withdraw_tab2{
+    flex-direction: column;
+  }
+
+  .lp_withdraw_amount{
+    width:100%;
+  }
+
+  .withdraw_withdraw{
+    margin-top:10px;
+  }
+
+  .withdraw_zap1_button_disable{
+    width:100%;
+  }
+
+  .deposit_zap_button{
+    width:100%;
+  }
+}
