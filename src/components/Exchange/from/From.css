@@ -138,6 +138,11 @@
     padding: 3px;
   }
 
+  .from__amount {
+    align-self:center;
+    height:30px;
+  }
+
   .swap__logo {
     width: 20px;
   }
