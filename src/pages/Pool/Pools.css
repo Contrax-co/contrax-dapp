@@ -25,7 +25,7 @@ th {
   padding: 15px 30px;
   border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
-  width: 40%;
+  width: auto;
   margin-top: 10%;
   color: white;
   justify-content: space-around;
@@ -50,4 +50,24 @@ th {
   tbody {
     overflow: scroll;
   }
+
+.th {
+  background: #001428;
+  color: white;
+  font-weight: medium;
+}
+.th-light {
+  background: white;
+  color: black;
+  font-weight: bold;
+}
+td,
+th {
+  padding: 2px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+.table-containers{
+  width: 50%;
+}
 }  
