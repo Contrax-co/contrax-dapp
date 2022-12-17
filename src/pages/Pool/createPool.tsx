@@ -181,7 +181,7 @@ export default function CreatePools({ lightMode }: any) {
         </div>
    
         <div className={`containeres ${lightMode && "containeres-light"}`}>
-          <h1 className='headind'>Create a Pool</h1>
+          <h1>Create a Pool</h1>
 
           <form className="forms">
             <div className="rows">
