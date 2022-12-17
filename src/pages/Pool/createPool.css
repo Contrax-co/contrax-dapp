@@ -58,9 +58,9 @@
   grid-template-columns: repeat(auto-fit, minmax(100px, 0.5fr));
   grid-gap: 0% 0%;
 }
-.one {
+/* .one {
   width: 150%;
-}
+} */
 .two {
   width: 20%;
   background-color: gray;
@@ -179,30 +179,52 @@ label {
 
 @media only screen and (max-width: 600px) {
   .inputs {
-    width: 60%;
+    width: 65%;
     margin-right: 5%;
     position:relative;
     z-index:0;
- 
+ height: 50%;
   }
   .inputs-light {
-    width: 60%;
+    width: 65%;
     margin-right: 5%;
-   
+    height: 50%;
   }
 
 .forms{
   position: relative;
 }
   .inputesbtn {
-    width: 60%;
+    width: 70%;
+    padding: 10px 7px;
+
   }
   .inputesbtn-light {
-    width: 60%;
+    width: 70%;
+    padding: 10px 7px;
   }
   .containeres{
     z-index:-999;
     position: relative;
     clear: left;
   }
+
+.buttonsss {
+   padding: 25px 20px;
+  width: 50%;
+
+  font-size: larger;
+  font-weight: bold;
+
+}
+.buttonss-disabled {
+  padding: 15px 10px;
+  width: 90%;
+margin-top: 4%;
+  font-size: larger;
+  font-weight: bold;
+}
+.headind{
+  font-size: 28px;
+}
 }
