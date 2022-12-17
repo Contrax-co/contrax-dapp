@@ -25,7 +25,7 @@ th {
   padding: 15px 30px;
   border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
-  width: 40%;
+  width: auto;
   margin-top: 10%;
   color: white;
   justify-content: space-around;
@@ -37,7 +37,9 @@ th {
 }
 
 @media only screen and (max-width: 600px) {
-
+  .table-containerss{
+    width: 40%;
+  }
   .scrollit {
     overflow: scroll;
     height: 100%;
@@ -50,6 +52,27 @@ th {
   tbody {
     overflow: scroll;
   }
+
+.th {
+  background: #001428;
+  color: white;
+  font-weight: medium;
+  font-size: 10;
+}
+.th-light {
+  background: white;
+  color: black;
+  font-weight: bold;
+  font-size: 10;
+}
+td,
+th {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
+  font-size: 10;
+}
+
 }
 /* 
 @media only screen and (max-width: 600px) {
