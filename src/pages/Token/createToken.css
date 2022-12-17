@@ -210,28 +210,5 @@ font-size: x-large;
  .containers{
   z-index: -1;
  }
- .buttonss{
-  padding: 25px 20px;
- width: 100%;
 
- font-size: larger;
- font-weight: bold;
-
-}
-.buttonssss-disabled {
- padding: 15px 10px;
- width: 100%;
-margin-top: 4%;
- font-size: larger;
- font-weight: bold;
-}
-p{
-  font-size: 15px;
-}
-.form-controlss{
-  font-size: medium;
-} 
-.one{
-  width: 200%;
-}
 }
