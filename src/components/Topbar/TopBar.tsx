@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import {TbMenu2} from "react-icons/tb";
+import { TbMenu2 } from 'react-icons/tb';
 import './TopBar.css';
 import LightModeToggle from '../LightModeToggle';
 
@@ -13,32 +13,81 @@ function TopBar({
   setMenuItem,
   ...props
 }: any) {
-
-  const [show, setShow] = useState(false); 
+  const [show, setShow] = useState(false);
 
   return (
     <div className="topbar_placement">
-      <div className={`topbar_menu ${lightMode && 'topbar_menu--light'}`} onClick={() => setShow(!show)}>
-       <TbMenu2 /> 
+      <div
+        className={`topbar_menu ${lightMode && 'topbar_menu--light'}`}
+        onClick={() => setShow(!show)}
+      >
+        <TbMenu2 className="burger-icon" />
       </div>
-      {
-        show ? (
-          <div className={`dropdown_hamburger_menu ${lightMode && 'dropdown_hamburger_menu--light'}`}>
-            <a href ="#dashboard" onClick={() => {setMenuItem("Dashboard"); setShow(!show)} } ><p>Dashboard</p></a>              
-            <a href = "#farms" onClick={() => {setMenuItem("Farms"); setShow(!show)}}>< p>Farms</p></a>
-            <a href ="#exchange" onClick={() => {setMenuItem("Exchange"); setShow(!show) }}><p>Exchange</p></a>
-            <a href ="#token" onClick={() => {setMenuItem("Create token"); setShow(!show)}}><p>Create Token</p></a>
-            <a href ="#pool" onClick={() => {setMenuItem("Create pool"); setShow(!show)}}><p>Create Pool</p></a>
-            <a href ="#docs" onClick={() => {
-            window.open('https://contrax.gitbook.io/contrax-docs/', '_blank');
-            setShow(!show)
-            }
-          }><p>Docs</p></a>
-            <div>
-              <LightModeToggle onClick={props.onClick} lightMode={lightMode}/>
-            </div>
+      {show ? (
+        <div
+          className={`dropdown_hamburger_menu ${
+            lightMode && 'dropdown_hamburger_menu--light'
+          }`}
+        >
+          <a
+            href="#dashboard"
+            onClick={() => {
+              setMenuItem('Dashboard');
+              setShow(!show);
+            }}
+          >
+            <p>Dashboard</p>
+          </a>
+          <a
+            href="#farms"
+            onClick={() => {
+              setMenuItem('Farms');
+              setShow(!show);
+            }}
+          >
+            <p>Farms</p>
+          </a>
+          <a
+            href="#exchange"
+            onClick={() => {
+              setMenuItem('Exchange');
+              setShow(!show);
+            }}
+          >
+            <p>Exchange</p>
+          </a>
+          <a
+            href="#token"
+            onClick={() => {
+              setMenuItem('Create token');
+              setShow(!show);
+            }}
+          >
+            <p>Create Token</p>
+          </a>
+          <a
+            href="#pool"
+            onClick={() => {
+              setMenuItem('Create pool');
+              setShow(!show);
+            }}
+          >
+            <p>Create Pool</p>
+          </a>
+          <a
+            href="#docs"
+            onClick={() => {
+              window.open('https://contrax.gitbook.io/contrax-docs/', '_blank');
+              setShow(!show);
+            }}
+          >
+            <p>Docs</p>
+          </a>
+          <div>
+            <LightModeToggle onClick={props.onClick} lightMode={lightMode} />
           </div>
-        ) : null}
+        </div>
+      ) : null}
 
       {currentWallet ? (
         <div
