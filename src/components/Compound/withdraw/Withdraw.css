@@ -66,6 +66,7 @@
   color: white;
   font-weight: bold;
   margin-right: 70px;
+  position: relative !important;
 }
 
 .withdraw_tab--light {
