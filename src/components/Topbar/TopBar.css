@@ -34,21 +34,20 @@
   border-radius: 15px;
 }
 
-.connect_wallet2--light{
+.connect_wallet2--light {
   color: black;
 }
-
 
 .connected_wallet_address {
   font-weight: bold;
   color: white;
   display: flex;
-  width:fit-content;
+  width: fit-content;
   justify-content: center;
 }
 
-.connected_wallet_address--light{
-  color:black;
+.connected_wallet_address--light {
+  color: black;
 }
 
 .wallet_address > p {
@@ -126,93 +125,97 @@
 }
 
 .hamburger_menu {
-  display:none;
+  display: none;
 }
 
-.topbar_menu{
-  display:none;
+.topbar_menu {
+  display: none;
+}
+
+.burger-icon {
+  margin: 5px 0;
 }
 
 .dropdown_hamburger_menu {
-  display:flex;
-  flex-direction: column; 
-  text-align:center;
-  align-items:center;
-  justify-content:center;
-  width: 100vw;
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 50vw;
+  max-width: 200px;
+  padding: 10% 5%;
+  padding-left: 15%;
+  border: 0.5px solid #8798ad;
   background-color: #012243;
-  z-index:999 !important;
+  z-index: 999 !important;
 }
 
 .dropdown_hamburger_menu--light {
-  background-color:white;
+  background-color: white;
+  border: 0.5px solid black;
 }
 
 .dropdown_hamburger_menu > a {
   font-size: 20px;
-  color:white;
+  color: white;
   text-decoration: none;
 }
 
 .dropdown_hamburger_menu > a:hover {
-  text-decoration:underline;
+  text-decoration: underline;
 }
 
 .dropdown_hamburger_menu--light > a {
-  color:black;
+  color: black;
 }
 
-
 @media (max-width: 768px) {
-  .topbar_placement{
-    display:flex;
+  .topbar_placement {
+    display: flex;
     flex-direction: row;
     justify-content: space-between;
     left: 0;
-    padding-top:10px;
+    padding-top: 10px;
     padding-right: 20px;
-    padding-left:20px;
+    padding-left: 20px;
   }
 
   .topbar_menu {
-    display:revert;
-    font-size:50px;
-    color:white;
+    display: revert;
+    font-size: 50px;
+    color: white;
     top: 20px;
     left: 20px;
     position: fixed;
-    z-index:1000;
+    z-index: 1000;
   }
 
-  .topbar_menu--light{
-    color:black;
+  .topbar_menu--light {
+    color: black;
   }
 
-  .topbar_menu:hover{
+  .topbar_menu:hover {
     cursor: pointer;
   }
 
-  .connect_wallet{
-    top: 20px; 
-    right: 20px; 
+  .connect_wallet {
+    top: 20px;
+    right: 20px;
     position: fixed;
   }
-  .connect_wallet2{
-    top: 20px; 
-    right: 20px; 
+  .connect_wallet2 {
+    top: 20px;
+    right: 20px;
     position: fixed;
   }
   .connected_wallet_address {
     align-items: right;
     font-weight: bold;
     display: flex;
-    width:fit-content;
+    width: fit-content;
     right: 0;
-    margin:0;
+    margin: 0;
   }
 
-  .connected_wallet{
+  .connected_wallet {
     padding-left: 5px;
     padding-right: 1px;
     border-radius: 20px;
@@ -220,10 +223,9 @@
     align-items: center;
     margin-left: 30px;
   }
-
 }
 
-@media (max-height: 480px){
+@media (max-height: 480px) {
   .dropdown_hamburger_menu {
     overflow: scroll;
   }
@@ -232,5 +234,4 @@
     font-size: 15px;
     margin: 0;
   }
-
 }
