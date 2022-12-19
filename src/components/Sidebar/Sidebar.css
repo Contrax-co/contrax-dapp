@@ -29,7 +29,6 @@
 }
 
 .toggle_placement {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  margin: 0 auto;
+  padding-bottom: 35px;
 }
