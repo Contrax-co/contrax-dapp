@@ -8,8 +8,8 @@ import { getUserSession, setUserSession } from '../store/localStorage';
 import Logout from '../components/Logout/Logout';
 import Exchange from '../components/Exchange/Exchange';
 import Compound from '../components/Compound/Compound';
-import CreateToken from './Token/createToken';
-import CreatePool from './Pool/createPool';
+import CreateToken from './tokenBuilder/createToken';
+import CreatePool from './poolBuilder/createPool';
 import * as ethers from 'ethers';
 import logo from '../images/logo-4x.png';
 import Dashboard from '../components/Dashboard/Dashboard';
@@ -27,7 +27,13 @@ const gnosis = gnosisModule();
 const mewWalletModule = mewWallet();
 
 const onboard = Onboard({
-  wallets: [injected, coinbaseWalletSdk, enrkyptModule, gnosis, mewWalletModule],
+  wallets: [
+    injected,
+    coinbaseWalletSdk,
+    enrkyptModule,
+    gnosis,
+    mewWalletModule,
+  ],
   chains: [
     {
       id: '0xA4B1',
@@ -38,13 +44,13 @@ const onboard = Onboard({
   ],
   appMetadata: {
     name: 'Contrax dAPP',
-    icon: logo, 
-    logo: logo, 
+    icon: logo,
+    logo: logo,
     description: 'Contrax dAPP',
-    agreement: { 
+    agreement: {
       version: '1.0.0',
-      termsUrl: 'https://testing.contrax.finance/termsofuse.pdf'
-    }
+      termsUrl: 'https://testing.contrax.finance/termsofuse.pdf',
+    },
   },
 });
 function Application() {
@@ -72,7 +78,7 @@ function Application() {
 
   useEffect(() => {
     network();
-  
+
     wallet();
   });
 
@@ -90,46 +96,39 @@ function Application() {
     }
   }, []);
 
-
-
-
-async function network(){
-  const chainId = 42161
-  if (window.ethereum.networkVersion !== chainId) {
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId:'0xA4B1' }]
-      });
-    } catch (err:any) {
-        // This error code indicates that the chain has not been added to MetaMask
-      
-        if (err.code === 4902) {
+  async function network() {
+    const chainId = 42161;
+    if (window.ethereum.networkVersion !== chainId) {
+      try {
         await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [
-            {
-              chainName: 'Arbitrum One',
-              chainId: '0xA4B1',
-              nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
-              rpcUrls: ['https://arb1.arbitrum.io/rpc/']
-            }
-          ]
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0xA4B1' }],
         });
+      } catch (err: any) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (err.code === 4902) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainName: 'Arbitrum One',
+                chainId: '0xA4B1',
+                nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
+                rpcUrls: ['https://arb1.arbitrum.io/rpc/'],
+              },
+            ],
+          });
+        }
       }
     }
   }
-}
-
 
   async function wallet() {
     const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
     let accounts = await provider.send('eth_requestAccounts', []);
-    // TODO - 'account' variable assigned a value but never used
     let account = accounts[0];
     provider.on('accountsChanged', function (accounts) {
       account = accounts[0];
-      console.log(address); // Print new address
     });
 
     const signer = provider.getSigner();
@@ -164,7 +163,6 @@ async function network(){
   };
   const toggleLight = () => {
     setLightMode(!lightMode);
-
   };
   return (
     <div className={`page ${lightMode && 'page--light'}`}>
@@ -177,19 +175,18 @@ async function network(){
             onClick={toggleLight}
           />
         </div>
-        
-        
+
         <div className={`rightside ${lightMode && 'rightside--light'}`}>
           <div className="topbar">
-              <TopBar
-                lightMode={lightMode}
-                currentWallet={currentWallet}
-                connectWallet={connectWallet}
-                networkId={networkId}
-                logout={() => setLogout(true)}
-                setMenuItem={setMenuItem}
-                onClick={toggleLight}
-              />
+            <TopBar
+              lightMode={lightMode}
+              currentWallet={currentWallet}
+              connectWallet={connectWallet}
+              networkId={networkId}
+              logout={() => setLogout(true)}
+              setMenuItem={setMenuItem}
+              onClick={toggleLight}
+            />
           </div>
 
           {menuItem === 'Dashboard' && (
@@ -203,7 +200,6 @@ async function network(){
             />
           )}
           {menuItem === 'Create token' && <CreateToken lightMode={lightMode} />}
-
           {menuItem === 'Create pool' && <CreatePool lightMode={lightMode} />}
           {menuItem === 'Exchange' && (
             <Exchange lightMode={lightMode} currentWallet={currentWallet} />

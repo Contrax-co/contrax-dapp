@@ -1,4 +1,4 @@
-.pages {
+.pagess {
   width: 100%;
   height: 100%;
   display: flex;
@@ -8,7 +8,7 @@
   overflow-x: hidden;
 }
 
-.token__header {
+.pool-header {
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -18,11 +18,11 @@
   color: white;
 }
 
-.token-header-light {
+.pool-header-light {
   color: black;
 }
 
-.containers {
+.pool-containers {
   display: flex;
   flex-direction: column;
   align-self: center;
@@ -32,91 +32,77 @@
   border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
   width: 50%;
+  max-width: 780px;
   color: white;
   justify-content: space-around;
 }
 
-.containers-light {
+.pool-containers-light {
   background-color: #ffffff;
   color: black;
 }
 
-.forms {
-  display: flex;
+.pool-forms {
+  width: 100%;
   position: relative;
   margin: 30px auto 0 auto;
-  flex-direction: column;
 }
 
-.rows {
-  display: flex;
+.pool-rows {
+  width: 100%;
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   grid-gap: 30px 30px;
   margin-bottom: 50px;
-  flex-direction: column;
 }
 
-.rows-check {
+.pool-rows-check {
   width: 100%;
-  display: flex;
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 0.5fr));
   grid-gap: 0% 0%;
 }
 
-.one {
-  width: 150%;
-}
-
-.two {
-  width: 20%;
-  background-color: gray;
-}
-
-label {
+/* label {
   font-size: larger;
   font-weight: bolder;
-}
+} */
 
-.inputs {
-  width: 100%;
+.pool-inputs {
+  width: 95%;
+  height: 100%;
   font-weight: 600;
   font-size: larger;
-  padding: 8px 10px;
+  padding: 20px 10px;
   border-radius: 5px;
   border: 1.2px solid #232323;
   margin-top: 5px;
   height: 90%;
   background-color: #001428;
   color: white;
+  margin-bottom: 2%;
 }
 
-.inputs-light {
-  width: 100%;
+.pool-inputs-light {
+  width: 95%;
   font-weight: 400;
   font-size: larger;
-  padding: 8px 10px;
+  padding: 20px 10px;
   border-radius: 5px;
   border: 1.2px solid #c4cae0;
   margin-top: 5px;
   height: 90%;
   background-color: white;
   color: black;
+  margin-bottom: 2%;
 }
 
-.inputs:focus {
+.pool-inputs:focus {
   outline: none;
   border-color: #6f6df4;
 }
 
-#disabled-input {
-  background-color: rgb(226, 226, 226);
-}
-
-#disabled-input::placeholder {
-  color: #020202 !important;
-}
-
-.form-controlss {
+.form-controless {
   font-family: system-ui, sans-serif;
   font-size: 1.5rem;
   font-weight: bold;
@@ -126,33 +112,7 @@ label {
   gap: 0.5em;
 }
 
-.inputs-check {
-  width: 20%;
-  font-weight: 600;
-  padding: 8px 10px;
-  border-radius: 5px;
-  border: 1.2px solid #232323;
-  margin-top: 5px;
-  margin-left: 70%;
-  height: 50%;
-  background-color: #001428;
-  color: white;
-}
-
-.inputs-check-light {
-  width: 20%;
-  font-weight: 600;
-  padding: 8px 10px;
-  border-radius: 5px;
-  border: 1.2px solid #c4cae0;
-  margin-top: 5px;
-  margin-left: 70%;
-  height: 50%;
-  background-color: white;
-  color: #001428;
-}
-
-.buttons {
+.pool-buttons {
   display: flex;
   flex: 1;
   width: 100%;
@@ -160,12 +120,10 @@ label {
   height: auto;
 }
 
-.buttonss {
-  flex: 1;
-  width: 100%;
-  display: flex;
+.pool-button {
   border: 2px solid;
   padding: 25px 20px;
+  width: 50%;
   background-color: #63cce0;
   color: #ffffff;
   border-radius: 10px;
@@ -174,12 +132,10 @@ label {
   cursor: pointer;
 }
 
-.buttonssss-disabled {
+.pool-button-disabled {
   border: 2px solid;
   padding: 25px 20px;
-  flex: 1;
-  width: 100%;
-  display: flex;
+  /* width: 50%; */
   background-color: rgb(156, 178, 193);
   color: #ffffff;
   border-radius: 10px;
@@ -187,49 +143,67 @@ label {
   font-weight: bold;
 }
 
+.pool-inputs-btn {
+  width: 95%;
+  height: 100%;
+  font-weight: 600;
+  font-size: larger;
+  padding: 20px 10px;
+  border-radius: 5px;
+  border: 1.2px solid #232323;
+  margin-top: 5px;
+  height: 90%;
+  background-color: #001428;
+  color: white;
+  cursor: pointer;
+}
+
+.pool-inputs-btn-light {
+  width: 95%;
+  font-weight: 400;
+  font-size: larger;
+  padding: 20px 10px;
+  border-radius: 5px;
+  border: 1.2px solid #c4cae0;
+  margin-top: 5px;
+  height: 90%;
+  background-color: white;
+  color: black;
+  cursor: pointer;
+}
+
+.pool-inputs-btn:focus {
+  outline: none;
+  border-color: #6f6df4;
+}
+
 @media only screen and (max-width: 600px) {
-  .inputs {
+  .pool-inputs {
     width: 60%;
     margin-right: 5%;
-    height: 50%;
+    position: relative;
+    z-index: 0;
   }
-
-  .inputs-light {
+  .pool-inputs-light {
     width: 60%;
     margin-right: 5%;
-    height: 50%;
-  }
-
-  .inputs-check {
-    width: 100%;
-    margin-left: 0%;
-    margin-top: 3%;
-    margin-bottom: 25%;
-  }
-
-  .column {
-    margin-bottom: -5%;
-  }
-
-  .columnss {
-    font-size: large;
   }
 
   .forms {
-    font-size: medium;
+    position: relative;
   }
 
-  .containers h1 {
-    font-size: 1.25rem;
+  .pool-inputs-btn {
+    width: 60%;
   }
 
-  .column label {
-    font-size: medium;
+  .pool-inputs-btn-light {
+    width: 60%;
   }
 
-  .containers {
-    width: 65%;
-    z-index: -1;
-    padding: 15px 35px;
+  .containeres {
+    z-index: -999;
+    position: relative;
+    clear: left;
   }
 }

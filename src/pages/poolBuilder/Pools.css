@@ -1,14 +1,15 @@
-
 .th {
   background: #001428;
   color: white;
   font-weight: bold;
 }
+
 .th-light {
   background: white;
   color: black;
   font-weight: bold;
 }
+
 td,
 th {
   padding: 10px;
@@ -16,7 +17,7 @@ th {
   text-align: left;
 }
 
-.table-containerss {
+.table-containers {
   display: flex;
   flex-direction: column;
   align-self: center;
@@ -31,56 +32,29 @@ th {
   justify-content: space-around;
 }
 
-.table-containerss-light {
+.table-containers-light {
   background-color: #ffffff;
   color: black;
 }
 
 @media only screen and (max-width: 600px) {
-
   .scrollit {
     overflow: scroll;
     height: 100%;
   }
 
+  .pool-table-header {
+    display: flex;
+    font-size: 1.5rem;
+    margin: 15px auto 25px auto;
+    justify-content: center;
+  }
+
   table {
     overflow-x: scroll;
   }
-  /* Zebra striping */
+
   tbody {
     overflow: scroll;
   }
 }
-/* 
-@media only screen and (max-width: 600px) {
-
-  .table-containers{
-    margin-top: 130%;
-  }
-  }
-  @media only screen and (max-width: 400px) {
-
-    .table-containers{
-      margin-top: 280%;
-    }
-    }
-
-@media only screen and (max-width: 800px) {
-
-  .table-containers{
-    margin-top: 100%;
-  }
-  }
-
-  @media only screen and (max-width: 1200px) {
-
-    .table-containers{
-      margin-top: 60%;
-    }
-    }
-    @media only screen and (max-width: 2200px) {
-
-      .table-containers{
-        margin-top: 30%;
-      }
-      } */

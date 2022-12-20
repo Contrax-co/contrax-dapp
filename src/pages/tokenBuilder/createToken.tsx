@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import swal from 'sweetalert';
 import { getUserSession } from '../../store/localStorage';
-import './createToken.css';
 import Tokens from './tokens';
 import LoadingSpinner from '../../components/spinner/spinner';
+import './createToken.css';
+
 const contractFile = require('../../config/erc20.json');
 
 declare global {
@@ -23,8 +24,7 @@ export default function CreateToken({ lightMode }: any) {
   const [tokenBurnValue, setTokenBurnValue] = useState('');
   const [tokenTradingFee, setTokenTradingFee] = useState(false);
   const [tokenTradingFeeValue, setTradingFeeValue] = useState('');
-  const [tokenSupportSupplyIncrease, setTokenSupportSupplyIncrease] =
-    useState(false);
+  const [tokenSupplyIncrease, settokenSupplyIncrease] = useState(false);
   const [tokenAddress, setTokenAddress] = useState();
   const [wallet, setWallet] = useState();
   const [decimals, setDecimal] = useState();
@@ -45,12 +45,13 @@ export default function CreateToken({ lightMode }: any) {
     await provider.send('eth_requestAccounts', []);
     const signer = provider.getSigner();
     const { chainId } = await provider.getNetwork();
+
     let name = tokenName;
     let symbol = tokenSymbol;
     let decimal = Number(tokenDecimal);
     let burnPercantageIdentifier = tokenBurn === 'on' ? true : false;
     let initialSupply = Number(tokenSupply);
-    let mintable = tokenSupportSupplyIncrease === 'on' ? true : false;
+    let mintable = tokenSupplyIncrease === 'on' ? true : false;
     let burnPercentage = Number(tokenBurnValue);
     let transactionFeePercentage = Number(tokenTradingFeeValue);
     let transactionFeePercentageIdentiier =
@@ -100,27 +101,30 @@ export default function CreateToken({ lightMode }: any) {
               setIsLoading(false);
 
               swal({
-                title: 'Good job!',
-                text: 'Token Created SuccessFully.Please allow a few minutes for your token to appear in the Token Table ',
+                title: 'Congratulations!',
+                text: 'Your token was created successfully! Please allow a few minutes for confirmation then the token will appear in your Token Table',
                 icon: 'success',
               }).then((data) => {});
             }
           } else {
-            swal('Something went wrong', 'Please add decimal in 1-64 numbers');
+            swal(
+              'Something went wrong',
+              'Token Name must be between 1 and 64 characters'
+            );
           }
         } else {
           swal(
             'Something went wrong',
-            'Token Supply decimal input is out of range'
+            'Token Supply must be between 1 and 99999999999999999'
           );
         }
       } else {
-        swal('Something went wrong', 'Token Name is above 16 character');
+        swal('Something went wrong', 'Token Name is more than 16 characters');
       }
     } else {
       swal(
         'Something went wrong',
-        'Please do not enter any decimal points in the Decimal Field and make sure the number is between 1 and 18'
+        'Decimal must be a whole number between 1 and 18'
       );
     }
   };
@@ -129,27 +133,35 @@ export default function CreateToken({ lightMode }: any) {
     <>
       <div className="pages">
         <div
-          className={`token__header ${lightMode && 'token-header-light'}`}
+          className={`token-header ${lightMode && 'token-header-light'}`}
         ></div>
-        <div className={`containers ${lightMode && 'containers-light'}`}>
-          <h1>Deploy an ERC-20 Token</h1>
+        <div
+          className={`token-containers ${
+            lightMode && 'token-containers-light'
+          }`}
+        >
+          <h1 className="token-h1">Deploy an ERC-20 Token</h1>
 
-          <form className="forms">
-            <div className="rows">
-              <div className="column">
-                <label>Token Name</label>
+          <form className="token-forms">
+            <div className="token-rows">
+              <div className="token-column">
+                <label className="token-label">Token Name</label>
                 <input
-                  className={`inputs ${lightMode && 'inputs-light'}`}
+                  className={`token-inputs ${
+                    lightMode && 'token-inputs-light'
+                  }`}
                   type="text"
                   id="name"
                   placeholder="e.g. My Token"
                   onChange={(e) => setTokenName(e.target.value)}
                 />
               </div>
-              <div className="column">
-                <label htmlFor="email">Token Symbol</label>
+              <div className="token-column">
+                <label className="token-label">Token Symbol</label>
                 <input
-                  className={`inputs ${lightMode && 'inputs-light'}`}
+                  className={`token-inputs ${
+                    lightMode && 'token-inputs-light'
+                  }`}
                   type="text"
                   id="email"
                   placeholder="e.g. MYT"
@@ -157,57 +169,62 @@ export default function CreateToken({ lightMode }: any) {
                 />
               </div>
             </div>
-            <div className="rows">
-              <div className="column">
-                <label htmlFor="subject">Token Supply</label>
+            <div className="token-rows">
+              <div className="token-column">
+                <label className="token-label">Token Supply</label>
                 <input
-                  className={`inputs ${lightMode && 'inputs-light'}`}
+                  className={`token-inputs ${
+                    lightMode && 'token-inputs-light'
+                  }`}
                   type="number"
                   id="subject"
                   placeholder="e.g. 21000000"
                   onChange={(e) => setTokenSupply(e.target.value)}
                 />
               </div>
-              <div className="columnss">
-                <label htmlFor="contact">Decimals</label>
+              <div className="token-column">
+                <label className="token-label">Decimals</label>
                 <input
-                  className={`inputs ${lightMode && 'inputs-light'}`}
-                  type="number"
+                  className={`token-inputs ${
+                    lightMode && 'token-inputs-light'
+                  }`}
+                  type="text"
                   disabled="disabled"
                   id="disabled-input"
-                  placeholder="18 (Default)"
+                  autocomplete="false"
+                  value="18"
                   onChange={(e) => setTokenDecimal(e.target.value)}
                 />
               </div>
             </div>
-            <h1>Special Features</h1>
-            <div className="rows-check">
-              <div className="one">
-                <label className="form-controlss">
+            <h2 className="token-header-special">Special Features</h2>
+            <div className="token-rows-special">
+              <div className="token-column-special">
+                <label className="token-special-labels">
                   <input
                     onChange={(e) => setTokenBurn(true)}
                     type="checkbox"
                     name="checkbox"
-                  />{' '}
+                  />
                   Burn
                 </label>
-                <p>
-                  A percentage of tokens will be sent to the burn address for
-                  each on-chain transfer
+                <p className="token-special-desc">
+                  Percentage of tokens will be sent to the burn address for each
+                  on-chain transfer
                 </p>
               </div>
-
               <input
-                className={`inputs-check ${lightMode && 'inputs-check-light'}`}
+                className={`token-inputs-special ${
+                  lightMode && 'token-inputs-special-light'
+                }`}
                 type="number"
-                id="contact"
                 placeholder="0%"
                 onChange={(e) => setTokenBurnValue(e.target.value)}
               />
             </div>
-            <div className="rows-check">
-              <div className="one">
-                <label className="form-controlss">
+            <div className="token-rows-special">
+              <div className="token-column-special">
+                <label className="token-special-labels">
                   <input
                     onChange={(e) => setTokenTradingFee(true)}
                     type="checkbox"
@@ -215,46 +232,47 @@ export default function CreateToken({ lightMode }: any) {
                   />
                   Trading Fees
                 </label>
-                <p>
-                  A percentage of tokens will be sent to the creators address
-                  for each on-chain transfer
+                <p className="token-special-desc">
+                  Percentage of tokens will be sent to the creators address for
+                  each on-chain transfer
                 </p>
               </div>
               <input
-                className={`inputs-check ${lightMode && 'inputs-check-light'}`}
+                className={`token-inputs-special ${
+                  lightMode && 'token-inputs-special-light'
+                }`}
                 type="number"
-                id="contact"
                 placeholder="0%"
                 onChange={(e) => setTradingFeeValue(e.target.value)}
               />
             </div>
-            <label className="form-controlss">
+            <label className="token-special-labels">
               <input
-                onChange={(e) => setTokenSupportSupplyIncrease(true)}
+                onChange={(e) => settokenSupplyIncrease(true)}
                 type="checkbox"
                 name="checkbox"
               />
               Supports Supply Increase
             </label>
-            <p>
-              Allows the creator to issue additional tokens after the token
-              creation
+            <p className="token-special-desc">
+              Allows creator to issue additional tokens after the token has been
+              deployed
             </p>
           </form>
-          <div className="buttons">
+          <div className="token-buttons">
             {!isLoading ? (
               <div>
                 {tokenName && tokenDecimal && tokenSupply && tokenSymbol ? (
                   <button
                     onClick={handleSubmit}
                     type="button"
-                    className="buttonss"
+                    className="deploy-token-btn"
                   >
-                    Create a Token
+                    Deploy Token
                   </button>
                 ) : (
-                  <button type="button" className="buttonssss-disabled">
-                    Create a Token
+                  <button type="button" className="deploy-token-btn-disabled">
+                    Deploy Token
                   </button>
                 )}
               </div>
@@ -267,7 +285,6 @@ export default function CreateToken({ lightMode }: any) {
         </div>
         <Tokens lightMode={lightMode} />
       </div>
-      {/* <BottomBar /> */}
     </>
   );
 }

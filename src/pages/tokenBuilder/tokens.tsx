@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { getUserSession } from "../../store/localStorage";
-import LoadingSpinner from "../../components/spinner/spinner";
-import "./tokens.css";
+import { useEffect, useState } from 'react';
+import { getUserSession } from '../../store/localStorage';
+import LoadingSpinner from '../../components/spinner/spinner';
+import './tokens.css';
 
 export default function Tokens({ lightMode }: any) {
   const [wallet, setWallet] = useState();
@@ -26,10 +26,10 @@ export default function Tokens({ lightMode }: any) {
     fetch(
       `https://api.covalenthq.com/v1/42161/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=true/`,
       {
-        method: "GET",
+        method: 'GET',
         headers: {
-          Authorization: "Basic Y2tleV81YzcwODllZTFiMTQ0NWM3Yjg0NjcyYmFlM2Q6",
-          "Content-Type": "application/json",
+          Authorization: 'Basic Y2tleV81YzcwODllZTFiMTQ0NWM3Yjg0NjcyYmFlM2Q6', // TODO - auth key in plain text?
+          'Content-Type': 'application/json',
         },
       }
     )
@@ -46,29 +46,29 @@ export default function Tokens({ lightMode }: any) {
   return (
     <>
       <div
-        className={`table-containerss ${
-          lightMode && "table-containerss-light"
+        className={`token-table-container ${
+          lightMode && 'token-table-container-light'
         }`}
       >
         <div className="scrollit">
+          <h2 className="table-header">My Tokens</h2>
           <table className="table table-hover-token">
             <thead>
               <tr
                 className={`table__input-token ${
-                  lightMode && "table--light-token "
+                  lightMode && 'table--light-token '
                 }`}
               >
-                <th className={`th ${lightMode && "th-light"}`}>#</th>
+                <th className={`th ${lightMode && 'th-light'}`}>#</th>
                 <th>Token Symbol</th>
                 <th>Token Name</th>
-                <th>Decimal</th>
-
+                <th className="hide-mobile">Decimal</th>
                 <th>Balance</th>
               </tr>
             </thead>
             {isLoading ? (
-              <div style={{ marginLeft: "50%" }}>
-                <div style={{ marginLeft: "500%" }}>
+              <div style={{ marginLeft: '50%' }}>
+                <div style={{ marginLeft: '500%' }}>
                   <LoadingSpinner />
                 </div>
               </div>
@@ -78,14 +78,14 @@ export default function Tokens({ lightMode }: any) {
                   return (
                     <tr
                       className={`table__input-token ${
-                        lightMode && "table--light-token "
+                        lightMode && 'table--light-token '
                       }`}
                       key={index}
                     >
-                      <th>{index + 1}</th>
+                      <th className="hide-mobile">{index + 1}</th>
                       <td>{token.contract_ticker_symbol}</td>
                       <td>{token.contract_name}</td>
-                      <td>{token.contract_decimals}</td>
+                      <td className="hide-mobile">{token.contract_decimals}</td>
 
                       <td>
                         {token.balance / Math.pow(10, token.contract_decimals)}

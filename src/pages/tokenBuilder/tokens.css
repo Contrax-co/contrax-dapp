@@ -1,14 +1,19 @@
+.table {
+  margin: 0 auto;
+}
 
 .th {
   background: #001428;
   color: white;
   font-weight: bold;
 }
+
 .th-light {
   background: white;
   color: black;
   font-weight: bold;
 }
+
 td,
 th {
   padding: 10px;
@@ -16,38 +21,76 @@ th {
   text-align: left;
 }
 
-.table-containers {
+.token-table-container {
   display: flex;
   flex-direction: column;
   align-self: center;
   justify-self: center;
   background-color: #012243;
-  padding: 15px 30px;
+  padding: 35px 50px;
   border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
-  width: 40%;
-  margin-top: 10%;
+  width: 50%;
+  max-width: 780px;
+  margin-top: 40px;
   color: white;
   justify-content: space-around;
 }
 
-.table-containers-light {
+.token-table-container-light {
   background-color: #ffffff;
   color: black;
 }
-
-
 
 @media only screen and (max-width: 600px) {
   .scrollit {
     overflow: scroll;
     height: 100%;
   }
+
+  .token-table-header {
+    display: flex;
+    font-size: 1.5rem;
+    margin: 15px auto 25px auto;
+    justify-content: center;
+  }
+
+  .token-table-container {
+    width: 80%;
+    padding: 10px 10px;
+  }
+
+  .th {
+    display: none;
+  }
+
+  .th-light {
+    display: none;
+  }
+
+  .hide-mobile {
+    display: none;
+  }
+
+  th,
+  td {
+    font-size: 0.7rem;
+    padding: 2px;
+  }
+
   table {
     overflow-x: scroll;
   }
-  /* Zebra striping */
+
   tbody {
     overflow: scroll;
   }
-}  
+}
+
+@media only screen and (max-width: 600px) {
+  th,
+  td {
+    font-size: 0.5rem;
+    padding: 2px;
+  }
+}
