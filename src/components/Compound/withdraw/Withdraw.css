@@ -340,6 +340,7 @@
 
 @media (max-width: 768px) {
   .detail_container {
+    display:flex;
     flex-direction: column;
     width: 100%;
     margin-top: 5px;

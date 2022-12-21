@@ -115,11 +115,11 @@ function Exchange({ lightMode, currentWallet }: any) {
           />
         </div>
 
-        <div className={`exchange_icon`}>
+        {/* <div className={`exchange_icon`}>
           <CgArrowsExchangeAltV
             className={`exchange_icon2 ${lightMode && 'exchange_icon2--light'}`}
           />
-        </div>
+        </div> */}
 
         <div className={`to ${lightMode && 'to--light'}`}>
           <To
