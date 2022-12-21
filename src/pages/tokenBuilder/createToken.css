@@ -193,8 +193,8 @@ input[type='checkbox'] {
 
 @media only screen and (max-width: 600px) {
   .token-containers {
-    width: 65%;
-    padding: 30px 40px;
+    width: 66%;
+    padding: 6% 7%;
   }
 
   .token-h1 {

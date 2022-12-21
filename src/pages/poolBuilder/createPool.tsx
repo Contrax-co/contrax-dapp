@@ -113,18 +113,14 @@ export default function CreatePools({ lightMode }: any) {
     try {
       const amount1min: any = 0;
       const amount2min: any = 0;
-
       const amountIn1 = ethers.utils.parseEther(amount1.toString());
       const amountIn2 = ethers.utils.parseEther(amount2.toString());
-
       const amount1Min = ethers.utils.parseEther(amount1min.toString());
       const amount2Min = ethers.utils.parseEther(amount2min.toString());
-
       const time = Math.floor(Date.now() / 1000) + 200000;
+      // TODO - unused variables
       const deadline = ethers.BigNumber.from(time);
-
       const userAddress = wallet;
-
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
       const factory = new ethers.Contract(factoryAddress, contractABI, signer);
@@ -153,9 +149,8 @@ export default function CreatePools({ lightMode }: any) {
           title: 'Pool Deployed!',
           text: 'Please allow a few minutes to see your pool in the table, and another day or two from SushiSwap to actually display the pool.',
           icon: 'success',
-
           buttons: {
-            ok: 'CLOSE!',
+            ok: 'CLOSE',
             Transaction: {
               value: 'Transaction',
             },
@@ -175,16 +170,14 @@ export default function CreatePools({ lightMode }: any) {
   }
   return (
     <>
-      <div className="pagess">
+      <div className="pool-screen">
         <div
           className={`pool-header ${lightMode && 'pool-header-light'}`}
         ></div>
-
         <div
           className={`pool-containers ${lightMode && 'pool-containers-light'}`}
         >
-          <h1>Create a Pool</h1>
-
+          <h1 className="pool-h1">Create a Pool</h1>
           <form className="pool-forms">
             <div className="pool-rows">
               <div className="pool-column">
@@ -195,7 +188,7 @@ export default function CreatePools({ lightMode }: any) {
                     lightMode && 'pool-inputs-btn-light'
                   }`}
                 >
-                  {tokenSymbols ? tokenSymbols : 'Select Created Token'}
+                  {tokenSymbols ? tokenSymbols : 'Select Custom Token'}
                 </button>
               </div>
               <div className="pool-column">
@@ -206,12 +199,11 @@ export default function CreatePools({ lightMode }: any) {
                     lightMode && 'pool-inputs-btn-light'
                   }`}
                 >
-                  {tokenSymbol ? tokenSymbol : 'Select Existing Token'}
+                  {tokenSymbol ? tokenSymbol : 'Select Secondary Token'}
                 </button>
               </div>
             </div>
-
-            <label htmlFor="subject">{tokenSymbols} Amount</label>
+            <label>{tokenSymbols} Amount</label>
             {tokenSymbols ? (
               <input
                 className={`pool-inputs ${lightMode && 'pool-inputs-light'}`}
@@ -229,8 +221,7 @@ export default function CreatePools({ lightMode }: any) {
                 disabled="disabled"
               />
             )}
-
-            <label htmlFor="subject">{tokenSymbol} Amount</label>
+            <label>{tokenSymbol} Amount</label>
             {tokenSymbol ? (
               <input
                 className={`pool-inputs ${lightMode && 'pool-inputs-light'}`}
@@ -254,17 +245,21 @@ export default function CreatePools({ lightMode }: any) {
               <LoadingSpinner />{' '}
             </div>
           ) : (
-            <div className="pool-buttons">
+            <div className="pool-btn-container">
               {tokenOneAmount && tokenTwoAmount ? (
                 <button
                   type="button"
                   onClick={handleCreatePool}
-                  className="pool-buttons"
+                  className="deploy-pool-btn"
                 >
                   Deploy Pool
                 </button>
               ) : (
-                <button type="button" className="pool-button-disabled" disabled>
+                <button
+                  type="button"
+                  className="deploy-pool-btn-disabled"
+                  disabled
+                >
                   Deploy Pool
                 </button>
               )}

@@ -28,6 +28,7 @@ th {
   justify-self: center;
   background-color: #012243;
   padding: 35px 50px;
+  margin-bottom: 30px;
   border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
   width: 50%;
@@ -40,6 +41,15 @@ th {
 .token-table-container-light {
   background-color: #ffffff;
   color: black;
+}
+
+.token-table {
+  padding-bottom: 5px;
+}
+
+.spinner-container {
+  width: 100%;
+  margin: 15px auto;
 }
 
 @media only screen and (max-width: 600px) {
@@ -57,7 +67,7 @@ th {
 
   .token-table-container {
     width: 80%;
-    padding: 10px 10px;
+    padding: 0;
   }
 
   .th {
@@ -87,7 +97,7 @@ th {
   }
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 390px) {
   th,
   td {
     font-size: 0.5rem;

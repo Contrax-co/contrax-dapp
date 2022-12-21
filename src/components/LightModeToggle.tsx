@@ -8,7 +8,7 @@ import './LightModeToggle.css';
 
 function LightModeToggle({ lightMode, ...props }: any) {
   return (
-    <div className="togglelight_container">
+    <div className="darkmode_toggle_container">
       {lightMode ? (
         <MdLightMode className={`label1 ${lightMode && 'label1--light'}`} />
       ) : (

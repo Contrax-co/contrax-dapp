@@ -76,7 +76,7 @@
 }
 
 .overlay {
-  display:flex;
+  display: flex;
   position: absolute !important;
   background-color: #009aff;
   color: white;
@@ -419,64 +419,63 @@ input::-webkit-inner-spin-button {
 }
 
 @media (max-width: 768px) {
-  .addliquidity_descriptiontab{
+  .addliquidity_descriptiontab {
     width: 100%;
     display: flex;
     flex-direction: column;
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 30px;
-    justify-content:center;
+    justify-content: center;
   }
 
-  .addliquidity_description{
-    margin:0;
+  .addliquidity_description {
+    margin: 0;
   }
 
-  .addliquidity_description_title{
-    font-size:15px;
-    font-weight:750px;
+  .addliquidity_description_title {
+    font-size: 15px;
+    font-weight: 750px;
   }
 
-  .description_description{
-    font-size:13px;
+  .description_description {
+    font-size: 13px;
   }
 
-  .addliquidity_tab{
-    align-self:center;
+  .addliquidity_tab {
+    align-self: center;
     margin-right: 0;
-    width:90%;
+    width: 90%;
   }
 
-  .inside_toggle{
-    padding:5px;
+  .inside_toggle {
+    padding: 5px;
   }
 
-  .addliquidity_weth_bal > p{
-    font-size:13px;
+  .addliquidity_weth_bal > p {
+    font-size: 13px;
   }
 }
 
 @media (max-width: 500px) {
-  .deposit_tab{
-    display:flex;
-    flex-direction:column;
+  .deposit_tab {
+    display: flex;
+    flex-direction: column;
   }
 
-  .weth_deposit_amount{
-    width:100%;
+  .weth_deposit_amount {
+    width: 100%;
   }
 
-  .deposit_deposits{
-    margin-top:10px;
-
+  .deposit_deposits {
+    margin-top: 10px;
   }
 
-  .deposit_zap1_button_disable{
-    width:100%;
+  .deposit_zap1_button_disable {
+    width: 100%;
   }
 
-  .deposit_zap_button{
-    width:100%;
+  .deposit_zap_button {
+    width: 100%;
   }
 }

@@ -1,4 +1,4 @@
-.pagess {
+.pool-screen {
   width: 100%;
   height: 100%;
   display: flex;
@@ -35,6 +35,8 @@
   max-width: 780px;
   color: white;
   justify-content: space-around;
+  z-index: -999;
+  position: relative;
 }
 
 .pool-containers-light {
@@ -63,35 +65,36 @@
   grid-gap: 0% 0%;
 }
 
-/* label {
-  font-size: larger;
-  font-weight: bolder;
-} */
+.pool-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .pool-inputs {
-  width: 95%;
+  width: 96%;
   height: 100%;
   font-weight: 600;
   font-size: larger;
-  padding: 20px 10px;
+  padding: 3% 2%;
   border-radius: 5px;
   border: 1.2px solid #232323;
   margin-top: 5px;
-  height: 90%;
+  height: 40px;
   background-color: #001428;
   color: white;
   margin-bottom: 2%;
 }
 
 .pool-inputs-light {
-  width: 95%;
+  width: 94%;
   font-weight: 400;
   font-size: larger;
-  padding: 20px 10px;
+  padding: 3% 2%;
   border-radius: 5px;
   border: 1.2px solid #c4cae0;
   margin-top: 5px;
-  height: 90%;
+  height: 40px;
   background-color: white;
   color: black;
   margin-bottom: 2%;
@@ -102,25 +105,16 @@
   border-color: #6f6df4;
 }
 
-.form-controless {
-  font-family: system-ui, sans-serif;
-  font-size: 1.5rem;
-  font-weight: bold;
-  line-height: 1.1;
-  display: grid;
-  grid-template-columns: 1em auto;
-  gap: 0.5em;
-}
-
-.pool-buttons {
+.pool-btn-container {
   display: flex;
   flex: 1;
   width: 100%;
   justify-content: center;
   height: auto;
+  margin: 32px auto 12px auto;
 }
 
-.pool-button {
+.deploy-pool-btn {
   border: 2px solid;
   padding: 25px 20px;
   width: 50%;
@@ -132,7 +126,7 @@
   cursor: pointer;
 }
 
-.pool-button-disabled {
+.deploy-pool-btn-disabled {
   border: 2px solid;
   padding: 25px 20px;
   /* width: 50%; */
@@ -144,7 +138,7 @@
 }
 
 .pool-inputs-btn {
-  width: 95%;
+  width: 100%;
   height: 100%;
   font-weight: 600;
   font-size: larger;
@@ -152,21 +146,22 @@
   border-radius: 5px;
   border: 1.2px solid #232323;
   margin-top: 5px;
-  height: 90%;
+  height: 80px;
   background-color: #001428;
   color: white;
   cursor: pointer;
 }
 
 .pool-inputs-btn-light {
-  width: 95%;
+  width: 100%;
+  height: 100%;
   font-weight: 400;
   font-size: larger;
   padding: 20px 10px;
   border-radius: 5px;
   border: 1.2px solid #c4cae0;
   margin-top: 5px;
-  height: 90%;
+  height: 80px;
   background-color: white;
   color: black;
   cursor: pointer;
@@ -178,32 +173,87 @@
 }
 
 @media only screen and (max-width: 600px) {
-  .pool-inputs {
+  .pool-containers {
     width: 60%;
-    margin-right: 5%;
-    position: relative;
-    z-index: 0;
-  }
-  .pool-inputs-light {
-    width: 60%;
-    margin-right: 5%;
+    padding: 25px 40px;
+    clear: left;
   }
 
-  .forms {
+  .pool-h1 {
+    font-size: 1.6rem;
+    margin: 10px auto;
+  }
+
+  .pool-forms {
+    width: 100%;
     position: relative;
+    margin: 25px auto 0 auto;
+  }
+
+  .pool-rows {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-gap: 15px 20px;
+    margin-bottom: 15px;
+  }
+
+  .pool-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .pool-inputs-btn {
-    width: 60%;
+    height: 65px;
+    font-size: 0.8rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 25px 5px;
   }
 
   .pool-inputs-btn-light {
-    width: 60%;
+    height: 65px;
+    font-size: 0.8rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 25px 5px;
   }
 
-  .containeres {
-    z-index: -999;
-    position: relative;
-    clear: left;
+  .pool-inputs {
+    width: 94%;
+    padding: 3%;
+    margin-bottom: 8px;
+    z-index: 0;
+  }
+
+  .pool-inputs-light {
+    width: 94%;
+    padding: 3%;
+    margin-bottom: 10px;
+    z-index: 0;
+  }
+
+  .pool-btn-container {
+    margin: 15px auto 10px auto;
+  }
+
+  .deploy-pool-btn {
+    padding: 20px 15px;
+    font-size: 1rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .deploy-pool-btn-disabled {
+    padding: 20px 15px;
+    font-size: 1rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .pool-containers {
+    margin: auto 0;
+    width: 65%;
   }
 }
