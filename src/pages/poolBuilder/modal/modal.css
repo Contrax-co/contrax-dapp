@@ -14,7 +14,7 @@
 .swap__modals {
   display: flex;
   flex-direction: column;
-  z-index: 200;
+  /* z-index: 200; */
   background-color: #012243;
   width: 30%;
   height: 60%;
@@ -80,3 +80,10 @@
   color: rgb(116, 114, 114);
   margin-left: 10px;
 }
+@media only screen and (max-width: 600px) {
+  .swap__modals {
+width: 80%;
+
+  }
+}
+

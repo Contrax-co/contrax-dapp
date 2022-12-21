@@ -142,7 +142,7 @@ export default function CreateToken({ lightMode }: any) {
         >
           <h1 className="token-h1">Deploy an ERC-20 Token</h1>
 
-          <form className="token-forms">
+          <form >
             <div className="token-rows">
               <div className="token-column">
                 <label className="token-label">Token Name</label>

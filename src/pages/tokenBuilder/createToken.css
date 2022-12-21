@@ -248,9 +248,7 @@ input[type='checkbox'] {
     font-size: 1.3rem;
   }
 
-  .token-containers {
-    z-index: -1;
-  }
+ 
 
   .deploy-token-btn {
     padding: 20px 15px;
