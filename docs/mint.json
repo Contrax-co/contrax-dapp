@@ -1,0 +1,89 @@
+{
+  "name": "Contrax",
+  "logo": {
+    "light": "/images/contrax-light.svg",
+    "dark": "/images/contrax-dark.svg"
+  },
+  "favicon": "/images/favicon.png",
+  "colors": {
+    "primary": "#78C5EB",
+    "light": "#47D6D2",
+    "dark": "#3B7A86",
+    "ultraLight": "#F1FAFC",
+    "ultraDark": "#0F3E47"
+  },
+  "topbarLinks": [
+    {
+      "name": "Home",
+      "url": "https://contrax.finance"
+    },
+    {
+      "name": "Blog",
+      "url": "https://contraxfi.medium.com/"
+    },
+    {
+      "name": "About",
+      "url": "https://contrax.finance/about"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://contraxfi.medium.com/"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "color": "#7289da",
+      "url": "https://discord.gg/rDdvyeWAtt"
+    },
+    {
+      "name": "Github",
+      "icon": "github",
+      "color": "#333",
+      "url": "https://github.com/Contrax-co"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction",
+        "start/defi",
+        "start/wallet-setup",
+        "start/wallet-funding",
+        "start/bridge",
+        "start/quickstart"
+      ]
+    },
+    {
+      "group": "Contrax DApp",
+      "pages": [
+        "contrax-dapp/dashboard",
+        "contrax-dapp/farms",
+        "contrax-dapp/zap-in-trade",
+        "contrax-dapp/create-tokens",
+        "contrax-dapp/create-pools",
+        "contrax-dapp/dapp-faq"
+      ]
+    },
+    {
+      "group": "FAQ",
+      "pages": [
+        "FAQ/dapp-faq"
+      ]
+    }
+  ],
+  "classes": {
+    "logo": "min-h-[2.5rem]",
+    "anchors": "group-hover:bg-gradient-to-tr from-[#78C5EB] to-[#47D6D2]",
+    "activeAnchors": "bg-gradient-to-tr"
+  },
+  "footerSocials": {
+    "twitter": "https://twitter.com/Contrax_Finance",
+    "linkedin": "https://www.linkedin.com/company/actioner/",
+    "discord": "https://discord.com/invite/rDdvyeWAtt",
+    "telegram": "https://t.me/Contrax"
+  }
+}
