@@ -178,7 +178,7 @@ export default function CreatePools({ lightMode }: any) {
           className={`pool-containers ${lightMode && 'pool-containers-light'}`}
         >
           <h1 className="pool-h1">Create a Pool</h1>
-          <form className="pool-forms">
+          <form>
             <div className="pool-rows">
               <div className="pool-column">
                 <button
