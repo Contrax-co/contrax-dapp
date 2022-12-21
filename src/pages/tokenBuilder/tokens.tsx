@@ -51,8 +51,8 @@ export default function Tokens({ lightMode }: any) {
         }`}
       >
         <div className="scrollit">
-          <h2 className="table-header">My Tokens</h2>
-          <table className="table table-hover-token">
+          <h2 className="token-table-header">My Tokens</h2>
+          <table className="table token-table">
             <thead>
               <tr
                 className={`table__input-token ${
@@ -67,10 +67,8 @@ export default function Tokens({ lightMode }: any) {
               </tr>
             </thead>
             {isLoading ? (
-              <div style={{ marginLeft: '50%' }}>
-                <div style={{ marginLeft: '500%' }}>
-                  <LoadingSpinner />
-                </div>
+              <div className="spinner-container">
+                <LoadingSpinner />
               </div>
             ) : (
               <tbody>

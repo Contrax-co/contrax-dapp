@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useInsertionEffect, useState } from 'react';
 import { getUserSession } from '../../store/localStorage';
 import { Link } from '../../components/text/Text';
 import LoadingSpinner from '../../components/spinner/spinner';
@@ -13,16 +13,19 @@ export default function Pools({ lightMode }: any) {
 
   useEffect(() => {
     setIsLoading(true);
-    let sessionData = getUserSession();
     let walletData: any;
+    let sessionData = getUserSession();
     if (sessionData) {
       walletData = JSON.parse(sessionData);
       setWallet(walletData.address);
-      pools();
     }
   }, [wallet]);
 
-  const pools = async () => {
+  useEffect(() => {
+    pools();
+  });
+
+  async function pools() {
     try {
       const result = await axios.post(
         'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange',
@@ -60,45 +63,43 @@ export default function Pools({ lightMode }: any) {
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   return (
     <>
       <div
-        className={`table-containers ${lightMode && 'table-containers-light'}`}
+        className={`pool-table-container ${
+          lightMode && 'pool-table-container-light'
+        }`}
       >
         <div className="scrollit">
           <h2 className="pool-table-header">My Pools</h2>
-          <table className="table table-hover-token">
+          <table className="table pool-table">
             <thead>
               <tr
-                className={`table__input-token ${
-                  lightMode && 'table--light-token '
+                className={`pool-table__input-token ${
+                  lightMode && 'pool-table--light-token'
                 }`}
               >
-                <th className={`th ${lightMode && 'th-light'}`}>#</th>
                 <th>Pool Address</th>
                 <th>Pool Name</th>
-                <th>View Sushiswap</th>
+                <th>View Pool</th>
               </tr>
             </thead>
             {isLoading ? (
-              <div style={{ marginLeft: '50%' }}>
-                <div style={{ marginLeft: '500%' }}>
-                  <LoadingSpinner />
-                </div>
+              <div className="spinner-container">
+                <LoadingSpinner />
               </div>
             ) : (
               <tbody>
                 {values.map((token: any, index: any) => {
                   return (
                     <tr
-                      className={`table__input-token ${
-                        lightMode && 'table--light-token '
+                      className={`pool-table__input-token ${
+                        lightMode && 'pool-table--light-token '
                       }`}
                       key={index}
                     >
-                      <th className="hide-mobile">{index + 1}</th>
                       <td>{token.id}</td>
                       <td>{token.name}</td>
                       <td>

@@ -1,8 +1,8 @@
-.togglelight_container {
+.darkmode_toggle_container {
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: left;
   align-self: bottom;
 }
 

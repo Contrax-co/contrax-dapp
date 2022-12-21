@@ -17,27 +17,43 @@ th {
   text-align: left;
 }
 
-.table-containers {
+.pool-table-container {
   display: flex;
   flex-direction: column;
   align-self: center;
   justify-self: center;
-  background-color: #012243;
   padding: 15px 30px;
   border-radius: 20px;
   box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
   width: 40%;
   margin-top: 10%;
-  color: white;
+  margin-bottom: 30px;
   justify-content: space-around;
+  background-color: #012243;
+  color: white;
 }
 
-.table-containers-light {
+.pool-table-container-light {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-self: center;
+  padding: 15px 30px;
+  border-radius: 20px;
+  box-shadow: 20px 30px 25px rgba(0, 0, 0, 0.15);
+  width: 40%;
+  margin-top: 10%;
+  margin-bottom: 30px;
+  justify-content: space-around;
   background-color: #ffffff;
   color: black;
 }
 
-@media only screen and (max-width: 600px) {
+.pool-table {
+  padding-bottom: 5px;
+}
+
+@media only screen and (max-width: 768px) {
   .scrollit {
     overflow: scroll;
     height: 100%;
@@ -50,11 +66,37 @@ th {
     justify-content: center;
   }
 
+  .pool-table-container {
+    padding: 10px 10px;
+    width: 80%;
+    z-index: -999;
+    position: relative;
+    clear: left;
+  }
+
+  .pool-table {
+    width: 98%;
+  }
+
+  th,
+  td {
+    font-size: 0.7rem;
+    padding: 5px;
+  }
+
   table {
     overflow-x: scroll;
   }
 
   tbody {
     overflow: scroll;
+  }
+}
+
+@media only screen and (max-width: 390px) {
+  th,
+  td {
+    font-size: 0.5rem;
+    padding: 2px;
   }
 }

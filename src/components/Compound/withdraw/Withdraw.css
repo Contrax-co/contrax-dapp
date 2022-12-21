@@ -338,8 +338,8 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) { 
-  .detail_container{
+@media (max-width: 768px) {
+  .detail_container {
     flex-direction: column;
     width: 100%;
     margin-top: 5px;
@@ -348,11 +348,11 @@
     justify-content: center;
   }
 
-  .withdrawal_title{
-    font-size:13px;
+  .withdrawal_title {
+    font-size: 13px;
   }
 
-  .withdrawal_description2{
+  .withdrawal_description2 {
     font-size: 13px;
   }
 
@@ -362,28 +362,28 @@
   }
 
   .lp_bal > p {
-    font-size:13px;
+    font-size: 13px;
   }
 }
 
 @media (max-width: 500px) {
-  .withdraw_tab2{
+  .withdraw_tab2 {
     flex-direction: column;
   }
 
-  .lp_withdraw_amount{
-    width:100%;
+  .lp_withdraw_amount {
+    width: 100%;
   }
 
-  .withdraw_withdraw{
-    margin-top:10px;
+  .withdraw_withdraw {
+    margin-top: 10px;
   }
 
-  .withdraw_zap1_button_disable{
-    width:100%;
+  .withdraw_zap1_button_disable {
+    width: 100%;
   }
 
-  .deposit_zap_button{
-    width:100%;
+  .deposit_zap_button {
+    width: 100%;
   }
 }

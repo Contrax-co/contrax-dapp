@@ -139,7 +139,7 @@
 .dropdown_hamburger_menu {
   display: flex;
   flex-direction: column;
-  width: 50vw;
+  width: 45vw;
   max-width: 200px;
   padding: 10% 5%;
   padding-left: 15%;
@@ -233,5 +233,38 @@
   .dropdown_hamburger_menu > a {
     font-size: 15px;
     margin: 0;
+  }
+}
+
+@media only screen and (max-width: 390px) {
+  .connect_wallet {
+    padding: 2px 7px;
+    margin: 0;
+  }
+
+  .connect_wallet2 {
+    padding: 2px 7px;
+    margin: 0;
+  }
+
+  /* hide wallet address & adjust spacing on very small screens */
+  .address {
+    display: none;
+  }
+  .connected_wallet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin-left: 15px;
+    width: 50px;
+  }
+  .connected_wallet--light {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin-left: 15px;
+    width: 50px;
   }
 }
