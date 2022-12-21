@@ -60,8 +60,10 @@ export default function Pools({ lightMode }: any) {
       console.log(arr);
       setValues(arr);
       console.log(values, 'ok');
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
     }
   }
 

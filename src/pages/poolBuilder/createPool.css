@@ -35,8 +35,8 @@
   max-width: 780px;
   color: white;
   justify-content: space-around;
-  z-index: -999;
-  position: relative;
+  /* position: relative; */
+  /* z-index: 100; */
 }
 
 .pool-containers-light {
@@ -47,6 +47,7 @@
 .pool-forms {
   width: 100%;
   position: relative;
+  /* z-index: -1  ; */
   margin: 30px auto 0 auto;
 }
 
@@ -177,6 +178,9 @@
     width: 60%;
     padding: 25px 40px;
     clear: left;
+  
+   
+    /* z-index: -1; */
   }
 
   .pool-h1 {

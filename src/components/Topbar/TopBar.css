@@ -146,6 +146,7 @@
   border: 0.5px solid #8798ad;
   background-color: #012243;
   z-index: 999 !important;
+  position: relative;
 }
 
 .dropdown_hamburger_menu--light {
