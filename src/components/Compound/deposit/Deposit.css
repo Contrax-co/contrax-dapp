@@ -429,10 +429,6 @@ input::-webkit-inner-spin-button {
     justify-content: center;
   }
 
-  .addliquidity_description {
-    margin: 0;
-  }
-
   .addliquidity_description_title {
     font-size: 15px;
     font-weight: 750px;
@@ -443,7 +439,7 @@ input::-webkit-inner-spin-button {
   }
 
   .addliquidity_tab {
-    align-self: center;
+
     margin-right: 0;
     width: 90%;
   }
