@@ -10,7 +10,7 @@ if (window.location.hostname === 'localhost') {
   isLocalhost = true;
 }
 
-var fetchUrl = 'https://testing.contrax.finance/api/vaults.json';
+var fetchUrl = 'https://beta.contrax.finance/api/vaults.json';
 if (isLocalhost) {
   fetchUrl = 'http://localhost:3000/api/vaults.json';
 }

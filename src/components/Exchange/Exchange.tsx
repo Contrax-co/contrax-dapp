@@ -25,7 +25,7 @@ if (window.location.hostname === 'localhost') {
   isLocalhost = true;
 }
 
-var fetchUrl = 'https://testing.contrax.finance/api/poolswap.json';
+var fetchUrl = 'https://beta.contrax.finance/api/poolswap.json';
 if (isLocalhost) {
   fetchUrl = 'http://localhost:3000/api/poolswap.json';
 }

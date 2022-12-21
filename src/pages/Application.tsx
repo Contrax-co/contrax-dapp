@@ -49,7 +49,7 @@ const onboard = Onboard({
     description: 'Contrax dAPP',
     agreement: {
       version: '1.0.0',
-      termsUrl: 'https://testing.contrax.finance/termsofuse.pdf',
+      termsUrl: 'https://beta.contrax.finance/termsofuse.pdf',
     },
   },
 });

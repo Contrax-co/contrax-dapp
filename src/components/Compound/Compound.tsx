@@ -7,7 +7,7 @@ if (window.location.hostname === 'localhost') {
   isLocalhost = true;
 }
 
-var fetchUrl = 'https://testing.contrax.finance/api/pools.json';
+var fetchUrl = 'https://beta.contrax.finance/api/pools.json';
 if (isLocalhost) {
   fetchUrl = 'http://localhost:3000/api/pools.json';
 }
