@@ -59,7 +59,7 @@ function Application() {
     if (data != null) {
       return JSON.parse(data);
     } else {
-      return 'Dashboard';
+      return 'Farms';
     }
   });
   const [lightMode, setLightMode] = useState(() => {
