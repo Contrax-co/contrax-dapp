@@ -43,13 +43,13 @@ const onboard = Onboard({
     },
   ],
   appMetadata: {
-    name: 'Contrax dAPP',
+    name: 'Contrax',
     icon: logo,
     logo: logo,
-    description: 'Contrax dAPP',
+    description: 'Contrax',
     agreement: {
       version: '1.0.0',
-      termsUrl: 'https://testing.contrax.finance/termsofuse.pdf',
+      termsUrl: 'https://beta.contrax.finance/termsofuse.pdf',
     },
   },
 });
@@ -59,7 +59,7 @@ function Application() {
     if (data != null) {
       return JSON.parse(data);
     } else {
-      return 'Dashboard';
+      return 'Farms';
     }
   });
   const [lightMode, setLightMode] = useState(() => {
