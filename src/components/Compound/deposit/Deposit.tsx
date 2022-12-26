@@ -22,6 +22,8 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [loaderMessage, setLoaderMessage] = useState('');
   const [success, setSuccess] = useState('loading');
   const [secondaryMessage, setSecondaryMessage] = useState('');
+  const [link, setLink] = useState(false);
+  const [hash, setHash] = useState(''); 
 
   const [price, setPrice] = useState(0);
 
@@ -49,7 +51,9 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
         setLoading,
         setLoaderMessage,
         setSuccess,
-        setSecondaryMessage
+        setSecondaryMessage,
+        setLink,
+        setHash
       );
     } else {
       deposit(
@@ -61,7 +65,9 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
         setLoading,
         setLoaderMessage,
         setSuccess,
-        setSecondaryMessage
+        setSecondaryMessage,
+        setLink,
+        setHash
       );
     }
   }
@@ -220,11 +226,19 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
             </div>
           </div>
 
-          <div
-            className={`deposit_spinner_bottom`}
-            onClick={() => setLoading(false)}
-          >
-            <p>Dismiss</p>
+          <div className={`deposit_spinner_bottom`}> 
+          {link ? (
+            <div className={`deposit_spinner_bottom_left`} onClick={() =>
+              window.open(`https://arbiscan.io/tx/${hash}`, '_blank')
+            }>
+              <p>Details</p>
+            </div>
+
+          ) : null}
+            
+            <div className={`deposit_spinner_bottom_right`} onClick={() => {setLoading(false); setLink(false); setHash('')}}>
+              <p>Dismiss</p>
+            </div>
           </div>
         </div>
       )}

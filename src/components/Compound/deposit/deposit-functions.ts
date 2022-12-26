@@ -162,7 +162,9 @@ export const deposit = async (
   setLoading: any,
   setLoaderMessage: any,
   setSuccess: any,
-  setSecondaryMessage: any
+  setSecondaryMessage: any,
+  setLink: any,
+  setHash:any
 ) => {
   const { ethereum } = window;
   setSuccess('loading');
@@ -211,10 +213,14 @@ export const deposit = async (
 
       const depositTxnStatus = await depositTxn.wait(1);
       if (!depositTxnStatus.status) {
+        setLink(true);
+        setHash(depositTxn.hash); 
         setLoaderMessage(`Error depositing into vault!`);
         setSecondaryMessage(`Try again!`);
         setSuccess('fail');
       } else {
+        setLink(true);
+        setHash(depositTxn.hash); 
         setLoaderMessage(`Deposited--`);
         setSuccess('success');
         setSecondaryMessage(`Txn hash: ${depositTxn.hash}`);
@@ -230,7 +236,9 @@ export const deposit = async (
     }
   } catch (error) {
     console.log(error);
-    setLoaderMessage(error + 'Try again!');
+    setLoaderMessage(`Error depositing!`);
+    setSecondaryMessage(`Try again!`);
+    setSuccess('fail');
   }
 };
 
@@ -250,7 +258,9 @@ export const depositAll = async (
   setLoading: any,
   setLoaderMessage: any,
   setSuccess: any,
-  setSecondaryMessage: any
+  setSecondaryMessage: any,
+  setLink:any,
+  setHash:any
 ) => {
   const { ethereum } = window;
   setSuccess('loading');
@@ -299,10 +309,14 @@ export const depositAll = async (
 
       const depositTxnStatus = await depositTxn.wait(1);
       if (!depositTxnStatus.status) {
+        setLink(true);
+        setHash(depositTxn.hash); 
         setLoaderMessage(`Error depositing into vault!`);
         setSecondaryMessage(`Try again!`);
         setSuccess('fail');
       } else {
+        setLink(true);
+        setHash(depositTxn.hash); 
         setLoaderMessage(`Deposited--`);
         setSuccess('success');
         setSecondaryMessage(`Txn hash: ${depositTxn.hash}`);
@@ -318,6 +332,8 @@ export const depositAll = async (
     }
   } catch (error) {
     console.log(error);
-    setLoaderMessage(error + 'Try again!');
+    setLoaderMessage(`Error depositing!`);
+    setSecondaryMessage(`Try again!`);
+    setSuccess('fail');
   }
 };

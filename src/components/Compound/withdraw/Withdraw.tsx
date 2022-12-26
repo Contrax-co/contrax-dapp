@@ -21,6 +21,8 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [secondaryMessage, setSecondaryMessage] = useState('');
 
   const [price, setPrice] = useState(0);
+  const [link, setLink] = useState(false);
+  const [hash, setHash] = useState(''); 
 
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
@@ -41,7 +43,9 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
         pool,
         setWithdrawAmt,
         setLoading,
-        setLoaderMessage
+        setLoaderMessage,
+        setLink,
+        setHash
       );
     } else {
       withdraw(
@@ -53,7 +57,9 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
         withdrawAmt,
         setWithdrawAmt,
         setLoading,
-        setLoaderMessage
+        setLoaderMessage,
+        setLink,
+        setHash
       );
     }
   }
@@ -129,7 +135,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                   max
                 </p>
               </div>
-
+      
               <div
                 className={`withdraw_withdraw ${
                   lightMode && 'withdraw_withdraw--light'
@@ -207,9 +213,18 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
 
           <div
             className={`withdraw_spinner_bottom`}
-            onClick={() => setLoading(false)}
           >
-            <p>Dismiss</p>
+            {link ? (
+              <div className={`withdraw_spinner_bottom_left`} onClick={() =>
+                window.open(`https://arbiscan.io/tx/${hash}`, '_blank')
+              }>
+                <p>Details</p>
+              </div>
+            ) : null}
+
+            <div className={`withdraw_spinner_bottom_right`}  onClick={() => {setLoading(false); setLink(false); setHash('')}}>
+              <p>Dismiss</p>
+            </div> 
           </div>
         </div>
       )}
