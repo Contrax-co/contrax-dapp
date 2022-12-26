@@ -278,8 +278,30 @@
   height: 40px;
   width: 100%;
   border-top: 1px solid rgb(218, 216, 216);
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
+}
+
+.withdraw_spinner_bottom_left{
+  flex:1;
+  text-align:center;
+}
+
+.withdraw_spinner_bottom_left:hover{
+  cursor: pointer;
+}
+
+.withdraw_spinner_bottom_left > p {
+  border-right: 1px solid rgb(129, 126, 126);
+}
+
+.withdraw_spinner_bottom_right {
+  flex: 1; 
+  text-align:center;
+}
+
+.withdraw_spinner_bottom_right:hover {
+  cursor: pointer;
 }
 
 .spinner_description {

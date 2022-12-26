@@ -57,7 +57,9 @@ export const withdraw = async (
   withdrawAmount: any,
   setWithdrawAmount: any,
   setLoading: any,
-  setLoaderMessage: any
+  setLoaderMessage: any,
+  setLink:any,
+  setHash:any
 ) => {
   const { ethereum } = window;
   setSuccess('loading');
@@ -97,10 +99,14 @@ export const withdraw = async (
 
       const withdrawTxnStatus = await withdrawTxn.wait(1);
       if (!withdrawTxnStatus.status) {
+        setLink(true);
+        setHash(withdrawTxn.hash); 
         setLoaderMessage(`Error withdrawing from vault!`);
         setSecondaryMessage(`Try again!`);
         setSuccess('fail');
       } else {
+        setLink(true);
+        setHash(withdrawTxn.hash); 
         setSuccess('success');
         setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`);
         setLoaderMessage(`Withdrawn--`);
@@ -116,7 +122,9 @@ export const withdraw = async (
     }
   } catch (error) {
     console.log(error);
-    setLoaderMessage(error + 'Try again!');
+    setLoaderMessage(`Error withdrawing!`);
+    setSecondaryMessage(`Try again!`);
+    setSuccess('fail');
   }
 };
 
@@ -133,7 +141,9 @@ export const zapOut = async (
   setLoaderMessage: any,
   pool: any,
   withdrawAmt: any,
-  setWithdrawAmount: any
+  setWithdrawAmount: any,
+  setLink:any,
+  setHash:any
 ) => {
   const { ethereum } = window;
   setLoading(true);
@@ -218,7 +228,9 @@ export const withdrawAll = async (
   pool: any,
   setWithdrawAmount: any,
   setLoading: any,
-  setLoaderMessage: any
+  setLoaderMessage: any,
+  setLink:any,
+  setHash:any
 ) => {
   const { ethereum } = window;
   setSuccess('loading');
@@ -253,10 +265,14 @@ export const withdrawAll = async (
 
       const withdrawTxnStatus = await withdrawTxn.wait(1);
       if (!withdrawTxnStatus.status) {
+        setLink(true);
+        setHash(withdrawTxn.hash); 
         setLoaderMessage(`Error withdrawing from vault!`);
         setSecondaryMessage(`Try again!`);
         setSuccess('fail');
       } else {
+        setLink(true);
+        setHash(withdrawTxn.hash); 
         setSuccess('success');
         setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`);
         setLoaderMessage(`Withdrawn--`);
@@ -272,6 +288,8 @@ export const withdrawAll = async (
     }
   } catch (error) {
     console.log(error);
-    setLoaderMessage(error + 'Try again!');
+    setLoaderMessage(`Error withdrawing!`);
+    setSecondaryMessage(`Try again!`);
+    setSuccess('fail');
   }
 };

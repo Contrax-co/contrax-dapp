@@ -346,8 +346,30 @@
   height: 40px;
   width: 100%;
   border-top: 1px solid rgb(218, 216, 216);
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
+}
+
+.deposit_spinner_bottom_left{
+  flex:1;
+  text-align:center;
+}
+
+.deposit_spinner_bottom_left:hover{
+  cursor: pointer;
+}
+
+.deposit_spinner_bottom_left > p{
+  border-right: 1px solid rgb(129, 126, 126);
+}
+
+.deposit_spinner_bottom_right{
+  flex: 1; 
+  text-align:center;
+}
+
+.deposit_spinner_bottom_right:hover{
+  cursor: pointer;
 }
 
 .spinner_description {
