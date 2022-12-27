@@ -137,17 +137,22 @@ export const withdraw = async (
  * @param setWithdrawAmount
  */
 export const zapOut = async (
+  currentWallet:any,
+  setUserVaultBalance:any,
+  setSuccess:any,
   setLoading: any,
   setLoaderMessage: any,
   pool: any,
   withdrawAmt: any,
   setWithdrawAmount: any,
   setLink:any,
-  setHash:any
+  setHash:any,
+  setSecondaryMessage: any
 ) => {
   const { ethereum } = window;
+  setSuccess('loading');
   setLoading(true);
-  setLoaderMessage('User initiated a withdraw from the vault!');
+  setLoaderMessage('Withdraw initiated!');
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
@@ -167,6 +172,8 @@ export const zapOut = async (
         18
       );
 
+      setSecondaryMessage('Approving withdraw...');
+
       const vaultContract = new ethers.Contract(
         pool.vault_addr,
         pool.vault_abi,
@@ -181,34 +188,49 @@ export const zapOut = async (
       );
       await lpContract.approve(pool.zapper_addr, formattedBal);
 
-      const gasPrice = await provider.getGasPrice();
+      const gasPrice:any = await provider.getGasPrice();
+
+      setSecondaryMessage('Confirm withdraw...');
 
       const withdrawTxn = await zapperContract.zapOutAndSwap(
         pool.vault_addr,
         formattedBal,
         wethAddress,
         0,
-        { gasLimit: gasPrice }
+        { gasLimit: gasPrice/10 }
       );
-      console.log('Withdrawing...', withdrawTxn.hash);
-
-      setLoaderMessage(`Withdrawing... ${withdrawTxn.hash}`);
+      
+      setLoaderMessage(`Withdrawing... `);
+      setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`);
 
       const withdrawTxnStatus = await withdrawTxn.wait(1);
       if (!withdrawTxnStatus.status) {
-        setLoaderMessage(`Error withdrawing into vault!`);
+        setLink(true);
+        setHash(withdrawTxn.hash); 
+        setLoaderMessage(`Error withdrawing from vault!`);
+        setSecondaryMessage(`Try again!`);
+        setSuccess('fail');
       } else {
-        setLoaderMessage(`Withdrawn-- ${withdrawTxn.hash}`);
+        setLink(true);
+        setHash(withdrawTxn.hash); 
+        setSuccess('success');
+        setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`);
+        setLoaderMessage(`Withdrawn--`);
         setWithdrawAmount(0.0);
+        getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
       }
     } else {
       console.log("Ethereum object doesn't exist!");
+
+      setLoaderMessage(`Error withdrawing!`);
+      setSecondaryMessage(`Try again!`);
+      setSuccess('fail');
     }
   } catch (error) {
     console.log(error);
-    setLoaderMessage(error + 'Try again!');
-  } finally {
-    setLoading(false);
+    setLoaderMessage(`Error withdrawing!`);
+    setSecondaryMessage(`Try again!`);
+    setSuccess('fail');
   }
 };
 

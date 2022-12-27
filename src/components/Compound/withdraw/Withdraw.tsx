@@ -3,14 +3,17 @@ import {
   getUserVaultBalance,
   withdraw,
   withdrawAll,
+  zapOut,
 } from './withdraw-function';
 import { MoonLoader } from 'react-spinners';
 import './Withdraw.css';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { MdOutlineErrorOutline } from 'react-icons/md';
 import { priceToken } from '../compound-item/compound-functions';
+import Toggle from '../Toggle';
 
 function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
+  const [toggleType, setToggleType] = useState(false);
   const [loaderMessage, setLoaderMessage] = useState('');
   const [isLoading, setLoading] = useState(false);
 
@@ -64,12 +67,34 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
     }
   }
 
+  function zapOutFunction(){
+    zapOut(
+      currentWallet,
+      setUserVaultBalance,
+      setSuccess,
+      setLoading,
+      setLoaderMessage,
+      pool,
+      withdrawAmt,
+      setWithdrawAmt,
+      setLink,
+      setHash,
+      setSecondaryMessage
+    )
+  }
+
   function withdrawMax() {
     setWithdrawAmt(userVaultBal);
   }
 
   return (
     <div className="whole_tab">
+      <Toggle
+        lightMode={lightMode}
+        active={toggleType}
+        pool={pool}
+        onClick={() => setToggleType(!toggleType)}    
+      /> 
       <div className="detail_container">
         <div
           className={`withdrawal_description ${
@@ -83,10 +108,21 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
           >
             Removal of Liquidity
           </p>
-          <p className="withdrawal_description2">
+
+          {toggleType ? (
+            <p className="withdrawal_description2">
             Your deposited LP token can be withdrawn from the autocompounding
             vault back to the user's connected wallet.{' '}
           </p>
+
+          ) : (
+            <p className="withdrawal_description2">
+            Your deposited LP token can be withdrawn from the autocompounding
+            vault back to the user's wallet as native ETH.{' '}
+            </p>
+
+          )}
+          
         </div>
 
         <div className={`withdraw_tab ${lightMode && 'withdraw_tab--light'}`}>
@@ -126,21 +162,54 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                   value={withdrawAmt}
                   onChange={handleWithdrawChange}
                 />
-                <p
-                  className={`withdraw_max ${
-                    lightMode && 'withdraw_max--light'
-                  }`}
-                  onClick={withdrawMax}
-                >
-                  max
-                </p>
+
+                {toggleType ? (
+                  <p
+                    className={`withdraw_max ${
+                      lightMode && 'withdraw_max--light'
+                    }`}
+                    onClick={withdrawMax}
+                  >
+                    max
+                  </p>
+
+                ): null}
+               
               </div>
-      
-              <div
-                className={`withdraw_withdraw ${
-                  lightMode && 'withdraw_withdraw--light'
-                }`}
-              >
+
+              {toggleType ? (
+                  <div className={`withdraw_withdraw ${lightMode && 'withdraw_withdraw--light'}`}>
+                    {!withdrawAmt || withdrawAmt <= 0 ? (
+                      <div
+                        className={`withdraw_zap1_button_disable ${
+                          lightMode && 'withdraw_zap1_button_disable--light'
+                        }`}
+                      >
+                        <p>Withdraw</p>
+                      </div>
+                    ) : withdrawAmt > userVaultBal ? (
+                      <div
+                        className={`withdraw_zap1_button_disable ${
+                          lightMode && 'withdraw_zap1_button_disable--light'
+                        }`}
+                      >
+                        <p>Insufficient Balance</p>
+                      </div>
+                    ) : (
+                
+                      <div
+                        className={`deposit_zap_button ${
+                          lightMode && 'deposit_zap_button--light'
+                        }`}
+                        onClick={withdrawFunction}
+                      >
+                        <p>Withdraw</p>
+                      </div>
+                    )}
+                  </div>
+
+              ) : (
+              <div className={`withdraw_withdraw ${lightMode && 'withdraw_withdraw--light'}`}>
                 {!withdrawAmt || withdrawAmt <= 0 ? (
                   <div
                     className={`withdraw_zap1_button_disable ${
@@ -158,16 +227,20 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                     <p>Insufficient Balance</p>
                   </div>
                 ) : (
+            
                   <div
                     className={`deposit_zap_button ${
                       lightMode && 'deposit_zap_button--light'
                     }`}
-                    onClick={withdrawFunction}
+                    onClick={zapOutFunction}
                   >
                     <p>Withdraw</p>
                   </div>
                 )}
               </div>
+              )}
+      
+              
             </div>
           </div>
 
