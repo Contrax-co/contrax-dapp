@@ -91,15 +91,22 @@ export const getLPBalance = async (
  * @param {*} setEthZapAmount
  */
 export const zapIn = async (
+  setEthUserBal: any,
+  currentWallet: any,
   setLoading: any,
   pool: any,
   ethZapAmount: any,
   setEthZapAmount: any,
-  setLoaderMessage: any
+  setLoaderMessage: any,
+  setSuccess:any,
+  setSecondaryMessage: any,
+  setLink:any,
+  setHash:any
 ) => {
   const { ethereum } = window;
+  setSuccess('loading');
   setLoading(true);
-  setLoaderMessage('User initiated a zap into the vault!');
+  setLoaderMessage('Zap initiated!');
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
@@ -116,33 +123,49 @@ export const zapIn = async (
        */
       const formattedBal = ethers.utils.parseUnits(ethZapAmount.toString(), 18);
 
-      const gasPrice = await provider.getGasPrice();
+      const gasPrice:any = await provider.getGasPrice();
+
+      setSecondaryMessage('Approving zapping...');
 
       const zapperTxn = await zapperContract.zapInETH(
         pool.vault_addr,
-        formattedBal,
+        0,
         wethAddress,
-        { value: formattedBal, gasLimit: gasPrice }
+        { value: formattedBal, gasLimit: gasPrice/10 }
       );
 
-      setLoaderMessage(`Zapping... ${zapperTxn.hash}`);
+      setLoaderMessage(`Zapping...`);
+      setSecondaryMessage(`Txn hash: ${zapperTxn.hash}`);
 
       const zapperTxnStatus = await zapperTxn.wait(1);
       if (!zapperTxnStatus.status) {
-        setLoaderMessage('Error zapping into the vault');
+        setLink(true);
+        setHash(zapperTxn.hash); 
+        setLoaderMessage(`Error zapping into vault!`);
+        setSecondaryMessage(`Try again!`);
+        setSuccess('fail');
       } else {
-        setLoaderMessage(`Deposited -- ${zapperTxn.hash}`);
+
+        setLink(true);
+        setHash(zapperTxn.hash); 
+        setLoaderMessage(`Deposited--`);
+        setSuccess('success');
+        setSecondaryMessage(`Txn hash: ${zapperTxn.hash}`);
         setEthZapAmount(0.0);
+        getEthBalance(currentWallet, setEthUserBal);
       }
     } else {
-      console.log("Zapper object doesn't exist!");
+      console.log("Ethereum object doesn't exist!");
+
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`);
+      setSuccess('fail');
     }
   } catch (error) {
     console.log(error);
-    setLoaderMessage(error + 'Try again!');
-  } finally {
-    setLoading(false);
-    setLoaderMessage('');
+    setLoaderMessage(`Error depositing!`);
+    setSecondaryMessage(`Try again!`);
+    setSuccess('fail');
   }
 };
 
