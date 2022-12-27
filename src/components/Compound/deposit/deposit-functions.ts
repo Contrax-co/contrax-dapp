@@ -129,7 +129,7 @@ export const zapIn = async (
 
       const zapperTxn = await zapperContract.zapInETH(
         pool.vault_addr,
-        formattedBal,
+        0,
         wethAddress,
         { value: formattedBal, gasLimit: gasPrice/10 }
       );
