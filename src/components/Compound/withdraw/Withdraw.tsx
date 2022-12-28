@@ -13,7 +13,7 @@ import { priceToken } from '../compound-item/compound-functions';
 import Toggle from '../Toggle';
 
 function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
-  const [toggleType, setToggleType] = useState(false);
+  const [toggleType, setToggleType] = useState(true);
   const [loaderMessage, setLoaderMessage] = useState('');
   const [isLoading, setLoading] = useState(false);
 
@@ -87,14 +87,22 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
     setWithdrawAmt(userVaultBal);
   }
 
+  function withdrawEthMax() {
+    setWithdrawAmt(userVaultBal * 99/100);
+  }
+
   return (
     <div className="whole_tab">
-      <Toggle
-        lightMode={lightMode}
-        active={toggleType}
-        pool={pool}
-        onClick={() => setToggleType(!toggleType)}    
-      /> 
+      {pool.token_type === "LP Token" ? (
+        <Toggle
+         lightMode={lightMode}
+         active={toggleType}
+         pool={pool}
+         onClick={() => setToggleType(!toggleType)}    
+        /> 
+      )
+      : null}
+     
       <div className="detail_container">
         <div
           className={`withdrawal_description ${
@@ -173,7 +181,16 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
                     max
                   </p>
 
-                ): null}
+                ): (
+                  <p
+                  className={`withdraw_max ${
+                    lightMode && 'withdraw_max--light'
+                  }`}
+                  onClick={withdrawEthMax}
+                >
+                  max
+                </p>
+                )}
                
               </div>
 
