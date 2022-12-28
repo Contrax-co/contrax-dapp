@@ -89,10 +89,19 @@ export const withdraw = async (
       );
 
       setSecondaryMessage('Confirm withdraw...');
+      
+      let withdrawTxn;
+      try{
+        const gasEstimated:any = await vaultContract.estimateGas.withdraw(formattedBal);
+        const gasMargin = gasEstimated * 1.1;
 
-      const withdrawTxn = await vaultContract.withdraw(formattedBal, {
-        gasLimit: gasPrice1 / 10,
-      });
+        withdrawTxn = await vaultContract.withdraw(formattedBal, {gasLimit: Math.ceil(gasMargin)});
+      }catch {
+        withdrawTxn = await vaultContract.withdraw(formattedBal, {
+          gasLimit: gasPrice1 / 20,
+        });
+
+      }
 
       setLoaderMessage(`Withdrawing... `);
       setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`);
@@ -191,14 +200,24 @@ export const zapOut = async (
       const gasPrice:any = await provider.getGasPrice();
 
       setSecondaryMessage('Confirm withdraw...');
+      
+      let withdrawTxn;
+      try{
+        const gasEstimated:any = await zapperContract.estimateGas.zapOutAndSwap(pool.vault_addr, formattedBal, wethAddress, 0);
+        const gasMargin = gasEstimated * 1.1;
 
-      const withdrawTxn = await zapperContract.zapOutAndSwap(
-        pool.vault_addr,
-        formattedBal,
-        wethAddress,
-        0,
-        { gasLimit: gasPrice/10 }
-      );
+        withdrawTxn = await zapperContract.zapOutAndSwap(pool.vault_addr, formattedBal, wethAddress, 0, {gasLimit: Math.ceil(gasMargin)});
+
+      }catch{
+        withdrawTxn = await zapperContract.zapOutAndSwap(
+          pool.vault_addr,
+          formattedBal,
+          wethAddress,
+          0,
+          { gasLimit: gasPrice/20 }
+        );
+
+      }
       
       setLoaderMessage(`Withdrawing... `);
       setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`);
@@ -277,10 +296,19 @@ export const withdrawAll = async (
        * Execute the actual withdraw functionality from smart contract
        */
       setSecondaryMessage('Confirm withdraw...');
+      
+      let withdrawTxn;
+      try{
+        const gasEstimated:any = await vaultContract.estimateGas.withdrawAll();
+        const gasMargin = gasEstimated * 1.1;
 
-      const withdrawTxn = await vaultContract.withdrawAll({
-        gasLimit: gasPrice1 / 10,
-      });
+        withdrawTxn = await vaultContract.withdrawAll({gasLimit: Math.ceil(gasMargin)});
+
+      }catch{
+        withdrawTxn = await vaultContract.withdrawAll({
+          gasLimit: gasPrice1 / 20,
+        });
+      }
 
       setLoaderMessage(`Withdrawing... `);
       setSecondaryMessage(`Txn hash: ${withdrawTxn.hash}`);

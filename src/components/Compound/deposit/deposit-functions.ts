@@ -126,13 +126,19 @@ export const zapIn = async (
       const gasPrice:any = await provider.getGasPrice();
 
       setSecondaryMessage('Approving zapping...');
+      
+      let zapperTxn;
+      try {
+        const gasEstimated:any = await zapperContract.estimateGas.zapInETH(pool.vault_addr,0,wethAddress, {value: formattedBal});
+        const gasMargin = gasEstimated * 1.1;
+  
+        zapperTxn = await zapperContract.zapInETH(pool.vault_addr,0, wethAddress, {value: formattedBal, gasLimit: Math.ceil(gasMargin)});
 
-      const zapperTxn = await zapperContract.zapInETH(
-        pool.vault_addr,
-        0,
-        wethAddress,
-        { value: formattedBal, gasLimit: gasPrice/10 }
-      );
+      }catch{
+        zapperTxn = await zapperContract.zapInETH(pool.vault_addr, 0, wethAddress,
+          { value: formattedBal, gasLimit: gasPrice/20 }
+        );
+      }
 
       setLoaderMessage(`Zapping...`);
       setSecondaryMessage(`Txn hash: ${zapperTxn.hash}`);
@@ -226,10 +232,18 @@ export const deposit = async (
 
       setSecondaryMessage('Confirm deposit...');
 
-      //the abi of the vault contract needs to be checked
-      const depositTxn = await vaultContract.deposit(formattedBal, {
-        gasLimit: gasPrice1 / 10,
-      });
+      let depositTxn; 
+
+      try {
+        const gasEstimated:any = await vaultContract.estimateGas.deposit(formattedBal);
+        const gasMargin = gasEstimated * 1.1;
+  
+        depositTxn = await vaultContract.deposit(formattedBal, {gasLimit: Math.ceil(gasMargin)});
+
+      }catch {
+        //the abi of the vault contract needs to be checked
+        depositTxn = await vaultContract.deposit(formattedBal, {gasLimit: gasPrice1/20});
+      }
 
       setLoaderMessage(`Depositing...`);
       setSecondaryMessage(`Txn hash: ${depositTxn.hash}`);
@@ -321,11 +335,20 @@ export const depositAll = async (
       await lpContract.approve(pool.vault_addr, formattedBal);
 
       setSecondaryMessage('Confirm deposit...');
+      
+      let depositTxn;
+      try {
+        const gasEstimated:any = await vaultContract.estimateGas.depositAll();
+        const gasMargin = gasEstimated * 1.1;
+  
+        depositTxn = await vaultContract.depositAll({gasLimit: Math.ceil(gasMargin)});
+      }catch {
+        //the abi of the vault contract needs to be checked
+        depositTxn = await vaultContract.depositAll({
+          gasLimit: gasPrice1 / 20,
+        });
 
-      //the abi of the vault contract needs to be checked
-      const depositTxn = await vaultContract.depositAll({
-        gasLimit: gasPrice1 / 10,
-      });
+      }
 
       setLoaderMessage(`Depositing...`);
       setSecondaryMessage(`Txn hash: ${depositTxn.hash}`);
