@@ -74,14 +74,15 @@ function VaultItem({
                     lightMode && 'vault_items_title--light'
                   }`}
                 >
-                  Liquidity
+                  Your Stake
                 </p>
                 <p>
-                  {(vaultAmount * price).toLocaleString('en-US', {
+                  {(tokenAmount * price).toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
                   })}
                 </p>
+              
               </div>
 
               <div className={`vault_items_bottom_categories`}>
@@ -118,10 +119,10 @@ function VaultItem({
                     lightMode && 'vault_items_title--light'
                   }`}
                 >
-                  Your Stake
+                  Liquidity
                 </p>
                 <p>
-                  {(tokenAmount * price).toLocaleString('en-US', {
+                  {(vaultAmount * price).toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
                   })}
