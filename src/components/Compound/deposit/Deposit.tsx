@@ -14,7 +14,7 @@ import { MdOutlineErrorOutline } from 'react-icons/md';
 import Toggle from '../Toggle';
 
 function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
-  const [toggleType, setToggleType] = useState(false);
+  const [toggleType, setToggleType] = useState(true);
 
   const [ethUserBal, setEthUserBal] = useState(0);
   const [lpUserBal, setLPUserBal] = useState(0);
@@ -106,12 +106,17 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
 
   return (
     <div className="addliquidity_outsidetab">
-      <Toggle
-        lightMode={lightMode}
-        active={toggleType}
-        pool={pool}
-        onClick={() => setToggleType(!toggleType)}
-      /> 
+      {pool.token_type === "LP Token" ? (
+        <Toggle
+          lightMode={lightMode}
+          active={toggleType}
+          pool={pool}
+          onClick={() => setToggleType(!toggleType)}
+        /> 
+      ) : (
+        null
+      )}
+     
 
       <div className="addliquidity_descriptiontab">
         <div
