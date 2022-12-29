@@ -7,7 +7,8 @@ import {
   getEthBalance,
   getLPBalance,
   priceToken,
-  zapIn
+  zapIn,
+  zapInAll
 } from './deposit-functions';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { MdOutlineErrorOutline } from 'react-icons/md';
@@ -31,6 +32,8 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [hash, setHash] = useState(''); 
 
   const [price, setPrice] = useState(0);
+
+  const refresh = () => window.location.reload();
 
   useEffect(() => {
     getEthBalance(currentWallet, setEthUserBal);
@@ -82,19 +85,36 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
   }
 
   function zapDeposit() {
-    zapIn(
-      setEthUserBal, 
-      currentWallet, 
-      setLoading, 
-      pool, 
-      ethDepositAmount, 
-      setEthDepositAmount, 
-      setLoaderMessage, 
-      setSuccess, 
-      setSecondaryMessage, 
-      setLink, 
-      setHash
-    );
+    if(ethDepositAmount === ethUserBal){
+      zapInAll(
+        setEthUserBal, 
+        currentWallet, 
+        setLoading, 
+        pool, 
+        ethDepositAmount, 
+        setEthDepositAmount, 
+        setLoaderMessage, 
+        setSuccess, 
+        setSecondaryMessage, 
+        setLink, 
+        setHash
+      );
+    }else {
+      zapIn(
+        setEthUserBal, 
+        currentWallet, 
+        setLoading, 
+        pool, 
+        ethDepositAmount, 
+        setEthDepositAmount, 
+        setLoaderMessage, 
+        setSuccess, 
+        setSecondaryMessage, 
+        setLink, 
+        setHash
+      );
+
+    }
   }
   function maxDeposit() {
     setLPDepositAmount(lpUserBal);
@@ -307,7 +327,7 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
 
           ) : null}
             
-            <div className={`deposit_spinner_bottom_right`} onClick={() => {setLoading(false); setLink(false); setHash('')}}>
+            <div className={`deposit_spinner_bottom_right`} onClick={() => {setLoading(false); setLink(false); setHash(''); refresh();}}>
               <p>Dismiss</p>
             </div>
           </div>

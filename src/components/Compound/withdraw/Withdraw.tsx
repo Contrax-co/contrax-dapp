@@ -27,6 +27,8 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [link, setLink] = useState(false);
   const [hash, setHash] = useState(''); 
 
+  const refresh = () => window.location.reload();
+
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
     priceToken(pool.lp_address, setPrice);
@@ -88,7 +90,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   }
 
   function withdrawEthMax() {
-    setWithdrawAmt(userVaultBal * 99/100);
+    setWithdrawAmt(userVaultBal * 999/1000);
   }
 
   return (
@@ -312,7 +314,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
               </div>
             ) : null}
 
-            <div className={`withdraw_spinner_bottom_right`}  onClick={() => {setLoading(false); setLink(false); setHash('')}}>
+            <div className={`withdraw_spinner_bottom_right`}  onClick={() => {setLoading(false); setLink(false); setHash(''); refresh()}}>
               <p>Dismiss</p>
             </div> 
           </div>
