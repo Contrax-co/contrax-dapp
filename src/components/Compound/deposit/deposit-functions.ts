@@ -424,9 +424,9 @@ export const depositAll = async (
        * Execute the actual deposit functionality from smart contract
        */
       const gasPrice:any = await provider.getGasPrice();
-      const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 9));
+      const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 10));
    
-      const formattedBal = ethers.utils.parseUnits((ethZapAmount - gasToRemove/20).toString(), 18);
+      const formattedBal = ethers.utils.parseUnits((ethZapAmount - gasToRemove/10).toString(), 18);
 
       setSecondaryMessage('Approving zapping...');
       
@@ -454,6 +454,7 @@ export const depositAll = async (
         setSecondaryMessage(`Try again!`);
         setSuccess('fail');
       } else {
+
         setLink(true);
         setHash(zapperTxn.hash); 
         setLoaderMessage(`Deposited--`);
