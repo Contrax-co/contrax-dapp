@@ -7,7 +7,8 @@ import {
   getEthBalance,
   getLPBalance,
   priceToken,
-  zapIn
+  zapIn,
+  zapInAll
 } from './deposit-functions';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import { MdOutlineErrorOutline } from 'react-icons/md';
@@ -82,19 +83,36 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
   }
 
   function zapDeposit() {
-    zapIn(
-      setEthUserBal, 
-      currentWallet, 
-      setLoading, 
-      pool, 
-      ethDepositAmount, 
-      setEthDepositAmount, 
-      setLoaderMessage, 
-      setSuccess, 
-      setSecondaryMessage, 
-      setLink, 
-      setHash
-    );
+    if(ethDepositAmount === ethUserBal){
+      zapInAll(
+        setEthUserBal, 
+        currentWallet, 
+        setLoading, 
+        pool, 
+        ethDepositAmount, 
+        setEthDepositAmount, 
+        setLoaderMessage, 
+        setSuccess, 
+        setSecondaryMessage, 
+        setLink, 
+        setHash
+      );
+    }else {
+      zapIn(
+        setEthUserBal, 
+        currentWallet, 
+        setLoading, 
+        pool, 
+        ethDepositAmount, 
+        setEthDepositAmount, 
+        setLoaderMessage, 
+        setSuccess, 
+        setSecondaryMessage, 
+        setLink, 
+        setHash
+      );
+
+    }
   }
   function maxDeposit() {
     setLPDepositAmount(lpUserBal);

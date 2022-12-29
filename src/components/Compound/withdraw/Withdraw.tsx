@@ -88,7 +88,7 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
   }
 
   function withdrawEthMax() {
-    setWithdrawAmt(userVaultBal * 99/100);
+    setWithdrawAmt(userVaultBal * 999/1000);
   }
 
   return (
