@@ -454,7 +454,6 @@ export const depositAll = async (
         setSecondaryMessage(`Try again!`);
         setSuccess('fail');
       } else {
-
         setLink(true);
         setHash(zapperTxn.hash); 
         setLoaderMessage(`Deposited--`);

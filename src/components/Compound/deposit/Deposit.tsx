@@ -33,6 +33,8 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
 
   const [price, setPrice] = useState(0);
 
+  const refresh = () => window.location.reload();
+
   useEffect(() => {
     getEthBalance(currentWallet, setEthUserBal);
     getLPBalance(pool, currentWallet, setLPUserBal);
@@ -325,7 +327,7 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
 
           ) : null}
             
-            <div className={`deposit_spinner_bottom_right`} onClick={() => {setLoading(false); setLink(false); setHash('')}}>
+            <div className={`deposit_spinner_bottom_right`} onClick={() => {setLoading(false); setLink(false); setHash(''); refresh();}}>
               <p>Dismiss</p>
             </div>
           </div>
