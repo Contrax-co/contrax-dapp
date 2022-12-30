@@ -1,5 +1,4 @@
 import * as ethers from 'ethers';
-
 export const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
 
 export const priceToken = async (address: any, setPrice: any) => {
@@ -59,6 +58,7 @@ export const getLPBalance = async (
     const { ethereum } = window;
     try {
       if (ethereum) {
+        
         const provider = new ethers.providers.Web3Provider(ethereum);
         await provider.send('eth_requestAccounts', []);
 

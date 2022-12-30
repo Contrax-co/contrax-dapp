@@ -15,7 +15,13 @@ import { MdOutlineErrorOutline } from 'react-icons/md';
 import Toggle from '../Toggle';
 
 function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
-  const [toggleType, setToggleType] = useState(true);
+  const [toggleType, setToggleType] = useState(() => {
+    if (pool.token_type === "Token") {
+      return true;
+    } else {
+      return false;
+    }
+  });
 
   const [ethUserBal, setEthUserBal] = useState(0);
   const [lpUserBal, setLPUserBal] = useState(0);
@@ -173,6 +179,8 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
               Your native ETH token is zapped into the liquidity pool and the deposit token is then staked in the {pool.platform} protocol 
               for {pool.reward} rewards. All rewards are sold to purchase more LP tokens. 
             </p>
+
+
           )}
 
           
