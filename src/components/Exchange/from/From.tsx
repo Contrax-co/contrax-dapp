@@ -25,6 +25,8 @@ function From({
   setFromAlt,
   toName,
   setUserAmt,
+  toDecimals,
+  setFromDecimals
 }: any) {
   const token = tokens.slice(tokenId - 1, tokenId);
 
@@ -35,6 +37,7 @@ function From({
 
   const [fromAmt, setFromAmt] = useState(0);
   const [tokenAbi, setTokenAbi] = useState([]);
+  const [decimals, setDecimals] = useState(0);
 
   const [swapAmount, setSwapAmount] = useState(0.0);
 
@@ -53,6 +56,8 @@ function From({
       setTokenLp(token.address);
       setTokenType(token.token_sub);
       setFromAddress(token.address);
+      setDecimals(token.decimals);
+      setFromDecimals(token.decimals);
       setAbi(JSON.stringify(token.token_abi));
     });
 
@@ -62,7 +67,8 @@ function From({
       setFromAmt,
       tokenLp,
       tokenAbi,
-      setUserAmt
+      setUserAmt,
+      decimals
     );
   }, [
     currentWallet,
@@ -77,6 +83,8 @@ function From({
     setFromImg,
     setFromName,
     setUserAmt,
+    decimals,
+    setFromDecimals
   ]);
 
   useEffect(() => {
@@ -93,7 +101,9 @@ function From({
       swapAmount,
       fromAddress,
       toAddress,
-      setToValue
+      setToValue,
+      decimals, 
+      toDecimals
     );
   }, [
     fromAmt,
@@ -107,6 +117,8 @@ function From({
     fromAddress,
     toAddress,
     setToValue,
+    decimals,
+    toDecimals
   ]);
 
   const handleSwapChange = (e: any) => {

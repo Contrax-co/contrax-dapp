@@ -69,8 +69,10 @@ export const getLPBalance = async (
         );
 
         const balance = await lpContract.balanceOf(currentWallet);
-        const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
+        const formattedBal = Number(ethers.utils.formatUnits(balance, pool.decimals));
         setUserLPBalance(formattedBal);
+        
+        
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -225,11 +227,16 @@ export const deposit = async (
       /*
        * Execute the actual deposit functionality from smart contract
        */
-      const formattedBal = ethers.utils.parseUnits(
-        Number(depositAmount).toFixed(16),
-        18
-      );
-
+      let formattedBal;
+      if(pool.decimals !== 18) {
+        formattedBal = ethers.utils.parseUnits(depositAmount.toString(), pool.decimals);
+      }else{
+        formattedBal = ethers.utils.parseUnits(
+          Number(depositAmount).toFixed(16),
+          pool.decimals
+        );
+      }
+      
       // approve the vault to spend asset
       const lpContract = new ethers.Contract(
         pool.lp_address,
@@ -337,10 +344,15 @@ export const depositAll = async (
       /*
        * Execute the actual deposit functionality from smart contract
        */
-      const formattedBal = ethers.utils.parseUnits(
-        Number(Number(depositAmount) + Number(depositAmount)).toFixed(16),
-        18
-      );
+      let formattedBal;
+      if(pool.decimals !== 18) {
+        formattedBal = ethers.utils.parseUnits(depositAmount.toString(), pool.decimals);
+      }else {
+        formattedBal = ethers.utils.parseUnits(
+          Number(Number(depositAmount) + Number(depositAmount)).toFixed(16),
+          pool.decimals
+        );
+      }
 
       // approve the vault to spend asset
       const lpContract = new ethers.Contract(

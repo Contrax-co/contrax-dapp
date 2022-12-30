@@ -26,7 +26,7 @@ export const getUserVaultBalance = async (
         );
 
         const balance = await vaultContract.balanceOf(currentWallet);
-        const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
+        const formattedBal = Number(ethers.utils.formatUnits(balance, pool.decimals));
 
         setUserVaultBalance(formattedBal);
       } else {
@@ -83,10 +83,15 @@ export const withdraw = async (
       /*
        * Execute the actual withdraw functionality from smart contract
        */
-      const formattedBal = ethers.utils.parseUnits(
-        Number(withdrawAmount).toFixed(16),
-        18
-      );
+      let formattedBal;
+      if(pool.decimals !== 18){
+        formattedBal = ethers.utils.parseUnits(withdrawAmount.toString(), pool.decimals);
+      }else {
+        formattedBal = ethers.utils.parseUnits(
+          Number(withdrawAmount).toFixed(16),
+          pool.decimals
+        );
+      }
 
       setSecondaryMessage('Confirm withdraw...');
       
@@ -184,10 +189,15 @@ export const zapOut = async (
       /*
        * Execute the actual withdraw functionality from smart contract
        */
-      const formattedBal = ethers.utils.parseUnits(
-        Number(withdrawAmt).toFixed(16),
-        18
-      );
+      let formattedBal;
+      if(pool.decimals !== 18){
+        formattedBal = ethers.utils.parseUnits(withdrawAmt.toString(), pool.decimals);
+      }else {
+        formattedBal = ethers.utils.parseUnits(
+          Number(withdrawAmt).toFixed(16),
+          pool.decimals
+        );
+      }
 
       setSecondaryMessage('Approving withdraw...');
 
