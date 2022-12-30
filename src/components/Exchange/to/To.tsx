@@ -18,6 +18,7 @@ function To({
   setToImg,
   setToAlt,
   currentWallet,
+  setToDecimals
 }: any) {
   const token = tokens.slice(tokenId - 1, tokenId);
 
@@ -27,6 +28,7 @@ function To({
 
   const [swapAmount, setSwapAmount] = useState(0.0);
   const [toAbi, setToAbi] = useState([]);
+  const [decimals, setDecimals] = useState(0); 
 
   const [amt, setAmt] = useState(0.0);
   const [price, setPrice] = useState(0);
@@ -42,13 +44,15 @@ function To({
       setToAddress(token.address);
       setToName(token.token_name);
       setToAbi(token.token_abi);
+      setDecimals(token.decimals);
+      setToDecimals(token.decimals);
     });
-  }, [token, setTokenType, setToAddress, setToAlt, setToImg, setToName]);
+  }, [token, setTokenType, setToAddress, setToAlt, setToImg, setToName, setToDecimals]);
 
   useEffect(() => {
-    userBalTo(currentWallet, tokenName, setAmt, toAddress, toAbi);
+    userBalTo(currentWallet, tokenName, setAmt, toAddress, toAbi, decimals);
     priceToken(toAddress, setPrice);
-  }, [tokenName, currentWallet, toAddress, toAbi, toValue]);
+  }, [tokenName, currentWallet, toAddress, toAbi, toValue, decimals]);
 
   const handleSwapChange = (e: any) => {
     setSwapAmount(e.target.value);

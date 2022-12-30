@@ -62,6 +62,9 @@ function Exchange({ lightMode, currentWallet }: any) {
   const [fromAlt, setFromAlt] = useState('');
   const [toAlt, setToAlt] = useState('');
 
+  const [toDecimals, setToDecimals] = useState(0);
+  const [fromDecimals, setFromDecimals] = useState(0); 
+
   const [success, setSuccess] = useState('loading');
 
   const [userAmt, setUserAmt] = useState(0);
@@ -112,6 +115,8 @@ function Exchange({ lightMode, currentWallet }: any) {
             tokenType1={tokenType1}
             tokenType2={tokenType2}
             setUserAmt={setUserAmt}
+            toDecimals = {toDecimals}
+            setFromDecimals = {setFromDecimals}
           />
         </div>
 
@@ -136,6 +141,7 @@ function Exchange({ lightMode, currentWallet }: any) {
             setToImg={setToImg}
             setToAlt={setToAlt}
             currentWallet={currentWallet}
+            setToDecimals={setToDecimals}
           />
         </div>
 
@@ -252,7 +258,8 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setLoading,
                   setLoaderMessage,
                   setSecondaryMessage,
-                  setSuccess
+                  setSuccess,
+                  fromDecimals
                 )
               : tokenType1 === 'Token' &&
                 tokenType2 === 'LP Token' &&
@@ -268,7 +275,8 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setLoading,
                   setLoaderMessage,
                   setSecondaryMessage,
-                  setSuccess
+                  setSuccess,
+                  fromDecimals
                 )
               : tokenType1 === 'LP Token' &&
                 tokenType2 === 'Token' &&
@@ -284,7 +292,8 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setLoading,
                   setLoaderMessage,
                   setSecondaryMessage,
-                  setSuccess
+                  setSuccess,
+                  fromDecimals
                 )
               : tokenType1 === 'Token' &&
                 tokenType2 === 'Token' &&
@@ -297,7 +306,8 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setLoading,
                   setLoaderMessage,
                   setSecondaryMessage,
-                  setSuccess
+                  setSuccess,
+                  fromDecimals
                 )
               : tokenType1 === 'Token' &&
                 tokenType2 === 'LP Token' &&
@@ -310,7 +320,8 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setLoading,
                   setLoaderMessage,
                   setSecondaryMessage,
-                  setSuccess
+                  setSuccess,
+                  fromDecimals
                 )
               : tokenType1 === 'LP Token' &&
                 tokenType2 === 'Token' &&
@@ -324,7 +335,8 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setLoading,
                   setLoaderMessage,
                   setSecondaryMessage,
-                  setSuccess
+                  setSuccess,
+                  fromDecimals
                 )
               : tokenType1 === 'Token' &&
                 tokenType2 === 'Token' &&
@@ -338,7 +350,8 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setLoading,
                   setLoaderMessage,
                   setSecondaryMessage,
-                  setSuccess
+                  setSuccess,
+                  fromDecimals
                 )
               : swapPairForPair(
                   currentWallet,
@@ -350,7 +363,8 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setLoading,
                   setLoaderMessage,
                   setSecondaryMessage,
-                  setSuccess
+                  setSuccess,
+                  fromDecimals
                 );
           }}
         />
