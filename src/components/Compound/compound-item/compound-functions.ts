@@ -101,7 +101,7 @@ export const getUserVaultBalance = async (
         );
 
         const balance = await vaultContract.balanceOf(currentWallet);
-        const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
+        const formattedBal = Number(ethers.utils.formatUnits(balance, pool.decimals));
 
         setUserVaultBalance(formattedBal);
       } else {
@@ -132,7 +132,7 @@ export const getTotalVaultBalance = async (
       );
 
       const balance = await vaultContract.totalSupply();
-      const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
+      const formattedBal = Number(ethers.utils.formatUnits(balance, pool.decimals));
 
       setTotalVaultBalance(formattedBal);
     } else {
