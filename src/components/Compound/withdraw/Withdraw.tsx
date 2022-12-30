@@ -13,7 +13,13 @@ import { priceToken } from '../compound-item/compound-functions';
 import Toggle from '../Toggle';
 
 function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
-  const [toggleType, setToggleType] = useState(true);
+  const [toggleType, setToggleType] = useState(() => {
+    if (pool.token_type === "Token") {
+      return true;
+    } else {
+      return false;
+    }
+  });
   const [loaderMessage, setLoaderMessage] = useState('');
   const [isLoading, setLoading] = useState(false);
 

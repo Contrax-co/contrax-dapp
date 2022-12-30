@@ -168,9 +168,17 @@ export const zapIn = async (
       setSuccess('fail');
     }
   } catch (error) {
-    console.log(error);
-    setLoaderMessage(`Error depositing!`);
-    setSecondaryMessage(`Try again!`);
+    let code = JSON.stringify(error);
+    let reason = JSON.parse(code);
+    console.log(reason);
+    if(reason['code'] === "ACTION_REJECTED"){
+      setLoaderMessage(`REJECTED!`);
+      setSecondaryMessage(`User rejected transaction!`);
+
+    }else {
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`);
+    }
     setSuccess('fail');
   }
 };
@@ -272,9 +280,17 @@ export const deposit = async (
       setSuccess('fail');
     }
   } catch (error) {
-    console.log(error);
-    setLoaderMessage(`Error depositing!`);
-    setSecondaryMessage(`Try again!`);
+    let code = JSON.stringify(error);
+    let reason = JSON.parse(code);
+    console.log(reason);
+    if(reason['code'] === "ACTION_REJECTED"){
+      setLoaderMessage(`REJECTED!`);
+      setSecondaryMessage(`User rejected transaction!`);
+
+    }else {
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`);
+    }
     setSuccess('fail');
   }
 };
@@ -377,9 +393,17 @@ export const depositAll = async (
       setSuccess('fail');
     }
   } catch (error) {
-    console.log(error);
-    setLoaderMessage(`Error depositing!`);
-    setSecondaryMessage(`Try again!`);
+    let code = JSON.stringify(error);
+    let reason = JSON.parse(code);
+    console.log(reason);
+    if(reason['code'] === "ACTION_REJECTED"){
+      setLoaderMessage(`REJECTED!`);
+      setSecondaryMessage(`User rejected transaction!`);
+
+    }else {
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`);
+    }
     setSuccess('fail');
   }
 };
@@ -424,9 +448,9 @@ export const depositAll = async (
        * Execute the actual deposit functionality from smart contract
        */
       const gasPrice:any = await provider.getGasPrice();
-      const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 10));
+      const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 11));
    
-      const formattedBal = ethers.utils.parseUnits((ethZapAmount - gasToRemove/10).toString(), 18);
+      const formattedBal = ethers.utils.parseUnits((ethZapAmount - gasToRemove).toString(), 18);
 
       setSecondaryMessage('Approving zapping...');
       
@@ -471,9 +495,17 @@ export const depositAll = async (
       setSuccess('fail');
     }
   } catch (error) {
-    console.log(error);
-    setLoaderMessage(`Error depositing!`);
-    setSecondaryMessage(`Try again!`);
+    let code = JSON.stringify(error);
+    let reason = JSON.parse(code);
+    console.log(reason);
+    if(reason['code'] === "ACTION_REJECTED"){
+      setLoaderMessage(`REJECTED!`);
+      setSecondaryMessage(`User rejected transaction!`);
+
+    }else {
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`);
+    }
     setSuccess('fail');
   }
 };
