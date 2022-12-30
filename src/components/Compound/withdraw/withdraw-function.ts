@@ -130,9 +130,17 @@ export const withdraw = async (
       setSuccess('fail');
     }
   } catch (error) {
-    console.log(error);
-    setLoaderMessage(`Error withdrawing!`);
-    setSecondaryMessage(`Try again!`);
+    let code = JSON.stringify(error);
+    let reason = JSON.parse(code);
+    console.log(reason);
+    if(reason['code'] === "ACTION_REJECTED"){
+      setLoaderMessage(`REJECTED!`);
+      setSecondaryMessage(`User rejected transaction!`);
+
+    }else {
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`);
+    }
     setSuccess('fail');
   }
 };
@@ -246,9 +254,17 @@ export const zapOut = async (
       setSuccess('fail');
     }
   } catch (error) {
-    console.log(error);
-    setLoaderMessage(`Error withdrawing!`);
-    setSecondaryMessage(`Try again!`);
+    let code = JSON.stringify(error);
+    let reason = JSON.parse(code);
+    console.log(reason);
+    if(reason['code'] === "ACTION_REJECTED"){
+      setLoaderMessage(`REJECTED!`);
+      setSecondaryMessage(`User rejected transaction!`);
+
+    }else {
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`);
+    }
     setSuccess('fail');
   }
 };
@@ -337,9 +353,17 @@ export const withdrawAll = async (
       setSuccess('fail');
     }
   } catch (error) {
-    console.log(error);
-    setLoaderMessage(`Error withdrawing!`);
-    setSecondaryMessage(`Try again!`);
+    let code = JSON.stringify(error);
+    let reason = JSON.parse(code);
+    console.log(reason);
+    if(reason['code'] === "ACTION_REJECTED"){
+      setLoaderMessage(`REJECTED!`);
+      setSecondaryMessage(`User rejected transaction!`);
+
+    }else {
+      setLoaderMessage(`Error depositing!`);
+      setSecondaryMessage(`Try again!`);
+    }
     setSuccess('fail');
   }
 };
