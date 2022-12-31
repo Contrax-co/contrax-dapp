@@ -151,7 +151,7 @@ function Exchange({ lightMode, currentWallet }: any) {
               lightMode && 'exchange_button_disable--light'
             }`}
           >
-            <p>Enter a amount</p>
+            <p>Enter amount</p>
           </div>
         ) : value > userAmt ? (
           <div

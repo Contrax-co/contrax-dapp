@@ -139,7 +139,7 @@ function Confirm({
               setConfirmPage(false);
             }}
           >
-            <p>Confirm Swap</p>
+            <p>Swap</p>
           </div>
         </div>
       </div>
