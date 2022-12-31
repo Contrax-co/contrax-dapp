@@ -171,6 +171,7 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
               pool. Your tokens wil be
               staked on {pool.platform} for fees and rewards. 
               All rewards are sold to auto-compound your position.{' '}
+              <br /><br />
               After depositing, remember to confirm the transaction in your wallet.{' '}
             </p>
 
@@ -178,9 +179,10 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
             <p className="description_description">
               Deposit with ETH directly into the {pool.platform} liquidity pool for <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">{pool.name}</a>. 
               Your ETH will be swapped for LP tokens to earn fees and rewards, which are sold to auto-compound your LP position.
-              After depositing, remember to confirm the transaction in your wallet.
+              Note that "Max" leaves a small amount of ETH for gas. You'll need it to exit the farm later.
               <br /><br />
-              Note: The "Max" button will leave a small amount of ETH for gas. You'll need it to exit the farm later.
+              After depositing, remember to confirm the transaction in your wallet.
+            
             </p>
 
 
