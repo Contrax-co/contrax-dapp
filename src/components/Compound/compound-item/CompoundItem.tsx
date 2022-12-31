@@ -42,7 +42,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
     apyPool(pool.lp_address, setRewardApy);
     calculateFeeAPY(pool.lp_address, setFeeAPY);
     calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound);
-    findCompoundAPY(pool.apy, setCompoundAPY);
+    findCompoundAPY(pool.rewards_apy, setCompoundAPY, pool.apy);
   }, [pool, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
 
   return (
