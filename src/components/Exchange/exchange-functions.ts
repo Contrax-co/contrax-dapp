@@ -166,16 +166,18 @@ export const swapFromTokenToToken = async (
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
+        let exchangeTxn; 
+        try {
+          const gasEstimated:any = await exchangeContract.estimateGas.swapFromTokenToToken(from, to, formattedBal);
+          const gasMargin = gasEstimated * 1.1;
+    
+          exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {gasLimit: Math.ceil(gasMargin)});
 
-        const exchangeTxn = await exchangeContract.swapFromTokenToToken(
-          from,
-          to,
-          formattedBal,
-          {
-            gasLimit: gasPrice1 / 10,
-          }
-        );
+        }catch {
+          exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {gasLimit: gasPrice1 / 20,});
+        }
 
+       
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
 
@@ -257,15 +259,16 @@ export const swapFromTokenToPair = async (
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
-
-        const exchangeTxn = await exchangeContract.swapTokenForPair(
-          from,
-          to,
-          formattedBal,
-          {
-            gasLimit: gasPrice1 / 10,
-          }
-        );
+        let exchangeTxn; 
+        try {
+          const gasEstimated:any = await exchangeContract.estimateGas.swapTokenForPair(from, to, formattedBal);
+          const gasMargin = gasEstimated * 1.1;
+    
+          exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal, {gasLimit: Math.ceil(gasMargin)});
+        }
+        catch {
+          exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal,{gasLimit: gasPrice1 / 20,});
+        }
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
@@ -348,15 +351,16 @@ export const swapPairForToken = async (
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
+        let exchangeTxn; 
+        try{
+          const gasEstimated:any = await exchangeContract.estimateGas.swapPairForToken(from, to, formattedBal);
+          const gasMargin = gasEstimated * 1.1;
+    
+          exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, { gasLimit: Math.ceil(gasMargin)});
 
-        const exchangeTxn = await exchangeContract.swapPairForToken(
-          from,
-          to,
-          formattedBal,
-          {
-            gasLimit: gasPrice1 / 10,
-          }
-        );
+        }catch {
+          exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, { gasLimit: gasPrice1 / 20,});
+        }
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
@@ -439,15 +443,17 @@ export const swapPairForPair = async (
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
+        let exchangeTxn; 
 
-        const exchangeTxn = await exchangeContract.swapPairForPair(
-          from,
-          to,
-          formattedBal,
-          {
-            gasLimit: gasPrice1 / 10,
-          }
-        );
+        try{
+          const gasEstimated:any = await exchangeContract.estimateGas.swapPairForPair(from, to, formattedBal);
+          const gasMargin = gasEstimated * 1.1;
+    
+          exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal, {gasLimit: Math.ceil(gasMargin)});
+
+        }catch{
+          exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal,{ gasLimit: gasPrice1 / 20, });
+        }
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
@@ -529,10 +535,16 @@ export const swapEthForToken = async (
     
         setSecondaryMessage('Confirm Contract Interaction');
 
-        const exchangeTxn = await exchangeContract.swapFromEthToToken(to, {
-          value: formattedBal,
-          gasLimit: gasPrice1 / 10,
-        });
+        let exchangeTxn; 
+        try{
+          const gasEstimated:any = await exchangeContract.estimateGas.swapFromEthToToken(to, {value: formattedBal});
+          const gasMargin = gasEstimated * 1.1;
+    
+          exchangeTxn = await exchangeContract.swapFromEthToToken(to, {value: formattedBal, gasLimit: Math.ceil(gasMargin)});
+
+        }catch {
+          exchangeTxn = await exchangeContract.swapFromEthToToken(to, {value: formattedBal, gasLimit: gasPrice1 / 20, });
+        }
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
@@ -614,11 +626,16 @@ export const swapEthForPair = async (
         }
 
         setSecondaryMessage('Confirm Contract Interaction');
+        let exchangeTxn;
+        try{
+          const gasEstimated:any = await exchangeContract.estimateGas.swapEthForPair(to, {value: formattedBal});
+          const gasMargin = gasEstimated * 1.1;
+    
+          exchangeTxn = await exchangeContract.swapEthForPair(to, {value: formattedBal, gasLimit: Math.ceil(gasMargin)});
 
-        const exchangeTxn = await exchangeContract.swapEthForPair(to, {
-          value: formattedBal,
-          gasLimit: gasPrice1 / 10,
-        });
+        }catch{
+          exchangeTxn = await exchangeContract.swapEthForPair(to, {value: formattedBal, gasLimit: gasPrice1 / 20, });
+        }
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
@@ -704,12 +721,17 @@ export const swapPairForETH = async (
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
+        let exchangeTxn;
 
-        const exchangeTxn = await exchangeContract.swapPairForEth(
-          from,
-          formattedBal,
-          { gasLimit: gasPrice1 / 10 }
-        );
+        try{
+          const gasEstimated:any = await exchangeContract.estimateGas.swapPairForEth(from, formattedBal);
+          const gasMargin = gasEstimated * 1.1;
+    
+          exchangeTxn = await exchangeContract.swapPairForEth(from, formattedBal, {gasLimit: Math.ceil(gasMargin)});
+
+        }catch {
+          exchangeTxn = await exchangeContract.swapPairForEth(from, formattedBal, { gasLimit: gasPrice1 / 20 });
+        }
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
@@ -796,12 +818,16 @@ export const swapTokenForETH = async (
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
+        let exchangeTxn;
+        try{
+          const gasEstimated:any = await exchangeContract.estimateGas.swapFromTokenToEth(from, formattedBal);
+          const gasMargin = gasEstimated * 1.1;
+    
+          exchangeTxn = await exchangeContract.swapFromTokenToEth(from, formattedBal, {gasLimit: Math.ceil(gasMargin)});
 
-        const exchangeTxn = await exchangeContract.swapFromTokenToEth(
-          from,
-          formattedBal,
-          { gasLimit: gasPrice1 / 10 }
-        );
+        }catch{
+          exchangeTxn = await exchangeContract.swapFromTokenToEth(from, formattedBal, { gasLimit: gasPrice1 / 20 });
+        }
 
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
