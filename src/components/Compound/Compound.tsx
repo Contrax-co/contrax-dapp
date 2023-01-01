@@ -34,8 +34,8 @@ function Compound({ lightMode, currentWallet, connectWallet }: any) {
         <div className={`farm__second__title`}>
           <p>DEPOSITED</p>
           <p>SHARE</p>
-          <p>LIQUIDITY</p>
-          <p>TOTAL APY</p>
+          <p>TOTAL LIQUIDITY</p>
+          <p>APY</p>
         </div>
       </div>
 

@@ -125,7 +125,8 @@ export const swapFromTokenToToken = async (
   setLoading: any,
   setLoaderMessage: any,
   setSecondaryMessage: any,
-  setSuccess: any
+  setSuccess: any,
+  fromDecimals:any
 ) => {
   setSuccess('loading');
   setLoading(true);
@@ -151,10 +152,17 @@ export const swapFromTokenToToken = async (
         /*
          * Execute the actual swap functionality from smart contract
          */
-        const formattedBal = ethers.utils.parseUnits(
-          Number(fromValue).toFixed(16),
-          18
-        );
+        let formattedBal; 
+        if(fromDecimals !== 18) {
+          formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
+        }else {
+          formattedBal = ethers.utils.parseUnits(
+            Number(fromValue).toFixed(16),
+            18
+          );
+
+        }
+       
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
@@ -209,7 +217,8 @@ export const swapFromTokenToPair = async (
   setLoading: any,
   setLoaderMessage: any,
   setSecondaryMessage: any,
-  setSuccess: any
+  setSuccess: any,
+  fromDecimals:any
 ) => {
   setSuccess('loading');
   setLoading(true);
@@ -235,10 +244,16 @@ export const swapFromTokenToPair = async (
         /*
          * Execute the actual swap functionality from smart contract
          */
-        const formattedBal = ethers.utils.parseUnits(
-          Number(fromValue).toFixed(16),
-          18
-        );
+        let formattedBal; 
+        if(fromDecimals !== 18) {
+          formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
+        }else {
+          formattedBal = ethers.utils.parseUnits(
+            Number(fromValue).toFixed(16),
+            18
+          );
+
+        }
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
@@ -293,7 +308,8 @@ export const swapPairForToken = async (
   setLoading: any,
   setLoaderMessage: any,
   setSecondaryMessage: any,
-  setSuccess: any
+  setSuccess: any,
+  fromDecimals:any
 ) => {
   setSuccess('loading');
   setLoading(true);
@@ -319,10 +335,16 @@ export const swapPairForToken = async (
         /*
          * Execute the actual swap functionality from smart contract
          */
-        const formattedBal = ethers.utils.parseUnits(
-          Number(fromValue).toFixed(16),
-          18
-        );
+        let formattedBal; 
+        if(fromDecimals !== 18) {
+          formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
+        }else {
+          formattedBal = ethers.utils.parseUnits(
+            Number(fromValue).toFixed(16),
+            18
+          );
+
+        }
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
@@ -377,7 +399,8 @@ export const swapPairForPair = async (
   setLoading: any,
   setLoaderMessage: any,
   setSecondaryMessage: any,
-  setSuccess: any
+  setSuccess: any,
+  fromDecimals:any
 ) => {
   setSuccess('loading');
   setLoading(true);
@@ -403,10 +426,16 @@ export const swapPairForPair = async (
         /*
          * Execute the actual swap functionality from smart contract
          */
-        const formattedBal = ethers.utils.parseUnits(
-          Number(fromValue).toFixed(16),
-          18
-        );
+        let formattedBal; 
+        if(fromDecimals !== 18) {
+          formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
+        }else {
+          formattedBal = ethers.utils.parseUnits(
+            Number(fromValue).toFixed(16),
+            18
+          );
+
+        }
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
@@ -460,7 +489,8 @@ export const swapEthForToken = async (
   setLoading: any,
   setLoaderMessage: any,
   setSecondaryMessage: any,
-  setSuccess: any
+  setSuccess: any,
+  fromDecimals:any
 ) => {
   setSuccess('loading');
   setLoading(true);
@@ -483,15 +513,20 @@ export const swapEthForToken = async (
         const gasPrice1: any = await provider.getGasPrice();
 
         setSecondaryMessage('Approving Token');
-
         /*
          * Execute the actual swap functionality from smart contract
          */
-        const formattedBal = ethers.utils.parseUnits(
-          Number(fromValue).toFixed(16),
-          18
-        );
+        let formattedBal; 
+        if(fromDecimals !== 18) {
+          formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
+        }else {
+          formattedBal = ethers.utils.parseUnits(
+            Number(fromValue).toFixed(16),
+            18
+          );
 
+        }
+    
         setSecondaryMessage('Confirm Contract Interaction');
 
         const exchangeTxn = await exchangeContract.swapFromEthToToken(to, {
@@ -539,7 +574,8 @@ export const swapEthForPair = async (
   setLoading: any,
   setLoaderMessage: any,
   setSecondaryMessage: any,
-  setSuccess: any
+  setSuccess: any,
+  fromDecimals:any
 ) => {
   setSuccess('loading');
   setLoading(true);
@@ -566,10 +602,16 @@ export const swapEthForPair = async (
         /*
          * Execute the actual swap functionality from smart contract
          */
-        const formattedBal = ethers.utils.parseUnits(
-          Number(fromValue).toFixed(16),
-          18
-        );
+        let formattedBal; 
+        if(fromDecimals !== 18) {
+          formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
+        }else {
+          formattedBal = ethers.utils.parseUnits(
+            Number(fromValue).toFixed(16),
+            18
+          );
+
+        }
 
         setSecondaryMessage('Confirm Contract Interaction');
 
@@ -619,7 +661,8 @@ export const swapPairForETH = async (
   setLoading: any,
   setLoaderMessage: any,
   setSecondaryMessage: any,
-  setSuccess: any
+  setSuccess: any,
+  fromDecimals:any
 ) => {
   setSuccess('loading');
   setLoading(true);
@@ -647,10 +690,17 @@ export const swapPairForETH = async (
         /*
          * Execute the actual swap functionality from smart contract
          */
-        const formattedBal = ethers.utils.parseUnits(
-          Number(fromValue).toFixed(16),
-          18
-        );
+        let formattedBal; 
+        if(fromDecimals !== 18) {
+          formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
+        }else {
+          formattedBal = ethers.utils.parseUnits(
+            Number(fromValue).toFixed(16),
+            18
+          );
+
+        }
+  
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');
@@ -702,7 +752,8 @@ export const swapTokenForETH = async (
   setLoading: any,
   setLoaderMessage: any,
   setSecondaryMessage: any,
-  setSuccess: any
+  setSuccess: any,
+  fromDecimals:any
 ) => {
   setSuccess('loading');
   setLoading(true);
@@ -731,10 +782,17 @@ export const swapTokenForETH = async (
         /*
          * Execute the actual swap functionality from smart contract
          */
-        const formattedBal = ethers.utils.parseUnits(
-          Number(fromValue).toFixed(16),
-          18
-        );
+        let formattedBal; 
+        if(fromDecimals !== 18) {
+          formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
+        }else {
+          formattedBal = ethers.utils.parseUnits(
+            Number(fromValue).toFixed(16),
+            18
+          );
+
+        }
+      
         await tokenContract.approve(exchange_address, formattedBal);
 
         setSecondaryMessage('Confirm Contract Interaction');

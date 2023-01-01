@@ -379,7 +379,8 @@ export const totalFrom = async (
   setFromAmt: any,
   tokenLp: any,
   tokenAbi: any,
-  setUserAmt: any
+  setUserAmt: any,
+  decimals:any
 ) => {
   if (currentWallet) {
     const { ethereum } = window;
@@ -397,7 +398,7 @@ export const totalFrom = async (
         } else if (tokenName !== 'ETH') {
           const tokenContract = new ethers.Contract(tokenLp, tokenAbi, signer);
           const balance = await tokenContract.balanceOf(currentWallet);
-          const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
+          const formattedBal = Number(ethers.utils.formatUnits(balance, decimals));
           setFromAmt(formattedBal);
           setUserAmt(formattedBal);
         }
@@ -423,7 +424,9 @@ export const estimateValueTo = async (
   value: any,
   fromAddress: any,
   toAddress: any,
-  setToValue: any
+  setToValue: any,
+  fromDecimals:any,
+  toDecimals:any
 ) => {
   const { ethereum } = window;
   try {
@@ -448,11 +451,11 @@ export const estimateValueTo = async (
         );
 
         let path = [fromAddress, toAddress];
-        const formattedVal = ethers.utils.parseUnits(value.toString(), 18);
+        const formattedVal = ethers.utils.parseUnits(value.toString(), fromDecimals);
 
         const [, outValue] = await Uniswap.getAmountsOut(formattedVal, path);
 
-        const formattedBal = Number(ethers.utils.formatUnits(outValue, 18));
+        const formattedBal = Number(ethers.utils.formatUnits(outValue, toDecimals));
         setToValue(formattedBal);
       } else if (tokenType1 === 'LP Token' && tokenType2 === 'Token') {
         setToValue((fromPrice * fromAmt) / toPrice);
@@ -470,11 +473,11 @@ export const estimateValueTo = async (
         );
 
         let path = [fromAddress, toAddress];
-        const formattedVal = ethers.utils.parseUnits(value.toString(), 18);
+        const formattedVal = ethers.utils.parseUnits(value.toString(), fromDecimals);
 
         const [, outValue] = await Uniswap.getAmountsOut(formattedVal, path);
 
-        const formattedBal = Number(ethers.utils.formatUnits(outValue, 18));
+        const formattedBal = Number(ethers.utils.formatUnits(outValue, toDecimals));
         setToValue(formattedBal);
       } else if (
         tokenType1 === 'Token' &&
@@ -491,11 +494,11 @@ export const estimateValueTo = async (
         );
 
         let path = [fromAddress, wethAddress, toAddress];
-        const formattedVal = ethers.utils.parseUnits(value.toString(), 18);
+        const formattedVal = ethers.utils.parseUnits(value.toString(), fromDecimals);
 
         const [, , outValue] = await Uniswap.getAmountsOut(formattedVal, path);
 
-        const formattedBal = Number(ethers.utils.formatUnits(outValue, 18));
+        const formattedBal = Number(ethers.utils.formatUnits(outValue, toDecimals));
         setToValue(formattedBal);
       }
     } else {

@@ -37,7 +37,7 @@ function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
         />
 
         <SidebarItem
-          title="Zap In/Trade"
+          title="Exchange"
           icon={<FaExchangeAlt />}
           onClick={() => setMenuItem('Exchange')}
           active={menuItem === 'Exchange'}
@@ -45,7 +45,7 @@ function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
         />
 
         <SidebarItem
-          title="Create token"
+          title="Create Token"
           icon={<GiToken />}
           onClick={() => setMenuItem('Create token')}
           active={menuItem === 'Create token'}
@@ -53,7 +53,7 @@ function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
         />
 
         <SidebarItem
-          title="Create pool"
+          title="Create Pool"
           icon={<RiFundsLine />}
           onClick={() => setMenuItem('Create pool')}
           active={menuItem === 'Create pool'}
@@ -61,7 +61,7 @@ function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
         />
 
         <SidebarItem
-          title="Docs"
+          title="User Guide"
           onClick={() =>
             window.open('https://contrax.gitbook.io/contrax-docs/', '_blank')
           }

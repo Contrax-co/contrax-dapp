@@ -35,7 +35,8 @@ export const totalArbitrumUsd = async (
 export const totalVault = async (
   vaultAddress: any,
   vault_abi: any,
-  setVaultAmount: any
+  setVaultAmount: any,
+  decimals: any
 ) => {
   const { ethereum } = window;
   try {
@@ -50,7 +51,7 @@ export const totalVault = async (
         signer
       );
       const balance = await vaultContract.totalSupply();
-      const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
+      const formattedBal = Number(ethers.utils.formatUnits(balance, decimals));
 
       setVaultAmount(formattedBal);
     } else {
@@ -65,7 +66,8 @@ export const userVaultTokens = async (
   currentWallet: any,
   vaultAddress: any,
   vault_abi: any,
-  setAmount: any
+  setAmount: any,
+  decimals: any
 ) => {
   if (currentWallet) {
     const { ethereum } = window;
@@ -81,7 +83,7 @@ export const userVaultTokens = async (
           signer
         );
         const balance = await vaultContract.balanceOf(currentWallet);
-        const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
+        const formattedBal = Number(ethers.utils.formatUnits(balance, decimals));
 
         setAmount(formattedBal);
       } else {
