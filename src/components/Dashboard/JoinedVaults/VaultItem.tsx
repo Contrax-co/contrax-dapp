@@ -28,17 +28,18 @@ function VaultItem({
       currentWallet,
       vault.vault_address,
       vault.vault_abi,
-      setTokenAmount
+      setTokenAmount,
+      vault.decimals
     );
     priceOfToken(vault.lp_address, setPrice);
 
-    totalVault(vault.vault_address, vault.vault_abi, setVaultAmount);
+    totalVault(vault.vault_address, vault.vault_abi, setVaultAmount, vault.decimals);
 
     apyPool(vault.lp_address, setRewardApy);
     calculateFeeAPY(vault.lp_address, setFeeAPY);
 
     calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound);
-    findCompoundAPY(vault.apy, setCompoundAPY);
+    findCompoundAPY(vault.rewards_apy, setCompoundAPY, vault.apy);
   }, [currentWallet, vault, tokenAmount, price, rewardAPY, feeAPY]);
 
 

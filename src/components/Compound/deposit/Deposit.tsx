@@ -161,23 +161,28 @@ function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
           {toggleType ? (
 
             <p className="description_description">
-              This is a {pool.platform} liquidity pool composed of{' '}
+             Deposit your tokens for {pool.platform}'s {' '}
               <a
                 href="https://app.sushi.com/legacy/pool?chainId=42161"
                 className="span"
               >
                 {pool.name}
               </a>{' '}
-              tokens. Your LP tokens are deposited directly into our vaults and
-              then staked in the {pool.platform} protocol for {pool.reward}{' '}
-              rewards. All rewards are sold to purchase more LP tokens.{' '}
+              pool. Your tokens wil be
+              staked on {pool.platform} for fees and rewards. 
+              All rewards are sold to auto-compound your position.{' '}
+              <br /><br />
+              After depositing, remember to confirm the transaction in your wallet.{' '}
             </p>
 
           ): (
             <p className="description_description">
-              This is a {pool.platform} liquidity pool composed of <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">{pool.name}</a> tokens. 
-              Your native ETH token is zapped into the liquidity pool and the deposit token is then staked in the {pool.platform} protocol 
-              for {pool.reward} rewards. All rewards are sold to purchase more LP tokens. 
+              Deposit with ETH directly into the {pool.platform} liquidity pool for <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">{pool.name}</a>. 
+              Your ETH will be swapped for LP tokens to earn fees and rewards, which are sold to auto-compound your LP position.
+              Note that "Max" leaves a small amount of ETH for gas. You'll need it to exit the farm later.
+              <br /><br />
+              After depositing, remember to confirm the transaction in your wallet.
+            
             </p>
 
 

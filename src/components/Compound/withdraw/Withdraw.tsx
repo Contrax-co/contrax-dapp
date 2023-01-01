@@ -122,19 +122,22 @@ function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
               lightMode && 'withdrawal_title--light'
             }`}
           >
-            Removal of Liquidity
+            Description
           </p>
 
           {toggleType ? (
             <p className="withdrawal_description2">
-            Your deposited LP token can be withdrawn from the autocompounding
-            vault back to the user's connected wallet.{' '}
+              Withdraw into tokens for the {pool.platform} liquidity pool for <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">{pool.name}</a>. 
+              You can re-stake it when you wish, or swap it for ETH or other tokens, including LP tokens, on our exchange page.
+              <br /> <br />
+              After withdrawing, remember to confirm the transaction in your wallet.{' '}
           </p>
-
           ) : (
             <p className="withdrawal_description2">
-            Your deposited LP token can be withdrawn from the autocompounding
-            vault back to the user's wallet as native ETH.{' '}
+              Withdraw into ETH directly from {pool.platform} liquidity pool for <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">{pool.name}</a>. 
+              Note that the balance is shown in terms of LP tokens, but once withdrawn, you will receive ETH in your wallet. 
+              <br /> <br />
+              After withdrawing, remember to confirm the transaction(s) in your wallet.{' '}
             </p>
 
           )}

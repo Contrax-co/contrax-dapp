@@ -8,7 +8,7 @@ function Toggle({ lightMode, active, pool, ...props }: any) {
           active && 'first_switch--selected'
         } ${active && lightMode && 'first_switch--selected--light'}`}
       >
-        ETH
+        Zap ETH
       </p>
 
       <div
@@ -25,7 +25,7 @@ function Toggle({ lightMode, active, pool, ...props }: any) {
           } ${active && lightMode && 'toggle_button--selected--light'}`}
         ></div>
       </div>
-
+      
       <p
         className={`second_switch ${lightMode && 'second_switch--light'} ${
           active && 'second_switch--selected'
