@@ -9,11 +9,7 @@ This is the main tool of Contrax: our auto-compounding farms, real yield farms. 
 
 ## Farms
 
-At beta, Contrax has GMX as the real yield project we encourage people to farm in. Besides with, we have several WETH farms (wrapped ETH, 1:1 exchangeable for ETH) with stablecoins (1:1 tradeable for USD), and Bitcoin.
-
-Here are the starting farms:
-
-<Frame>![Farms](/images/farms.png)</Frame>
+At beta, Contrax has GMX as the real yield project we encourage people to farm in. We also have USDC and USDT stablecoin farms (stablecoins are 1:1 exchangeable for USD), and several WETH (wrapped ETH, 1:1 exchangeable for ETH) - stablecoin farms, and WETH-Bitcoin.
 
 For each farm, the first and second columns will show your deposited amount and what percent of the pool you own on Contrax (blank if undeposited). The third column shows the total liquidity of the pool, and the fourth shows the APY, or the approximate yearly percentage growth from staking in the farm.
 
@@ -27,20 +23,19 @@ There is a toggle to switch between deposit and withdraw, which start on deposit
 
 You can see you the balance you can deposit and withdraw, and click "max" to default it to the max, or type in a custom amount if prefer.
 
-Click "See more details" the price of each asset, your unstaked position (available for deposit) and your staked position (available for withdrawal).
+You can click "See more details" the price of each asset, your unstaked position (available for deposit) and your staked position (available for withdrawal).
 
 ## How to join a farm
 
-1. Ensure you either have GMX of the LP token you need. See the [Zap in page](../contrax-dap/zap-in-trade) to exchange your ETH for the right LP or GMX.
-2. Find the farm you want to join, and click it. Picking up for our swap example, we will enter the WETH-USDC farm:
+1. Ensure you the tokens you need. Some farms need a single sided token like GMX, USDC, or USDT. You can get them with ETH from the [Exchange page](../contrax-dap/exchange). All other farms can be entered with just ETH, so there's no need to exchange anything.
+2. Find the farm you want to join, and click it open it. For LP farms, there is the option to "Zap" to Zap in ETH, but we can toggle to the LP got it from the exchange. Zap is not an option currently for single sided tokens.
    <Frame>![Farm Deposit](/images/farm_deposit.png)</Frame>{" "}
-3. Click "Max" and then "Deposit" to deposit all your available LP tokens, and then confirm the two transactions that pop up in MetaMask.
-
-Note that that for some reason the gas estimate provided may be too high. Both transactions will actually be about 3-5 cents in gas, but the estimation may say over $1. This is incorrect, and after you deposit, you can see yourself in your MetaMask history what the actual cost was.
+3.
+4. Click "Max" (or type an amount) and then "Deposit," and then confirm the transactions that pop up in MetaMask. Note that they may be one or more depending on the farm and deposit method.
 
 <Frame>![Farm Confirmation](/images/farm_confirmation.png)</Frame>
-4. After depositing, you'll see a depositing modal in the corner of your screen that
-will become "deposited" when the transaction completes.
+5. After depositing, you'll see a depositing confirmation in the corner of your screen
+that will say "deposited" when the transaction completes.
 
 <Frame>![Farm Deposited](/images/farm_deposited.png)</Frame>
 
@@ -54,6 +49,6 @@ To withdraw, click the farm your have a position in, simply do the reverse proce
 
     <Frame>![Farm Withdraw](/images/farm_withdraw.png)</Frame>
 
-2.  Click "Max" and then "Withdraw" to withdraw all your available LP tokens, and then confirm the two transactions that pop up in MetaMask.
+2.  Click "Max" and then "Withdraw" to withdraw all your available tokens, and then confirm the transactions that pop up in MetaMask.
 
-Once confirmed, your LP tokens will back in your wallet. Refresh the page and you can see the LP balance available to be deposited again. You can then go the exchange page and swap the LP tokens for any asset in the list, including Arbitrum ETH, and then use the [bridge guide](../start/bridge) to take them back to Ethereum mainnet if you prefer.
+If it a single-sided farm, you'll see that token in your wallet, and you can swap it for ETH or another asset on the exchange page. If it was an LP farm, you can withdraw with "Zap ETH" and get your tokens as ETH. If you wish, you can use the [bridge guide](../start/bridge) to take the ETH back to Ethereum mainnet.

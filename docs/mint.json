@@ -62,7 +62,7 @@
       "pages": [
         "contrax-dapp/dashboard",
         "contrax-dapp/farms",
-        "contrax-dapp/zap-in-trade",
+        "contrax-dapp/exchange",
         "contrax-dapp/create-tokens",
         "contrax-dapp/create-pools",
         "contrax-dapp/dapp-faq"
