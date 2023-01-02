@@ -68,11 +68,12 @@ export const calculateFarmAPY = (
   feeAPY: any,
   setAPYVisionCompound: any
 ) => {
-  // Compounded APY = ((1 + (0.9*rate/period))^period) - 1
-  const rate = (rewardAPY + feeAPY) / 100;
+  // Compounded APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
+  const rate = (rewardAPY) / 100;
+  const baseAPY = (rewardAPY + feeAPY) / 100
   const period = 365;
 
-  const APY = (1 + (0.9 * rate) / period) ** period - 1;
+  const APY = ((1 + (0.9 * rate) / period) ** period - 1) + baseAPY;
   setAPYVisionCompound(APY * 100);
 };
 

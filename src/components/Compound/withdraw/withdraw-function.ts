@@ -143,7 +143,7 @@ export const withdraw = async (
       setSecondaryMessage(`User rejected transaction!`);
 
     }else {
-      setLoaderMessage(`Error depositing!`);
+      setLoaderMessage(`Error withdrawing!`);
       setSecondaryMessage(`Try again!`);
     }
     setSuccess('fail');
@@ -272,7 +272,7 @@ export const zapOut = async (
       setSecondaryMessage(`User rejected transaction!`);
 
     }else {
-      setLoaderMessage(`Error depositing!`);
+      setLoaderMessage(`Error withdrawing!`);
       setSecondaryMessage(`Try again!`);
     }
     setSuccess('fail');
@@ -371,7 +371,7 @@ export const withdrawAll = async (
       setSecondaryMessage(`User rejected transaction!`);
 
     }else {
-      setLoaderMessage(`Error depositing!`);
+      setLoaderMessage(`Error withdrawing!`);
       setSecondaryMessage(`Try again!`);
     }
     setSuccess('fail');
