@@ -42,22 +42,23 @@
 
 .pair {
   display: flex;
+  margin-right: 10px;
 }
 
 .pool_title {
-  margin-left: 10px;
   line-height: 0px;
 }
 
 .logofirst {
   width: 60px;
   height: 60px;
-  margin-right: -10px;
+
 }
 
 .logo {
   width: 60px;
   height: 60px;
+  margin-left: -10px;
 }
 
 .rewards_div {
