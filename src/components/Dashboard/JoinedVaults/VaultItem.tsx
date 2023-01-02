@@ -39,7 +39,7 @@ function VaultItem({
     calculateFeeAPY(vault.lp_address, setFeeAPY);
 
     calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound);
-    findCompoundAPY(vault.rewards_apy, setCompoundAPY, vault.apy);
+    findCompoundAPY(vault.rewards_apy, setCompoundAPY, vault.total_apy);
   }, [currentWallet, vault, tokenAmount, price, rewardAPY, feeAPY]);
 
 
@@ -107,10 +107,10 @@ function VaultItem({
                 >
                   APY
                 </p>
-                {!vault.apy ? (
+                {!vault.total_apy ? (
                   <p> {(apyVisionCompound + rewardAPY + feeAPY).toFixed(2)}%</p>
                 ) : (
-                  <p> {(compoundAPY + Number(vault.apy)).toFixed(2)}%</p>
+                  <p> {(compoundAPY + Number(vault.total_apy)).toFixed(2)}%</p>
                 )}
               </div>
 
