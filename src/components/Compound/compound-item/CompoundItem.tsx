@@ -204,7 +204,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                   }`}
                 >
                   <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                    {totalAPY.toFixed(2)}%
+                    {totalAPY.toFixed(2)} - {(pool.total_apy + totalAPY).toFixed(2)}%
                   </p>
                   <CgInfo
                     className={`apy_info hoverable ${
