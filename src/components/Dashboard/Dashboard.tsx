@@ -65,8 +65,9 @@ function Dashboard({ lightMode, currentWallet }: any) {
               </p>
               {!copied ? <FiCopy /> : <BsCheckCircle />}
             </div>
-
-            <div
+            
+            {currentWallet ? (
+              <div
               className={`dashboard_copy ${
                 lightMode && 'dashboard_copy--light'
               }`}
@@ -80,6 +81,9 @@ function Dashboard({ lightMode, currentWallet }: any) {
               <p style={{ marginRight: '10px' }}>View on Arbiscan</p>
               <FiExternalLink />
             </div>
+
+            ) : null}
+            
           </div>
 
          
