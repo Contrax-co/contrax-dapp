@@ -10,9 +10,11 @@ import {
   calculateFarmAPY,
   calculateFeeAPY,
   findCompoundAPY,
+  findTotalAPY,
   getTotalVaultBalance,
   getUserVaultBalance,
   priceToken,
+  totalFarmAPY,
 } from './compound-functions';
 import Details from '../Details/Details';
 
@@ -32,6 +34,9 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
   const [apyVisionCompound, setAPYVisionCompound] = useState(0);
   const [compoundAPY, setCompoundAPY] = useState(0);
 
+  const [totalAPY, setTotalAPY] = useState(0);
+  const [apyVisionAPY, setAPYVisionAPY] = useState(0);
+
   useEffect(() => {
     getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
     getTotalVaultBalance(pool, setTotalVaultBalance);
@@ -41,8 +46,10 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
     priceToken(pool.lp_address, setPriceOfSingleToken);
     apyPool(pool.lp_address, setRewardApy);
     calculateFeeAPY(pool.lp_address, setFeeAPY);
-    calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound);
-    findCompoundAPY(pool.rewards_apy, setCompoundAPY, pool.apy);
+    calculateFarmAPY(rewardAPY, setAPYVisionCompound);
+    findCompoundAPY(pool.rewards_apy, setCompoundAPY, pool.total_apy);
+    findTotalAPY(pool.rewards_apy, setTotalAPY, pool.total_apy);
+    totalFarmAPY(rewardAPY, feeAPY, setAPYVisionAPY);
   }, [pool, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
 
   return (
@@ -165,14 +172,14 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
             )}
 
             <div className={`container1 ${lightMode && 'container1--light'}`}>
-              {!pool.apy ? (
+              {!pool.total_apy ? (
                 <div
                   className={`container1_apy ${
                     lightMode && 'container1_apy--light'
                   }`}
                 >
                   <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                    {(apyVisionCompound + rewardAPY + feeAPY).toFixed(2)}%
+                    {(apyVisionAPY).toFixed(2)}%
                   </p>
                   <CgInfo
                     className={`apy_info hoverable ${
@@ -197,7 +204,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                   }`}
                 >
                   <p className={`pool_name ${lightMode && 'pool_name--light'}`}>
-                    {(compoundAPY + Number(pool.apy)).toFixed(2)}%
+                    {totalAPY.toFixed(2)} - {(pool.total_apy + totalAPY).toFixed(2)}%
                   </p>
                   <CgInfo
                     className={`apy_info hoverable ${
@@ -210,7 +217,7 @@ function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
                     <p>
                       <b>Base APRs</b>
                     </p>
-                    <p>LP Rewards: {Number(pool.apy).toFixed(2)}%</p>
+                    <p>LP Rewards: {Number(pool.rewards_apy).toFixed(2)}%</p>
                     <p>Compounding: {compoundAPY.toFixed(2)}%</p>
                   </div>
                 </div>

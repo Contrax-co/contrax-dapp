@@ -54,27 +54,48 @@ export const priceToken = async (address: any, setPrice: any) => {
     });
 };
 
-export const findCompoundAPY = (apy: any, setCompoundAPY: any, baseAPY:any) => {
+export const findTotalAPY = (apy: any, setTotalAPY: any, totalAPY:any) => {
   // Compounded APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
+  const rate = apy / 100;
+  const period = 52; //weekly
+
+  const baseAPY = (totalAPY/100) - rate;
+
+  const APY = ((((1 + ((0.9 * rate) / period)))** period) - 1) + baseAPY;
+  setTotalAPY(APY * 100);
+}
+
+export const findCompoundAPY = (apy: any, setCompoundAPY: any, totalAPY:any) => {
+  // Compounded APY = (((1 + (0.9*rate/period))^period) - 1)
   const rate = apy / 100;
   const period = 365; //weekly
 
-  const APY = ((1 + (0.9 * rate) / period) ** period - 1) + (baseAPY/100);
+  const APY = ((((1 + ((0.9 * rate) / period)))** period) - 1);
   setCompoundAPY(APY * 100);
 };
 
 export const calculateFarmAPY = (
   rewardAPY: any,
-  feeAPY: any,
   setAPYVisionCompound: any
 ) => {
-  // Compounded APY = ((1 + (0.9*rate/period))^period) - 1
-  const rate = (rewardAPY + feeAPY) / 100;
-  const period = 365;
+  // Compounded APY = (((1 + (0.9*rate/period))^period) - 1)
+  const rate = (rewardAPY) / 100;
+  const period = 52;
 
-  const APY = (1 + (0.9 * rate) / period) ** period - 1;
+  const APY = ((((1 + ((0.9 * rate) / period))) ** period) - 1);
   setAPYVisionCompound(APY * 100);
 };
+
+export const totalFarmAPY = (rewardAPY: any, feeAPY: any, setAPYVisionAPY: any) => {
+   // total APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
+   const rate = (rewardAPY) / 100;
+   const baseAPY = (feeAPY) / 100
+   const period = 52;
+ 
+   const APY = ((((1 + ((0.9 * rate) / period))) ** period) - 1) + baseAPY;
+   setAPYVisionAPY(APY * 100);
+
+}
 
 /**
  * Retrieves the user's vault balance

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import {
   apyPool,
-  calculateFarmAPY,
   calculateFeeAPY,
-  findCompoundAPY,
+  findTotalAPY,
+  totalFarmAPY,
 } from '../../Compound/compound-item/compound-functions';
 import { priceOfToken, totalVault, userVaultTokens } from './vault-functions';
 import './VaultItem.css';
@@ -20,8 +20,9 @@ function VaultItem({
   const [feeAPY, setFeeAPY] = useState(0);
 
   const [rewardAPY, setRewardApy] = useState(0);
-  const [apyVisionCompound, setAPYVisionCompound] = useState(0);
-  const [compoundAPY, setCompoundAPY] = useState(0);
+
+  const [apyVisionAPY, setAPYVisionAPY] = useState(0);
+  const [totalAPY, setTotalAPY] = useState(0);
 
   useEffect(() => {
     userVaultTokens(
@@ -38,8 +39,8 @@ function VaultItem({
     apyPool(vault.lp_address, setRewardApy);
     calculateFeeAPY(vault.lp_address, setFeeAPY);
 
-    calculateFarmAPY(rewardAPY, feeAPY, setAPYVisionCompound);
-    findCompoundAPY(vault.rewards_apy, setCompoundAPY, vault.apy);
+    totalFarmAPY(rewardAPY, feeAPY, setAPYVisionAPY)
+    findTotalAPY(vault.rewards_apy, setTotalAPY, vault.total_apy)
   }, [currentWallet, vault, tokenAmount, price, rewardAPY, feeAPY]);
 
 
@@ -107,10 +108,10 @@ function VaultItem({
                 >
                   APY
                 </p>
-                {!vault.apy ? (
-                  <p> {(apyVisionCompound + rewardAPY + feeAPY).toFixed(2)}%</p>
+                {!vault.total_apy ? (
+                  <p> {(apyVisionAPY).toFixed(2)}%</p>
                 ) : (
-                  <p> {(compoundAPY + Number(vault.apy)).toFixed(2)}%</p>
+                  <p> {(totalAPY).toFixed(2)}%</p>
                 )}
               </div>
 
