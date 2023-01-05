@@ -54,24 +54,39 @@ export const priceToken = async (address: any, setPrice: any) => {
     });
 };
 
-export const findTotalAPY = (apy: any, setTotalAPY: any, totalAPY:any) => {
+export const findTotalAPY = (apy: any, setTotalAPY: any, totalAPY:any, platform:any) => {
   // Compounded APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
-  const rate = apy / 100;
-  const period = 52; //weekly
+  let rate; 
+  if(platform === "Dodo"){
+    rate = apy / 100;
+  }else {
+    rate = (apy / 100);
+  }
+  
+  const period = 365; //weekly
 
-  const baseAPY = (totalAPY/100) - rate;
+  const baseAPY = (totalAPY/100) - (apy/100);
 
-  const APY = ((((1 + ((0.9 * rate) / period)))** period) - 1) + baseAPY;
+  const APY = ((((1 + ((rate) / period)))** period) - 1) + baseAPY;
   setTotalAPY(APY * 100);
 }
 
-export const findCompoundAPY = (apy: any, setCompoundAPY: any, totalAPY:any) => {
+export const findCompoundAPY = (apy: any, setCompoundAPY: any, totalAPY:any, platform:any) => {
   // Compounded APY = (((1 + (0.9*rate/period))^period) - 1)
-  const rate = apy / 100;
+  let rate;
+  if(platform === "Dodo"){
+    rate = apy / 100;
+  }else {
+    rate = (apy / 100);
+  }
+  
   const period = 365; //weekly
+  
+  const baseAPY = (totalAPY/100) - (apy/100);
 
-  const APY = ((((1 + ((0.9 * rate) / period)))** period) - 1);
-  setCompoundAPY(APY * 100);
+  const APY = ((((1 + (rate / period)))** period) - 1) + baseAPY;
+  const compoundAPY = APY - (totalAPY/100);
+  setCompoundAPY(compoundAPY * 100 * 0.9);
 };
 
 export const calculateFarmAPY = (

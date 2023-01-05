@@ -40,7 +40,7 @@ function VaultItem({
     calculateFeeAPY(vault.lp_address, setFeeAPY);
 
     totalFarmAPY(rewardAPY, feeAPY, setAPYVisionAPY)
-    findTotalAPY(vault.rewards_apy, setTotalAPY, vault.total_apy)
+    findTotalAPY(vault.rewards_apy, setTotalAPY, vault.total_apy, vault.platform)
   }, [currentWallet, vault, tokenAmount, price, rewardAPY, feeAPY]);
 
 
