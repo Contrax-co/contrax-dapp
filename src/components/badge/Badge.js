@@ -1,4 +1,4 @@
-import { StyledBadge } from './Badge.style';
+import { StyledBadge } from "./Badge.style";
 
 export const Badge = (props) => {
   const { children, ...remainingProps } = props;

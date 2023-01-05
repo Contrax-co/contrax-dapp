@@ -1,18 +1,9 @@
-import { useEffect, useState } from 'react';
-import {
-  apyPool,
-  calculateFeeAPY,
-  findTotalAPY,
-  totalFarmAPY,
-} from '../../Compound/compound-item/compound-functions';
-import { priceOfToken, totalVault, userVaultTokens } from './vault-functions';
-import './VaultItem.css';
+import { useEffect, useState } from "react";
+import { apyPool, calculateFeeAPY, findTotalAPY, totalFarmAPY } from "../../Compound/compound-item/compound-functions";
+import { priceOfToken, totalVault, userVaultTokens } from "./vault-functions";
+import "./VaultItem.css";
 
-function VaultItem({
-  lightMode,
-  currentWallet,
-  vault
-}: any) {
+function VaultItem({ lightMode, currentWallet, vault }: any) {
   const [tokenAmount, setTokenAmount] = useState(0);
   const [price, setPrice] = useState(0);
 
@@ -25,13 +16,7 @@ function VaultItem({
   const [totalAPY, setTotalAPY] = useState(0);
 
   useEffect(() => {
-    userVaultTokens(
-      currentWallet,
-      vault.vault_address,
-      vault.vault_abi,
-      setTokenAmount,
-      vault.decimals
-    );
+    userVaultTokens(currentWallet, vault.vault_address, vault.vault_abi, setTokenAmount, vault.decimals);
     priceOfToken(vault.lp_address, setPrice);
 
     totalVault(vault.vault_address, vault.vault_abi, setVaultAmount, vault.decimals);
@@ -39,31 +24,18 @@ function VaultItem({
     apyPool(vault.lp_address, setRewardApy);
     calculateFeeAPY(vault.lp_address, setFeeAPY);
 
-    totalFarmAPY(rewardAPY, feeAPY, setAPYVisionAPY)
-    findTotalAPY(vault.rewards_apy, setTotalAPY, vault.total_apy)
+    totalFarmAPY(rewardAPY, feeAPY, setAPYVisionAPY);
+    findTotalAPY(vault.rewards_apy, setTotalAPY, vault.total_apy);
   }, [currentWallet, vault, tokenAmount, price, rewardAPY, feeAPY]);
-
 
   return (
     <div>
       {tokenAmount * price < 0.01 ? null : (
-        <div className={`vault_item ${lightMode && 'vault_item--light'}`}>
+        <div className={`vault_item ${lightMode && "vault_item--light"}`}>
           <div className={`vault_item_images`}>
-            {vault.alt1 ? (
-              <img
-                className={`vault_item_logo1`}
-                alt={vault.alt1}
-                src={vault.logo1}
-              />
-            ) : null}
+            {vault.alt1 ? <img className={`vault_item_logo1`} alt={vault.alt1} src={vault.logo1} /> : null}
 
-            {vault.alt2 ? (
-              <img
-                className={`vault_item_logo2`}
-                alt={vault.alt2}
-                src={vault.logo2}
-              />
-            ) : null}
+            {vault.alt2 ? <img className={`vault_item_logo2`} alt={vault.alt2} src={vault.logo2} /> : null}
 
             <p className={`vault_item_name`}>{vault.name}</p>
           </div>
@@ -71,62 +43,33 @@ function VaultItem({
           <div className={`vault_items_bottom_header`}>
             <div className={`vault_items_bottom_row`}>
               <div className={`vault_items_bottom_categories`}>
-                <p
-                  className={`vault_items_title ${
-                    lightMode && 'vault_items_title--light'
-                  }`}
-                >
-                  Your Stake
-                </p>
+                <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>Your Stake</p>
                 <p>
-                  {(tokenAmount * price).toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
+                  {(tokenAmount * price).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
                   })}
                 </p>
-              
               </div>
 
               <div className={`vault_items_bottom_categories`}>
-                <p
-                  className={`vault_items_title ${
-                    lightMode && 'vault_items_title--light'
-                  }`}
-                >
-                  Pool Share
-                </p>
+                <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>Pool Share</p>
                 <p>{((tokenAmount / vaultAmount) * 100).toFixed(2)}%</p>
               </div>
             </div>
 
             <div className={`vault_items_bottom_row`}>
               <div className={`vault_items_bottom_categories`}>
-                <p
-                  className={`vault_items_title ${
-                    lightMode && 'vault_items_title--light'
-                  }`}
-                >
-                  APY
-                </p>
-                {!vault.total_apy ? (
-                  <p> {(apyVisionAPY).toFixed(2)}%</p>
-                ) : (
-                  <p> {(totalAPY).toFixed(2)}%</p>
-                )}
+                <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>APY</p>
+                {!vault.total_apy ? <p> {apyVisionAPY.toFixed(2)}%</p> : <p> {totalAPY.toFixed(2)}%</p>}
               </div>
 
               <div className={`vault_items_bottom_categories`}>
-                <p
-                  className={`vault_items_title ${
-                    lightMode && 'vault_items_title--light'
-                  }`}
-                >
-                  Liquidity
-                </p>
+                <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>Liquidity</p>
                 <p>
-                  {(vaultAmount * price).toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
+                  {(vaultAmount * price).toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "USD",
                   })}
                 </p>
               </div>

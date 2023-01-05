@@ -1,4 +1,4 @@
-import { Network, Alchemy } from 'alchemy-sdk';
+import { Network, Alchemy } from "alchemy-sdk";
 
 const settings = {
   apiKey: process.env.REACT_APP_ALCHEMY_KEY,
@@ -9,7 +9,7 @@ const alchemy = new Alchemy(settings);
 
 export const getGasPrice = async (setGasPrice: any) => {
   const gas = await alchemy.core.getGasPrice();
-  setGasPrice(gas['_hex']);
+  setGasPrice(gas["_hex"]);
 };
 
 export const main = async (currentWallet: any, setTokens: any) => {
@@ -38,19 +38,12 @@ export const priceOfToken = async (address: any, setPrice: any) => {
   } catch (err) {}
 };
 
-export const tokenInfo = async (
-  token: any,
-  setBalance: any,
-  setName: any,
-  setSymbol: any
-) => {
+export const tokenInfo = async (token: any, setBalance: any, setName: any, setSymbol: any) => {
   // Get balance of token
   let balance: any = token.tokenBalance;
 
   // Get metadata of token
-  const metadata: any = await alchemy.core.getTokenMetadata(
-    token.contractAddress
-  );
+  const metadata: any = await alchemy.core.getTokenMetadata(token.contractAddress);
 
   // Compute token balance in human-readable format
   balance = balance / Math.pow(10, metadata.decimals);

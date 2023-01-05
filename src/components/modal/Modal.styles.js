@@ -1,13 +1,13 @@
-import styled from 'styled-components/macro';
-import Button from '../button/Button';
-import './modal.css';
+import styled from "styled-components/macro";
+import Button from "../button/Button";
+import "./modal.css";
 export const StyledModalContent = styled.div.attrs((props) => {
-  const a = window.localStorage.getItem('light');
+  const a = window.localStorage.getItem("light");
   console.log(typeof a);
   console.log(a);
 
   return {
-    className: `${a !== 'false' ? 'modal-content--light' : 'modal-content'}`,
+    className: `${a !== "false" ? "modal-content--light" : "modal-content"}`,
   };
 })`
   padding: 1.8rem 1.2rem;
@@ -16,13 +16,13 @@ export const StyledModalContent = styled.div.attrs((props) => {
 
 export const StyledModalDialog = styled.div.attrs((props) => {
   return {
-    className: 'modal-dialog modal-dialog-centered',
+    className: "modal-dialog modal-dialog-centered",
   };
 })``;
 
 export const StyledCrossBtn = styled(Button).attrs((props) => {
   return {
-    className: 'btn-close',
+    className: "btn-close",
   };
 })`
   position: absolute;

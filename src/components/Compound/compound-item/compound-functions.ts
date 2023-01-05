@@ -1,6 +1,6 @@
-import * as ethers from 'ethers';
+import * as ethers from "ethers";
 
-export const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
+export const wethAddress = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
 
 // export const priceOfTokens = async (address: any, setPrices: any) => {
 //   await fetch(
@@ -23,19 +23,17 @@ export const apyPool = async (address: any, setRewardApy: any) => {
   )
     .then((response) => response.json())
     .then((data) => {
-      const results: any = JSON.stringify(data.results[0]['apy30d']);
+      const results: any = JSON.stringify(data.results[0]["apy30d"]);
 
       setRewardApy(Number(results));
     });
 };
 
 export const calculateFeeAPY = async (address: any, setFeeAPY: any) => {
-  await fetch(
-    `https://stats.apy.vision/api/v1/pools/${address}?accessToken=${process.env.REACT_APP_APY_TOKEN}`
-  )
+  await fetch(`https://stats.apy.vision/api/v1/pools/${address}?accessToken=${process.env.REACT_APP_APY_TOKEN}`)
     .then((response) => response.json())
     .then((data) => {
-      const results: any = JSON.stringify(data[0]['fee_apys_30d']);
+      const results: any = JSON.stringify(data[0]["fee_apys_30d"]);
 
       setFeeAPY(Number(results));
     });
@@ -54,48 +52,44 @@ export const priceToken = async (address: any, setPrice: any) => {
     });
 };
 
-export const findTotalAPY = (apy: any, setTotalAPY: any, totalAPY:any) => {
+export const findTotalAPY = (apy: any, setTotalAPY: any, totalAPY: any) => {
   // Compounded APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
   const rate = apy / 100;
   const period = 52; //weekly
 
-  const baseAPY = (totalAPY/100) - rate;
+  const baseAPY = totalAPY / 100 - rate;
 
-  const APY = ((((1 + ((0.9 * rate) / period)))** period) - 1) + baseAPY;
+  const APY = (1 + (0.9 * rate) / period) ** period - 1 + baseAPY;
   setTotalAPY(APY * 100);
-}
+};
 
-export const findCompoundAPY = (apy: any, setCompoundAPY: any, totalAPY:any) => {
+export const findCompoundAPY = (apy: any, setCompoundAPY: any, totalAPY: any) => {
   // Compounded APY = (((1 + (0.9*rate/period))^period) - 1)
   const rate = apy / 100;
   const period = 365; //weekly
 
-  const APY = ((((1 + ((0.9 * rate) / period)))** period) - 1);
+  const APY = (1 + (0.9 * rate) / period) ** period - 1;
   setCompoundAPY(APY * 100);
 };
 
-export const calculateFarmAPY = (
-  rewardAPY: any,
-  setAPYVisionCompound: any
-) => {
+export const calculateFarmAPY = (rewardAPY: any, setAPYVisionCompound: any) => {
   // Compounded APY = (((1 + (0.9*rate/period))^period) - 1)
-  const rate = (rewardAPY) / 100;
+  const rate = rewardAPY / 100;
   const period = 52;
 
-  const APY = ((((1 + ((0.9 * rate) / period))) ** period) - 1);
+  const APY = (1 + (0.9 * rate) / period) ** period - 1;
   setAPYVisionCompound(APY * 100);
 };
 
 export const totalFarmAPY = (rewardAPY: any, feeAPY: any, setAPYVisionAPY: any) => {
-   // total APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
-   const rate = (rewardAPY) / 100;
-   const baseAPY = (feeAPY) / 100
-   const period = 52;
- 
-   const APY = ((((1 + ((0.9 * rate) / period))) ** period) - 1) + baseAPY;
-   setAPYVisionAPY(APY * 100);
+  // total APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
+  const rate = rewardAPY / 100;
+  const baseAPY = feeAPY / 100;
+  const period = 52;
 
-}
+  const APY = (1 + (0.9 * rate) / period) ** period - 1 + baseAPY;
+  setAPYVisionAPY(APY * 100);
+};
 
 /**
  * Retrieves the user's vault balance
@@ -103,23 +97,15 @@ export const totalFarmAPY = (rewardAPY: any, feeAPY: any, setAPYVisionAPY: any) 
  * @param currentWallet
  * @param setUserVaultBalance
  */
-export const getUserVaultBalance = async (
-  pool: any,
-  currentWallet: any,
-  setUserVaultBalance: any
-) => {
+export const getUserVaultBalance = async (pool: any, currentWallet: any, setUserVaultBalance: any) => {
   if (currentWallet) {
     const { ethereum } = window;
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
-        const vaultContract = new ethers.Contract(
-          pool.vault_addr,
-          pool.vault_abi,
-          signer
-        );
+        const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
 
         const balance = await vaultContract.balanceOf(currentWallet);
         const formattedBal = Number(ethers.utils.formatUnits(balance, pool.decimals));
@@ -136,21 +122,14 @@ export const getUserVaultBalance = async (
   }
 };
 
-export const getTotalVaultBalance = async (
-  pool: any,
-  setTotalVaultBalance: any
-) => {
+export const getTotalVaultBalance = async (pool: any, setTotalVaultBalance: any) => {
   const { ethereum } = window;
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
-      await provider.send('eth_requestAccounts', []);
+      await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
-      const vaultContract = new ethers.Contract(
-        pool.vault_addr,
-        pool.vault_abi,
-        signer
-      );
+      const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
 
       const balance = await vaultContract.totalSupply();
       const formattedBal = Number(ethers.utils.formatUnits(balance, pool.decimals));

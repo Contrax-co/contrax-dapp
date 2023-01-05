@@ -1,4 +1,4 @@
-import { StyledCard, StyledCardBody } from './Card.styles';
+import { StyledCard, StyledCardBody } from "./Card.styles";
 
 export const Card = function (props) {
   const { children, ...remainingProps } = props;

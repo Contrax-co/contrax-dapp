@@ -1,10 +1,10 @@
-import styled from 'styled-components/macro';
-import { Container } from '../blocks/Blocks';
-import { Image } from '../image/Image';
+import styled from "styled-components/macro";
+import { Container } from "../blocks/Blocks";
+import { Image } from "../image/Image";
 
 export const StyledBox1 = styled(Container)((props) => ({
-  borderRadius: '1.5rem',
-  padding: '2.3rem 3rem',
+  borderRadius: "1.5rem",
+  padding: "2.3rem 3rem",
 }));
 
 export const StyledBox = styled(Container)`

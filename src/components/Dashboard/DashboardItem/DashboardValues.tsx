@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { userTokenValue } from './dashboard-functions';
-import './DashboardValue.css';
+import { useEffect, useState } from "react";
+import { userTokenValue } from "./dashboard-functions";
+import "./DashboardValue.css";
 
 function DashboardValues({ currentWallet, vault }: any) {
   const [userVaultBalance, setUserVaultBalance] = useState(0);

@@ -1,4 +1,4 @@
-import * as ethers from 'ethers';
+import * as ethers from "ethers";
 
 export const priceOfToken = async (address: any, setPrice: any) => {
   await fetch(`https://coins.llama.fi/prices/current/arbitrum:${address}`)
@@ -13,10 +13,7 @@ export const priceOfToken = async (address: any, setPrice: any) => {
     });
 };
 
-export const totalArbitrumUsd = async (
-  currentWallet: any,
-  setTotalUsd: any
-) => {
+export const totalArbitrumUsd = async (currentWallet: any, setTotalUsd: any) => {
   await fetch(
     `https://api.apy.vision/portfolio/42161/core/${currentWallet}?accessToken=${process.env.REACT_APP_APY_TOKEN}`
   )
@@ -32,24 +29,15 @@ export const totalArbitrumUsd = async (
     });
 };
 
-export const totalVault = async (
-  vaultAddress: any,
-  vault_abi: any,
-  setVaultAmount: any,
-  decimals: any
-) => {
+export const totalVault = async (vaultAddress: any, vault_abi: any, setVaultAmount: any, decimals: any) => {
   const { ethereum } = window;
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
-      await provider.send('eth_requestAccounts', []);
+      await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
 
-      const vaultContract = new ethers.Contract(
-        vaultAddress,
-        vault_abi,
-        signer
-      );
+      const vaultContract = new ethers.Contract(vaultAddress, vault_abi, signer);
       const balance = await vaultContract.totalSupply();
       const formattedBal = Number(ethers.utils.formatUnits(balance, decimals));
 
@@ -74,14 +62,10 @@ export const userVaultTokens = async (
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
 
-        const vaultContract = new ethers.Contract(
-          vaultAddress,
-          vault_abi,
-          signer
-        );
+        const vaultContract = new ethers.Contract(vaultAddress, vault_abi, signer);
         const balance = await vaultContract.balanceOf(currentWallet);
         const formattedBal = Number(ethers.utils.formatUnits(balance, decimals));
 
@@ -93,6 +77,6 @@ export const userVaultTokens = async (
       console.log(err);
     }
   } else {
-    console.log('Connect Wallet!');
+    console.log("Connect Wallet!");
   }
 };

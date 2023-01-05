@@ -1,10 +1,10 @@
-import { useEffect, useInsertionEffect, useState } from 'react';
-import { getUserSession } from '../../store/localStorage';
-import { Link } from '../../components/text/Text';
-import LoadingSpinner from '../../components/spinner/spinner';
-import './Pools.css';
-import { BiLinkExternal } from 'react-icons/bi';
-import axios from 'axios';
+import { useEffect, useInsertionEffect, useState } from "react";
+import { getUserSession } from "../../store/localStorage";
+import { Link } from "../../components/text/Text";
+import LoadingSpinner from "../../components/spinner/spinner";
+import "./Pools.css";
+import { BiLinkExternal } from "react-icons/bi";
+import axios from "axios";
 
 export default function Pools({ lightMode }: any) {
   const [wallet, setWallet] = useState();
@@ -27,10 +27,8 @@ export default function Pools({ lightMode }: any) {
 
   async function pools() {
     try {
-      const result = await axios.post(
-        'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange',
-        {
-          query: `
+      const result = await axios.post("https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange", {
+        query: `
                   {
                     user(id:"${wallet}") {
                       liquidityPositions {
@@ -44,8 +42,7 @@ export default function Pools({ lightMode }: any) {
                   
                   }
                 `,
-        }
-      );
+      });
 
       // TODO - variable assigned a value but never used.
       const a = result.data.data.user.liquidityPositions;
@@ -59,7 +56,7 @@ export default function Pools({ lightMode }: any) {
       }
       console.log(arr);
       setValues(arr);
-      console.log(values, 'ok');
+      console.log(values, "ok");
       setIsLoading(false);
     } catch (error) {
       console.error(error);
@@ -69,20 +66,12 @@ export default function Pools({ lightMode }: any) {
 
   return (
     <>
-      <div
-        className={`pool-table-container ${
-          lightMode && 'pool-table-container-light'
-        }`}
-      >
+      <div className={`pool-table-container ${lightMode && "pool-table-container-light"}`}>
         <div className="scrollit">
           <h2 className="pool-table-header">My Pools</h2>
           <table className="table pool-table">
             <thead>
-              <tr
-                className={`pool-table__input-token ${
-                  lightMode && 'pool-table--light-token'
-                }`}
-              >
+              <tr className={`pool-table__input-token ${lightMode && "pool-table--light-token"}`}>
                 <th>Pool Address</th>
                 <th>Pool Name</th>
                 <th>View Pool</th>
@@ -96,26 +85,17 @@ export default function Pools({ lightMode }: any) {
               <tbody>
                 {values.map((token: any, index: any) => {
                   return (
-                    <tr
-                      className={`pool-table__input-token ${
-                        lightMode && 'pool-table--light-token '
-                      }`}
-                      key={index}
-                    >
+                    <tr className={`pool-table__input-token ${lightMode && "pool-table--light-token "}`} key={index}>
                       <td>{token.id}</td>
                       <td>{token.name}</td>
                       <td>
                         <Link
-                          link={
-                            'https://app.sushi.com/analytics/pools/' +
-                            token.id +
-                            '?chainId=42161'
-                          }
+                          link={"https://app.sushi.com/analytics/pools/" + token.id + "?chainId=42161"}
                           target="_blank"
                           rel="noreferrer"
                         >
-                          {'View on Sushiswap'} <BiLinkExternal />
-                        </Link>{' '}
+                          {"View on Sushiswap"} <BiLinkExternal />
+                        </Link>{" "}
                       </td>
                     </tr>
                   );

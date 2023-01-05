@@ -1,6 +1,6 @@
 export const family = {
-  Lexend: 'Lexend, sans-serif',
-  Poppins: 'Poppins, sans-serif',
+  Lexend: "Lexend, sans-serif",
+  Poppins: "Poppins, sans-serif",
 };
 
 export const weight = {

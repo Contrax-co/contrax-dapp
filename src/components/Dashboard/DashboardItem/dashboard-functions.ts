@@ -1,22 +1,14 @@
-import * as ethers from 'ethers';
+import * as ethers from "ethers";
 
-export const userTokenValue = async (
-  currentWallet: any,
-  vault: any,
-  setUserVaultBalance: any
-) => {
+export const userTokenValue = async (currentWallet: any, vault: any, setUserVaultBalance: any) => {
   if (currentWallet) {
     const { ethereum } = window;
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
-        const vaultContract = new ethers.Contract(
-          vault.vault_address,
-          vault.vault_abi,
-          signer
-        );
+        const vaultContract = new ethers.Contract(vault.vault_address, vault.vault_abi, signer);
 
         const balance = await vaultContract.balanceOf(currentWallet);
         const formattedBal = Number(ethers.utils.formatUnits(balance, 18));

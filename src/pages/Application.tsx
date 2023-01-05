@@ -28,7 +28,6 @@ function Application() {
     }
   });
 
-
   const [logoutInfo, setLogout] = useState(false);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import * as ethers from 'ethers';
+import * as ethers from "ethers";
 
 // const uniSwap_address = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506';
 // const uniswap_abi = [
@@ -394,21 +394,21 @@ export const userBalTo = async (
   setFromAmt: any,
   tokenLp: any,
   tokenAbi: any,
-  toDecimals:any
+  toDecimals: any
 ) => {
   if (currentWallet) {
     const { ethereum } = window;
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
 
-        if (tokenName === 'ETH') {
+        if (tokenName === "ETH") {
           const balance = await provider.getBalance(currentWallet);
           const formattedBal = Number(ethers.utils.formatUnits(balance, toDecimals));
           setFromAmt(formattedBal);
-        } else if (tokenName !== 'ETH') {
+        } else if (tokenName !== "ETH") {
           const tokenContract = new ethers.Contract(tokenLp, tokenAbi, signer);
           const balance = await tokenContract.balanceOf(currentWallet);
           const formattedBal = Number(ethers.utils.formatUnits(balance, toDecimals));

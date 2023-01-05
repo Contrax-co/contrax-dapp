@@ -1,13 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Row } from '../../blocks/Blocks';
-import { B1 } from '../../text/Text';
-import {
-  ListSubTitle,
-  StyledDropBtn,
-  StyledInput,
-  StyledListBtn,
-  StyledSearch,
-} from './DropdownInput.styles';
+import { useEffect, useState } from "react";
+import { Row } from "../../blocks/Blocks";
+import { B1 } from "../../text/Text";
+import { ListSubTitle, StyledDropBtn, StyledInput, StyledListBtn, StyledSearch } from "./DropdownInput.styles";
 
 function DropdownInput(props) {
   const { items, searchable, label } = props;
@@ -33,11 +27,7 @@ function DropdownInput(props) {
 
   const onSearch = (e) => {
     const str = e.target.value;
-    setFiltered(
-      items.filter(
-        (item) => item.title.toLowerCase().indexOf(str.toLowerCase()) > -1
-      )
-    );
+    setFiltered(items.filter((item) => item.title.toLowerCase().indexOf(str.toLowerCase()) > -1));
   };
   return (
     <div className={`dropdown-input ${props.className}`}>
@@ -56,12 +46,7 @@ function DropdownInput(props) {
         >
           {selected && selected.name} <span className="caret"></span>
         </StyledDropBtn>
-        <StyledInput
-          onChange={onToken}
-          size="16"
-          type={props.inputType || 'text'}
-          placeholder={props.placeholder}
-        />
+        <StyledInput onChange={onToken} size="16" type={props.inputType || "text"} placeholder={props.placeholder} />
         <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
           {searchable && (
             <li>
@@ -84,8 +69,7 @@ function DropdownInput(props) {
                       onSelect(item);
                     }}
                   >
-                    {item.name}{' '}
-                    {item.symbol && <ListSubTitle>{item.symbol}</ListSubTitle>}
+                    {item.name} {item.symbol && <ListSubTitle>{item.symbol}</ListSubTitle>}
                   </StyledListBtn>
                 </li>
               );

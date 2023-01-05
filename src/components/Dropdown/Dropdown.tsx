@@ -1,4 +1,4 @@
-import './Dropdown.css';
+import "./Dropdown.css";
 
 function Dropdown({ pool, value, setValue }: any) {
   const handleChange = (event: any) => {
@@ -11,11 +11,7 @@ function Dropdown({ pool, value, setValue }: any) {
         User can choose token to deposit into vault
         <div className={`dropdown_values`}>
           <button>Please select</button>
-          <select
-            className={`dropdown_select`}
-            value={value}
-            onChange={handleChange}
-          >
+          <select className={`dropdown_select`} value={value} onChange={handleChange}>
             <option value="" disabled>
               Please select...
             </option>

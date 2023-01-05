@@ -1,8 +1,8 @@
-import { Chart } from 'react-google-charts';
-import { accentDark, primary, secondaryDark } from '../../theme/colors';
+import { Chart } from "react-google-charts";
+import { accentDark, primary, secondaryDark } from "../../theme/colors";
 
 const pieOptions = {
-  title: '',
+  title: "",
   slices: [
     {
       color: primary,
@@ -12,8 +12,8 @@ const pieOptions = {
     },
   ],
   legend: {
-    position: 'right',
-    alignment: 'center',
+    position: "right",
+    alignment: "center",
     textStyle: {
       color: secondaryDark,
       fontSize: 14,
@@ -25,10 +25,10 @@ const pieOptions = {
   chartArea: {
     right: 0,
     top: 0,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
-  fontName: 'Roboto',
+  fontName: "Roboto",
 };
 
 export default function PieChart(props: any) {
@@ -40,8 +40,8 @@ export default function PieChart(props: any) {
         data={chartData}
         options={pieOptions}
         graph_id={`PieChart${chartId}`}
-        width={width ? width : '100%'}
-        height={height ? height : '100%'}
+        width={width ? width : "100%"}
+        height={height ? height : "100%"}
         legend_toggle
       />
     </div>

@@ -1,8 +1,8 @@
-import styled, { css } from 'styled-components/macro';
+import styled, { css } from "styled-components/macro";
 
 export const StyledContainer = styled.div.attrs((props) => {
   return {
-    className: props.fluid ? 'container-fluid' : 'container',
+    className: props.fluid ? "container-fluid" : "container",
   };
 })`
   ${(props) =>
@@ -14,7 +14,7 @@ export const StyledContainer = styled.div.attrs((props) => {
 
 export const StyledRow = styled.div.attrs((props) => {
   return {
-    className: 'row',
+    className: "row",
   };
 })`
   ${(props) =>
@@ -26,7 +26,7 @@ export const StyledRow = styled.div.attrs((props) => {
 
 export const StyledCol = styled.div.attrs((props) => {
   return {
-    className: props.size ? 'col-md-' + props.size : 'col',
+    className: props.size ? "col-md-" + props.size : "col",
   };
 })``;
 

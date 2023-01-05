@@ -1,13 +1,7 @@
-import { useRef } from 'react';
-import './modal.css';
+import { useRef } from "react";
+import "./modal.css";
 
-function Modals({
-  lightMode,
-  setOpenModal,
-  tokens,
-  setTokenId,
-  setTokenSymbol,
-}: any) {
+function Modals({ lightMode, setOpenModal, tokens, setTokenId, setTokenSymbol }: any) {
   // close the modal when clicking outside the modal.
   const modalRef: any = useRef();
 
@@ -25,8 +19,8 @@ function Modals({
 
   return (
     <div className={`modal__containers`} ref={modalRef} onClick={closeModal}>
-      <div className={`swap__modals ${lightMode && 'swap__modal--lights'}`}>
-        <div className={`modal__titles ${lightMode && 'modal__title--lights'}`}>
+      <div className={`swap__modals ${lightMode && "swap__modal--lights"}`}>
+        <div className={`modal__titles ${lightMode && "modal__title--lights"}`}>
           <p>Select a token</p>
         </div>
 
@@ -34,16 +28,12 @@ function Modals({
           {tokens.map((token: any) => (
             <div
               key={token.id}
-              className={`exchange_itemss ${
-                lightMode && 'exchange_itemss--light'
-              }`}
+              className={`exchange_itemss ${lightMode && "exchange_itemss--light"}`}
               onClick={() => {
                 setId(token.id, token.symbol);
               }}
             >
-              <div
-                className={`pad_optionss ${lightMode && 'pad_options--lights'}`}
-              >
+              <div className={`pad_optionss ${lightMode && "pad_options--lights"}`}>
                 <p>{token.name}</p>
                 <p className="minis">{token.symbol}</p>
               </div>

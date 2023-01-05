@@ -1,11 +1,11 @@
-import { H1, H2, H3 } from '../text/Text';
-import { useLocation } from 'react-router-dom';
-import { Col, Row } from '../blocks/Blocks';
-import { StyledHeader } from './Header.styles';
-import * as colors from '../../theme/colors';
-import { Image } from '../image/Image';
-import headerBg from '../../images/banner-bg.svg';
-import bannerImage from '../../images/dashboard-1.png';
+import { H1, H2, H3 } from "../text/Text";
+import { useLocation } from "react-router-dom";
+import { Col, Row } from "../blocks/Blocks";
+import { StyledHeader } from "./Header.styles";
+import * as colors from "../../theme/colors";
+import { Image } from "../image/Image";
+import headerBg from "../../images/banner-bg.svg";
+import bannerImage from "../../images/dashboard-1.png";
 
 export default function Header(props: any) {
   const { value } = props;
@@ -16,7 +16,7 @@ export default function Header(props: any) {
       <StyledHeader fluid background={headerBg}>
         <div className="container h-100">
           <div className="row h-100">
-            {location.pathname === '/dashboard' ? (
+            {location.pathname === "/dashboard" ? (
               <>
                 <Col size="6" className="pt-3">
                   <Row className="mb-4 mt-4">

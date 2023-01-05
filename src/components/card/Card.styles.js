@@ -1,9 +1,9 @@
-import styled, { css } from 'styled-components/macro';
-import * as colors from '../../theme/colors';
+import styled, { css } from "styled-components/macro";
+import * as colors from "../../theme/colors";
 
 export const StyledCard = styled.div.attrs((props) => {
   return {
-    className: 'card ' + props.className,
+    className: "card " + props.className,
   };
 })`
   background: ${colors.white};
@@ -19,7 +19,7 @@ export const StyledCard = styled.div.attrs((props) => {
 
 export const StyledCardBody = styled.div.attrs((props) => {
   return {
-    className: 'card-body',
+    className: "card-body",
   };
 })`
   padding: 1.5rem;

@@ -1,6 +1,6 @@
-import { StyledButton } from './Button.styles';
-import uuid from 'react-uuid';
-import * as colors from '../../theme/colors';
+import { StyledButton } from "./Button.styles";
+import uuid from "react-uuid";
+import * as colors from "../../theme/colors";
 
 export const Button = (props) => {
   const {
@@ -37,22 +37,16 @@ export const Button = (props) => {
 };
 
 Button.defaultProps = {
-  variant: 'primary',
-  type: 'button',
-  size: 'large',
+  variant: "primary",
+  type: "button",
+  size: "large",
 };
 
 export const ButtonGroupRadio = (props) => {
-  const { values, name, checked, className, disabled, ...remainingProps } =
-    props;
+  const { values, name, checked, className, disabled, ...remainingProps } = props;
   console.log({ className });
   return (
-    <div
-      class={className + ' btn-group'}
-      role="group"
-      aria-label="Basic radio toggle button group"
-      {...remainingProps}
-    >
+    <div class={className + " btn-group"} role="group" aria-label="Basic radio toggle button group" {...remainingProps}>
       {values.map((item) => {
         const key = uuid();
         return (

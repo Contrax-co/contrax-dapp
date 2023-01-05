@@ -1,4 +1,4 @@
-import * as ethers from 'ethers';
+import * as ethers from "ethers";
 
 export const priceOfToken = async (address: any, setPrice: any) => {
   await fetch(`https://coins.llama.fi/prices/current/arbitrum:${address}`)
@@ -13,17 +13,12 @@ export const priceOfToken = async (address: any, setPrice: any) => {
     });
 };
 
-export const userTokenAmount = async (
-  currentWallet: any,
-  address: any,
-  address_abi: any,
-  setAmount: any
-) => {
+export const userTokenAmount = async (currentWallet: any, address: any, address_abi: any, setAmount: any) => {
   const { ethereum } = window;
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
-      await provider.send('eth_requestAccounts', []);
+      await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
 
       const tokenContract = new ethers.Contract(address, address_abi, signer);
@@ -39,18 +34,13 @@ export const userTokenAmount = async (
   }
 };
 
-export const userVaultAmount = async (
-  currentWallet: any,
-  vault: any,
-  vault_abi: any,
-  setAmount: any
-) => {
+export const userVaultAmount = async (currentWallet: any, vault: any, vault_abi: any, setAmount: any) => {
   if (currentWallet) {
     const { ethereum } = window;
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
 
         const vaultContract = new ethers.Contract(vault, vault_abi, signer);
@@ -65,6 +55,6 @@ export const userVaultAmount = async (
       console.log(err);
     }
   } else {
-    console.log('Connect Wallet!');
+    console.log("Connect Wallet!");
   }
 };

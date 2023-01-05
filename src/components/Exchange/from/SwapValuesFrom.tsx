@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import './SwapValuesFrom.css';
+import { useRef } from "react";
+import "./SwapValuesFrom.css";
 
 function SwapValuesFrom({ lightMode, setOpenModal, tokens, setTokenId }: any) {
   // close the modal when clicking outside the modal.
@@ -18,8 +18,8 @@ function SwapValuesFrom({ lightMode, setOpenModal, tokens, setTokenId }: any) {
 
   return (
     <div className={`modal__container`} ref={modalRef} onClick={closeModal}>
-      <div className={`swap__modal ${lightMode && 'swap__modal--light'}`}>
-        <div className={`modal__title ${lightMode && 'modal__title--light'}`}>
+      <div className={`swap__modal ${lightMode && "swap__modal--light"}`}>
+        <div className={`modal__title ${lightMode && "modal__title--light"}`}>
           <p>Select a token</p>
         </div>
 
@@ -27,21 +27,15 @@ function SwapValuesFrom({ lightMode, setOpenModal, tokens, setTokenId }: any) {
           {tokens.map((token: any) => (
             <div
               key={token.id}
-              className={`exchange_items ${
-                lightMode && 'exchange_items--light'
-              }`}
+              className={`exchange_items ${lightMode && "exchange_items--light"}`}
               onClick={() => {
                 setId(token.id);
               }}
             >
-              <div
-                className={`pad_options ${lightMode && 'pad_options--light'}`}
-              >
+              <div className={`pad_options ${lightMode && "pad_options--light"}`}>
                 <img
                   alt={token.token_alt}
-                  className={`exchange__logo2 ${
-                    lightMode && 'exchange__logo2--light'
-                  }`}
+                  className={`exchange__logo2 ${lightMode && "exchange__logo2--light"}`}
                   src={token.token_logo}
                 />
                 <p>{token.token_name}</p>

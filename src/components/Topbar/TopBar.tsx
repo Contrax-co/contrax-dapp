@@ -5,7 +5,7 @@ import "./TopBar.css";
 import LightModeToggle from "../LightModeToggle";
 import useWallet from "../../hooks/useWallet";
 
-function TopBar({ lightMode, logout,  setMenuItem, ...props }: any) {
+function TopBar({ lightMode, logout, setMenuItem, ...props }: any) {
   const [show, setShow] = useState(false);
   const { connectWallet, currentWallet, networkId } = useWallet();
 

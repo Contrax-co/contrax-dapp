@@ -1,10 +1,10 @@
-import styled, { css } from 'styled-components/macro';
-import * as colors from '../../theme/colors';
-import { weight, family } from '../../theme/fonts';
+import styled, { css } from "styled-components/macro";
+import * as colors from "../../theme/colors";
+import { weight, family } from "../../theme/fonts";
 
 export const StyledButton = styled.button.attrs((props) => {
   return {
-    className: 'btn',
+    className: "btn",
   };
 })`
   ${(props) =>
@@ -46,7 +46,7 @@ export const StyledButton = styled.button.attrs((props) => {
     `}
   
   ${(props) =>
-    props.size === 'sm' &&
+    props.size === "sm" &&
     css`
     font-size: 1rem,
     light-height: 1.5rem,
@@ -54,7 +54,7 @@ export const StyledButton = styled.button.attrs((props) => {
   `}
 
   ${(props) =>
-    props.size === 'large' &&
+    props.size === "large" &&
     css`
       font-size: 1.25rem;
       line-height: 2rem;

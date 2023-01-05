@@ -1,5 +1,5 @@
-import * as ethers from 'ethers';
-export const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
+import * as ethers from "ethers";
+export const wethAddress = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
 
 export const priceToken = async (address: any, setPrice: any) => {
   await fetch(`https://coins.llama.fi/prices/current/arbitrum:${address}`)
@@ -26,7 +26,7 @@ export const getEthBalance = async (currentWallet: any, setEthUserBal: any) => {
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
 
         const balance = await provider.getBalance(currentWallet);
         const formattedBal = Number(ethers.utils.formatUnits(balance, 18));
@@ -49,30 +49,19 @@ export const getEthBalance = async (currentWallet: any, setEthUserBal: any) => {
  * @param setUserLPBalance
  * @param userLPBalance
  */
-export const getLPBalance = async (
-  pool: any,
-  currentWallet: any,
-  setUserLPBalance: any
-) => {
+export const getLPBalance = async (pool: any, currentWallet: any, setUserLPBalance: any) => {
   if (currentWallet) {
     const { ethereum } = window;
     try {
       if (ethereum) {
-        
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
 
-        const lpContract = new ethers.Contract(
-          pool.lp_address,
-          pool.lp_abi,
-          provider
-        );
+        const lpContract = new ethers.Contract(pool.lp_address, pool.lp_abi, provider);
 
         const balance = await lpContract.balanceOf(currentWallet);
         const formattedBal = Number(ethers.utils.formatUnits(balance, pool.decimals));
         setUserLPBalance(formattedBal);
-        
-        
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -100,46 +89,47 @@ export const zapIn = async (
   ethZapAmount: any,
   setEthZapAmount: any,
   setLoaderMessage: any,
-  setSuccess:any,
+  setSuccess: any,
   setSecondaryMessage: any,
-  setLink:any,
-  setHash:any
+  setLink: any,
+  setHash: any
 ) => {
   const { ethereum } = window;
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Zap initiated!');
+  setLoaderMessage("Zap initiated!");
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
-      await provider.send('eth_requestAccounts', []);
+      await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
-      const zapperContract = new ethers.Contract(
-        pool.zapper_addr,
-        pool.zapper_abi,
-        signer
-      );
+      const zapperContract = new ethers.Contract(pool.zapper_addr, pool.zapper_abi, signer);
 
       /*
        * Execute the actual deposit functionality from smart contract
        */
       const formattedBal = ethers.utils.parseUnits(ethZapAmount.toString(), 18);
 
-      const gasPrice:any = await provider.getGasPrice();
+      const gasPrice: any = await provider.getGasPrice();
 
-      setSecondaryMessage('Approving zapping...');
-      
+      setSecondaryMessage("Approving zapping...");
+
       let zapperTxn;
       try {
-        const gasEstimated:any = await zapperContract.estimateGas.zapInETH(pool.vault_addr,0,wethAddress, {value: formattedBal});
+        const gasEstimated: any = await zapperContract.estimateGas.zapInETH(pool.vault_addr, 0, wethAddress, {
+          value: formattedBal,
+        });
         const gasMargin = gasEstimated * 1.1;
-  
-        zapperTxn = await zapperContract.zapInETH(pool.vault_addr,0, wethAddress, {value: formattedBal, gasLimit: Math.ceil(gasMargin)});
 
-      }catch{
-        zapperTxn = await zapperContract.zapInETH(pool.vault_addr, 0, wethAddress,
-          { value: formattedBal, gasLimit: gasPrice/20 }
-        );
+        zapperTxn = await zapperContract.zapInETH(pool.vault_addr, 0, wethAddress, {
+          value: formattedBal,
+          gasLimit: Math.ceil(gasMargin),
+        });
+      } catch {
+        zapperTxn = await zapperContract.zapInETH(pool.vault_addr, 0, wethAddress, {
+          value: formattedBal,
+          gasLimit: gasPrice / 20,
+        });
       }
 
       setLoaderMessage(`Zapping...`);
@@ -148,16 +138,15 @@ export const zapIn = async (
       const zapperTxnStatus = await zapperTxn.wait(1);
       if (!zapperTxnStatus.status) {
         setLink(true);
-        setHash(zapperTxn.hash); 
+        setHash(zapperTxn.hash);
         setLoaderMessage(`Error zapping into vault!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       } else {
-
         setLink(true);
-        setHash(zapperTxn.hash); 
+        setHash(zapperTxn.hash);
         setLoaderMessage(`Deposited--`);
-        setSuccess('success');
+        setSuccess("success");
         setSecondaryMessage(`Txn hash: ${zapperTxn.hash}`);
         setEthZapAmount(0.0);
         getEthBalance(currentWallet, setEthUserBal);
@@ -167,21 +156,20 @@ export const zapIn = async (
 
       setLoaderMessage(`Error depositing!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } catch (error) {
     let code = JSON.stringify(error);
     let reason = JSON.parse(code);
     console.log(reason);
-    if(reason['code'] === "ACTION_REJECTED"){
+    if (reason["code"] === "ACTION_REJECTED") {
       setLoaderMessage(`REJECTED!`);
       setSecondaryMessage(`User rejected transaction!`);
-
-    }else {
+    } else {
       setLoaderMessage(`Error depositing!`);
       setSecondaryMessage(`Try again!`);
     }
-    setSuccess('fail');
+    setSuccess("fail");
   }
 };
 
@@ -203,61 +191,49 @@ export const deposit = async (
   setSuccess: any,
   setSecondaryMessage: any,
   setLink: any,
-  setHash:any
+  setHash: any
 ) => {
   const { ethereum } = window;
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Deposit initiated!');
+  setLoaderMessage("Deposit initiated!");
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
-      await provider.send('eth_requestAccounts', []);
+      await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
-      const vaultContract = new ethers.Contract(
-        pool.vault_addr,
-        pool.vault_abi,
-        signer
-      );
+      const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
 
       const gasPrice1: any = await provider.getGasPrice();
 
-      setSecondaryMessage('Approving deposit...');
+      setSecondaryMessage("Approving deposit...");
 
       /*
        * Execute the actual deposit functionality from smart contract
        */
       let formattedBal;
-      if(pool.decimals !== 18) {
+      if (pool.decimals !== 18) {
         formattedBal = ethers.utils.parseUnits(depositAmount.toString(), pool.decimals);
-      }else{
-        formattedBal = ethers.utils.parseUnits(
-          Number(depositAmount).toFixed(16),
-          pool.decimals
-        );
+      } else {
+        formattedBal = ethers.utils.parseUnits(Number(depositAmount).toFixed(16), pool.decimals);
       }
-      
+
       // approve the vault to spend asset
-      const lpContract = new ethers.Contract(
-        pool.lp_address,
-        pool.lp_abi,
-        signer
-      );
+      const lpContract = new ethers.Contract(pool.lp_address, pool.lp_abi, signer);
       await lpContract.approve(pool.vault_addr, formattedBal);
 
-      setSecondaryMessage('Confirm deposit...');
+      setSecondaryMessage("Confirm deposit...");
 
-      let depositTxn; 
+      let depositTxn;
 
       try {
-        const gasEstimated:any = await vaultContract.estimateGas.deposit(formattedBal);
+        const gasEstimated: any = await vaultContract.estimateGas.deposit(formattedBal);
         const gasMargin = gasEstimated * 1.1;
-  
-        depositTxn = await vaultContract.deposit(formattedBal, {gasLimit: Math.ceil(gasMargin)});
 
-      }catch {
+        depositTxn = await vaultContract.deposit(formattedBal, { gasLimit: Math.ceil(gasMargin) });
+      } catch {
         //the abi of the vault contract needs to be checked
-        depositTxn = await vaultContract.deposit(formattedBal, {gasLimit: gasPrice1/20});
+        depositTxn = await vaultContract.deposit(formattedBal, { gasLimit: gasPrice1 / 20 });
       }
 
       setLoaderMessage(`Depositing...`);
@@ -266,15 +242,15 @@ export const deposit = async (
       const depositTxnStatus = await depositTxn.wait(1);
       if (!depositTxnStatus.status) {
         setLink(true);
-        setHash(depositTxn.hash); 
+        setHash(depositTxn.hash);
         setLoaderMessage(`Error depositing into vault!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       } else {
         setLink(true);
-        setHash(depositTxn.hash); 
+        setHash(depositTxn.hash);
         setLoaderMessage(`Deposited--`);
-        setSuccess('success');
+        setSuccess("success");
         setSecondaryMessage(`Txn hash: ${depositTxn.hash}`);
         setLPDepositAmount(0.0);
         getLPBalance(pool, currentWallet, setLPUserBal);
@@ -284,21 +260,20 @@ export const deposit = async (
 
       setLoaderMessage(`Error depositing!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } catch (error) {
     let code = JSON.stringify(error);
     let reason = JSON.parse(code);
     console.log(reason);
-    if(reason['code'] === "ACTION_REJECTED"){
+    if (reason["code"] === "ACTION_REJECTED") {
       setLoaderMessage(`REJECTED!`);
       setSecondaryMessage(`User rejected transaction!`);
-
-    }else {
+    } else {
       setLoaderMessage(`Error depositing!`);
       setSecondaryMessage(`Try again!`);
     }
-    setSuccess('fail');
+    setSuccess("fail");
   }
 };
 
@@ -319,35 +294,31 @@ export const depositAll = async (
   setLoaderMessage: any,
   setSuccess: any,
   setSecondaryMessage: any,
-  setLink:any,
-  setHash:any
+  setLink: any,
+  setHash: any
 ) => {
   const { ethereum } = window;
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Deposit initiated!');
+  setLoaderMessage("Deposit initiated!");
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
-      await provider.send('eth_requestAccounts', []);
+      await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
-      const vaultContract = new ethers.Contract(
-        pool.vault_addr,
-        pool.vault_abi,
-        signer
-      );
+      const vaultContract = new ethers.Contract(pool.vault_addr, pool.vault_abi, signer);
 
       const gasPrice1: any = await provider.getGasPrice();
 
-      setSecondaryMessage('Approving deposit...');
+      setSecondaryMessage("Approving deposit...");
 
       /*
        * Execute the actual deposit functionality from smart contract
        */
       let formattedBal;
-      if(pool.decimals !== 18) {
+      if (pool.decimals !== 18) {
         formattedBal = ethers.utils.parseUnits(depositAmount.toString(), pool.decimals);
-      }else {
+      } else {
         formattedBal = ethers.utils.parseUnits(
           Number(Number(depositAmount) + Number(depositAmount)).toFixed(16),
           pool.decimals
@@ -355,27 +326,22 @@ export const depositAll = async (
       }
 
       // approve the vault to spend asset
-      const lpContract = new ethers.Contract(
-        pool.lp_address,
-        pool.lp_abi,
-        signer
-      );
+      const lpContract = new ethers.Contract(pool.lp_address, pool.lp_abi, signer);
       await lpContract.approve(pool.vault_addr, formattedBal);
 
-      setSecondaryMessage('Confirm deposit...');
-      
+      setSecondaryMessage("Confirm deposit...");
+
       let depositTxn;
       try {
-        const gasEstimated:any = await vaultContract.estimateGas.depositAll();
+        const gasEstimated: any = await vaultContract.estimateGas.depositAll();
         const gasMargin = gasEstimated * 1.1;
-  
-        depositTxn = await vaultContract.depositAll({gasLimit: Math.ceil(gasMargin)});
-      }catch {
+
+        depositTxn = await vaultContract.depositAll({ gasLimit: Math.ceil(gasMargin) });
+      } catch {
         //the abi of the vault contract needs to be checked
         depositTxn = await vaultContract.depositAll({
           gasLimit: gasPrice1 / 20,
         });
-
       }
 
       setLoaderMessage(`Depositing...`);
@@ -384,15 +350,15 @@ export const depositAll = async (
       const depositTxnStatus = await depositTxn.wait(1);
       if (!depositTxnStatus.status) {
         setLink(true);
-        setHash(depositTxn.hash); 
+        setHash(depositTxn.hash);
         setLoaderMessage(`Error depositing into vault!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       } else {
         setLink(true);
-        setHash(depositTxn.hash); 
+        setHash(depositTxn.hash);
         setLoaderMessage(`Deposited--`);
-        setSuccess('success');
+        setSuccess("success");
         setSecondaryMessage(`Txn hash: ${depositTxn.hash}`);
         setLPDepositAmount(0.0);
         getLPBalance(pool, currentWallet, setLPUserBal);
@@ -402,21 +368,20 @@ export const depositAll = async (
 
       setLoaderMessage(`Error depositing!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } catch (error) {
     let code = JSON.stringify(error);
     let reason = JSON.parse(code);
     console.log(reason);
-    if(reason['code'] === "ACTION_REJECTED"){
+    if (reason["code"] === "ACTION_REJECTED") {
       setLoaderMessage(`REJECTED!`);
       setSecondaryMessage(`User rejected transaction!`);
-
-    }else {
+    } else {
       setLoaderMessage(`Error depositing!`);
       setSecondaryMessage(`Try again!`);
     }
-    setSuccess('fail');
+    setSuccess("fail");
   }
 };
 
@@ -428,7 +393,7 @@ export const depositAll = async (
  * @param {*} wethAddress
  * @param {*} setEthZapAmount
  */
- export const zapInAll = async (
+export const zapInAll = async (
   setEthUserBal: any,
   currentWallet: any,
   setLoading: any,
@@ -436,47 +401,48 @@ export const depositAll = async (
   ethZapAmount: any,
   setEthZapAmount: any,
   setLoaderMessage: any,
-  setSuccess:any,
+  setSuccess: any,
   setSecondaryMessage: any,
-  setLink:any,
-  setHash:any
+  setLink: any,
+  setHash: any
 ) => {
   const { ethereum } = window;
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Zap initiated!');
+  setLoaderMessage("Zap initiated!");
   try {
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
-      await provider.send('eth_requestAccounts', []);
+      await provider.send("eth_requestAccounts", []);
       const signer = provider.getSigner();
-      const zapperContract = new ethers.Contract(
-        pool.zapper_addr,
-        pool.zapper_abi,
-        signer
-      );
+      const zapperContract = new ethers.Contract(pool.zapper_addr, pool.zapper_abi, signer);
 
       /*
        * Execute the actual deposit functionality from smart contract
        */
-      const gasPrice:any = await provider.getGasPrice();
+      const gasPrice: any = await provider.getGasPrice();
       const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 11));
-   
+
       const formattedBal = ethers.utils.parseUnits((ethZapAmount - gasToRemove).toString(), 18);
 
-      setSecondaryMessage('Approving zapping...');
-      
+      setSecondaryMessage("Approving zapping...");
+
       let zapperTxn;
       try {
-        const gasEstimated:any = await zapperContract.estimateGas.zapInETH(pool.vault_addr,0,wethAddress, {value: formattedBal});
+        const gasEstimated: any = await zapperContract.estimateGas.zapInETH(pool.vault_addr, 0, wethAddress, {
+          value: formattedBal,
+        });
         const gasMargin = gasEstimated * 1.1;
-  
-        zapperTxn = await zapperContract.zapInETH(pool.vault_addr,0, wethAddress, {value: formattedBal, gasLimit: Math.ceil(gasMargin)});
 
-      }catch{
-        zapperTxn = await zapperContract.zapInETH(pool.vault_addr, 0, wethAddress,
-          { value: formattedBal, gasLimit: gasPrice/20 }
-        );
+        zapperTxn = await zapperContract.zapInETH(pool.vault_addr, 0, wethAddress, {
+          value: formattedBal,
+          gasLimit: Math.ceil(gasMargin),
+        });
+      } catch {
+        zapperTxn = await zapperContract.zapInETH(pool.vault_addr, 0, wethAddress, {
+          value: formattedBal,
+          gasLimit: gasPrice / 20,
+        });
       }
 
       setLoaderMessage(`Zapping...`);
@@ -485,16 +451,15 @@ export const depositAll = async (
       const zapperTxnStatus = await zapperTxn.wait(1);
       if (!zapperTxnStatus.status) {
         setLink(true);
-        setHash(zapperTxn.hash); 
+        setHash(zapperTxn.hash);
         setLoaderMessage(`Error zapping into vault!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       } else {
-
         setLink(true);
-        setHash(zapperTxn.hash); 
+        setHash(zapperTxn.hash);
         setLoaderMessage(`Deposited--`);
-        setSuccess('success');
+        setSuccess("success");
         setSecondaryMessage(`Txn hash: ${zapperTxn.hash}`);
         setEthZapAmount(0.0);
         getEthBalance(currentWallet, setEthUserBal);
@@ -504,20 +469,19 @@ export const depositAll = async (
 
       setLoaderMessage(`Error depositing!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } catch (error) {
     let code = JSON.stringify(error);
     let reason = JSON.parse(code);
     console.log(reason);
-    if(reason['code'] === "ACTION_REJECTED"){
+    if (reason["code"] === "ACTION_REJECTED") {
       setLoaderMessage(`REJECTED!`);
       setSecondaryMessage(`User rejected transaction!`);
-
-    }else {
+    } else {
       setLoaderMessage(`Error depositing!`);
       setSecondaryMessage(`Try again!`);
     }
-    setSuccess('fail');
+    setSuccess("fail");
   }
 };

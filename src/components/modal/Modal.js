@@ -1,15 +1,11 @@
-import Button from '../button/Button';
-import { H3 } from '../text/Text';
-import {
-  StyledCrossBtn,
-  StyledModalContent,
-  StyledModalDialog,
-} from './Modal.styles';
-import crossImage from '../../images/cross.svg';
-import { Image } from '../image/Image';
-import * as colors from '../../theme/colors';
-import Icon from '../icon/Icon';
-import './modal.css';
+import Button from "../button/Button";
+import { H3 } from "../text/Text";
+import { StyledCrossBtn, StyledModalContent, StyledModalDialog } from "./Modal.styles";
+import crossImage from "../../images/cross.svg";
+import { Image } from "../image/Image";
+import * as colors from "../../theme/colors";
+import Icon from "../icon/Icon";
+import "./modal.css";
 export const Modal = (props) => {
   const {
     onClose,
@@ -23,12 +19,7 @@ export const Modal = (props) => {
     ...remainingProps
   } = props;
   return (
-    <div
-      className="modal fade"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-      {...remainingProps}
-    >
+    <div className="modal fade" aria-labelledby="exampleModalLabel" aria-hidden="true" {...remainingProps}>
       <StyledModalDialog>
         <StyledModalContent lightMode={lightMode}>
           <div className="modal-header border-0 pb-2">
@@ -48,18 +39,13 @@ export const Modal = (props) => {
           <div className="modal-body pb-0">{children}</div>
           <div className="modal-footer border-0 pb-0">
             {closeLabel && (
-              <Button
-                type="button"
-                className="col"
-                onClick={onClose}
-                data-bs-dismiss="modal"
-              >
-                {closeLabel ? closeLabel : 'Close'}
+              <Button type="button" className="col" onClick={onClose} data-bs-dismiss="modal">
+                {closeLabel ? closeLabel : "Close"}
               </Button>
             )}
             {hasOkayButton && (
               <Button type="button" className="col" primary onClick={onOk}>
-                {okLabel ? okLabel : 'OK'}
+                {okLabel ? okLabel : "OK"}
               </Button>
             )}
           </div>

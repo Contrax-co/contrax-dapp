@@ -1,6 +1,6 @@
-import { IconWrapper } from './Icon.styles';
-import * as colors from '../../theme/colors';
-import { Image } from '../image/Image';
+import { IconWrapper } from "./Icon.styles";
+import * as colors from "../../theme/colors";
+import { Image } from "../image/Image";
 
 export const Icon = function (props) {
   const { name, iconImg, ...remainingProps } = props;
@@ -11,7 +11,7 @@ export const Icon = function (props) {
       {name && (
         <i
           style={{ color: props.color ? props.color : colors.primary }}
-          className={'fas ' + name}
+          className={"fas " + name}
           {...remainingProps}
         />
       )}

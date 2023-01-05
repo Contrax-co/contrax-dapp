@@ -1,117 +1,117 @@
-import * as ethers from 'ethers';
+import * as ethers from "ethers";
 
-const exchange_address = '0xf19cc9868d9Ae098aE85ae9d7F8148Ed206cF4de';
+const exchange_address = "0xf19cc9868d9Ae098aE85ae9d7F8148Ed206cF4de";
 const exchange_abi = [
   {
-    inputs: [{ internalType: 'address', name: '_controller', type: 'address' }],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
+    inputs: [{ internalType: "address", name: "_controller", type: "address" }],
+    stateMutability: "nonpayable",
+    type: "constructor",
   },
   {
     inputs: [],
-    name: 'controller',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
-    stateMutability: 'view',
-    type: 'function',
+    name: "controller",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [],
-    name: 'minimumAmount',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function',
+    name: "minimumAmount",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [],
-    name: 'sushiRouter',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
-    stateMutability: 'view',
-    type: 'function',
+    name: "sushiRouter",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
   },
   {
-    inputs: [{ internalType: 'address', name: '_to', type: 'address' }],
-    name: 'swapEthForPair',
+    inputs: [{ internalType: "address", name: "_to", type: "address" }],
+    name: "swapEthForPair",
     outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
+    stateMutability: "payable",
+    type: "function",
   },
   {
-    inputs: [{ internalType: 'address', name: '_to', type: 'address' }],
-    name: 'swapFromEthToToken',
+    inputs: [{ internalType: "address", name: "_to", type: "address" }],
+    name: "swapFromEthToToken",
     outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: '_from', type: 'address' },
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
-    ],
-    name: 'swapFromTokenToEth',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "payable",
+    type: "function",
   },
   {
     inputs: [
-      { internalType: 'address', name: '_from', type: 'address' },
-      { internalType: 'address', name: '_to', type: 'address' },
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
+      { internalType: "address", name: "_from", type: "address" },
+      { internalType: "uint256", name: "_amount", type: "uint256" },
     ],
-    name: 'swapFromTokenToToken',
+    name: "swapFromTokenToEth",
     outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [
-      { internalType: 'address', name: '_from', type: 'address' },
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
+      { internalType: "address", name: "_from", type: "address" },
+      { internalType: "address", name: "_to", type: "address" },
+      { internalType: "uint256", name: "_amount", type: "uint256" },
     ],
-    name: 'swapPairForEth',
+    name: "swapFromTokenToToken",
     outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [
-      { internalType: 'address', name: '_from', type: 'address' },
-      { internalType: 'address', name: '_to', type: 'address' },
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
+      { internalType: "address", name: "_from", type: "address" },
+      { internalType: "uint256", name: "_amount", type: "uint256" },
     ],
-    name: 'swapPairForPair',
+    name: "swapPairForEth",
     outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [
-      { internalType: 'address', name: '_from', type: 'address' },
-      { internalType: 'address', name: '_to', type: 'address' },
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
+      { internalType: "address", name: "_from", type: "address" },
+      { internalType: "address", name: "_to", type: "address" },
+      { internalType: "uint256", name: "_amount", type: "uint256" },
     ],
-    name: 'swapPairForToken',
+    name: "swapPairForPair",
     outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [
-      { internalType: 'address', name: '_from', type: 'address' },
-      { internalType: 'address', name: '_to', type: 'address' },
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
+      { internalType: "address", name: "_from", type: "address" },
+      { internalType: "address", name: "_to", type: "address" },
+      { internalType: "uint256", name: "_amount", type: "uint256" },
     ],
-    name: 'swapTokenForPair',
+    name: "swapPairForToken",
     outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "_from", type: "address" },
+      { internalType: "address", name: "_to", type: "address" },
+      { internalType: "uint256", name: "_amount", type: "uint256" },
+    ],
+    name: "swapTokenForPair",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [],
-    name: 'weth',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
-    stateMutability: 'view',
-    type: 'function',
+    name: "weth",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
   },
 ];
 
@@ -126,58 +126,52 @@ export const swapFromTokenToToken = async (
   setLoaderMessage: any,
   setSecondaryMessage: any,
   setSuccess: any,
-  fromDecimals:any
+  fromDecimals: any
 ) => {
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Swap Pending');
+  setLoaderMessage("Swap Pending");
   if (currentWallet) {
     const { ethereum } = window;
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
         const gasPrice1: any = await provider.getGasPrice();
 
-        const exchangeContract = new ethers.Contract(
-          exchange_address,
-          exchange_abi,
-          signer
-        );
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
         const tokenContract = new ethers.Contract(from, token_abi, signer);
 
-        setSecondaryMessage('Approving Token');
+        setSecondaryMessage("Approving Token");
 
         /*
          * Execute the actual swap functionality from smart contract
          */
-        let formattedBal; 
-        if(fromDecimals !== 18) {
+        let formattedBal;
+        if (fromDecimals !== 18) {
           formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
-        }else {
-          formattedBal = ethers.utils.parseUnits(
-            Number(fromValue).toFixed(16),
-            18
-          );
-
+        } else {
+          formattedBal = ethers.utils.parseUnits(Number(fromValue).toFixed(16), 18);
         }
-       
+
         await tokenContract.approve(exchange_address, formattedBal);
 
-        setSecondaryMessage('Confirm Contract Interaction');
-        let exchangeTxn; 
+        setSecondaryMessage("Confirm Contract Interaction");
+        let exchangeTxn;
         try {
-          const gasEstimated:any = await exchangeContract.estimateGas.swapFromTokenToToken(from, to, formattedBal);
+          const gasEstimated: any = await exchangeContract.estimateGas.swapFromTokenToToken(from, to, formattedBal);
           const gasMargin = gasEstimated * 1.1;
-    
-          exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {gasLimit: Math.ceil(gasMargin)});
 
-        }catch {
-          exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {gasLimit: gasPrice1 / 20,});
+          exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {
+            gasLimit: Math.ceil(gasMargin),
+          });
+        } catch {
+          exchangeTxn = await exchangeContract.swapFromTokenToToken(from, to, formattedBal, {
+            gasLimit: gasPrice1 / 20,
+          });
         }
 
-       
         setLoaderMessage(`Swapping...`);
         setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
 
@@ -185,10 +179,10 @@ export const swapFromTokenToToken = async (
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping`);
           setSecondaryMessage(`Try again!`);
-          setSuccess('fail');
+          setSuccess("fail");
         } else {
           setLoaderMessage(`Swapped--`);
-          setSuccess('success');
+          setSuccess("success");
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
           setValue(0.0);
         }
@@ -196,16 +190,16 @@ export const swapFromTokenToToken = async (
         console.log("Ethereum object doesn't exist!");
         setLoaderMessage(`Error swapping!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       }
     } catch (error) {
       console.log(error);
       setLoaderMessage(`Error swapping!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } else {
-    setLoaderMessage('Connect Wallet!');
+    setLoaderMessage("Connect Wallet!");
   }
 };
 
@@ -220,54 +214,47 @@ export const swapFromTokenToPair = async (
   setLoaderMessage: any,
   setSecondaryMessage: any,
   setSuccess: any,
-  fromDecimals:any
+  fromDecimals: any
 ) => {
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Swap Pending');
+  setLoaderMessage("Swap Pending");
   if (currentWallet) {
     const { ethereum } = window;
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
-        const exchangeContract = new ethers.Contract(
-          exchange_address,
-          exchange_abi,
-          signer
-        );
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
 
         const tokenContract = new ethers.Contract(from, token_abi, signer);
         const gasPrice1: any = await provider.getGasPrice();
 
-        setSecondaryMessage('Approving Token');
+        setSecondaryMessage("Approving Token");
 
         /*
          * Execute the actual swap functionality from smart contract
          */
-        let formattedBal; 
-        if(fromDecimals !== 18) {
+        let formattedBal;
+        if (fromDecimals !== 18) {
           formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
-        }else {
-          formattedBal = ethers.utils.parseUnits(
-            Number(fromValue).toFixed(16),
-            18
-          );
-
+        } else {
+          formattedBal = ethers.utils.parseUnits(Number(fromValue).toFixed(16), 18);
         }
         await tokenContract.approve(exchange_address, formattedBal);
 
-        setSecondaryMessage('Confirm Contract Interaction');
-        let exchangeTxn; 
+        setSecondaryMessage("Confirm Contract Interaction");
+        let exchangeTxn;
         try {
-          const gasEstimated:any = await exchangeContract.estimateGas.swapTokenForPair(from, to, formattedBal);
+          const gasEstimated: any = await exchangeContract.estimateGas.swapTokenForPair(from, to, formattedBal);
           const gasMargin = gasEstimated * 1.1;
-    
-          exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal, {gasLimit: Math.ceil(gasMargin)});
-        }
-        catch {
-          exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal,{gasLimit: gasPrice1 / 20,});
+
+          exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal, {
+            gasLimit: Math.ceil(gasMargin),
+          });
+        } catch {
+          exchangeTxn = await exchangeContract.swapTokenForPair(from, to, formattedBal, { gasLimit: gasPrice1 / 20 });
         }
 
         setLoaderMessage(`Swapping...`);
@@ -277,10 +264,10 @@ export const swapFromTokenToPair = async (
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
           setSecondaryMessage(`Try again!`);
-          setSuccess('fail');
+          setSuccess("fail");
         } else {
           setLoaderMessage(`Swapped--`);
-          setSuccess('success');
+          setSuccess("success");
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
           setValue(0.0);
         }
@@ -288,16 +275,16 @@ export const swapFromTokenToPair = async (
         console.log("Ethereum object doesn't exist!");
         setLoaderMessage(`Error swapping!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       }
     } catch (error) {
       console.log(error);
       setLoaderMessage(`Error swapping!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } else {
-    setLoaderMessage('Connect wallet!');
+    setLoaderMessage("Connect wallet!");
   }
 };
 
@@ -312,54 +299,47 @@ export const swapPairForToken = async (
   setLoaderMessage: any,
   setSecondaryMessage: any,
   setSuccess: any,
-  fromDecimals:any
+  fromDecimals: any
 ) => {
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Swap Pending');
+  setLoaderMessage("Swap Pending");
   if (currentWallet) {
     const { ethereum } = window;
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
-        const exchangeContract = new ethers.Contract(
-          exchange_address,
-          exchange_abi,
-          signer
-        );
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
         const gasPrice1: any = await provider.getGasPrice();
 
         const tokenContract = new ethers.Contract(from, token_abi, signer);
 
-        setSecondaryMessage('Approving Token');
+        setSecondaryMessage("Approving Token");
 
         /*
          * Execute the actual swap functionality from smart contract
          */
-        let formattedBal; 
-        if(fromDecimals !== 18) {
+        let formattedBal;
+        if (fromDecimals !== 18) {
           formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
-        }else {
-          formattedBal = ethers.utils.parseUnits(
-            Number(fromValue).toFixed(16),
-            18
-          );
-
+        } else {
+          formattedBal = ethers.utils.parseUnits(Number(fromValue).toFixed(16), 18);
         }
         await tokenContract.approve(exchange_address, formattedBal);
 
-        setSecondaryMessage('Confirm Contract Interaction');
-        let exchangeTxn; 
-        try{
-          const gasEstimated:any = await exchangeContract.estimateGas.swapPairForToken(from, to, formattedBal);
+        setSecondaryMessage("Confirm Contract Interaction");
+        let exchangeTxn;
+        try {
+          const gasEstimated: any = await exchangeContract.estimateGas.swapPairForToken(from, to, formattedBal);
           const gasMargin = gasEstimated * 1.1;
-    
-          exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, { gasLimit: Math.ceil(gasMargin)});
 
-        }catch {
-          exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, { gasLimit: gasPrice1 / 20,});
+          exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, {
+            gasLimit: Math.ceil(gasMargin),
+          });
+        } catch {
+          exchangeTxn = await exchangeContract.swapPairForToken(from, to, formattedBal, { gasLimit: gasPrice1 / 20 });
         }
 
         setLoaderMessage(`Swapping...`);
@@ -369,10 +349,10 @@ export const swapPairForToken = async (
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
           setSecondaryMessage(`Try again!`);
-          setSuccess('fail');
+          setSuccess("fail");
         } else {
           setLoaderMessage(`Swapped--`);
-          setSuccess('success');
+          setSuccess("success");
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
           setValue(0.0);
         }
@@ -380,16 +360,16 @@ export const swapPairForToken = async (
         console.log("Ethereum object doesn't exist!");
         setLoaderMessage(`Error swapping!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       }
     } catch (error) {
       console.log(error);
       setLoaderMessage(`Error swapping!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } else {
-    setLoaderMessage('Connect Wallet!');
+    setLoaderMessage("Connect Wallet!");
   }
 };
 
@@ -404,55 +384,48 @@ export const swapPairForPair = async (
   setLoaderMessage: any,
   setSecondaryMessage: any,
   setSuccess: any,
-  fromDecimals:any
+  fromDecimals: any
 ) => {
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Swap Pending');
+  setLoaderMessage("Swap Pending");
   if (currentWallet) {
     const { ethereum } = window;
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
-        const exchangeContract = new ethers.Contract(
-          exchange_address,
-          exchange_abi,
-          signer
-        );
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
         const gasPrice1: any = await provider.getGasPrice();
 
         const tokenContract = new ethers.Contract(from, token_abi, signer);
 
-        setSecondaryMessage('Approving Token');
+        setSecondaryMessage("Approving Token");
 
         /*
          * Execute the actual swap functionality from smart contract
          */
-        let formattedBal; 
-        if(fromDecimals !== 18) {
+        let formattedBal;
+        if (fromDecimals !== 18) {
           formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
-        }else {
-          formattedBal = ethers.utils.parseUnits(
-            Number(fromValue).toFixed(16),
-            18
-          );
-
+        } else {
+          formattedBal = ethers.utils.parseUnits(Number(fromValue).toFixed(16), 18);
         }
         await tokenContract.approve(exchange_address, formattedBal);
 
-        setSecondaryMessage('Confirm Contract Interaction');
-        let exchangeTxn; 
+        setSecondaryMessage("Confirm Contract Interaction");
+        let exchangeTxn;
 
-        try{
-          const gasEstimated:any = await exchangeContract.estimateGas.swapPairForPair(from, to, formattedBal);
+        try {
+          const gasEstimated: any = await exchangeContract.estimateGas.swapPairForPair(from, to, formattedBal);
           const gasMargin = gasEstimated * 1.1;
-    
-          exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal, {gasLimit: Math.ceil(gasMargin)});
 
-        }catch{
-          exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal,{ gasLimit: gasPrice1 / 20, });
+          exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal, {
+            gasLimit: Math.ceil(gasMargin),
+          });
+        } catch {
+          exchangeTxn = await exchangeContract.swapPairForPair(from, to, formattedBal, { gasLimit: gasPrice1 / 20 });
         }
 
         setLoaderMessage(`Swapping...`);
@@ -463,10 +436,10 @@ export const swapPairForPair = async (
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
           setSecondaryMessage(`Try again!`);
-          setSuccess('fail');
+          setSuccess("fail");
         } else {
           setLoaderMessage(`Swapped--`);
-          setSuccess('success');
+          setSuccess("success");
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
           setValue(0.0);
         }
@@ -474,16 +447,16 @@ export const swapPairForPair = async (
         console.log("Ethereum object doesn't exist!");
         setLoaderMessage(`Error swapping!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       }
     } catch (error) {
       console.log(error);
       setLoaderMessage(`Error swapping!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } else {
-    setLoaderMessage('Connect Wallet!');
+    setLoaderMessage("Connect Wallet!");
   }
 };
 
@@ -496,11 +469,11 @@ export const swapEthForToken = async (
   setLoaderMessage: any,
   setSecondaryMessage: any,
   setSuccess: any,
-  fromDecimals:any
+  fromDecimals: any
 ) => {
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Swap Pending');
+  setLoaderMessage("Swap Pending");
 
   if (currentWallet) {
     const { ethereum } = window;
@@ -508,42 +481,39 @@ export const swapEthForToken = async (
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
 
-        const exchangeContract = new ethers.Contract(
-          exchange_address,
-          exchange_abi,
-          signer
-        );
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
         const gasPrice1: any = await provider.getGasPrice();
 
-        setSecondaryMessage('Approving Token');
+        setSecondaryMessage("Approving Token");
         /*
          * Execute the actual swap functionality from smart contract
          */
-        let formattedBal; 
-        if(fromDecimals !== 18) {
+        let formattedBal;
+        if (fromDecimals !== 18) {
           formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
-        }else {
-          formattedBal = ethers.utils.parseUnits(
-            Number(fromValue).toFixed(16),
-            18
-          );
-
+        } else {
+          formattedBal = ethers.utils.parseUnits(Number(fromValue).toFixed(16), 18);
         }
-    
-        setSecondaryMessage('Confirm Contract Interaction');
 
-        let exchangeTxn; 
-        try{
-          const gasEstimated:any = await exchangeContract.estimateGas.swapFromEthToToken(to, {value: formattedBal});
+        setSecondaryMessage("Confirm Contract Interaction");
+
+        let exchangeTxn;
+        try {
+          const gasEstimated: any = await exchangeContract.estimateGas.swapFromEthToToken(to, { value: formattedBal });
           const gasMargin = gasEstimated * 1.1;
-    
-          exchangeTxn = await exchangeContract.swapFromEthToToken(to, {value: formattedBal, gasLimit: Math.ceil(gasMargin)});
 
-        }catch {
-          exchangeTxn = await exchangeContract.swapFromEthToToken(to, {value: formattedBal, gasLimit: gasPrice1 / 20, });
+          exchangeTxn = await exchangeContract.swapFromEthToToken(to, {
+            value: formattedBal,
+            gasLimit: Math.ceil(gasMargin),
+          });
+        } catch {
+          exchangeTxn = await exchangeContract.swapFromEthToToken(to, {
+            value: formattedBal,
+            gasLimit: gasPrice1 / 20,
+          });
         }
 
         setLoaderMessage(`Swapping...`);
@@ -554,10 +524,10 @@ export const swapEthForToken = async (
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
           setSecondaryMessage(`Try again!`);
-          setSuccess('fail');
+          setSuccess("fail");
         } else {
           setLoaderMessage(`Swapped--`);
-          setSuccess('success');
+          setSuccess("success");
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
           setValue(0.0);
         }
@@ -565,16 +535,16 @@ export const swapEthForToken = async (
         console.log("Ethereum object doesn't exist!");
         setLoaderMessage(`Error swapping!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       }
     } catch (error) {
       console.log(error);
       setLoaderMessage(`Error swapping!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } else {
-    setLoaderMessage('Connect Wallet!');
+    setLoaderMessage("Connect Wallet!");
   }
 };
 
@@ -587,11 +557,11 @@ export const swapEthForPair = async (
   setLoaderMessage: any,
   setSecondaryMessage: any,
   setSuccess: any,
-  fromDecimals:any
+  fromDecimals: any
 ) => {
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Swap Pending');
+  setLoaderMessage("Swap Pending");
 
   if (currentWallet) {
     const { ethereum } = window;
@@ -599,42 +569,36 @@ export const swapEthForPair = async (
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
 
-        const exchangeContract = new ethers.Contract(
-          exchange_address,
-          exchange_abi,
-          signer
-        );
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
         const gasPrice1: any = await provider.getGasPrice();
 
-        setSecondaryMessage('Approving Token');
+        setSecondaryMessage("Approving Token");
 
         /*
          * Execute the actual swap functionality from smart contract
          */
-        let formattedBal; 
-        if(fromDecimals !== 18) {
+        let formattedBal;
+        if (fromDecimals !== 18) {
           formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
-        }else {
-          formattedBal = ethers.utils.parseUnits(
-            Number(fromValue).toFixed(16),
-            18
-          );
-
+        } else {
+          formattedBal = ethers.utils.parseUnits(Number(fromValue).toFixed(16), 18);
         }
 
-        setSecondaryMessage('Confirm Contract Interaction');
+        setSecondaryMessage("Confirm Contract Interaction");
         let exchangeTxn;
-        try{
-          const gasEstimated:any = await exchangeContract.estimateGas.swapEthForPair(to, {value: formattedBal});
+        try {
+          const gasEstimated: any = await exchangeContract.estimateGas.swapEthForPair(to, { value: formattedBal });
           const gasMargin = gasEstimated * 1.1;
-    
-          exchangeTxn = await exchangeContract.swapEthForPair(to, {value: formattedBal, gasLimit: Math.ceil(gasMargin)});
 
-        }catch{
-          exchangeTxn = await exchangeContract.swapEthForPair(to, {value: formattedBal, gasLimit: gasPrice1 / 20, });
+          exchangeTxn = await exchangeContract.swapEthForPair(to, {
+            value: formattedBal,
+            gasLimit: Math.ceil(gasMargin),
+          });
+        } catch {
+          exchangeTxn = await exchangeContract.swapEthForPair(to, { value: formattedBal, gasLimit: gasPrice1 / 20 });
         }
 
         setLoaderMessage(`Swapping...`);
@@ -645,10 +609,10 @@ export const swapEthForPair = async (
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
           setSecondaryMessage(`Try again!`);
-          setSuccess('fail');
+          setSuccess("fail");
         } else {
           setLoaderMessage(`Swapped--`);
-          setSuccess('success');
+          setSuccess("success");
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
           setValue(0.0);
         }
@@ -656,16 +620,16 @@ export const swapEthForPair = async (
         console.log("Ethereum object doesn't exist!");
         setLoaderMessage(`Error swapping!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       }
     } catch (error) {
       console.log(error);
       setLoaderMessage(`Error swapping!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } else {
-    setLoaderMessage('Connect Wallet!');
+    setLoaderMessage("Connect Wallet!");
   }
 };
 
@@ -679,11 +643,11 @@ export const swapPairForETH = async (
   setLoaderMessage: any,
   setSecondaryMessage: any,
   setSuccess: any,
-  fromDecimals:any
+  fromDecimals: any
 ) => {
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Swap Pending');
+  setLoaderMessage("Swap Pending");
 
   if (currentWallet) {
     const { ethereum } = window;
@@ -691,45 +655,36 @@ export const swapPairForETH = async (
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
 
-        const exchangeContract = new ethers.Contract(
-          exchange_address,
-          exchange_abi,
-          signer
-        );
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
         const tokenContract = new ethers.Contract(from, token_abi, signer);
 
-        setSecondaryMessage('Approving Token');
+        setSecondaryMessage("Approving Token");
 
         const gasPrice1: any = await provider.getGasPrice();
         /*
          * Execute the actual swap functionality from smart contract
          */
-        let formattedBal; 
-        if(fromDecimals !== 18) {
+        let formattedBal;
+        if (fromDecimals !== 18) {
           formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
-        }else {
-          formattedBal = ethers.utils.parseUnits(
-            Number(fromValue).toFixed(16),
-            18
-          );
-
+        } else {
+          formattedBal = ethers.utils.parseUnits(Number(fromValue).toFixed(16), 18);
         }
-  
+
         await tokenContract.approve(exchange_address, formattedBal);
 
-        setSecondaryMessage('Confirm Contract Interaction');
+        setSecondaryMessage("Confirm Contract Interaction");
         let exchangeTxn;
 
-        try{
-          const gasEstimated:any = await exchangeContract.estimateGas.swapPairForEth(from, formattedBal);
+        try {
+          const gasEstimated: any = await exchangeContract.estimateGas.swapPairForEth(from, formattedBal);
           const gasMargin = gasEstimated * 1.1;
-    
-          exchangeTxn = await exchangeContract.swapPairForEth(from, formattedBal, {gasLimit: Math.ceil(gasMargin)});
 
-        }catch {
+          exchangeTxn = await exchangeContract.swapPairForEth(from, formattedBal, { gasLimit: Math.ceil(gasMargin) });
+        } catch {
           exchangeTxn = await exchangeContract.swapPairForEth(from, formattedBal, { gasLimit: gasPrice1 / 20 });
         }
 
@@ -741,10 +696,10 @@ export const swapPairForETH = async (
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
           setSecondaryMessage(`Try again!`);
-          setSuccess('fail');
+          setSuccess("fail");
         } else {
           setLoaderMessage(`Swapped--`);
-          setSuccess('success');
+          setSuccess("success");
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
           setValue(0.0);
         }
@@ -752,16 +707,16 @@ export const swapPairForETH = async (
         console.log("Ethereum object doesn't exist!");
         setLoaderMessage(`Error swapping!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       }
     } catch (error) {
       console.log(error);
       setLoaderMessage(`Error swapping!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } else {
-    setLoaderMessage('Connect Wallet!');
+    setLoaderMessage("Connect Wallet!");
   }
 };
 
@@ -775,11 +730,11 @@ export const swapTokenForETH = async (
   setLoaderMessage: any,
   setSecondaryMessage: any,
   setSuccess: any,
-  fromDecimals:any
+  fromDecimals: any
 ) => {
-  setSuccess('loading');
+  setSuccess("loading");
   setLoading(true);
-  setLoaderMessage('Swap Pending');
+  setLoaderMessage("Swap Pending");
 
   if (currentWallet) {
     const { ethereum } = window;
@@ -787,45 +742,38 @@ export const swapTokenForETH = async (
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
-        await provider.send('eth_requestAccounts', []);
+        await provider.send("eth_requestAccounts", []);
         const signer = provider.getSigner();
 
-        const exchangeContract = new ethers.Contract(
-          exchange_address,
-          exchange_abi,
-          signer
-        );
+        const exchangeContract = new ethers.Contract(exchange_address, exchange_abi, signer);
         const tokenContract = new ethers.Contract(from, token_abi, signer);
 
         const gasPrice1: any = await provider.getGasPrice();
 
-        setSecondaryMessage('Approving Token');
+        setSecondaryMessage("Approving Token");
 
         /*
          * Execute the actual swap functionality from smart contract
          */
-        let formattedBal; 
-        if(fromDecimals !== 18) {
+        let formattedBal;
+        if (fromDecimals !== 18) {
           formattedBal = ethers.utils.parseUnits(fromValue.toString(), fromDecimals);
-        }else {
-          formattedBal = ethers.utils.parseUnits(
-            Number(fromValue).toFixed(16),
-            18
-          );
-
+        } else {
+          formattedBal = ethers.utils.parseUnits(Number(fromValue).toFixed(16), 18);
         }
-      
+
         await tokenContract.approve(exchange_address, formattedBal);
 
-        setSecondaryMessage('Confirm Contract Interaction');
+        setSecondaryMessage("Confirm Contract Interaction");
         let exchangeTxn;
-        try{
-          const gasEstimated:any = await exchangeContract.estimateGas.swapFromTokenToEth(from, formattedBal);
+        try {
+          const gasEstimated: any = await exchangeContract.estimateGas.swapFromTokenToEth(from, formattedBal);
           const gasMargin = gasEstimated * 1.1;
-    
-          exchangeTxn = await exchangeContract.swapFromTokenToEth(from, formattedBal, {gasLimit: Math.ceil(gasMargin)});
 
-        }catch{
+          exchangeTxn = await exchangeContract.swapFromTokenToEth(from, formattedBal, {
+            gasLimit: Math.ceil(gasMargin),
+          });
+        } catch {
           exchangeTxn = await exchangeContract.swapFromTokenToEth(from, formattedBal, { gasLimit: gasPrice1 / 20 });
         }
 
@@ -837,10 +785,10 @@ export const swapTokenForETH = async (
         if (!exchangeTxnStatus.status) {
           setLoaderMessage(`Error swapping!`);
           setSecondaryMessage(`Try again!`);
-          setSuccess('fail');
+          setSuccess("fail");
         } else {
           setLoaderMessage(`Swapped--`);
-          setSuccess('success');
+          setSuccess("success");
           setSecondaryMessage(`Txn hash: ${exchangeTxn.hash}`);
           setValue(0.0);
         }
@@ -848,15 +796,15 @@ export const swapTokenForETH = async (
         console.log("Ethereum object doesn't exist!");
         setLoaderMessage(`Error swapping!`);
         setSecondaryMessage(`Try again!`);
-        setSuccess('fail');
+        setSuccess("fail");
       }
     } catch (error) {
       console.log(error);
       setLoaderMessage(`Error swapping!`);
       setSecondaryMessage(`Try again!`);
-      setSuccess('fail');
+      setSuccess("fail");
     }
   } else {
-    setLoaderMessage('Connect Wallet!');
+    setLoaderMessage("Connect Wallet!");
   }
 };

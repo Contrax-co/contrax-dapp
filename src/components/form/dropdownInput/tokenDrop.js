@@ -1,13 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Row } from '../../blocks/Blocks';
-import { B1 } from '../../text/Text';
-import {
-  ListSubTitle,
-  StyledDropBtn,
-  StyledInput,
-  StyledListBtn,
-  StyledSearch,
-} from './DropdownInput.styles';
+import { useEffect, useState } from "react";
+import { Row } from "../../blocks/Blocks";
+import { B1 } from "../../text/Text";
+import { ListSubTitle, StyledDropBtn, StyledInput, StyledListBtn, StyledSearch } from "./DropdownInput.styles";
 
 function TokenDrop(props) {
   const { items, searchable, label } = props;
@@ -33,11 +27,7 @@ function TokenDrop(props) {
 
   const onSearch = (e) => {
     const str = e.target.value;
-    setFiltered(
-      items.filter(
-        (item) => item.tokenName.toLowerCase().indexOf(str.toLowerCase()) > -1
-      )
-    );
+    setFiltered(items.filter((item) => item.tokenName.toLowerCase().indexOf(str.toLowerCase()) > -1));
   };
   return (
     <div className={`dropdown-input ${props.className}`}>
@@ -56,12 +46,7 @@ function TokenDrop(props) {
         >
           {selected && selected.tokenName} <span className="caret"></span>
         </StyledDropBtn>
-        <StyledInput
-          size="16"
-          onChange={onToken}
-          type={props.inputType || 'text'}
-          placeholder={props.placeholder}
-        />
+        <StyledInput size="16" onChange={onToken} type={props.inputType || "text"} placeholder={props.placeholder} />
         <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
           {searchable && (
             <li>
@@ -84,10 +69,7 @@ function TokenDrop(props) {
                       onSelect(item);
                     }}
                   >
-                    {item.tokenName}{' '}
-                    {item.tokenSymbol && (
-                      <ListSubTitle>{item.tokenSymbol}</ListSubTitle>
-                    )}
+                    {item.tokenName} {item.tokenSymbol && <ListSubTitle>{item.tokenSymbol}</ListSubTitle>}
                   </StyledListBtn>
                 </li>
               );

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { HiChevronDown } from 'react-icons/hi';
-import { priceToken } from '../from/from-functions';
-import { userBalTo } from './to-functions';
-import './To.css';
+import React, { useState, useEffect } from "react";
+import { HiChevronDown } from "react-icons/hi";
+import { priceToken } from "../from/from-functions";
+import { userBalTo } from "./to-functions";
+import "./To.css";
 
 function To({
   lightMode,
@@ -18,17 +18,17 @@ function To({
   setToImg,
   setToAlt,
   currentWallet,
-  setToDecimals
+  setToDecimals,
 }: any) {
   const token = tokens.slice(tokenId - 1, tokenId);
 
-  const [tokenName, setTokenName] = useState('');
-  const [tokenSrc, setTokenSrc] = useState('');
-  const [tokenAlt, setTokenAlt] = useState('');
+  const [tokenName, setTokenName] = useState("");
+  const [tokenSrc, setTokenSrc] = useState("");
+  const [tokenAlt, setTokenAlt] = useState("");
 
   const [swapAmount, setSwapAmount] = useState(0.0);
   const [toAbi, setToAbi] = useState([]);
-  const [decimals, setDecimals] = useState(0); 
+  const [decimals, setDecimals] = useState(0);
 
   const [amt, setAmt] = useState(0.0);
   const [price, setPrice] = useState(0);
@@ -68,38 +68,31 @@ function To({
       <div className="to_div">
         <p>To</p>
         <div className={`to_values`}>
-          <p className={`to_usd ${lightMode && 'to_usd--light'}`}>
-            {(price * amt).toLocaleString('en-US', {
-              style: 'currency',
-              currency: 'USD',
+          <p className={`to_usd ${lightMode && "to_usd--light"}`}>
+            {(price * amt).toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
             })}
           </p>
 
           {amt * price < 0.01 ? (
-            <p className={`swap_amount ${lightMode && 'swap_amount--light'}`}>
-              0
-            </p>
+            <p className={`swap_amount ${lightMode && "swap_amount--light"}`}>0</p>
           ) : (
-            <p className={`swap_amount ${lightMode && 'swap_amount--light'}`}>
-              {amt.toFixed(12)}
-            </p>
+            <p className={`swap_amount ${lightMode && "swap_amount--light"}`}>{amt.toFixed(12)}</p>
           )}
         </div>
       </div>
 
-      <div className={`to__input ${lightMode && 'to__input--light'}`}>
+      <div className={`to__input ${lightMode && "to__input--light"}`}>
         <input
           type="number"
           placeholder="0.0"
-          className={`to__amount ${lightMode && 'to__amount--light'}`}
+          className={`to__amount ${lightMode && "to__amount--light"}`}
           value={swapAmount}
           onChange={handleSwapChange}
         />
 
-        <div
-          className={`dropdown__to ${lightMode && 'dropdown__to--light'}`}
-          onClick={() => setOpenModal(true)}
-        >
+        <div className={`dropdown__to ${lightMode && "dropdown__to--light"}`} onClick={() => setOpenModal(true)}>
           <img className={`swap__logo`} alt={tokenAlt} src={tokenSrc} />
           <p>{tokenName}</p>
           <HiChevronDown />

@@ -1,9 +1,4 @@
-import {
-  StyledBlock,
-  StyledCol,
-  StyledContainer,
-  StyledRow,
-} from './Blocks.style';
+import { StyledBlock, StyledCol, StyledContainer, StyledRow } from "./Blocks.style";
 
 export const Container = (props) => {
   const { children, ...remainingProps } = props;

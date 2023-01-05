@@ -1,16 +1,16 @@
-import { useLocation } from 'react-router-dom';
-import BottomBar from '../bottomBar/BottomBar';
-import { Col, Row } from '../blocks/Blocks';
-import * as colors from '../../theme/colors';
-import { StyledBox, StyledImage } from './Footer.styles';
-import footerLogo from '../../images/footer-logo.png';
-import discordLogo from '../../images/discord.png';
-import twitterLogo from '../../images/twitter.png';
-import telegramLogo from '../../images/telegram.png';
-import githubLogo from '../../images/github.png';
-import mediumLogo from '../../images/medium.png';
-import { Image } from '../image/Image';
-import { H3 } from '../text/Text';
+import { useLocation } from "react-router-dom";
+import BottomBar from "../bottomBar/BottomBar";
+import { Col, Row } from "../blocks/Blocks";
+import * as colors from "../../theme/colors";
+import { StyledBox, StyledImage } from "./Footer.styles";
+import footerLogo from "../../images/footer-logo.png";
+import discordLogo from "../../images/discord.png";
+import twitterLogo from "../../images/twitter.png";
+import telegramLogo from "../../images/telegram.png";
+import githubLogo from "../../images/github.png";
+import mediumLogo from "../../images/medium.png";
+import { Image } from "../image/Image";
+import { H3 } from "../text/Text";
 
 export default function Footer() {
   const location = useLocation();
@@ -34,18 +34,10 @@ export default function Footer() {
               <Image src={discordLogo} alt="Discord" />
             </a>
             <a href="https://twitter.com/Contrax_Finance">
-              <Image
-                className="m-4 mt-1 mb-1"
-                src={twitterLogo}
-                alt="Twitter"
-              />
+              <Image className="m-4 mt-1 mb-1" src={twitterLogo} alt="Twitter" />
             </a>
             <a href="https://t.me/Contrax">
-              <Image
-                className="m-1 mt-1 mb-1"
-                src={telegramLogo}
-                alt="Telegram"
-              />
+              <Image className="m-1 mt-1 mb-1" src={telegramLogo} alt="Telegram" />
             </a>
             <a href="https://contraxfi.medium.com/contrax-the-dapp-token-and-dao-explained-8c8d5a9b7e9d">
               <Image className="m-4 mt-1 mb-1" src={mediumLogo} alt="Medium" />
@@ -59,7 +51,7 @@ export default function Footer() {
           </Col>
         </Row>
       </StyledBox>
-      {location === '' ? '' : <BottomBar />}
+      {location === "" ? "" : <BottomBar />}
     </div>
   );
 }

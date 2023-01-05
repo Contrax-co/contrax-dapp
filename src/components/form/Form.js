@@ -1,9 +1,9 @@
-import { B1, Caption } from '../text/Text';
-import { StyledCheckbox, StyledForm, StyledInput } from './Form.styles';
-import * as colors from '../../theme/colors';
-import { weight } from '../../theme/fonts';
-import { Block, Row } from '../blocks/Blocks';
-import './form.css';
+import { B1, Caption } from "../text/Text";
+import { StyledCheckbox, StyledForm, StyledInput } from "./Form.styles";
+import * as colors from "../../theme/colors";
+import { weight } from "../../theme/fonts";
+import { Block, Row } from "../blocks/Blocks";
+import "./form.css";
 export const Form = (props) => {
   const { children, ...remainingProps } = props;
 
@@ -11,18 +11,8 @@ export const Form = (props) => {
 };
 
 export const FormInput = (props) => {
-  const {
-    variant,
-    value,
-    onClick,
-    children,
-    label,
-    className,
-    inputClassName,
-    type,
-    lightMode,
-    ...remainingProps
-  } = props;
+  const { variant, value, onClick, children, label, className, inputClassName, type, lightMode, ...remainingProps } =
+    props;
 
   return (
     <div className={props.className}>
@@ -30,17 +20,13 @@ export const FormInput = (props) => {
       <StyledInput
         variant={variant}
         onClick={!onClick ? undefined : onClick}
-        className={`form-control new-from__input ${
-          lightMode && 'form-control new-from__input--light'
-        }`}
-        type={type || 'text'}
+        className={`form-control new-from__input ${lightMode && "form-control new-from__input--light"}`}
+        type={type || "text"}
         {...remainingProps}
       ></StyledInput>
       {props.caption && (
         <Caption>
-          <div className={`token_titles ${lightMode && 'token_title--lights'}`}>
-            {props.caption}
-          </div>
+          <div className={`token_titles ${lightMode && "token_title--lights"}`}>{props.caption}</div>
         </Caption>
       )}
     </div>
@@ -48,17 +34,7 @@ export const FormInput = (props) => {
 };
 
 export const FormCheckbox = (props) => {
-  const {
-    variant,
-    value,
-    onClick,
-    children,
-    label,
-    className,
-    lightMode,
-    inputClassName,
-    ...remainingProps
-  } = props;
+  const { variant, value, onClick, children, label, className, lightMode, inputClassName, ...remainingProps } = props;
 
   return (
     <div className={props.className}>
@@ -73,23 +49,13 @@ export const FormCheckbox = (props) => {
         <Block className="p-0">
           <Row>
             <B1 weight={props.caption ? weight.semibold : weight.regular}>
-              <div
-                className={`token_titles ${lightMode && 'token_title--lights'}`}
-              >
-                {props.label}
-              </div>
+              <div className={`token_titles ${lightMode && "token_title--lights"}`}>{props.label}</div>
             </B1>
           </Row>
           {props.caption && (
             <Row>
               <B1>
-                <div
-                  className={`token_titles ${
-                    lightMode && 'token_title--lights'
-                  }`}
-                >
-                  {props.caption}{' '}
-                </div>
+                <div className={`token_titles ${lightMode && "token_title--lights"}`}>{props.caption} </div>
               </B1>
             </Row>
           )}
