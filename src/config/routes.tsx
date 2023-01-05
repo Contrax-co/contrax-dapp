@@ -1,5 +1,5 @@
 export const routes = {
-  HOME: "/",
-  DASHBOARD: "/",
-  CREATE_TOKEN: "/create-token",
+    HOME: "/",
+    DASHBOARD: "/",
+    CREATE_TOKEN: "/create-token",
 };

@@ -41,20 +41,20 @@ export const lightText = "#FFFFFF";
 export const darkText = "#323433";
 
 export const primaryBtn = {
-  background: primary,
-  color: "#FFFFFF",
-  hoverBackground: "#54adbe",
-  hoverColor: "#FFFFFF",
-  disabledBackground: "rgba(31, 31, 31, 0.12)",
-  disabledColor: "#818182",
+    background: primary,
+    color: "#FFFFFF",
+    hoverBackground: "#54adbe",
+    hoverColor: "#FFFFFF",
+    disabledBackground: "rgba(31, 31, 31, 0.12)",
+    disabledColor: "#818182",
 };
 
 export const secondaryBtn = {
-  background: "#FFFFFF",
-  color: primary,
-  hoverBackground: primary,
-  hoverColor: "#FFFFFF",
-  disabledBackground: "#FFFFFF",
-  disabledColor: "#818182",
-  disabledBorderColor: "rgba(31, 31, 31, 0.12)",
+    background: "#FFFFFF",
+    color: primary,
+    hoverBackground: primary,
+    hoverColor: "#FFFFFF",
+    disabledBackground: "#FFFFFF",
+    disabledColor: "#818182",
+    disabledBorderColor: "rgba(31, 31, 31, 0.12)",
 };

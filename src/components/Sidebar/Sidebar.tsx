@@ -11,66 +11,66 @@ import LightModeToggle from "../LightModeToggle";
 import "./Sidebar.css";
 
 function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
-  return (
-    <div className={`sidebar_bg ${lightMode && "sidebar_bg--light"}`}>
-      <img className="contrax_logo" alt="contrax-logo" src={lightMode ? logo2 : logo} />
+    return (
+        <div className={`sidebar_bg ${lightMode && "sidebar_bg--light"}`}>
+            <img className="contrax_logo" alt="contrax-logo" src={lightMode ? logo2 : logo} />
 
-      <div className="side_items">
-        <SidebarItem
-          title="Dashboard"
-          icon={<MdSpaceDashboard />}
-          onClick={() => setMenuItem("Dashboard")}
-          active={menuItem === "Dashboard"}
-          lightMode={lightMode}
-        />
+            <div className="side_items">
+                <SidebarItem
+                    title="Dashboard"
+                    icon={<MdSpaceDashboard />}
+                    onClick={() => setMenuItem("Dashboard")}
+                    active={menuItem === "Dashboard"}
+                    lightMode={lightMode}
+                />
 
-        <SidebarItem
-          title="Farms"
-          icon={<GiFarmTractor />}
-          onClick={() => setMenuItem("Farms")}
-          active={menuItem === "Farms"}
-          lightMode={lightMode}
-        />
+                <SidebarItem
+                    title="Farms"
+                    icon={<GiFarmTractor />}
+                    onClick={() => setMenuItem("Farms")}
+                    active={menuItem === "Farms"}
+                    lightMode={lightMode}
+                />
 
-        <SidebarItem
-          title="Exchange"
-          icon={<FaExchangeAlt />}
-          onClick={() => setMenuItem("Exchange")}
-          active={menuItem === "Exchange"}
-          lightMode={lightMode}
-        />
+                <SidebarItem
+                    title="Exchange"
+                    icon={<FaExchangeAlt />}
+                    onClick={() => setMenuItem("Exchange")}
+                    active={menuItem === "Exchange"}
+                    lightMode={lightMode}
+                />
 
-        <SidebarItem
-          title="Create Token"
-          icon={<GiToken />}
-          onClick={() => setMenuItem("Create token")}
-          active={menuItem === "Create token"}
-          lightMode={lightMode}
-        />
+                <SidebarItem
+                    title="Create Token"
+                    icon={<GiToken />}
+                    onClick={() => setMenuItem("Create token")}
+                    active={menuItem === "Create token"}
+                    lightMode={lightMode}
+                />
 
-        <SidebarItem
-          title="Create Pool"
-          icon={<RiFundsLine />}
-          onClick={() => setMenuItem("Create pool")}
-          active={menuItem === "Create pool"}
-          lightMode={lightMode}
-        />
+                <SidebarItem
+                    title="Create Pool"
+                    icon={<RiFundsLine />}
+                    onClick={() => setMenuItem("Create pool")}
+                    active={menuItem === "Create pool"}
+                    lightMode={lightMode}
+                />
 
-        <SidebarItem
-          title="User Guide"
-          onClick={() => window.open("https://contrax.gitbook.io/contrax-docs/", "_blank")}
-          icon={<HiDocumentText />}
-          icon2={<AiOutlineExport />}
-          active={menuItem === "Docs"}
-          lightMode={lightMode}
-        />
-      </div>
+                <SidebarItem
+                    title="User Guide"
+                    onClick={() => window.open("https://contrax.gitbook.io/contrax-docs/", "_blank")}
+                    icon={<HiDocumentText />}
+                    icon2={<AiOutlineExport />}
+                    active={menuItem === "Docs"}
+                    lightMode={lightMode}
+                />
+            </div>
 
-      <div className="toggle_placement">
-        <LightModeToggle onClick={props.onClick} lightMode={lightMode} />
-      </div>
-    </div>
-  );
+            <div className="toggle_placement">
+                <LightModeToggle onClick={props.onClick} lightMode={lightMode} />
+            </div>
+        </div>
+    );
 }
 
 export default Sidebar;

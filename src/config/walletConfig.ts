@@ -15,25 +15,25 @@ const gnosis = gnosisModule();
 const mewWalletModule = mewWallet();
 
 const onboard = Onboard({
-  wallets: [injected, coinbaseWalletSdk, enrkyptModule, gnosis, mewWalletModule],
-  chains: [
-    {
-      id: "0xA4B1",
-      token: "ETH",
-      label: "Arbitrum One",
-      rpcUrl: ARBITRUM_MAINNET,
+    wallets: [injected, coinbaseWalletSdk, enrkyptModule, gnosis, mewWalletModule],
+    chains: [
+        {
+            id: "0xA4B1",
+            token: "ETH",
+            label: "Arbitrum One",
+            rpcUrl: ARBITRUM_MAINNET,
+        },
+    ],
+    appMetadata: {
+        name: "Contrax",
+        icon: logo,
+        logo: logo,
+        description: "Contrax",
+        agreement: {
+            version: "1.0.0",
+            termsUrl: "https://beta.contrax.finance/termsofuse.pdf",
+        },
     },
-  ],
-  appMetadata: {
-    name: "Contrax",
-    icon: logo,
-    logo: logo,
-    description: "Contrax",
-    agreement: {
-      version: "1.0.0",
-      termsUrl: "https://beta.contrax.finance/termsofuse.pdf",
-    },
-  },
 });
 
 export { onboard };

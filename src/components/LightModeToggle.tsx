@@ -2,25 +2,25 @@ import { MdOutlineDarkMode, MdOutlineLightMode, MdLightMode, MdDarkMode } from "
 import "./LightModeToggle.css";
 
 function LightModeToggle({ lightMode, ...props }: any) {
-  return (
-    <div className="darkmode_toggle_container">
-      {lightMode ? (
-        <MdLightMode className={`label1 ${lightMode && "label1--light"}`} />
-      ) : (
-        <MdOutlineLightMode className={`label1 ${lightMode && "label1--light"}`} />
-      )}
+    return (
+        <div className="darkmode_toggle_container">
+            {lightMode ? (
+                <MdLightMode className={`label1 ${lightMode && "label1--light"}`} />
+            ) : (
+                <MdOutlineLightMode className={`label1 ${lightMode && "label1--light"}`} />
+            )}
 
-      <div className={`lighttoggle ${lightMode && "lighttoggle--light"}`} onClick={props.onClick}>
-        <div className={`lighttoggle_switch ${lightMode && "lighttoggle_switch--light"}`}></div>
-      </div>
+            <div className={`lighttoggle ${lightMode && "lighttoggle--light"}`} onClick={props.onClick}>
+                <div className={`lighttoggle_switch ${lightMode && "lighttoggle_switch--light"}`}></div>
+            </div>
 
-      {lightMode ? (
-        <MdOutlineDarkMode className={`label2 ${lightMode && "label2--light"}`} />
-      ) : (
-        <MdDarkMode className={`label2 ${lightMode && "label2--light"}`} />
-      )}
-    </div>
-  );
+            {lightMode ? (
+                <MdOutlineDarkMode className={`label2 ${lightMode && "label2--light"}`} />
+            ) : (
+                <MdDarkMode className={`label2 ${lightMode && "label2--light"}`} />
+            )}
+        </div>
+    );
 }
 
 export default LightModeToggle;
