@@ -1,38 +1,25 @@
-import { useState } from 'react';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { TbMenu2 } from 'react-icons/tb';
-import './TopBar.css';
-import LightModeToggle from '../LightModeToggle';
+import { useState } from "react";
+import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
+import { TbMenu2 } from "react-icons/tb";
+import "./TopBar.css";
+import LightModeToggle from "../LightModeToggle";
+import useWallet from "../../hooks/useWallet";
 
-function TopBar({
-  lightMode,
-  currentWallet,
-  connectWallet,
-  logout,
-  networkId,
-  setMenuItem,
-  ...props
-}: any) {
+function TopBar({ lightMode, logout,  setMenuItem, ...props }: any) {
   const [show, setShow] = useState(false);
+  const { connectWallet, currentWallet, networkId } = useWallet();
 
   return (
     <div className="topbar_placement">
-      <div
-        className={`topbar_menu ${lightMode && 'topbar_menu--light'}`}
-        onClick={() => setShow(!show)}
-      >
+      <div className={`topbar_menu ${lightMode && "topbar_menu--light"}`} onClick={() => setShow(!show)}>
         <TbMenu2 className="burger-icon" />
       </div>
       {show ? (
-        <div
-          className={`dropdown_hamburger_menu ${
-            lightMode && 'dropdown_hamburger_menu--light'
-          }`}
-        >
+        <div className={`dropdown_hamburger_menu ${lightMode && "dropdown_hamburger_menu--light"}`}>
           <a
             href="#dashboard"
             onClick={() => {
-              setMenuItem('Dashboard');
+              setMenuItem("Dashboard");
               setShow(!show);
             }}
           >
@@ -41,7 +28,7 @@ function TopBar({
           <a
             href="#farms"
             onClick={() => {
-              setMenuItem('Farms');
+              setMenuItem("Farms");
               setShow(!show);
             }}
           >
@@ -50,7 +37,7 @@ function TopBar({
           <a
             href="#exchange"
             onClick={() => {
-              setMenuItem('Exchange');
+              setMenuItem("Exchange");
               setShow(!show);
             }}
           >
@@ -59,7 +46,7 @@ function TopBar({
           <a
             href="#token"
             onClick={() => {
-              setMenuItem('Create token');
+              setMenuItem("Create token");
               setShow(!show);
             }}
           >
@@ -68,7 +55,7 @@ function TopBar({
           <a
             href="#pool"
             onClick={() => {
-              setMenuItem('Create pool');
+              setMenuItem("Create pool");
               setShow(!show);
             }}
           >
@@ -77,7 +64,7 @@ function TopBar({
           <a
             href="#docs"
             onClick={() => {
-              window.open('https://contrax.gitbook.io/contrax-docs/', '_blank');
+              window.open("https://contrax.gitbook.io/contrax-docs/", "_blank");
               setShow(!show);
             }}
           >
@@ -90,27 +77,18 @@ function TopBar({
       ) : null}
 
       {currentWallet ? (
-        <div
-          className={`connect_wallet2 ${lightMode && 'connect_wallet2--light'}`}
-        >
-          {networkId === '0xa4b1' || networkId === 'a4b1' ? (
-            <div className={`ethBal ${lightMode && 'ethBal--light'}`}>
+        <div className={`connect_wallet2 ${lightMode && "connect_wallet2--light"}`}>
+          {networkId === "0xa4b1" || networkId === "a4b1" ? (
+            <div className={`ethBal ${lightMode && "ethBal--light"}`}>
               <p>Arbitrum</p>
             </div>
           ) : (
-            <div
-              className={`wrongNetwork ${lightMode && 'wrongNetwork--light'}`}
-            >
+            <div className={`wrongNetwork ${lightMode && "wrongNetwork--light"}`}>
               <p>Wrong network!</p>
             </div>
           )}
 
-          <div
-            className={`connected_wallet ${
-              lightMode && 'connected_wallet--light'
-            }`}
-            onClick={logout}
-          >
+          <div className={`connected_wallet ${lightMode && "connected_wallet--light"}`} onClick={logout}>
             <p className="address">
               {currentWallet.substring(0, 6)}...
               {currentWallet.substring(currentWallet.length - 5)}

@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { CgArrowsExchangeAltV } from 'react-icons/cg';
-import SwapValuesFrom from './from/SwapValuesFrom';
-import SwapValuesTo from './to/SwapValuesTo';
-import { MoonLoader } from 'react-spinners';
-import './Exchange.css';
-import From from './from/From';
-import To from './to/To';
+import { useState, useEffect } from "react";
+import { CgArrowsExchangeAltV } from "react-icons/cg";
+import SwapValuesFrom from "./from/SwapValuesFrom";
+import SwapValuesTo from "./to/SwapValuesTo";
+import { MoonLoader } from "react-spinners";
+import "./Exchange.css";
+import From from "./from/From";
+import To from "./to/To";
 import {
   swapEthForPair,
   swapEthForToken,
@@ -15,22 +15,24 @@ import {
   swapPairForPair,
   swapPairForToken,
   swapTokenForETH,
-} from './exchange-functions';
-import Confirm from './Confirm';
-import { AiOutlineCheckCircle } from 'react-icons/ai';
-import { MdOutlineErrorOutline } from 'react-icons/md';
+} from "./exchange-functions";
+import Confirm from "./Confirm";
+import { AiOutlineCheckCircle } from "react-icons/ai";
+import { MdOutlineErrorOutline } from "react-icons/md";
+import useWallet from "../../hooks/useWallet";
 
 var isLocalhost = false;
-if (window.location.hostname === 'localhost') {
+if (window.location.hostname === "localhost") {
   isLocalhost = true;
 }
 
-var fetchUrl = 'https://beta.contrax.finance/api/poolswap.json';
+var fetchUrl = "https://beta.contrax.finance/api/poolswap.json";
 if (isLocalhost) {
-  fetchUrl = 'http://localhost:3000/api/poolswap.json';
+  fetchUrl = "http://localhost:3000/api/poolswap.json";
 }
 
-function Exchange({ lightMode, currentWallet }: any) {
+function Exchange({ lightMode }: any) {
+  const { currentWallet } = useWallet();
   const [openModalFrom, setOpenModalFrom] = useState(false);
   const [openModalTo, setOpenModalTo] = useState(false);
 
@@ -39,33 +41,33 @@ function Exchange({ lightMode, currentWallet }: any) {
   const [tokens, setTokens] = useState([]);
 
   const [value, setValue] = useState(0);
-  const [tokenType1, setTokenType1] = useState('');
-  const [tokenType2, setTokenType2] = useState('');
+  const [tokenType1, setTokenType1] = useState("");
+  const [tokenType2, setTokenType2] = useState("");
 
-  const [fromAddress, setFromAddress] = useState('');
-  const [toAddress, setToAddress] = useState('');
+  const [fromAddress, setFromAddress] = useState("");
+  const [toAddress, setToAddress] = useState("");
 
   const [tokenAbi, setTokenAbi] = useState([]);
 
   const [isLoading, setLoading] = useState(false);
-  const [loaderMessage, setLoaderMessage] = useState('');
-  const [secondaryMessage, setSecondaryMessage] = useState('');
+  const [loaderMessage, setLoaderMessage] = useState("");
+  const [secondaryMessage, setSecondaryMessage] = useState("");
 
   const [toValue, setToValue] = useState(0.0);
 
   const [confirmPage, setConfirmPage] = useState(false);
-  const [fromName, setFromName] = useState('');
-  const [toName, setToName] = useState('');
+  const [fromName, setFromName] = useState("");
+  const [toName, setToName] = useState("");
 
-  const [fromImg, setFromImg] = useState('');
-  const [toImg, setToImg] = useState('');
-  const [fromAlt, setFromAlt] = useState('');
-  const [toAlt, setToAlt] = useState('');
+  const [fromImg, setFromImg] = useState("");
+  const [toImg, setToImg] = useState("");
+  const [fromAlt, setFromAlt] = useState("");
+  const [toAlt, setToAlt] = useState("");
 
   const [toDecimals, setToDecimals] = useState(0);
-  const [fromDecimals, setFromDecimals] = useState(0); 
+  const [fromDecimals, setFromDecimals] = useState(0);
 
-  const [success, setSuccess] = useState('loading');
+  const [success, setSuccess] = useState("loading");
 
   const [userAmt, setUserAmt] = useState(0);
 
@@ -80,21 +82,13 @@ function Exchange({ lightMode, currentWallet }: any) {
   return (
     <div className={`whole__exchange__container`}>
       <div className="exchange__header">
-        <p
-          className={`whole__container__title ${
-            lightMode && 'whole__container__title--light'
-          }`}
-        >
-          Exchange
-        </p>
+        <p className={`whole__container__title ${lightMode && "whole__container__title--light"}`}>Exchange</p>
       </div>
 
-      <div
-        className={`swap__container ${lightMode && 'swap__container--light'}`}
-      >
-        <p className={`swap_title ${lightMode && 'swap_title--light'}`}>Swap</p>
+      <div className={`swap__container ${lightMode && "swap__container--light"}`}>
+        <p className={`swap_title ${lightMode && "swap_title--light"}`}>Swap</p>
 
-        <div className={`from ${lightMode && 'from--light'}`}>
+        <div className={`from ${lightMode && "from--light"}`}>
           <From
             lightMode={lightMode}
             setOpenModal={setOpenModalFrom}
@@ -115,8 +109,8 @@ function Exchange({ lightMode, currentWallet }: any) {
             tokenType1={tokenType1}
             tokenType2={tokenType2}
             setUserAmt={setUserAmt}
-            toDecimals = {toDecimals}
-            setFromDecimals = {setFromDecimals}
+            toDecimals={toDecimals}
+            setFromDecimals={setFromDecimals}
           />
         </div>
 
@@ -126,7 +120,7 @@ function Exchange({ lightMode, currentWallet }: any) {
           />
         </div> */}
 
-        <div className={`to ${lightMode && 'to--light'}`}>
+        <div className={`to ${lightMode && "to--light"}`}>
           <To
             lightMode={lightMode}
             setOpenModal={setOpenModalTo}
@@ -146,26 +140,16 @@ function Exchange({ lightMode, currentWallet }: any) {
         </div>
 
         {!value || value <= 0 ? (
-          <div
-            className={`exchange_button_disable ${
-              lightMode && 'exchange_button_disable--light'
-            }`}
-          >
+          <div className={`exchange_button_disable ${lightMode && "exchange_button_disable--light"}`}>
             <p>Enter amount</p>
           </div>
         ) : value > userAmt ? (
-          <div
-            className={`exchange_button_disable ${
-              lightMode && 'exchange_button_disable--light'
-            }`}
-          >
+          <div className={`exchange_button_disable ${lightMode && "exchange_button_disable--light"}`}>
             <p>Insufficient Balance</p>
           </div>
         ) : (
           <div
-            className={`exchange_button ${
-              lightMode && 'exchange_button--light'
-            }`}
+            className={`exchange_button ${lightMode && "exchange_button--light"}`}
             onClick={() => setConfirmPage(true)}
           >
             <p>See details</p>
@@ -183,47 +167,29 @@ function Exchange({ lightMode, currentWallet }: any) {
       ) : null}
 
       {openModalTo ? (
-        <SwapValuesTo
-          tokens={tokens}
-          setOpenModal={setOpenModalTo}
-          lightMode={lightMode}
-          setTokenId={setTokenId2}
-        />
+        <SwapValuesTo tokens={tokens} setOpenModal={setOpenModalTo} lightMode={lightMode} setTokenId={setTokenId2} />
       ) : null}
 
       {isLoading && (
-        <div
-          className={`exchange_spinner ${
-            lightMode && 'exchange_spinner--light'
-          }`}
-        >
+        <div className={`exchange_spinner ${lightMode && "exchange_spinner--light"}`}>
           <div className={`exchange_spinner_top`}>
             <div className="exchange_spinner-left">
-              {success === 'success' ? (
-                <AiOutlineCheckCircle
-                  style={{ color: '#00E600', fontSize: '20px' }}
-                />
-              ) : success === 'loading' ? (
-                <MoonLoader
-                  size={20}
-                  loading={isLoading}
-                  color={'rgb(89, 179, 247)'}
-                />
-              ) : success === 'fail' ? (
-                <MdOutlineErrorOutline style={{ color: '#e60000' }} />
+              {success === "success" ? (
+                <AiOutlineCheckCircle style={{ color: "#00E600", fontSize: "20px" }} />
+              ) : success === "loading" ? (
+                <MoonLoader size={20} loading={isLoading} color={"rgb(89, 179, 247)"} />
+              ) : success === "fail" ? (
+                <MdOutlineErrorOutline style={{ color: "#e60000" }} />
               ) : null}
             </div>
 
             <div className={`exchange_spinner_right`}>
-              <p style={{ fontWeight: '700' }}>{loaderMessage}</p>
+              <p style={{ fontWeight: "700" }}>{loaderMessage}</p>
               <p className={`exchange_second`}>{secondaryMessage}</p>
             </div>
           </div>
 
-          <div
-            className={`exchange_spinner_bottom`}
-            onClick={() => setLoading(false)}
-          >
+          <div className={`exchange_spinner_bottom`} onClick={() => setLoading(false)}>
             <p>Dismiss</p>
           </div>
         </div>
@@ -244,10 +210,7 @@ function Exchange({ lightMode, currentWallet }: any) {
           fromAlt={fromAlt}
           toAlt={toAlt}
           swap={() => {
-            tokenType1 === 'Token' &&
-            tokenType2 === 'Token' &&
-            fromName !== 'ETH' &&
-            toName !== 'ETH'
+            tokenType1 === "Token" && tokenType2 === "Token" && fromName !== "ETH" && toName !== "ETH"
               ? swapFromTokenToToken(
                   currentWallet,
                   value,
@@ -261,10 +224,7 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setSuccess,
                   fromDecimals
                 )
-              : tokenType1 === 'Token' &&
-                tokenType2 === 'LP Token' &&
-                fromName !== 'ETH' &&
-                toName !== 'ETH'
+              : tokenType1 === "Token" && tokenType2 === "LP Token" && fromName !== "ETH" && toName !== "ETH"
               ? swapFromTokenToPair(
                   currentWallet,
                   fromAddress,
@@ -278,10 +238,7 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setSuccess,
                   fromDecimals
                 )
-              : tokenType1 === 'LP Token' &&
-                tokenType2 === 'Token' &&
-                fromName !== 'ETH' &&
-                toName !== 'ETH'
+              : tokenType1 === "LP Token" && tokenType2 === "Token" && fromName !== "ETH" && toName !== "ETH"
               ? swapPairForToken(
                   currentWallet,
                   fromAddress,
@@ -295,9 +252,7 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setSuccess,
                   fromDecimals
                 )
-              : tokenType1 === 'Token' &&
-                tokenType2 === 'Token' &&
-                fromName === 'ETH'
+              : tokenType1 === "Token" && tokenType2 === "Token" && fromName === "ETH"
               ? swapEthForToken(
                   currentWallet,
                   toAddress,
@@ -309,9 +264,7 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setSuccess,
                   fromDecimals
                 )
-              : tokenType1 === 'Token' &&
-                tokenType2 === 'LP Token' &&
-                fromName === 'ETH'
+              : tokenType1 === "Token" && tokenType2 === "LP Token" && fromName === "ETH"
               ? swapEthForPair(
                   currentWallet,
                   toAddress,
@@ -323,9 +276,7 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setSuccess,
                   fromDecimals
                 )
-              : tokenType1 === 'LP Token' &&
-                tokenType2 === 'Token' &&
-                toName === 'ETH'
+              : tokenType1 === "LP Token" && tokenType2 === "Token" && toName === "ETH"
               ? swapPairForETH(
                   currentWallet,
                   fromAddress,
@@ -338,9 +289,7 @@ function Exchange({ lightMode, currentWallet }: any) {
                   setSuccess,
                   fromDecimals
                 )
-              : tokenType1 === 'Token' &&
-                tokenType2 === 'Token' &&
-                toName === 'ETH'
+              : tokenType1 === "Token" && tokenType2 === "Token" && toName === "ETH"
               ? swapTokenForETH(
                   currentWallet,
                   fromAddress,

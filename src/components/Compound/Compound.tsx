@@ -1,18 +1,20 @@
-import { useState, useEffect } from 'react';
-import './Compound.css';
-import CompoundItem from './compound-item/CompoundItem';
+import { useState, useEffect } from "react";
+import "./Compound.css";
+import CompoundItem from "./compound-item/CompoundItem";
+import useWallet from "../../hooks/useWallet";
 
 var isLocalhost = false;
-if (window.location.hostname === 'localhost') {
+if (window.location.hostname === "localhost") {
   isLocalhost = true;
 }
 
-var fetchUrl = 'https://beta.contrax.finance/api/pools.json';
+var fetchUrl = "https://beta.contrax.finance/api/pools.json";
 if (isLocalhost) {
-  fetchUrl = 'http://localhost:3000/api/pools.json';
+  fetchUrl = "http://localhost:3000/api/pools.json";
 }
 
-function Compound({ lightMode, currentWallet, connectWallet }: any) {
+function Compound({ lightMode }: any) {
+  const { currentWallet, connectWallet } = useWallet();
   const [pools, setPools] = useState([]);
 
   useEffect(() => {
@@ -24,12 +26,12 @@ function Compound({ lightMode, currentWallet, connectWallet }: any) {
   }, []);
 
   return (
-    <div className={`farms ${lightMode && 'farms--light'}`}>
-      <div className={`farm_header ${lightMode && 'farm_header--light'}`}>
+    <div className={`farms ${lightMode && "farms--light"}`}>
+      <div className={`farm_header ${lightMode && "farm_header--light"}`}>
         <p>Farms</p>
       </div>
 
-      <div className={`farm__title ${lightMode && 'farm__title--light'}`}>
+      <div className={`farm__title ${lightMode && "farm__title--light"}`}>
         <p className={`farm__asset`}>ASSET</p>
         <div className={`farm__second__title`}>
           <p>DEPOSITED</p>
