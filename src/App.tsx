@@ -2,11 +2,11 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import WalletProvider from "./context/WalletProvider";
-import Exchange from "src/components/Exchange/Exchange";
+import Exchange from "src/pages/Exchange/Exchange";
 import Farms from "src/pages/Farms/Farms";
 import CreateToken from "src/pages/CreateToken/CreateToken";
 import CreatePool from "src/pages/CreatePool/CreatePool";
-import Dashboard from "src/components/Dashboard/Dashboard";
+import Dashboard from "src/pages/Dashboard/Dashboard";
 import AppProvider from "./context/AppProvider";
 import "react-tooltip/dist/react-tooltip.css";
 

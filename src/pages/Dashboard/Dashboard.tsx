@@ -4,7 +4,7 @@ import { BsCheckCircle } from "react-icons/bs";
 import { FiExternalLink, FiCopy } from "react-icons/fi";
 import "./Dashboard.css";
 import Vaults from "./JoinedVaults/Vaults";
-import useWallet from "../../hooks/useWallet";
+import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 
 var isLocalhost = false;

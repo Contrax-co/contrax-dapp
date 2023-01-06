@@ -206,36 +206,20 @@ function CompoundItem({ pool }: any) {
                 <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>
                     <div className="drop_buttons">
                         <PoolButton
-                            lightMode={lightMode}
                             onClick={() => setButtonType("Deposit")}
                             description="deposit"
                             active={buttonType === "Deposit"}
                         />
                         <PoolButton
-                            lightMode={lightMode}
                             onClick={() => setButtonType("Withdraw")}
                             description="withdraw"
                             active={buttonType === "Withdraw"}
                         />
                     </div>
 
-                    {buttonType === "Deposit" && (
-                        <Deposit
-                            lightMode={lightMode}
-                            pool={pool}
-                            currentWallet={currentWallet}
-                            connectWallet={connectWallet}
-                        />
-                    )}
+                    {buttonType === "Deposit" && <Deposit pool={pool} />}
 
-                    {buttonType === "Withdraw" && (
-                        <Withdraw
-                            lightMode={lightMode}
-                            pool={pool}
-                            currentWallet={currentWallet}
-                            connectWallet={connectWallet}
-                        />
-                    )}
+                    {buttonType === "Withdraw" && <Withdraw pool={pool} />}
 
                     {details === false ? (
                         <div

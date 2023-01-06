@@ -7,7 +7,7 @@ import { FaExchangeAlt } from "react-icons/fa";
 import { RiFundsLine } from "react-icons/ri";
 import logo from "../../images/logo.png";
 import logo2 from "../../images/logo-4x.png";
-import LightModeToggle from "../LightModeToggle";
+import LightModeToggle from "src/components/LightModeToggle/LightModeToggle";
 import "./Sidebar.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { RoutesPaths } from "src/config/constants";

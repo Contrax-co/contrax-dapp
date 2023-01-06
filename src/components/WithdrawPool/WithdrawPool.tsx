@@ -7,8 +7,10 @@ import { MdOutlineErrorOutline } from "react-icons/md";
 import { priceToken } from "src/components/CompoundItem/compound-functions";
 import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
+import useWallet from "src/hooks/useWallet";
 
-function WithdrawPool({ pool, currentWallet, connectWallet }: any) {
+function WithdrawPool({ pool }: any) {
+    const { connectWallet, currentWallet } = useWallet();
     const { lightMode } = useApp();
     const [toggleType, setToggleType] = useState(() => {
         if (pool.token_type === "Token") {
