@@ -30,6 +30,7 @@
     "react-router-dom": "^6.4.5",
     "react-scripts": "^5.0.1",
     "react-spinners": "^0.13.7",
+    "react-tooltip": "^5.3.4",
     "react-uuid": "^2.0.0",
     "rooks": "^7.4.2",
     "styled-components": "^5.3.6",

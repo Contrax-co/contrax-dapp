@@ -8,6 +8,7 @@ import CreateToken from "src/pages/CreateToken/CreateToken";
 import CreatePool from "src/pages/CreatePool/CreatePool";
 import Dashboard from "src/components/Dashboard/Dashboard";
 import AppProvider from "./context/AppProvider";
+import "react-tooltip/dist/react-tooltip.css";
 
 function App() {
     return (

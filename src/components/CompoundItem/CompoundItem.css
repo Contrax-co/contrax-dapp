@@ -243,42 +243,25 @@
   display: none;
 }
 
-.apy_info:hover + .apy_hidden {
-  box-sizing: border-box;
-  z-index: 999;
-  display: flex;
-  flex-direction: column;
-  background-color: #032a51;
-  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%);
-  color: white;
-  padding: 10px;
-  width: 180px;
-  border-radius: 10px;
+.apy_tooltip {
+  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%) !important;
+  color: white !important;
+  padding: 3px 10px !important;
+  border-radius: 10px !important;
+  background-color: #032a51 !important;
+  line-height: 6px;
 }
 
-.apy_info:hover + .apy_hidden > p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: white;
-  background-color: #032a51;
-  padding: 3px;
-}
-
-.apy_info:hover + .apy_hidden--light {
-  display: flex;
-  background-color: white;
-  color: black;
-}
-
-.apy_info:hover + .apy_hidden--light > p {
-  background-color: white;
-  color: black;
+.apy_tooltip--light {
+  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%) !important;
+  color: black !important;
+  padding: 3px 10px !important;
+  border-radius: 10px !important;
+  background-color: white !important;
+  line-height: 6px;
 }
 
 @media (max-width: 768px) {
-  .apy_info:hover + .apy_hidden{
-    right:0;
-  }
 
   .pools {
     overflow: scroll;
@@ -337,9 +320,6 @@
     margin-left: 0px;
   }
 
-  .apy_info:hover + .apy_hidden{
-    right:0;
-  }
 
   .pool_name {
     margin-bottom: 2px;

@@ -5,6 +5,7 @@ import Deposit from "src/components/DepositPool/DepositPool";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import Withdraw from "src/components/WithdrawPool/WithdrawPool";
 import { CgInfo } from "react-icons/cg";
+import { Tooltip } from "react-tooltip";
 import {
     apyPool,
     calculateFarmAPY,
@@ -19,6 +20,7 @@ import {
 import Details from "src/components/CompoundItem/Details";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
+import uuid from "react-uuid";
 
 function CompoundItem({ pool }: any) {
     const { connectWallet, currentWallet } = useWallet();
@@ -55,6 +57,8 @@ function CompoundItem({ pool }: any) {
         findTotalAPY(pool.rewards_apy, setTotalAPY, pool.total_apy, pool.platform);
         totalFarmAPY(rewardAPY, feeAPY, setAPYVisionAPY);
     }, [pool, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
+
+    const key = uuid();
 
     return (
         <div className={`pools ${lightMode && "pools--light"}`}>
@@ -152,29 +156,41 @@ function CompoundItem({ pool }: any) {
                                     <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                         {apyVisionAPY.toFixed(2)}%
                                     </p>
-                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                                    <div className={`apy_hidden ${lightMode && "apy_hidden--light"}`}>
-                                        <p>
+                                    <a
+                                        id={key}
+                                        data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
-                                        <p>LP Rewards: {rewardAPY.toFixed(2)}%</p>
-                                        <p>Trading Fees: {feeAPY.toFixed(2)}%</p>
-                                        <p>Compounding: {apyVisionCompound.toFixed(2)}%</p>
-                                    </div>
+                                        <p>LP Rewards: ${rewardAPY.toFixed(2)}%</p>
+                                        <p>Trading Fees: ${feeAPY.toFixed(2)}%</p>
+                                        <p>Compounding: ${apyVisionCompound.toFixed(2)}%</p>`}
+                                    >
+                                        <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                                    </a>
+                                    <Tooltip
+                                        anchorId={key}
+                                        className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                                    />
                                 </div>
                             ) : (
                                 <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
                                     <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                         {totalAPY.toFixed(2)}%
                                     </p>
-                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                                    <div className={`apy_hidden ${lightMode && "apy_hidden--light"}`}>
-                                        <p>
+                                    <a
+                                        id={key}
+                                        data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
-                                        <p>LP Rewards: {Number(pool.rewards_apy).toFixed(2)}%</p>
-                                        <p>Compounding: {compoundAPY.toFixed(2)}%</p>
-                                    </div>
+                                        <p>LP Rewards: ${Number(pool.rewards_apy).toFixed(2)}%</p>
+                                        <p>Compounding: ${compoundAPY.toFixed(2)}%</p>`}
+                                    >
+                                        <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                                    </a>
+                                    <Tooltip
+                                        anchorId={key}
+                                        className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                                    />
                                 </div>
                             )}
                         </div>
