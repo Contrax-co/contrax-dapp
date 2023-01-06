@@ -2,8 +2,12 @@ import { useState, useEffect } from "react";
 import { main } from "./wallet-functions";
 import Item from "./Item";
 import "./WalletItem.css";
+import useApp from "src/hooks/useApp";
+import useWallet from "src/hooks/useWallet";
 
-function WalletItem({ lightMode, currentWallet }: any) {
+function WalletItem() {
+    const { lightMode } = useApp();
+    const { currentWallet } = useWallet();
     const [tokens, setTokens] = useState([]);
 
     useEffect(() => {

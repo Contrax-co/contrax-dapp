@@ -9,8 +9,15 @@ import logo from "../../images/logo.png";
 import logo2 from "../../images/logo-4x.png";
 import LightModeToggle from "../LightModeToggle";
 import "./Sidebar.css";
+import { useNavigate, useLocation } from "react-router-dom";
+import { RoutesPaths } from "src/config/constants";
+import useApp from "src/hooks/useApp";
 
-function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
+function Sidebar() {
+    const { lightMode } = useApp();
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
+
     return (
         <div className={`sidebar_bg ${lightMode && "sidebar_bg--light"}`}>
             <img className="contrax_logo" alt="contrax-logo" src={lightMode ? logo2 : logo} />
@@ -19,41 +26,36 @@ function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
                 <SidebarItem
                     title="Dashboard"
                     icon={<MdSpaceDashboard />}
-                    onClick={() => setMenuItem("Dashboard")}
-                    active={menuItem === "Dashboard"}
-                    lightMode={lightMode}
+                    onClick={() => navigate(RoutesPaths.Home)}
+                    active={pathname === RoutesPaths.Home}
                 />
 
                 <SidebarItem
                     title="Farms"
                     icon={<GiFarmTractor />}
-                    onClick={() => setMenuItem("Farms")}
-                    active={menuItem === "Farms"}
-                    lightMode={lightMode}
+                    onClick={() => navigate(RoutesPaths.Farms)}
+                    active={pathname === RoutesPaths.Farms}
                 />
 
                 <SidebarItem
                     title="Exchange"
                     icon={<FaExchangeAlt />}
-                    onClick={() => setMenuItem("Exchange")}
-                    active={menuItem === "Exchange"}
-                    lightMode={lightMode}
+                    onClick={() => navigate(RoutesPaths.Exchange)}
+                    active={pathname === RoutesPaths.Exchange}
                 />
 
                 <SidebarItem
                     title="Create Token"
                     icon={<GiToken />}
-                    onClick={() => setMenuItem("Create token")}
-                    active={menuItem === "Create token"}
-                    lightMode={lightMode}
+                    onClick={() => navigate(RoutesPaths.CreateToken)}
+                    active={pathname === RoutesPaths.CreateToken}
                 />
 
                 <SidebarItem
                     title="Create Pool"
                     icon={<RiFundsLine />}
-                    onClick={() => setMenuItem("Create pool")}
-                    active={menuItem === "Create pool"}
-                    lightMode={lightMode}
+                    onClick={() => navigate(RoutesPaths.CreatePool)}
+                    active={pathname === RoutesPaths.CreatePool}
                 />
 
                 <SidebarItem
@@ -61,13 +63,12 @@ function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
                     onClick={() => window.open("https://contrax.gitbook.io/contrax-docs/", "_blank")}
                     icon={<HiDocumentText />}
                     icon2={<AiOutlineExport />}
-                    active={menuItem === "Docs"}
-                    lightMode={lightMode}
+                    // active={menuItem === "Docs"}
                 />
             </div>
 
             <div className="toggle_placement">
-                <LightModeToggle onClick={props.onClick} lightMode={lightMode} />
+                <LightModeToggle />
             </div>
         </div>
     );

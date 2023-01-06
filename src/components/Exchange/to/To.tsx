@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { HiChevronDown } from "react-icons/hi";
+import useApp from "src/hooks/useApp";
+import useWallet from "src/hooks/useWallet";
 import { priceToken } from "../from/from-functions";
 import { userBalTo } from "./to-functions";
 import "./To.css";
 
 function To({
-    lightMode,
     setOpenModal,
     tokens,
     tokenId,
@@ -17,9 +18,10 @@ function To({
     setToName,
     setToImg,
     setToAlt,
-    currentWallet,
     setToDecimals,
 }: any) {
+    const { lightMode } = useApp();
+    const { currentWallet } = useWallet();
     const token = tokens.slice(tokenId - 1, tokenId);
 
     const [tokenName, setTokenName] = useState("");

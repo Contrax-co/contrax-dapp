@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { HiChevronDown } from "react-icons/hi";
-import { priceToken } from "../../Compound/compound-item/compound-functions";
+import { priceToken } from "src/components/CompoundItem/compound-functions";
+import useApp from "src/hooks/useApp";
 import { estimateValueTo } from "./from-functions";
 import { totalFrom } from "./from-functions";
 import "./From.css";
@@ -8,7 +9,6 @@ import "./From.css";
 function From({
     tokenType1,
     tokenType2,
-    lightMode,
     setOpenModal,
     tokens,
     tokenId,
@@ -28,6 +28,7 @@ function From({
     toDecimals,
     setFromDecimals,
 }: any) {
+    const { lightMode } = useApp();
     const token = tokens.slice(tokenId - 1, tokenId);
 
     const [tokenName, setTokenName] = useState("");

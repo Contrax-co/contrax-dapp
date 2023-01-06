@@ -4,6 +4,7 @@ import * as colors from "../../theme/colors";
 import { weight } from "../../theme/fonts";
 import { Block, Row } from "../blocks/Blocks";
 import "./form.css";
+import useApp from "src/hooks/useApp";
 export const Form = (props) => {
     const { children, ...remainingProps } = props;
 
@@ -11,8 +12,8 @@ export const Form = (props) => {
 };
 
 export const FormInput = (props) => {
-    const { variant, value, onClick, children, label, className, inputClassName, type, lightMode, ...remainingProps } =
-        props;
+    const { lightMode } = useApp();
+    const { variant, value, onClick, children, label, className, inputClassName, type, ...remainingProps } = props;
 
     return (
         <div className={props.className}>

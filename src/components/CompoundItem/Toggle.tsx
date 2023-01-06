@@ -1,6 +1,8 @@
+import useApp from "src/hooks/useApp";
 import "./Toggle.css";
 
-function Toggle({ lightMode, active, pool, ...props }: any) {
+function Toggle({ active, pool, ...props }: any) {
+    const { lightMode } = useApp();
     return (
         <div className="switch">
             <p

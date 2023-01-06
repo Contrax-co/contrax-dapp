@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
-import { getUserVaultBalance, withdraw, withdrawAll, zapOut } from "./withdraw-function";
+import { getUserVaultBalance, withdraw, withdrawAll, zapOut } from "src/components/WithdrawPool/withdraw-function";
 import { MoonLoader } from "react-spinners";
 import "./Withdraw.css";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { MdOutlineErrorOutline } from "react-icons/md";
-import { priceToken } from "../compound-item/compound-functions";
-import Toggle from "../Toggle";
+import { priceToken } from "src/components/CompoundItem/compound-functions";
+import Toggle from "src/components/CompoundItem/Toggle";
+import useApp from "src/hooks/useApp";
+import useWallet from "src/hooks/useWallet";
 
-function Withdraw({ lightMode, pool, currentWallet, connectWallet }: any) {
+function Withdraw({ pool }: any) {
+    const { lightMode } = useApp();
+    const { connectWallet, currentWallet } = useWallet();
     const [toggleType, setToggleType] = useState(() => {
         if (pool.token_type === "Token") {
             return true;

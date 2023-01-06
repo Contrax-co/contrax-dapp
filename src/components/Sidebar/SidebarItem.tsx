@@ -1,6 +1,8 @@
+import useApp from "src/hooks/useApp";
 import "./SidebarItem.css";
 
-function SidebarItem({ icon, title, icon2, lightMode, active, ...props }: any) {
+function SidebarItem({ icon, title, icon2, active, ...props }: any) {
+    const { lightMode } = useApp();
     return (
         <div
             className={`sideitems 

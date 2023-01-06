@@ -1,7 +1,10 @@
 import { useRef } from "react";
+import useApp from "src/hooks/useApp";
 import "./modal.css";
 
-function OwnModals({ lightMode, setOpenModal, tokens, setTokenId, setTokenSymbol }: any) {
+function OwnModal({ setOpenModal, tokens, setTokenId, setTokenSymbol }: any) {
+    const { lightMode } = useApp();
+
     console.log(tokens);
     // close the modal when clicking outside the modal.
     const modalRef: any = useRef();
@@ -52,4 +55,4 @@ function OwnModals({ lightMode, setOpenModal, tokens, setTokenId, setTokenSymbol
     );
 }
 
-export default OwnModals;
+export default OwnModal;

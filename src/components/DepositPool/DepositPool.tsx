@@ -4,9 +4,13 @@ import { MoonLoader } from "react-spinners";
 import { deposit, depositAll, getEthBalance, getLPBalance, priceToken, zapIn, zapInAll } from "./deposit-functions";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { MdOutlineErrorOutline } from "react-icons/md";
-import Toggle from "../Toggle";
+import Toggle from "src/components/CompoundItem/Toggle";
+import useApp from "src/hooks/useApp";
+import useWallet from "src/hooks/useWallet";
 
-function Deposit({ lightMode, pool, currentWallet, connectWallet }: any) {
+function Deposit({ pool }: any) {
+    const { lightMode } = useApp();
+    const { connectWallet, currentWallet } = useWallet();
     const [toggleType, setToggleType] = useState(() => {
         if (pool.token_type === "Token") {
             return true;

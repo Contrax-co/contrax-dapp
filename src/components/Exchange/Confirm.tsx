@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import { BsArrowDown } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
+import useApp from "src/hooks/useApp";
 import { priceToken } from "./confirm-functions";
 import "./Confirm.css";
 
 function Confirm({
-    lightMode,
     setConfirmPage,
     amount,
     toAmount,
@@ -19,6 +19,7 @@ function Confirm({
     fromAddress,
     toAddress,
 }: any) {
+    const { lightMode } = useApp();
     const [fromPrice, setFromPrice] = useState(0);
     const [toPrice, setToPrice] = useState(0);
 

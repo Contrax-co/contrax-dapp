@@ -5,6 +5,7 @@ import { FiExternalLink, FiCopy } from "react-icons/fi";
 import "./Dashboard.css";
 import Vaults from "./JoinedVaults/Vaults";
 import useWallet from "../../hooks/useWallet";
+import useApp from "src/hooks/useApp";
 
 var isLocalhost = false;
 if (window.location.hostname === "localhost") {
@@ -16,7 +17,8 @@ if (isLocalhost) {
     fetchUrl = "http://localhost:3000/api/vaults.json";
 }
 
-function Dashboard({ lightMode }: any) {
+function Dashboard() {
+    const { lightMode } = useApp();
     const { currentWallet } = useWallet();
     const [copied, setCopied] = useState(false);
     const [vaults, setVaults] = useState([]);

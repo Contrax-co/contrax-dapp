@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { getUserSession } from "../../store/localStorage";
-import LoadingSpinner from "../../components/spinner/spinner";
+import { getUserSession } from "src/store/localStorage";
+import LoadingSpinner from "src/components/spinner/spinner";
 import "./tokens.css";
+import useApp from "src/hooks/useApp";
 
-export default function Tokens({ lightMode }: any) {
+export default function Tokens() {
+    const { lightMode } = useApp();
     const [wallet, setWallet] = useState();
     const [datas, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);

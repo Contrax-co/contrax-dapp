@@ -4,10 +4,15 @@ import { TbMenu2 } from "react-icons/tb";
 import "./TopBar.css";
 import LightModeToggle from "../LightModeToggle";
 import useWallet from "../../hooks/useWallet";
+import { useNavigate } from "react-router-dom";
+import { RoutesPaths } from "src/config/constants";
+import useApp from "src/hooks/useApp";
 
-function TopBar({ lightMode, logout, setMenuItem, ...props }: any) {
+function TopBar({ openModal }: any) {
+    const { lightMode } = useApp();
     const [show, setShow] = useState(false);
     const { connectWallet, currentWallet, networkId } = useWallet();
+    const navigate = useNavigate();
 
     return (
         <div className="topbar_placement">
@@ -19,7 +24,7 @@ function TopBar({ lightMode, logout, setMenuItem, ...props }: any) {
                     <a
                         href="#dashboard"
                         onClick={() => {
-                            setMenuItem("Dashboard");
+                            navigate(RoutesPaths.Home);
                             setShow(!show);
                         }}
                     >
@@ -28,7 +33,8 @@ function TopBar({ lightMode, logout, setMenuItem, ...props }: any) {
                     <a
                         href="#farms"
                         onClick={() => {
-                            setMenuItem("Farms");
+                            navigate(RoutesPaths.Farms);
+
                             setShow(!show);
                         }}
                     >
@@ -37,7 +43,8 @@ function TopBar({ lightMode, logout, setMenuItem, ...props }: any) {
                     <a
                         href="#exchange"
                         onClick={() => {
-                            setMenuItem("Exchange");
+                            navigate(RoutesPaths.Exchange);
+
                             setShow(!show);
                         }}
                     >
@@ -46,7 +53,7 @@ function TopBar({ lightMode, logout, setMenuItem, ...props }: any) {
                     <a
                         href="#token"
                         onClick={() => {
-                            setMenuItem("Create token");
+                            navigate(RoutesPaths.CreateToken);
                             setShow(!show);
                         }}
                     >
@@ -55,7 +62,7 @@ function TopBar({ lightMode, logout, setMenuItem, ...props }: any) {
                     <a
                         href="#pool"
                         onClick={() => {
-                            setMenuItem("Create pool");
+                            navigate(RoutesPaths.CreatePool);
                             setShow(!show);
                         }}
                     >
@@ -71,7 +78,7 @@ function TopBar({ lightMode, logout, setMenuItem, ...props }: any) {
                         <p>Docs</p>
                     </a>
                     <div>
-                        <LightModeToggle onClick={props.onClick} lightMode={lightMode} />
+                        <LightModeToggle />
                     </div>
                 </div>
             ) : null}
@@ -88,7 +95,7 @@ function TopBar({ lightMode, logout, setMenuItem, ...props }: any) {
                         </div>
                     )}
 
-                    <div className={`connected_wallet ${lightMode && "connected_wallet--light"}`} onClick={logout}>
+                    <div className={`connected_wallet ${lightMode && "connected_wallet--light"}`} onClick={openModal}>
                         <p className="address">
                             {currentWallet.substring(0, 6)}...
                             {currentWallet.substring(currentWallet.length - 5)}

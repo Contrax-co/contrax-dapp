@@ -6,18 +6,11 @@ import { Image } from "../image/Image";
 import * as colors from "../../theme/colors";
 import Icon from "../icon/Icon";
 import "./modal.css";
+import useApp from "src/hooks/useApp";
+
 export const Modal = (props) => {
-    const {
-        onClose,
-        onOk,
-        hasOkayButton = true,
-        children,
-        title,
-        okLabel,
-        lightMode,
-        closeLabel,
-        ...remainingProps
-    } = props;
+    const { onClose, onOk, hasOkayButton = true, children, title, okLabel, closeLabel, ...remainingProps } = props;
+    const { lightMode } = useApp();
     return (
         <div className="modal fade" aria-labelledby="exampleModalLabel" aria-hidden="true" {...remainingProps}>
             <StyledModalDialog>

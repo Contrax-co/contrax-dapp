@@ -1,6 +1,8 @@
+import useApp from "src/hooks/useApp";
 import "./PoolButton.css";
 
-function PoolButton({ description, active, lightMode, ...props }: any) {
+function PoolButton({ description, active, ...props }: any) {
+    const { lightMode } = useApp();
     return (
         <div
             className={`button ${lightMode && "button--light"} ${active && "button--selected"} ${

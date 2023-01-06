@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import "./Compound.css";
-import CompoundItem from "./compound-item/CompoundItem";
-import useWallet from "../../hooks/useWallet";
+import "./Farms.css";
+import CompoundItem from "src/components/CompoundItem/CompoundItem";
+import useWallet from "src/hooks/useWallet";
+import useApp from "src/hooks/useApp";
 
 var isLocalhost = false;
 if (window.location.hostname === "localhost") {
@@ -13,7 +14,8 @@ if (isLocalhost) {
     fetchUrl = "http://localhost:3000/api/pools.json";
 }
 
-function Compound({ lightMode }: any) {
+function Farms() {
+    const { lightMode } = useApp();
     const { currentWallet, connectWallet } = useWallet();
     const [pools, setPools] = useState([]);
 
@@ -56,4 +58,4 @@ function Compound({ lightMode }: any) {
     );
 }
 
-export default Compound;
+export default Farms;

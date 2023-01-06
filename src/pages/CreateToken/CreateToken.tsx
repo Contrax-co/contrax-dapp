@@ -2,12 +2,13 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import swal from "sweetalert";
-import { getUserSession } from "../../store/localStorage";
-import Tokens from "./tokens";
-import LoadingSpinner from "../../components/spinner/spinner";
+import { getUserSession } from "src/store/localStorage";
+import Tokens from "./Tokens";
+import LoadingSpinner from "src/components/spinner/spinner";
 import "./createToken.css";
+import useApp from "src/hooks/useApp";
 
-const contractFile = require("../../config/erc20.json");
+const contractFile = require("src/config/erc20.json");
 
 declare global {
     interface Window {
@@ -15,7 +16,8 @@ declare global {
     }
 }
 
-export default function CreateToken({ lightMode }: any) {
+export default function CreateToken() {
+    const { lightMode } = useApp();
     const [tokenSymbol, setTokenSymbol] = useState("");
     const [tokenSupply, setTokenSupply] = useState("");
     const [tokenName, setTokenName] = useState("");
@@ -232,7 +234,7 @@ export default function CreateToken({ lightMode }: any) {
                         )}
                     </div>
                 </div>
-                <Tokens lightMode={lightMode} />
+                <Tokens />
             </div>
         </>
     );

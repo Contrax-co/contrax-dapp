@@ -2,16 +2,18 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import swal from "sweetalert";
-import { getUserSession } from "../../store/localStorage";
+import { getUserSession } from "src/store/localStorage";
 import Pools from "./Pools";
-import ercabi from "../../config/erc20.json";
-import factory from "../../config/pool.json";
-import Modals from "./modal/modal";
-import OwnModals from "./modal/OwnModal";
-import LoadingSpinner from "../../components/spinner/spinner";
+import ercabi from "src/config/erc20.json";
+import factory from "src/config/pool.json";
+import Modals from "./Modal/Modal";
+import OwnModals from "./Modal/OwnModal";
+import LoadingSpinner from "src/components/spinner/spinner";
 import "./createPool.css";
+import useApp from "src/hooks/useApp";
 
-export default function CreatePools({ lightMode }: any) {
+export default function CreatePool() {
+    const { lightMode } = useApp();
     const { ethereum } = window;
     const [openModalFrom, setOpenModalFrom] = useState(false);
     const [openModalTo, setOpenModalTo] = useState(false);
@@ -255,7 +257,6 @@ export default function CreatePools({ lightMode }: any) {
                     <Modals
                         tokens={StableTOKEN}
                         setOpenModal={setOpenModalFrom}
-                        lightMode={lightMode}
                         setTokenId={setTokenId1}
                         setTokenSymbol={setTokenSymbols}
                     />
@@ -264,13 +265,12 @@ export default function CreatePools({ lightMode }: any) {
                     <OwnModals
                         tokens={data}
                         setOpenModal={setOpenModalTo}
-                        lightMode={lightMode}
                         setTokenId={setTokenId2}
                         setTokenSymbol={setTokenSymbolss}
                     />
                 ) : null}
 
-                <Pools lightMode={lightMode} />
+                <Pools />
             </div>
         </>
     );

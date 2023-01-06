@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { priceOfToken, tokenInfo } from "./wallet-functions";
 import "./Item.css";
+import useApp from "src/hooks/useApp";
 
-function Item({ token, lightMode }: any) {
+function Item({ token }: any) {
+    const { lightMode } = useApp();
     const [balance, setBalance] = useState(0);
     const [name, setName] = useState("");
     const [symbol, setSymbol] = useState("");

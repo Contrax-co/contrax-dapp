@@ -20,6 +20,7 @@ import Confirm from "./Confirm";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import useWallet from "../../hooks/useWallet";
+import useApp from "src/hooks/useApp";
 
 var isLocalhost = false;
 if (window.location.hostname === "localhost") {
@@ -31,7 +32,8 @@ if (isLocalhost) {
     fetchUrl = "http://localhost:3000/api/poolswap.json";
 }
 
-function Exchange({ lightMode }: any) {
+function Exchange() {
+    const { lightMode } = useApp();
     const { currentWallet } = useWallet();
     const [openModalFrom, setOpenModalFrom] = useState(false);
     const [openModalTo, setOpenModalTo] = useState(false);

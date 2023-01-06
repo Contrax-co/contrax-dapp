@@ -1,7 +1,9 @@
 import { MdOutlineDarkMode, MdOutlineLightMode, MdLightMode, MdDarkMode } from "react-icons/md";
+import useApp from "src/hooks/useApp";
 import "./LightModeToggle.css";
 
-function LightModeToggle({ lightMode, ...props }: any) {
+function LightModeToggle() {
+    const { lightMode, toggleLight } = useApp();
     return (
         <div className="darkmode_toggle_container">
             {lightMode ? (
@@ -10,7 +12,7 @@ function LightModeToggle({ lightMode, ...props }: any) {
                 <MdOutlineLightMode className={`label1 ${lightMode && "label1--light"}`} />
             )}
 
-            <div className={`lighttoggle ${lightMode && "lighttoggle--light"}`} onClick={props.onClick}>
+            <div className={`lighttoggle ${lightMode && "lighttoggle--light"}`} onClick={toggleLight}>
                 <div className={`lighttoggle_switch ${lightMode && "lighttoggle_switch--light"}`}></div>
             </div>
 

@@ -6,8 +6,10 @@ import { BsCheckCircle } from "react-icons/bs";
 import "./Logout.css";
 import { removeUserSession } from "../../store/localStorage";
 import useWallet from "../../hooks/useWallet";
+import useApp from "src/hooks/useApp";
 
-function Logout({ lightMode, setLogout }: any) {
+function Logout({ onClose }: any) {
+    const { lightMode } = useApp();
     const { currentWallet, logout: walletLogout } = useWallet();
     const [copied, setCopied] = useState(false);
 
@@ -16,13 +18,13 @@ function Logout({ lightMode, setLogout }: any) {
 
     const closeModal = (e: any) => {
         if (e.target === modalRef.current) {
-            setLogout(false);
+            onClose();
         }
     };
 
     const logout = async () => {
         walletLogout();
-        setLogout(false);
+        onClose();
     };
 
     const copyToClipboard = () => {
@@ -38,10 +40,7 @@ function Logout({ lightMode, setLogout }: any) {
         <div className="logout" ref={modalRef} onClick={closeModal}>
             <div className={`logout__modal ${lightMode && "logout__modal--light"}`}>
                 <div className={`logout__info`}>
-                    <div
-                        className={`logout__close ${lightMode && "logout__close--light"}`}
-                        onClick={() => setLogout(false)}
-                    >
+                    <div className={`logout__close ${lightMode && "logout__close--light"}`} onClick={() => onClose()}>
                         {<CgClose />}
                     </div>
 

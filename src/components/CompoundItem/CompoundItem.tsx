@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import "./CompoundItem.css";
-import Deposit from "../deposit/Deposit";
-import PoolButton from "../PoolButton";
-import Withdraw from "../withdraw/Withdraw";
+import Deposit from "src/components/DepositPool/DepositPool";
+import PoolButton from "src/components/PoolButton/PoolButton";
+import Withdraw from "src/components/WithdrawPool/WithdrawPool";
 import { CgInfo } from "react-icons/cg";
 import {
     apyPool,
@@ -16,9 +16,13 @@ import {
     priceToken,
     totalFarmAPY,
 } from "./compound-functions";
-import Details from "../Details/Details";
+import Details from "src/components/CompoundItem/Details";
+import useApp from "src/hooks/useApp";
+import useWallet from "src/hooks/useWallet";
 
-function CompoundItem({ lightMode, pool, currentWallet, connectWallet }: any) {
+function CompoundItem({ pool }: any) {
+    const { connectWallet, currentWallet } = useWallet();
+    const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
     const [buttonType, setButtonType] = useState("Deposit");
 

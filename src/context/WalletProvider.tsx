@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { onboard } from "../config/walletConfig";
 import { getUserSession, setUserSession } from "../store/localStorage";

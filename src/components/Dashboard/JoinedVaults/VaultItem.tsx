@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
-import { apyPool, calculateFeeAPY, findTotalAPY, totalFarmAPY } from "../../Compound/compound-item/compound-functions";
+import { apyPool, calculateFeeAPY, findTotalAPY, totalFarmAPY } from "src/components/CompoundItem/compound-functions";
+import useApp from "src/hooks/useApp";
+import useWallet from "src/hooks/useWallet";
 import { priceOfToken, totalVault, userVaultTokens } from "./vault-functions";
 import "./VaultItem.css";
 
-function VaultItem({ lightMode, currentWallet, vault }: any) {
+function VaultItem({ vault }: any) {
+    const { currentWallet } = useWallet();
+    const { lightMode } = useApp();
     const [tokenAmount, setTokenAmount] = useState(0);
     const [price, setPrice] = useState(0);
 

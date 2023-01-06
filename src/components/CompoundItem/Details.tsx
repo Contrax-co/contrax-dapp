@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { RiArrowUpSLine } from "react-icons/ri";
+import useApp from "src/hooks/useApp";
+import useWallet from "src/hooks/useWallet";
 import { priceOfToken, userTokenAmount, userVaultAmount } from "./details-functions";
 import "./Details.css";
 
-function Details({ lightMode, currentWallet, pool, ...props }: any) {
+function Details({ pool, ...props }: any) {
+    const { lightMode } = useApp();
+    const { currentWallet } = useWallet();
     const [price1, setPrice1] = useState(0);
     const [price2, setPrice2] = useState(0);
 

@@ -5,8 +5,10 @@ import LoadingSpinner from "../../components/spinner/spinner";
 import "./Pools.css";
 import { BiLinkExternal } from "react-icons/bi";
 import axios from "axios";
+import useApp from "src/hooks/useApp";
 
-export default function Pools({ lightMode }: any) {
+export default function Pools() {
+    const { lightMode } = useApp();
     const [wallet, setWallet] = useState();
     const [values, setValues] = useState<any>([]);
     const [isLoading, setIsLoading] = useState(false);
