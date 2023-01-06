@@ -51,8 +51,8 @@ function CompoundItem({ pool }: any) {
         apyPool(pool.lp_address, setRewardApy);
         calculateFeeAPY(pool.lp_address, setFeeAPY);
         calculateFarmAPY(rewardAPY, setAPYVisionCompound);
-        findCompoundAPY(pool.rewards_apy, setCompoundAPY, pool.total_apy);
-        findTotalAPY(pool.rewards_apy, setTotalAPY, pool.total_apy);
+        findCompoundAPY(pool.rewards_apy, setCompoundAPY, pool.total_apy, pool.platform);
+        findTotalAPY(pool.rewards_apy, setTotalAPY, pool.total_apy, pool.platform);
         totalFarmAPY(rewardAPY, feeAPY, setAPYVisionAPY);
     }, [pool, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
 
@@ -165,7 +165,7 @@ function CompoundItem({ pool }: any) {
                             ) : (
                                 <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
                                     <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                        {totalAPY.toFixed(2)} - {(pool.total_apy + totalAPY).toFixed(2)}%
+                                        {totalAPY.toFixed(2)}%
                                     </p>
                                     <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
                                     <div className={`apy_hidden ${lightMode && "apy_hidden--light"}`}>
