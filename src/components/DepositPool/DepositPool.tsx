@@ -7,6 +7,7 @@ import { MdOutlineErrorOutline } from "react-icons/md";
 import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
+import { BLOCK_EXPLORER_URL } from "src/config/constants";
 
 function Deposit({ pool }: any) {
     const { lightMode } = useApp();
@@ -313,7 +314,7 @@ function Deposit({ pool }: any) {
                         {link ? (
                             <div
                                 className={`deposit_spinner_bottom_left`}
-                                onClick={() => window.open(`https://arbiscan.io/tx/${hash}`, "_blank")}
+                                onClick={() => window.open(`${BLOCK_EXPLORER_URL}/tx/${hash}`, "_blank")}
                             >
                                 <p>Details</p>
                             </div>

@@ -3,29 +3,12 @@ import "./Farms.css";
 import CompoundItem from "src/components/CompoundItem/CompoundItem";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
-
-var isLocalhost = false;
-if (window.location.hostname === "localhost") {
-    isLocalhost = true;
-}
-
-var fetchUrl = "https://beta.contrax.finance/api/pools.json";
-if (isLocalhost) {
-    fetchUrl = "http://localhost:3000/api/pools.json";
-}
+import usePools from "src/hooks/usePools";
 
 function Farms() {
     const { lightMode } = useApp();
     const { currentWallet, connectWallet } = useWallet();
-    const [pools, setPools] = useState([]);
-
-    useEffect(() => {
-        fetch(fetchUrl) //`http://localhost:3000/api/pools.json` or `https://testing.contrax.finance/api/pools.json` for when we want it done locally
-            .then((response) => response.json())
-            .then((data) => {
-                setPools(data);
-            });
-    }, []);
+    const { pools } = usePools();
 
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>

@@ -1,15 +1,17 @@
-// @ts-nocheck
 import React from "react";
-import { onboard } from "../config/walletConfig";
 import { getUserSession, setUserSession } from "../store/localStorage";
 import * as ethers from "ethers";
 import { removeUserSession } from "../store/localStorage";
+import { useConnectWallet, useSetChain } from "@web3-onboard/react";
 
 export const WalletContext = React.createContext({
     currentWallet: "",
+    displayAccount: "",
     connectWallet: () => {},
     networkId: "",
     logout: () => {},
+    signer: null as any,
+    provider: null as any,
 });
 
 interface IProps {
@@ -17,35 +19,45 @@ interface IProps {
 }
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
+    const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
     const [currentWallet, setCurrentWallet] = React.useState("");
     const [networkId, setNetworkId] = React.useState("");
+    const [provider, setProvider] = React.useState<ethers.ethers.providers.Web3Provider | null>(null);
+    const [signer, setSigner] = React.useState<ethers.ethers.providers.JsonRpcSigner | null>(null);
+    const [
+        {
+            chains, // the list of chains that web3-onboard was initialized with
+            connectedChain, // the current chain the user's wallet is connected to
+            settingChain, // boolean indicating if the chain is in the process of being set
+        },
+        setChain, // function to call to initiate user to switch chains in their wallet
+    ] = useSetChain();
 
     const connectWallet = async () => {
-        const wallets = await onboard.connectWallet();
+        const wallets = await connect();
         if (wallets) {
-            const states = onboard.state.get();
             setUserSession({
-                address: states.wallets[0].accounts[0].address,
-                networkId: states.chains[0].id,
+                address: wallets[0].accounts[0].address,
+                networkId: wallets[0].chains[0].id,
             });
 
-            setCurrentWallet(states.wallets[0].accounts[0].address);
-            setNetworkId(states.chains[0].id);
+            setCurrentWallet(wallets[0].accounts[0].address);
+            setNetworkId(wallets[0].chains[0].id);
         }
     };
 
     async function network() {
         const chainId = 42161;
-        if (window.ethereum.networkVersion !== chainId) {
+        if (!connectedChain?.id) return;
+        if (connectedChain.id !== chainId.toString()) {
             try {
-                await window.ethereum.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: "0xA4B1" }],
+                await setChain({
+                    chainId: chainId.toString(),
                 });
             } catch (err: any) {
                 // This error code indicates that the chain has not been added to MetaMask
                 if (err.code === 4902) {
-                    await window.ethereum.request({
+                    await wallet?.provider?.request({
                         method: "wallet_addEthereumChain",
                         params: [
                             {
@@ -61,8 +73,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     }
 
-    async function wallet() {
-        const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    async function walletFn() {
+        if (!wallet) return;
+        const provider = new ethers.providers.Web3Provider(wallet.provider, "any");
         let accounts = await provider.send("eth_requestAccounts", []);
         let account = accounts[0];
         provider.on("accountsChanged", function (accounts) {
@@ -89,7 +102,13 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     async function logout() {
         removeUserSession();
         setCurrentWallet("");
+        if (wallet) disconnect(wallet);
     }
+
+    const displayAccount = React.useMemo(
+        () => `${currentWallet.substring(0, 6)}...${currentWallet.substring(currentWallet.length - 5)}`,
+        [currentWallet]
+    );
 
     React.useEffect(() => {
         const data = getUserSession();
@@ -102,11 +121,24 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     React.useEffect(() => {
         network();
-        wallet();
-    });
+        walletFn();
+    }, [connectedChain, wallet, provider]);
+
+    React.useEffect(() => {
+        if (wallet) {
+            const provider = new ethers.providers.Web3Provider(wallet.provider, "any");
+            setProvider(provider);
+            provider.send("eth_requestAccounts", []).then(() => {
+                const signer = provider.getSigner();
+                setSigner(signer);
+            });
+        }
+    }, []);
 
     return (
-        <WalletContext.Provider value={{ currentWallet, connectWallet, networkId, logout }}>
+        <WalletContext.Provider
+            value={{ currentWallet, connectWallet, networkId, logout, displayAccount, signer, provider }}
+        >
             {children}
         </WalletContext.Provider>
     );

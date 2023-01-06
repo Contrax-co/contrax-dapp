@@ -7,14 +7,7 @@ import Tokens from "./Tokens";
 import LoadingSpinner from "src/components/spinner/spinner";
 import "./createToken.css";
 import useApp from "src/hooks/useApp";
-
-const contractFile = require("src/config/erc20.json");
-
-declare global {
-    interface Window {
-        ethereum: any;
-    }
-}
+import contractFile from "src/assets/abis/erc20.json";
 
 export default function CreateToken() {
     const { lightMode } = useApp();

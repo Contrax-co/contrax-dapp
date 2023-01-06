@@ -6,39 +6,20 @@ import "./Dashboard.css";
 import Vaults from "./JoinedVaults/Vaults";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
-
-var isLocalhost = false;
-if (window.location.hostname === "localhost") {
-    isLocalhost = true;
-}
-
-var fetchUrl = "https://beta.contrax.finance/api/vaults.json";
-if (isLocalhost) {
-    fetchUrl = "http://localhost:3000/api/vaults.json";
-}
+import useVaults from "src/hooks/useVaults";
+import { BLOCK_EXPLORER_URL } from "src/config/constants";
+import { copyToClipboard } from "src/utils";
 
 function Dashboard() {
     const { lightMode } = useApp();
-    const { currentWallet } = useWallet();
+    const { currentWallet, displayAccount } = useWallet();
     const [copied, setCopied] = useState(false);
-    const [vaults, setVaults] = useState([]);
+    const { vaults } = useVaults();
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(currentWallet);
+    const copy = () => {
         setCopied(true);
-
-        setTimeout(() => {
-            setCopied(false);
-        }, 1000);
+        copyToClipboard(currentWallet, () => setCopied(false));
     };
-
-    useEffect(() => {
-        fetch(fetchUrl) //`http://localhost:3000/api/vaults.json` or `https://testing.contrax.finance/api/vaults.json` for when we want it done locally
-            .then((response) => response.json())
-            .then((data) => {
-                setVaults(data);
-            });
-    }, []);
 
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
@@ -49,14 +30,13 @@ function Dashboard() {
                     <div>
                         <div
                             className={`dashboard_address_header ${lightMode && "dashboard_address_header--light"}`}
-                            onClick={copyToClipboard}
+                            onClick={copy}
                         >
                             <p
                                 className={`dashboard_address ${lightMode && "dashboard_address--light"}`}
                                 style={{ marginRight: "10px" }}
                             >
-                                {currentWallet.substring(0, 6)}...
-                                {currentWallet.substring(currentWallet.length - 5)}
+                                {displayAccount}
                             </p>
                             {!copied ? <FiCopy /> : <BsCheckCircle />}
                         </div>
@@ -64,7 +44,7 @@ function Dashboard() {
                         {currentWallet ? (
                             <div
                                 className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}
-                                onClick={() => window.open(`https://arbiscan.io/address/${currentWallet}`, "_blank")}
+                                onClick={() => window.open(`${BLOCK_EXPLORER_URL}/address/${currentWallet}`, "_blank")}
                             >
                                 <p style={{ marginRight: "10px" }}>View on Arbiscan</p>
                                 <FiExternalLink />
@@ -78,7 +58,7 @@ function Dashboard() {
                 <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
                     Joined Vaults
                 </p>
-                <Vaults lightMode={lightMode} vaults={vaults} currentWallet={currentWallet} />
+                <Vaults vaults={vaults} />
             </div>
         </div>
     );

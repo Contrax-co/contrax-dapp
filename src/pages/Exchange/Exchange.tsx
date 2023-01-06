@@ -21,26 +21,17 @@ import { AiOutlineCheckCircle } from "react-icons/ai";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import useWallet from "../../hooks/useWallet";
 import useApp from "src/hooks/useApp";
-
-var isLocalhost = false;
-if (window.location.hostname === "localhost") {
-    isLocalhost = true;
-}
-
-var fetchUrl = "https://beta.contrax.finance/api/poolswap.json";
-if (isLocalhost) {
-    fetchUrl = "http://localhost:3000/api/poolswap.json";
-}
+import usePoolSwaps from "src/hooks/usePoolSwaps";
 
 function Exchange() {
     const { lightMode } = useApp();
     const { currentWallet } = useWallet();
+    const { poolSwaps: tokens } = usePoolSwaps();
     const [openModalFrom, setOpenModalFrom] = useState(false);
     const [openModalTo, setOpenModalTo] = useState(false);
 
     const [tokenId1, setTokenId1] = useState(1);
     const [tokenId2, setTokenId2] = useState(2);
-    const [tokens, setTokens] = useState([]);
 
     const [value, setValue] = useState(0);
     const [tokenType1, setTokenType1] = useState("");
@@ -72,14 +63,6 @@ function Exchange() {
     const [success, setSuccess] = useState("loading");
 
     const [userAmt, setUserAmt] = useState(0);
-
-    useEffect(() => {
-        fetch(fetchUrl) //`http://localhost:3000/api/poolswap.json` or `https://testing.contrax.finance/api/poolswap.json` for when we want it done locally
-            .then((response) => response.json())
-            .then((data) => {
-                setTokens(data);
-            });
-    }, []);
 
     return (
         <div className={`whole__exchange__container`}>

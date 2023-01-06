@@ -1,4 +1,5 @@
 import * as ethers from "ethers";
+import { APY_TOKEN, APY_VISION_URL } from "src/config/constants";
 
 export const priceOfToken = async (address: any, setPrice: any) => {
     await fetch(`https://coins.llama.fi/prices/current/arbitrum:${address}`)
@@ -14,9 +15,7 @@ export const priceOfToken = async (address: any, setPrice: any) => {
 };
 
 export const totalArbitrumUsd = async (currentWallet: any, setTotalUsd: any) => {
-    await fetch(
-        `https://api.apy.vision/portfolio/42161/core/${currentWallet}?accessToken=${process.env.REACT_APP_APY_TOKEN}`
-    )
+    await fetch(`${APY_VISION_URL}/portfolio/42161/core/${currentWallet}?accessToken=${APY_TOKEN}`)
         .then((response) => response.json())
         .then((data) => {
             const total = JSON.stringify(data);

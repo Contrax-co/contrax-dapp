@@ -1,16 +1,21 @@
 import VaultItem from "./VaultItem";
 import "./Vaults.css";
+import { Vault } from "src/types";
 
-function Vaults({ vaults, singlePrice, setSinglePrice }: any) {
+interface Props {
+    vaults: Vault[];
+}
+
+const Vaults: React.FC<Props> = ({ vaults }) => {
     return (
         <div className={`vaults_container`}>
-            {vaults.map((vault: any) => (
+            {vaults.map((vault) => (
                 <div className={`vaults`}>
                     <VaultItem key={vault.id} vault={vault} />
                 </div>
             ))}
         </div>
     );
-}
+};
 
 export default Vaults;

@@ -7,6 +7,7 @@ import "./Logout.css";
 import { removeUserSession } from "../../store/localStorage";
 import useWallet from "../../hooks/useWallet";
 import useApp from "src/hooks/useApp";
+import { BLOCK_EXPLORER_URL } from "src/config/constants";
 
 function Logout({ onClose }: any) {
     const { lightMode } = useApp();
@@ -66,7 +67,7 @@ function Logout({ onClose }: any) {
 
                     <div
                         className={`logout__arbiscan ${lightMode && "logout__arbiscan--light"}`}
-                        onClick={() => window.open(`https://arbiscan.io/address/${currentWallet}`, "_blank")}
+                        onClick={() => window.open(`${BLOCK_EXPLORER_URL}/address/${currentWallet}`, "_blank")}
                     >
                         {<FiExternalLink />}
                         <p className="logout__view">View on Arbiscan</p>

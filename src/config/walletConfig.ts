@@ -2,9 +2,9 @@ import coinbaseWalletModule from "@web3-onboard/coinbase";
 import enrkypt from "@web3-onboard/enkrypt";
 import gnosisModule from "@web3-onboard/gnosis";
 import mewWallet from "@web3-onboard/mew-wallet";
-import logo from "../images/logo-4x.png";
-import Onboard from "@web3-onboard/core";
+import logo from "src/assets/images/logo-4x.png";
 import injectedModule from "@web3-onboard/injected-wallets";
+import { init } from "@web3-onboard/react";
 
 const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 
@@ -14,7 +14,7 @@ const enrkyptModule = enrkypt();
 const gnosis = gnosisModule();
 const mewWalletModule = mewWallet();
 
-const onboard = Onboard({
+init({
     wallets: [injected, coinbaseWalletSdk, enrkyptModule, gnosis, mewWalletModule],
     chains: [
         {
@@ -35,5 +35,3 @@ const onboard = Onboard({
         },
     },
 });
-
-export { onboard };

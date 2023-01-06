@@ -8,6 +8,7 @@ import { priceToken } from "src/components/CompoundItem/compound-functions";
 import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
+import { BLOCK_EXPLORER_URL } from "src/config/constants";
 
 function WithdrawPool({ pool }: any) {
     const { connectWallet, currentWallet } = useWallet();
@@ -268,7 +269,7 @@ function WithdrawPool({ pool }: any) {
                         {link ? (
                             <div
                                 className={`withdraw_spinner_bottom_left`}
-                                onClick={() => window.open(`https://arbiscan.io/tx/${hash}`, "_blank")}
+                                onClick={() => window.open(`${BLOCK_EXPLORER_URL}/tx/${hash}`, "_blank")}
                             >
                                 <p>Details</p>
                             </div>

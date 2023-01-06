@@ -4,13 +4,14 @@ import { ethers } from "ethers";
 import swal from "sweetalert";
 import { getUserSession } from "src/store/localStorage";
 import Pools from "./Pools";
-import ercabi from "src/config/erc20.json";
-import factory from "src/config/pool.json";
+import ercabi from "src/assets/abis/erc20.json";
+import factory from "src/assets/abis/pool.json";
 import Modals from "./Modal/Modal";
 import OwnModals from "./Modal/OwnModal";
 import LoadingSpinner from "src/components/spinner/spinner";
 import "./createPool.css";
 import useApp from "src/hooks/useApp";
+import { BLOCK_EXPLORER_URL } from "src/config/constants";
 
 export default function CreatePool() {
     const { lightMode } = useApp();
@@ -160,7 +161,7 @@ export default function CreatePool() {
                 }).then((value) => {
                     switch (value) {
                         case "Transaction":
-                            window.open(`https://arbiscan.io/tx/${hx.hash}`, "_blank");
+                            window.open(`${BLOCK_EXPLORER_URL}/tx/${hx.hash}`, "_blank");
                             break;
                         default:
                     }
