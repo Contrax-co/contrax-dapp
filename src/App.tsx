@@ -10,28 +10,38 @@ import Dashboard from "src/pages/Dashboard/Dashboard";
 import AppProvider from "src/context/AppProvider";
 import "react-tooltip/dist/react-tooltip.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { web3onboard } from "./config/walletConfig";
+import { Web3OnboardProvider } from "@web3-onboard/react";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+        },
+    },
+});
 
 function App() {
     return (
-        <QueryClientProvider client={queryClient}>
+        <Web3OnboardProvider web3Onboard={web3onboard}>
             <WalletProvider>
-                <AppProvider>
-                    <Router>
-                        <Routes>
-                            <Route path="/" element={<Home />}>
-                                <Route path="" element={<Dashboard />} />
-                                <Route path="farms" element={<Farms />} />
-                                <Route path="create-token" element={<CreateToken />} />
-                                <Route path="create-pool" element={<CreatePool />} />
-                                <Route path="exchange" element={<Exchange />} />
-                            </Route>
-                        </Routes>
-                    </Router>
-                </AppProvider>
+                <QueryClientProvider client={queryClient}>
+                    <AppProvider>
+                        <Router>
+                            <Routes>
+                                <Route path="/" element={<Home />}>
+                                    <Route path="" element={<Dashboard />} />
+                                    <Route path="farms" element={<Farms />} />
+                                    <Route path="create-token" element={<CreateToken />} />
+                                    <Route path="create-pool" element={<CreatePool />} />
+                                    <Route path="exchange" element={<Exchange />} />
+                                </Route>
+                            </Routes>
+                        </Router>
+                    </AppProvider>
+                </QueryClientProvider>
             </WalletProvider>
-        </QueryClientProvider>
+        </Web3OnboardProvider>
     );
 }
 

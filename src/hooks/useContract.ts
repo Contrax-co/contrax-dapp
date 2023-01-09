@@ -6,7 +6,7 @@ const useContract = (contractAddress: string, abi: any) => {
     const { provider, signer } = useWallet();
     const contract = React.useMemo(
         () => new Contract(contractAddress, abi, signer || provider),
-        [contractAddress, abi]
+        [contractAddress, abi, signer, provider]
     );
     return contract;
 };

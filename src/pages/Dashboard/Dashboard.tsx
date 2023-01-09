@@ -6,7 +6,7 @@ import "./Dashboard.css";
 import Vaults from "./JoinedVaults/Vaults";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
-import useVaults from "src/hooks/useVaults";
+import useVaults from "src/hooks/vaults/useVaults";
 import { BLOCK_EXPLORER_URL } from "src/config/constants";
 import { copyToClipboard } from "src/utils";
 

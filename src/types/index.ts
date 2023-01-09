@@ -15,5 +15,5 @@ export interface Vault {
     rewards2_alt?: string;
     total_apy?: number;
     rewards_apy?: number;
-    vault_abi: Object;
+    vault_abi: [any];
 }

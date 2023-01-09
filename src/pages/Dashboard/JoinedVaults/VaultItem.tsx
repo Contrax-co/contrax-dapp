@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { apyPool, calculateFeeAPY, findTotalAPY, totalFarmAPY } from "src/components/CompoundItem/compound-functions";
 import useApp from "src/hooks/useApp";
+import useVaultBalances from "src/hooks/vaults/useVaultBalances";
 import useWallet from "src/hooks/useWallet";
 import { Vault } from "src/types";
-import { priceOfToken, totalVault, userVaultTokens } from "./vault-functions";
 import "./VaultItem.css";
+import usePriceOfToken from "src/hooks/vaults/usePriceOfToken";
+import useVaultTotalSupply from "src/hooks/vaults/useVaultTotalSupply";
 
 interface Props {
     vault: Vault;
@@ -13,10 +15,20 @@ interface Props {
 const VaultItem: React.FC<Props> = ({ vault }) => {
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
-    const [tokenAmount, setTokenAmount] = useState(0);
-    const [price, setPrice] = useState(0);
 
-    const [vaultAmount, setVaultAmount] = useState(0);
+    const { formattedBalances } = useVaultBalances();
+    const tokenAmount = useMemo(() => {
+        return formattedBalances[vault.vault_address];
+    }, [formattedBalances]);
+
+    const { formattedSupplies } = useVaultTotalSupply();
+    const vaultAmount = useMemo(() => {
+        return formattedSupplies[vault.vault_address];
+    }, [formattedSupplies]);
+
+    // const [price, setPrice] = useState(0);
+    const { price } = usePriceOfToken(vault.lp_address);
+
     const [feeAPY, setFeeAPY] = useState(0);
 
     const [rewardAPY, setRewardApy] = useState(0);
@@ -25,11 +37,6 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
     const [totalAPY, setTotalAPY] = useState(0);
 
     useEffect(() => {
-        userVaultTokens(currentWallet, vault.vault_address, vault.vault_abi, setTokenAmount, vault.decimals);
-        priceOfToken(vault.lp_address, setPrice);
-
-        totalVault(vault.vault_address, vault.vault_abi, setVaultAmount, vault.decimals);
-
         apyPool(vault.lp_address, setRewardApy);
         calculateFeeAPY(vault.lp_address, setFeeAPY);
 

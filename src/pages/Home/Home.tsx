@@ -6,10 +6,10 @@ import Logout from "src/components/Logout/Logout";
 import { Outlet } from "react-router-dom";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
+import useVaultBalances from "src/hooks/vaults/useVaultBalances";
 
 function Home() {
     const { lightMode } = useApp();
-    const { currentWallet } = useWallet();
     const [open, setOpen] = useState(false);
 
     return (
