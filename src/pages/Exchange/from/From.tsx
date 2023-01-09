@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { HiChevronDown } from "react-icons/hi";
-import { priceToken } from "src/components/CompoundItem/compound-functions";
 import useApp from "src/hooks/useApp";
+import usePriceOfToken from "src/hooks/usePriceOfToken";
 import useWallet from "src/hooks/useWallet";
 import { estimateValueTo } from "./from-functions";
 import { totalFrom } from "./from-functions";
@@ -43,8 +43,8 @@ function From({
 
     const [swapAmount, setSwapAmount] = useState(0.0);
 
-    const [fromPrice, setFromPrice] = useState(0);
-    const [toPrice, setToPrice] = useState(0);
+    const { price: fromPrice } = usePriceOfToken(fromAddress);
+    const { price: toPrice } = usePriceOfToken(toAddress);
 
     useEffect(() => {
         token.forEach((token: any) => {
@@ -82,8 +82,6 @@ function From({
     ]);
 
     useEffect(() => {
-        priceToken(fromAddress, setFromPrice);
-        priceToken(toAddress, setToPrice);
         estimateValueTo(
             swapAmount,
             fromPrice,

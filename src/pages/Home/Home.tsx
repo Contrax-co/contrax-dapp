@@ -5,9 +5,6 @@ import "./Home.css";
 import Logout from "src/components/Logout/Logout";
 import { Outlet } from "react-router-dom";
 import useApp from "src/hooks/useApp";
-import useWallet from "src/hooks/useWallet";
-import useVaultBalances from "src/hooks/vaults/useVaultBalances";
-import useConstants from "src/hooks/useConstants";
 
 function Home() {
     const { lightMode } = useApp();

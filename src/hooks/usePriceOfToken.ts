@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { VAULT_TOKEN_PRICE } from "src/config/constants/query";
-import useConstants from "../useConstants";
-import useWallet from "../useWallet";
+import { TOKEN_PRICE } from "src/config/constants/query";
+import useConstants from "./useConstants";
+import useWallet from "./useWallet";
 
 const usePriceOfToken = (address: string) => {
     const { currentWallet } = useWallet();
@@ -23,8 +23,8 @@ const usePriceOfToken = (address: string) => {
         refetch,
         isLoading,
         isFetching,
-    } = useQuery(VAULT_TOKEN_PRICE(currentWallet, address, NETWORK_NAME), getPrice, {
-        enabled: !!address && !!currentWallet,
+    } = useQuery(TOKEN_PRICE(currentWallet, address, NETWORK_NAME), getPrice, {
+        enabled: !!address && !!currentWallet && !!COINS_LLAMA_PRICE && !!NETWORK_NAME,
         initialData: 0,
     });
 

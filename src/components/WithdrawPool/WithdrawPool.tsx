@@ -4,12 +4,12 @@ import { MoonLoader } from "react-spinners";
 import "./Withdraw.css";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { MdOutlineErrorOutline } from "react-icons/md";
-import { priceToken } from "src/components/CompoundItem/compound-functions";
 import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import useConstants from "src/hooks/useConstants";
 import { Farm } from "src/types";
+import usePriceOfToken from "src/hooks/usePriceOfToken";
 
 interface Props {
     farm: Farm;
@@ -35,7 +35,7 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
     const [success, setSuccess] = useState("loading");
     const [secondaryMessage, setSecondaryMessage] = useState("");
 
-    const [price, setPrice] = useState(0);
+    const { price } = usePriceOfToken(farm.lp_address);
     const [link, setLink] = useState(false);
     const [hash, setHash] = useState("");
 
@@ -43,7 +43,6 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
 
     useEffect(() => {
         getUserVaultBalance(farm, currentWallet, setUserVaultBalance);
-        priceToken(farm.lp_address, setPrice);
     }, [farm, currentWallet]);
 
     const handleWithdrawChange = (e: any) => {

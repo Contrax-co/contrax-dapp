@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import "./CompoundItem.css";
 import Deposit from "src/components/DepositPool/DepositPool";
@@ -6,22 +6,17 @@ import PoolButton from "src/components/PoolButton/PoolButton";
 import Withdraw from "src/components/WithdrawPool/WithdrawPool";
 import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
-import {
-    apyPool,
-    calculateFarmAPY,
-    calculateFeeAPY,
-    findCompoundAPY,
-    findTotalAPY,
-    getTotalVaultBalance,
-    getUserVaultBalance,
-    priceToken,
-    totalFarmAPY,
-} from "./compound-functions";
+import { apyPool, calculateFeeAPY } from "./compound-functions";
 import Details from "src/components/CompoundItem/Details";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import uuid from "react-uuid";
 import { Farm } from "src/types";
+import useFarmsVaultBalances from "src/hooks/farms/useFarmsVaultBalances";
+import useFarmsVaultTotalSupply from "src/hooks/farms/useFarmsVaultTotalSupply";
+import usePriceOfToken from "src/hooks/usePriceOfToken";
+import { calculateFarmAPY, findCompoundAPY, findTotalAPY, totalFarmAPY } from "src/utils/common";
+import useFarmApy from "src/hooks/farms/useFarmApy";
 
 interface Props {
     farm: Farm;
@@ -33,34 +28,33 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
     const [dropdown, setDropDown] = useState(false);
     const [buttonType, setButtonType] = useState("Deposit");
 
-    const [userVaultBal, setUserVaultBalance] = useState(0);
-    const [totalVaultBalance, setTotalVaultBalance] = useState(0);
+    const { formattedBalances } = useFarmsVaultBalances();
+    const userVaultBal = useMemo(() => {
+        return formattedBalances[farm.vault_addr] || 0;
+    }, [formattedBalances, farm]);
 
-    const [priceOfSingleToken, setPriceOfSingleToken] = useState(0);
+    const { formattedSupplies } = useFarmsVaultTotalSupply();
+    const totalVaultBalance = useMemo(() => {
+        return formattedSupplies[farm.vault_addr] || 0;
+    }, [formattedBalances, farm]);
+
+    const { price: priceOfSingleToken } = usePriceOfToken(farm.lp_address);
 
     const [details, setDetails] = useState(false);
-    const [rewardAPY, setRewardApy] = useState(0);
+    const { apy: rewardAPY } = useFarmApy(farm.lp_address);
     const [feeAPY, setFeeAPY] = useState(0);
 
-    const [apyVisionCompound, setAPYVisionCompound] = useState(0);
-    const [compoundAPY, setCompoundAPY] = useState(0);
+    const apyVisionCompound = useMemo(() => calculateFarmAPY(rewardAPY), [rewardAPY]);
+    const compoundAPY = useMemo(
+        () => findCompoundAPY(farm.rewards_apy || 0, farm.total_apy || 0, farm.platform),
+        [farm]
+    );
 
-    const [totalAPY, setTotalAPY] = useState(0);
-    const [apyVisionAPY, setAPYVisionAPY] = useState(0);
-
-    useEffect(() => {
-        getUserVaultBalance(farm, currentWallet, setUserVaultBalance);
-        getTotalVaultBalance(farm, setTotalVaultBalance);
-    }, [farm, currentWallet]);
+    const totalAPY = useMemo(() => findTotalAPY(farm.rewards_apy || 0, farm.total_apy || 0, farm.platform), [farm]);
+    const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]);
 
     useEffect(() => {
-        priceToken(farm.lp_address, setPriceOfSingleToken);
-        apyPool(farm.lp_address, setRewardApy);
         calculateFeeAPY(farm.lp_address, setFeeAPY);
-        calculateFarmAPY(rewardAPY, setAPYVisionCompound);
-        findCompoundAPY(farm.rewards_apy, setCompoundAPY, farm.total_apy, farm.platform);
-        findTotalAPY(farm.rewards_apy, setTotalAPY, farm.total_apy, farm.platform);
-        totalFarmAPY(rewardAPY, feeAPY, setAPYVisionAPY);
     }, [farm, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
 
     const key = uuid();
