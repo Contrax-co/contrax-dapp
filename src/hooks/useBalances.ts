@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TOKEN_BALANCES } from "src/config/constants/query";
 import * as ethers from "ethers";
 import useConstants from "./useConstants";
-import abi from "src/assets/abis/erc20.json";
+import erc20 from "src/assets/abis/erc20.json";
 
 /**
  * @description Returns balances for all tokens
@@ -24,8 +24,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
             const callContext: ContractCallContext = {
                 reference: item.address,
                 contractAddress: item.address,
-                // @ts-ignore
-                abi: abi,
+                abi: erc20.abi,
                 calls: [{ reference: "balance", methodName: "balanceOf", methodParameters: [currentWallet] }],
             };
             contractCallContext.push(callContext);

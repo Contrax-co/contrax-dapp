@@ -1,3 +1,5 @@
+// React Query query keys
+
 export const TOKEN_BALANCES = (currentWallet: string, addresses: string[], networkName: string) => [
     "token",
     "balances",

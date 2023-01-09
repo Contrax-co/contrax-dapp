@@ -17,7 +17,7 @@ const useFarmApy = (address: string) => {
     const getApy = async () => {
         const res = await axios.get(
             APY_VISION_URL + `/contractInsights/farmSearch/${CHAIN_ID}/${address}?accessToken=${APY_TOKEN}`
-        );
+        );        
         return Number(res.data.results[0]["apy30d"]) || 0;
     };
 

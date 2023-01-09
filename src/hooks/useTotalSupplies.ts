@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { TOKEN_TOTAL_SUPPLIES } from "src/config/constants/query";
 import * as ethers from "ethers";
 import useConstants from "src/hooks/useConstants";
-import abi from "src/assets/abis/erc20.json";
+import erc20 from "src/assets/abis/erc20.json";
 
 /**
  * @description Returns total supply for all tokens
@@ -24,8 +24,7 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
             const callContext: ContractCallContext = {
                 reference: item.address,
                 contractAddress: item.address,
-                // @ts-ignore
-                abi: abi,
+                abi: erc20.abi,
                 calls: [{ reference: "supply", methodName: "totalSupply", methodParameters: [] }],
             };
             contractCallContext.push(callContext);
