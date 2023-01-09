@@ -14,7 +14,7 @@ const enrkyptModule = enrkypt();
 const gnosis = gnosisModule();
 const mewWalletModule = mewWallet();
 
-init({
+const web3onboard = init({
     wallets: [injected, coinbaseWalletSdk, enrkyptModule, gnosis, mewWalletModule],
     chains: [
         {
@@ -34,4 +34,18 @@ init({
             termsUrl: "https://beta.contrax.finance/termsofuse.pdf",
         },
     },
+    accountCenter: {
+        desktop: {
+            position: "topRight",
+            enabled: true,
+            minimal: false,
+        },
+        mobile: {
+            position: "topRight",
+            enabled: true,
+            minimal: true,
+        },
+    },
 });
+
+export { web3onboard };

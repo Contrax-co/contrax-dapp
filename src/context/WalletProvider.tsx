@@ -2,7 +2,7 @@ import React from "react";
 import { getUserSession, setUserSession } from "../store/localStorage";
 import * as ethers from "ethers";
 import { removeUserSession } from "../store/localStorage";
-import { useConnectWallet, useSetChain } from "@web3-onboard/react";
+import { useConnectWallet, useSetChain, useWallets, useAccountCenter } from "@web3-onboard/react";
 
 export const WalletContext = React.createContext({
     currentWallet: "",
@@ -19,7 +19,8 @@ interface IProps {
 }
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
-    const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
+    const [{ wallet }, connect, disconnect, updateBalances, setWalletModules] = useConnectWallet();
+    const connectedWallets = useWallets();
     const [currentWallet, setCurrentWallet] = React.useState("");
     const [networkId, setNetworkId] = React.useState("");
     const [provider, setProvider] = React.useState<ethers.ethers.providers.Web3Provider | null>(null);
@@ -32,9 +33,11 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         },
         setChain, // function to call to initiate user to switch chains in their wallet
     ] = useSetChain();
+    const updateAccountCenter = useAccountCenter();
 
     const connectWallet = async () => {
         const wallets = await connect();
+        // TODO: Remove set user session
         if (wallets) {
             setUserSession({
                 address: wallets[0].accounts[0].address,
@@ -73,32 +76,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     }
 
-    async function walletFn() {
-        if (!wallet) return;
-        const provider = new ethers.providers.Web3Provider(wallet.provider, "any");
-        let accounts = await provider.send("eth_requestAccounts", []);
-        let account = accounts[0];
-        provider.on("accountsChanged", function (accounts) {
-            account = accounts[0];
-        });
-
-        const signer = provider.getSigner();
-
-        const address = await signer.getAddress();
-
-        console.log(address.toLowerCase(), currentWallet);
-
-        const data = getUserSession();
-        if (data) {
-            const userInfo = JSON.parse(data);
-            if (address.toLowerCase() !== userInfo.address) {
-                connectWallet();
-            } else {
-                console.log("Sorry");
-            }
-        }
-    }
-
     async function logout() {
         removeUserSession();
         setCurrentWallet("");
@@ -121,7 +98,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     React.useEffect(() => {
         network();
-        walletFn();
     }, [connectedChain, wallet, provider]);
 
     React.useEffect(() => {
@@ -133,7 +109,26 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 setSigner(signer);
             });
         }
-    }, []);
+    }, [wallet]);
+
+    React.useEffect(() => {
+        if (!connectedWallets.length) return;
+
+        const connectedWalletsLabelArray = connectedWallets.map(({ label }) => label);
+        localStorage.setItem("connectedWallets", JSON.stringify(connectedWalletsLabelArray));
+    }, [connectedWallets, wallet]);
+
+    React.useEffect(() => {
+        const previouslyConnectedWallets = JSON.parse(localStorage.getItem("connectedWallets") as string);
+
+        if (previouslyConnectedWallets?.length) {
+            connect({
+                autoSelect: previouslyConnectedWallets[0],
+            }).then((walletConnected) => {
+                console.log("connected wallets: ", walletConnected);
+            });
+        }
+    }, [connect]);
 
     return (
         <WalletContext.Provider
