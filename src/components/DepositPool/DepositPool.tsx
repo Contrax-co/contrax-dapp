@@ -7,9 +7,12 @@ import { MdOutlineErrorOutline } from "react-icons/md";
 import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
-import { BLOCK_EXPLORER_URL } from "src/config/constants";
+import useConstants from "src/hooks/useConstants";
+
 
 function Deposit({ pool }: any) {
+    const { BLOCK_EXPLORER_URL } = useConstants();
+
     const { lightMode } = useApp();
     const { connectWallet, currentWallet } = useWallet();
     const [toggleType, setToggleType] = useState(() => {

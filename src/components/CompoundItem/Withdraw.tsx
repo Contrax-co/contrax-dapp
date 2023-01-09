@@ -8,9 +8,11 @@ import { priceToken } from "src/components/CompoundItem/compound-functions";
 import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
-import { BLOCK_EXPLORER_URL } from "src/config/constants";
+import useConstants from "src/hooks/useConstants";
+
 
 function Withdraw({ pool }: any) {
+    const { BLOCK_EXPLORER_URL } = useConstants();
     const { lightMode } = useApp();
     const { connectWallet, currentWallet } = useWallet();
     const [toggleType, setToggleType] = useState(() => {

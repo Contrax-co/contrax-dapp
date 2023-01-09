@@ -2,13 +2,14 @@ import React from "react";
 import { getUserSession, setUserSession } from "../store/localStorage";
 import * as ethers from "ethers";
 import { removeUserSession } from "../store/localStorage";
-import { useConnectWallet, useSetChain, useWallets, useAccountCenter } from "@web3-onboard/react";
+import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
+import { defaultChainId } from "src/config/constants";
 
 export const WalletContext = React.createContext({
     currentWallet: "",
     displayAccount: "",
     connectWallet: () => {},
-    networkId: "",
+    networkId: defaultChainId,
     logout: () => {},
     signer: null as any,
     provider: null as any,
@@ -22,7 +23,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [{ wallet }, connect, disconnect, updateBalances, setWalletModules] = useConnectWallet();
     const connectedWallets = useWallets();
     const [currentWallet, setCurrentWallet] = React.useState("");
-    const [networkId, setNetworkId] = React.useState("");
+    const [networkId, setNetworkId] = React.useState(defaultChainId);
     const [provider, setProvider] = React.useState<ethers.ethers.providers.Web3Provider | null>(null);
     const [signer, setSigner] = React.useState<ethers.ethers.providers.JsonRpcSigner | null>(null);
     const [
@@ -33,7 +34,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         },
         setChain, // function to call to initiate user to switch chains in their wallet
     ] = useSetChain();
-    const updateAccountCenter = useAccountCenter();
 
     const connectWallet = async () => {
         const wallets = await connect();
@@ -45,7 +45,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             });
 
             setCurrentWallet(wallets[0].accounts[0].address);
-            setNetworkId(wallets[0].chains[0].id);
+            setNetworkId(parseInt(wallets[0].chains[0].id, 16));
         }
     };
 
@@ -132,7 +132,15 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     return (
         <WalletContext.Provider
-            value={{ currentWallet, connectWallet, networkId, logout, displayAccount, signer, provider }}
+            value={{
+                currentWallet,
+                connectWallet,
+                networkId: parseInt(connectedChain?.id || "0", 16),
+                logout,
+                displayAccount,
+                signer,
+                provider,
+            }}
         >
             {children}
         </WalletContext.Provider>

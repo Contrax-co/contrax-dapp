@@ -11,9 +11,10 @@ import OwnModals from "./Modal/OwnModal";
 import LoadingSpinner from "src/components/spinner/spinner";
 import "./createPool.css";
 import useApp from "src/hooks/useApp";
-import { BLOCK_EXPLORER_URL } from "src/config/constants";
+import useConstants from "src/hooks/useConstants";
 
 export default function CreatePool() {
+    const { BLOCK_EXPLORER_URL } = useConstants();
     const { lightMode } = useApp();
     const { ethereum } = window;
     const [openModalFrom, setOpenModalFrom] = useState(false);

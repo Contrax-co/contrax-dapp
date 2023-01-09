@@ -7,14 +7,15 @@ import Vaults from "./JoinedVaults/Vaults";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import useVaults from "src/hooks/vaults/useVaults";
-import { BLOCK_EXPLORER_URL } from "src/config/constants";
 import { copyToClipboard } from "src/utils";
+import useConstants from "src/hooks/useConstants";
 
 function Dashboard() {
     const { lightMode } = useApp();
     const { currentWallet, displayAccount } = useWallet();
     const [copied, setCopied] = useState(false);
     const { vaults } = useVaults();
+    const { BLOCK_EXPLORER_URL } = useConstants();
 
     const copy = () => {
         setCopied(true);

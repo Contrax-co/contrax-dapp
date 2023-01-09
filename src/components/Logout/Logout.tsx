@@ -7,9 +7,10 @@ import "./Logout.css";
 import { removeUserSession } from "../../store/localStorage";
 import useWallet from "../../hooks/useWallet";
 import useApp from "src/hooks/useApp";
-import { BLOCK_EXPLORER_URL } from "src/config/constants";
+import useConstants from "src/hooks/useConstants";
 
 function Logout({ onClose }: any) {
+    const { BLOCK_EXPLORER_URL } = useConstants();
     const { lightMode } = useApp();
     const { currentWallet, logout: walletLogout } = useWallet();
     const [copied, setCopied] = useState(false);

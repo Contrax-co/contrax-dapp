@@ -5,12 +5,13 @@ import useWallet from "src/hooks/useWallet";
 import { useQuery } from "@tanstack/react-query";
 import { VAULT_BALANCES } from "src/config/constants/query";
 import * as ethers from "ethers";
-import { NETWORK_NAME } from "src/config/constants";
+import useConstants from "../useConstants";
 
 /**
  * @description Returns balances for all vaults
  */
 const useVaultBalances = () => {
+    const { NETWORK_NAME } = useConstants();
     const { vaults } = useVaults();
     const { provider, currentWallet } = useWallet();
 

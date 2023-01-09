@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { COINS_LLAMA_PRICE, NETWORK_NAME } from "src/config/constants";
 import { VAULT_TOKEN_PRICE } from "src/config/constants/query";
+import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 
 const usePriceOfToken = (address: string) => {
     const { currentWallet } = useWallet();
+    const { NETWORK_NAME, COINS_LLAMA_PRICE } = useConstants();
 
     const getPrice = async () => {
         const res = await axios.get(COINS_LLAMA_PRICE + address);

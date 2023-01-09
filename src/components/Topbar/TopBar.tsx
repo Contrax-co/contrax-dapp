@@ -7,12 +7,14 @@ import useWallet from "src/hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import { RoutesPaths } from "src/config/constants";
 import useApp from "src/hooks/useApp";
+import useConstants from "src/hooks/useConstants";
 
 function TopBar({ openModal }: any) {
     const { lightMode } = useApp();
     const [show, setShow] = useState(false);
     const { connectWallet, currentWallet, networkId } = useWallet();
     const navigate = useNavigate();
+    const { NETWORK_NAME } = useConstants();
 
     return (
         <div className="topbar_placement">
@@ -85,15 +87,9 @@ function TopBar({ openModal }: any) {
 
             {currentWallet ? (
                 <div className={`connect_wallet2 ${lightMode && "connect_wallet2--light"}`}>
-                    {networkId === "0xa4b1" || networkId === "a4b1" ? (
-                        <div className={`ethBal ${lightMode && "ethBal--light"}`}>
-                            <p>Arbitrum</p>
-                        </div>
-                    ) : (
-                        <div className={`wrongNetwork ${lightMode && "wrongNetwork--light"}`}>
-                            <p>Wrong network!</p>
-                        </div>
-                    )}
+                    <div className={`ethBal ${lightMode && "ethBal--light"}`}>
+                        <p>{NETWORK_NAME.toLocaleUpperCase()}</p>
+                    </div>
 
                     <div className={`connected_wallet ${lightMode && "connected_wallet--light"}`} onClick={openModal}>
                         <p className="address">
