@@ -1,7 +1,14 @@
 import useApp from "src/hooks/useApp";
+import { Farm } from "src/types";
 import "./Toggle.css";
 
-function Toggle({ active, pool, ...props }: any) {
+interface Props {
+    active: boolean;
+    farm: Farm;
+    onClick: React.MouseEventHandler<HTMLDivElement>;
+}
+
+const Toggle: React.FC<Props> = ({ active, farm, ...props }) => {
     const { lightMode } = useApp();
     return (
         <div className="switch">
@@ -31,10 +38,10 @@ function Toggle({ active, pool, ...props }: any) {
                     active && "second_switch--selected"
                 } ${active && lightMode && "second_switch--selected--light"}`}
             >
-                {pool.name}
+                {farm.name}
             </p>
         </div>
     );
-}
+};
 
 export default Toggle;

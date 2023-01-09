@@ -12,7 +12,6 @@ import useConstants from "src/hooks/useConstants";
 function Home() {
     const { lightMode } = useApp();
     const [open, setOpen] = useState(false);
-    useConstants();
 
     return (
         <div className={`page ${lightMode && "page--light"}`}>

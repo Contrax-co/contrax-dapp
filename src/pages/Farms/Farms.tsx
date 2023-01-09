@@ -3,12 +3,11 @@ import "./Farms.css";
 import CompoundItem from "src/components/CompoundItem/CompoundItem";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
-import usePools from "src/hooks/usePools";
+import useFarms from "src/hooks/farms/useFarms";
 
 function Farms() {
     const { lightMode } = useApp();
-    const { currentWallet, connectWallet } = useWallet();
-    const { pools } = usePools();
+    const { farms } = useFarms();
 
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>
@@ -27,14 +26,8 @@ function Farms() {
             </div>
 
             <div className="pools_list">
-                {pools.map((pool: any) => (
-                    <CompoundItem
-                        key={pool.id}
-                        lightMode={lightMode}
-                        pool={pool}
-                        currentWallet={currentWallet}
-                        connectWallet={connectWallet}
-                    />
+                {farms.map((farm) => (
+                    <CompoundItem key={farm.id} farm={farm} />
                 ))}
             </div>
         </div>

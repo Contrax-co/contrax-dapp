@@ -21,12 +21,12 @@ import { AiOutlineCheckCircle } from "react-icons/ai";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import useWallet from "../../hooks/useWallet";
 import useApp from "src/hooks/useApp";
-import usePoolSwaps from "src/hooks/usePoolSwaps";
+import useFarmSwaps from "src/hooks/farms/useFarmSwaps";
 
 function Exchange() {
     const { lightMode } = useApp();
     const { currentWallet } = useWallet();
-    const { poolSwaps: tokens } = usePoolSwaps();
+    const { farmSwaps: tokens } = useFarmSwaps();
     const [openModalFrom, setOpenModalFrom] = useState(false);
     const [openModalTo, setOpenModalTo] = useState(false);
 
@@ -75,11 +75,9 @@ function Exchange() {
 
                 <div className={`from ${lightMode && "from--light"}`}>
                     <From
-                        lightMode={lightMode}
                         setOpenModal={setOpenModalFrom}
                         tokens={tokens}
                         tokenId={tokenId1}
-                        currentWallet={currentWallet}
                         setValue={setValue}
                         setTokenType={setTokenType1}
                         setFromAddress={setFromAddress}

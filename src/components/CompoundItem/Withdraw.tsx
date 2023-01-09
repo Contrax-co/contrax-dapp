@@ -9,14 +9,18 @@ import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import useConstants from "src/hooks/useConstants";
+import { Farm } from "src/types";
 
+interface Props {
+    farm: Farm;
+}
 
-function Withdraw({ pool }: any) {
+const Withdraw: React.FC<Props> = ({ farm }) => {
     const { BLOCK_EXPLORER_URL } = useConstants();
     const { lightMode } = useApp();
     const { connectWallet, currentWallet } = useWallet();
     const [toggleType, setToggleType] = useState(() => {
-        if (pool.token_type === "Token") {
+        if (farm.token_type === "Token") {
             return true;
         } else {
             return false;
@@ -38,9 +42,9 @@ function Withdraw({ pool }: any) {
     const refresh = () => window.location.reload();
 
     useEffect(() => {
-        getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
-        priceToken(pool.lp_address, setPrice);
-    }, [pool, currentWallet]);
+        getUserVaultBalance(farm, currentWallet, setUserVaultBalance);
+        priceToken(farm.lp_address, setPrice);
+    }, [farm, currentWallet]);
 
     const handleWithdrawChange = (e: any) => {
         setWithdrawAmt(e.target.value);
@@ -53,7 +57,7 @@ function Withdraw({ pool }: any) {
                 currentWallet,
                 setSuccess,
                 setSecondaryMessage,
-                pool,
+                farm,
                 setWithdrawAmt,
                 setLoading,
                 setLoaderMessage,
@@ -66,7 +70,7 @@ function Withdraw({ pool }: any) {
                 currentWallet,
                 setSuccess,
                 setSecondaryMessage,
-                pool,
+                farm,
                 withdrawAmt,
                 setWithdrawAmt,
                 setLoading,
@@ -84,7 +88,7 @@ function Withdraw({ pool }: any) {
             setSuccess,
             setLoading,
             setLoaderMessage,
-            pool,
+            farm,
             withdrawAmt,
             setWithdrawAmt,
             setLink,
@@ -103,13 +107,8 @@ function Withdraw({ pool }: any) {
 
     return (
         <div className="whole_tab">
-            {pool.token_type === "LP Token" ? (
-                <Toggle
-                    lightMode={lightMode}
-                    active={toggleType}
-                    pool={pool}
-                    onClick={() => setToggleType(!toggleType)}
-                />
+            {farm.token_type === "LP Token" ? (
+                <Toggle active={toggleType} farm={farm} onClick={() => setToggleType(!toggleType)} />
             ) : null}
 
             <div className="detail_container">
@@ -118,9 +117,9 @@ function Withdraw({ pool }: any) {
 
                     {toggleType ? (
                         <p className="withdrawal_description2">
-                            Withdraw into tokens for the {pool.platform} liquidity pool for{" "}
+                            Withdraw into tokens for the {farm.platform} liquidity pool for{" "}
                             <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                                {pool.name}
+                                {farm.name}
                             </a>
                             . You can re-stake it when you wish, or swap it for ETH or other tokens, including LP
                             tokens, on our exchange page.
@@ -129,9 +128,9 @@ function Withdraw({ pool }: any) {
                         </p>
                     ) : (
                         <p className="withdrawal_description2">
-                            Withdraw into ETH directly from {pool.platform} liquidity pool for{" "}
+                            Withdraw into ETH directly from {farm.platform} liquidity pool for{" "}
                             <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                                {pool.name}
+                                {farm.name}
                             </a>
                             . Note that the balance is shown in terms of LP tokens, but once withdrawn, you will receive
                             ETH in your wallet.
@@ -293,6 +292,6 @@ function Withdraw({ pool }: any) {
             )}
         </div>
     );
-}
+};
 
 export default Withdraw;

@@ -8,15 +8,19 @@ import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import useConstants from "src/hooks/useConstants";
+import { Farm } from "src/types";
 
+interface Props {
+    farm: Farm;
+}
 
-function Deposit({ pool }: any) {
+const Deposit: React.FC<Props> = ({ farm }) => {
     const { BLOCK_EXPLORER_URL } = useConstants();
 
     const { lightMode } = useApp();
     const { connectWallet, currentWallet } = useWallet();
     const [toggleType, setToggleType] = useState(() => {
-        if (pool.token_type === "Token") {
+        if (farm.token_type === "Token") {
             return true;
         } else {
             return false;
@@ -43,12 +47,12 @@ function Deposit({ pool }: any) {
 
     useEffect(() => {
         getEthBalance(currentWallet, setEthUserBal);
-        getLPBalance(pool, currentWallet, setLPUserBal);
-    }, [currentWallet, ethUserBal, pool, lpUserBal]);
+        getLPBalance(farm, currentWallet, setLPUserBal);
+    }, [currentWallet, ethUserBal, farm, lpUserBal]);
 
     useEffect(() => {
-        priceToken(pool.lp_address, setPrice);
-    }, [pool]);
+        priceToken(farm.lp_address, setPrice);
+    }, [farm]);
 
     const handleDepositChange = (e: any) => {
         setLPDepositAmount(e.target.value);
@@ -63,7 +67,7 @@ function Deposit({ pool }: any) {
             depositAll(
                 setLPUserBal,
                 currentWallet,
-                pool,
+                farm,
                 lpDepositAmount,
                 setLPDepositAmount,
                 setLoading,
@@ -77,7 +81,7 @@ function Deposit({ pool }: any) {
             deposit(
                 setLPUserBal,
                 currentWallet,
-                pool,
+                farm,
                 lpDepositAmount,
                 setLPDepositAmount,
                 setLoading,
@@ -96,7 +100,7 @@ function Deposit({ pool }: any) {
                 setEthUserBal,
                 currentWallet,
                 setLoading,
-                pool,
+                farm,
                 ethDepositAmount,
                 setEthDepositAmount,
                 setLoaderMessage,
@@ -110,7 +114,7 @@ function Deposit({ pool }: any) {
                 setEthUserBal,
                 currentWallet,
                 setLoading,
-                pool,
+                farm,
                 ethDepositAmount,
                 setEthDepositAmount,
                 setLoaderMessage,
@@ -131,11 +135,10 @@ function Deposit({ pool }: any) {
 
     return (
         <div className="addliquidity_outsidetab">
-            {pool.token_type === "LP Token" ? (
+            {farm.token_type === "LP Token" ? (
                 <Toggle
-                    lightMode={lightMode}
                     active={toggleType}
-                    pool={pool}
+                    farm={farm}
                     onClick={() => setToggleType(!toggleType)}
                 />
             ) : null}
@@ -152,20 +155,20 @@ function Deposit({ pool }: any) {
 
                     {toggleType ? (
                         <p className="description_description">
-                            Deposit your tokens for {pool.platform}'s{" "}
+                            Deposit your tokens for {farm.platform}'s{" "}
                             <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                                {pool.name}
+                                {farm.name}
                             </a>{" "}
-                            pool. Your tokens wil be staked on {pool.platform} for fees and rewards. All rewards are
+                            pool. Your tokens wil be staked on {farm.platform} for fees and rewards. All rewards are
                             sold to auto-compound your position. <br />
                             <br />
                             After depositing, remember to confirm the transaction in your wallet.{" "}
                         </p>
                     ) : (
                         <p className="description_description">
-                            Deposit with ETH directly into the {pool.platform} liquidity pool for{" "}
+                            Deposit with ETH directly into the {farm.platform} liquidity pool for{" "}
                             <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                                {pool.name}
+                                {farm.name}
                             </a>
                             . Your ETH will be swapped for LP tokens to earn fees and rewards, which are sold to
                             auto-compound your LP position. Note that "Max" leaves a small amount of ETH for gas. You'll
@@ -181,7 +184,7 @@ function Deposit({ pool }: any) {
                     <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                         {toggleType ? (
                             <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
-                                <p>{pool.name} balance:</p>
+                                <p>{farm.name} balance:</p>
                                 {price * lpUserBal < 0.01 ? <p>0</p> : <p>{lpUserBal}</p>}
                             </div>
                         ) : (
@@ -339,6 +342,6 @@ function Deposit({ pool }: any) {
             )}
         </div>
     );
-}
+};
 
 export default Deposit;

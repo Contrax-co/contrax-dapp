@@ -21,9 +21,14 @@ import Details from "src/components/CompoundItem/Details";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import uuid from "react-uuid";
+import { Farm } from "src/types";
 
-function CompoundItem({ pool }: any) {
-    const { connectWallet, currentWallet } = useWallet();
+interface Props {
+    farm: Farm;
+}
+
+const CompoundItem: React.FC<Props> = ({ farm }) => {
+    const { currentWallet } = useWallet();
     const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
     const [buttonType, setButtonType] = useState("Deposit");
@@ -44,51 +49,51 @@ function CompoundItem({ pool }: any) {
     const [apyVisionAPY, setAPYVisionAPY] = useState(0);
 
     useEffect(() => {
-        getUserVaultBalance(pool, currentWallet, setUserVaultBalance);
-        getTotalVaultBalance(pool, setTotalVaultBalance);
-    }, [pool, currentWallet]);
+        getUserVaultBalance(farm, currentWallet, setUserVaultBalance);
+        getTotalVaultBalance(farm, setTotalVaultBalance);
+    }, [farm, currentWallet]);
 
     useEffect(() => {
-        priceToken(pool.lp_address, setPriceOfSingleToken);
-        apyPool(pool.lp_address, setRewardApy);
-        calculateFeeAPY(pool.lp_address, setFeeAPY);
+        priceToken(farm.lp_address, setPriceOfSingleToken);
+        apyPool(farm.lp_address, setRewardApy);
+        calculateFeeAPY(farm.lp_address, setFeeAPY);
         calculateFarmAPY(rewardAPY, setAPYVisionCompound);
-        findCompoundAPY(pool.rewards_apy, setCompoundAPY, pool.total_apy, pool.platform);
-        findTotalAPY(pool.rewards_apy, setTotalAPY, pool.total_apy, pool.platform);
+        findCompoundAPY(farm.rewards_apy, setCompoundAPY, farm.total_apy, farm.platform);
+        findTotalAPY(farm.rewards_apy, setTotalAPY, farm.total_apy, farm.platform);
         totalFarmAPY(rewardAPY, feeAPY, setAPYVisionAPY);
-    }, [pool, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
+    }, [farm, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
 
     const key = uuid();
 
     return (
         <div className={`pools ${lightMode && "pools--light"}`}>
-            <div className="single_pool" key={pool.id} onClick={() => setDropDown(!dropdown)}>
+            <div className="single_pool" key={farm.id} onClick={() => setDropDown(!dropdown)}>
                 <div className="row_items">
                     <div className="title_container">
                         <div className="pair">
-                            {pool.logo1 ? (
+                            {farm.logo1 ? (
                                 <img
-                                    alt={pool.alt1}
+                                    alt={farm.alt1}
                                     className={`logofirst ${lightMode && "logofirst--light"}`}
-                                    src={pool.logo1}
+                                    src={farm.logo1}
                                 />
                             ) : null}
 
-                            {pool.logo2 ? (
+                            {farm.logo2 ? (
                                 <img
-                                    alt={pool.alt2}
+                                    alt={farm.alt2}
                                     className={`logo ${lightMode && "logo--light"}`}
-                                    src={pool.logo2}
+                                    src={farm.logo2}
                                 />
                             ) : null}
                         </div>
 
                         <div>
                             <div className="pool_title">
-                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>{pool.name}</p>
+                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>{farm.name}</p>
                                 <div className="rewards_div">
-                                    <p className={`farm_type ${lightMode && "farm_type--light"}`}>{pool.platform}</p>
-                                    <img alt={pool.platform_alt} className="rewards_image" src={pool.platform_logo} />
+                                    <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm.platform}</p>
+                                    <img alt={farm.platform_alt} className="rewards_image" src={farm.platform_logo} />
                                 </div>
                             </div>
                         </div>
@@ -151,7 +156,7 @@ function CompoundItem({ pool }: any) {
                         )}
 
                         <div className={`container1 ${lightMode && "container1--light"}`}>
-                            {!pool.total_apy ? (
+                            {!farm.total_apy ? (
                                 <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
                                     <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                         {apyVisionAPY.toFixed(2)}%
@@ -182,7 +187,7 @@ function CompoundItem({ pool }: any) {
                                         data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
-                                        <p>LP Rewards: ${Number(pool.rewards_apy).toFixed(2)}%</p>
+                                        <p>LP Rewards: ${Number(farm.rewards_apy).toFixed(2)}%</p>
                                         <p>Compounding: ${compoundAPY.toFixed(2)}%</p>`}
                                     >
                                         <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
@@ -217,9 +222,9 @@ function CompoundItem({ pool }: any) {
                         />
                     </div>
 
-                    {buttonType === "Deposit" && <Deposit pool={pool} />}
+                    {buttonType === "Deposit" && <Deposit farm={farm} />}
 
-                    {buttonType === "Withdraw" && <Withdraw pool={pool} />}
+                    {buttonType === "Withdraw" && <Withdraw farm={farm} />}
 
                     {details === false ? (
                         <div
@@ -235,7 +240,7 @@ function CompoundItem({ pool }: any) {
                         <Details
                             lightMode={lightMode}
                             currentWallet={currentWallet}
-                            pool={pool}
+                            farm={farm}
                             onClick={() => setDetails(false)}
                         />
                     )}
@@ -243,6 +248,6 @@ function CompoundItem({ pool }: any) {
             )}
         </div>
     );
-}
+};
 
 export default CompoundItem;
