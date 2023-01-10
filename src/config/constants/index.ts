@@ -10,5 +10,6 @@ export const defaultChainId = 42161; // Arbitrum
 export const defaultNetworkName = "arbitrum";
 
 export const APY_TOKEN = process.env.REACT_APP_APY_TOKEN;
+export const ALCHEMY_KEY = process.env.REACT_APP_ALCHEMY_KEY;
 export const APY_VISION_URL = "https://api.apy.vision";
 export const APY_VISION_STATS_URL = "https://stats.apy.vision/api/v1";
