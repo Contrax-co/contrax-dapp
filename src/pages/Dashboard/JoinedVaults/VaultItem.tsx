@@ -1,20 +1,19 @@
 import { useEffect, useState, useMemo } from "react";
-import { apyPool, calculateFeeAPY } from "src/components/CompoundItem/compound-functions";
 import useApp from "src/hooks/useApp";
 import useVaultBalances from "src/hooks/vaults/useVaultBalances";
-import useWallet from "src/hooks/useWallet";
 import { Vault } from "src/types";
 import "./VaultItem.css";
 import usePriceOfToken from "src/hooks/usePriceOfToken";
 import useVaultTotalSupply from "src/hooks/vaults/useVaultTotalSupply";
 import { findTotalAPY, totalFarmAPY } from "src/utils/common";
+import useFeeApy from "src/hooks/useFeeApy";
+import useFarmApy from "src/hooks/farms/useFarmApy";
 
 interface Props {
     vault: Vault;
 }
 
 const VaultItem: React.FC<Props> = ({ vault }) => {
-    const { currentWallet } = useWallet();
     const { lightMode } = useApp();
 
     const { formattedBalances } = useVaultBalances();
@@ -27,20 +26,14 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
         return formattedSupplies[vault.vault_address];
     }, [formattedSupplies, vault]);
 
-    // const [price, setPrice] = useState(0);
     const { price } = usePriceOfToken(vault.lp_address);
 
-    const [feeAPY, setFeeAPY] = useState(0);
+    const { apy: feeAPY } = useFeeApy(vault.lp_address);
 
-    const [rewardAPY, setRewardApy] = useState(0);
+    const { apy: rewardAPY } = useFarmApy(vault.lp_address);
 
     const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]);
     const totalAPY = useMemo(() => findTotalAPY(vault.rewards_apy || 0, vault.total_apy || 0, vault.platform), [vault]);
-
-    useEffect(() => {
-        apyPool(vault.lp_address, setRewardApy);
-        calculateFeeAPY(vault.lp_address, setFeeAPY);
-    }, [currentWallet, vault, tokenAmount, price, rewardAPY, feeAPY]);
 
     return (
         <div>

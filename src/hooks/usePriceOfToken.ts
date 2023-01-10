@@ -4,7 +4,7 @@ import { TOKEN_PRICE } from "src/config/constants/query";
 import useConstants from "./useConstants";
 import useWallet from "./useWallet";
 
-const usePriceOfToken = (address: string) => {
+const usePriceOfToken = (address?: string) => {
     const { currentWallet } = useWallet();
     const { NETWORK_NAME, COINS_LLAMA_PRICE } = useConstants();
 
@@ -23,7 +23,7 @@ const usePriceOfToken = (address: string) => {
         refetch,
         isLoading,
         isFetching,
-    } = useQuery(TOKEN_PRICE(currentWallet, address, NETWORK_NAME), getPrice, {
+    } = useQuery(TOKEN_PRICE(currentWallet, address || "", NETWORK_NAME), getPrice, {
         enabled: !!address && !!currentWallet && !!COINS_LLAMA_PRICE && !!NETWORK_NAME,
         initialData: 0,
     });

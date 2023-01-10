@@ -1,7 +1,14 @@
+import React from "react";
 import useApp from "src/hooks/useApp";
 import "./PoolButton.css";
 
-function PoolButton({ description, active, ...props }: any) {
+interface Props {
+    description: string;
+    active: boolean;
+    onClick?: React.MouseEventHandler<HTMLDivElement>;
+}
+
+const PoolButton: React.FC<Props> = ({ description, active, ...props }) => {
     const { lightMode } = useApp();
     return (
         <div
@@ -13,6 +20,6 @@ function PoolButton({ description, active, ...props }: any) {
             {description}
         </div>
     );
-}
+};
 
 export default PoolButton;

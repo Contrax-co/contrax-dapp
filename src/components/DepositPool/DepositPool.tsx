@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import "./Deposit.css";
 import { MoonLoader } from "react-spinners";
-import { deposit, depositAll, getEthBalance, getLPBalance, priceToken, zapIn, zapInAll } from "./deposit-functions";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import Toggle from "src/components/CompoundItem/Toggle";
@@ -9,16 +8,16 @@ import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import useConstants from "src/hooks/useConstants";
 import { Farm } from "src/types";
+import usePriceOfToken from "src/hooks/usePriceOfToken";
+import useBalances from "src/hooks/useBalances";
+import useZapIn from "src/hooks/farms/useZapIn";
+import useDeposit from "src/hooks/farms/useDeposit";
 
 interface Props {
     farm: Farm;
 }
 
 const Deposit: React.FC<Props> = ({ farm }) => {
-    const { BLOCK_EXPLORER_URL } = useConstants();
-
-    const { lightMode } = useApp();
-    const { connectWallet, currentWallet } = useWallet();
     const [toggleType, setToggleType] = useState(() => {
         if (farm.token_type === "Token") {
             return true;
@@ -27,122 +26,42 @@ const Deposit: React.FC<Props> = ({ farm }) => {
         }
     });
 
-    const [ethUserBal, setEthUserBal] = useState(0);
-    const [lpUserBal, setLPUserBal] = useState(0);
+    return (
+        <div className="addliquidity_outsidetab">
+            {farm.token_type === "LP Token" ? (
+                <Toggle active={toggleType} farm={farm} onClick={() => setToggleType(!toggleType)} />
+            ) : null}
 
-    const [isLoading, setLoading] = useState(false);
+            {toggleType ? <FarmDeposit farm={farm} /> : <ZapDeposit farm={farm} />}
+        </div>
+    );
+};
 
-    const [lpDepositAmount, setLPDepositAmount] = useState(0.0);
+export default Deposit;
+
+const ZapDeposit: React.FC<Props> = ({ farm }) => {
+    const { lightMode } = useApp();
+    const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
     const [ethDepositAmount, setEthDepositAmount] = useState(0.0);
-
-    const [loaderMessage, setLoaderMessage] = useState("");
-    const [success, setSuccess] = useState("loading");
-    const [secondaryMessage, setSecondaryMessage] = useState("");
-    const [link, setLink] = useState(false);
-    const [hash, setHash] = useState("");
-
-    const [price, setPrice] = useState(0);
+    const { hash, isLoading, loaderMsg, secondaryMsg, zapIn, status, zapInError } = useZapIn(farm);
+    const { BLOCK_EXPLORER_URL } = useConstants();
 
     const refresh = () => window.location.reload();
-
-    useEffect(() => {
-        getEthBalance(currentWallet, setEthUserBal);
-        getLPBalance(farm, currentWallet, setLPUserBal);
-    }, [currentWallet, ethUserBal, farm, lpUserBal]);
-
-    useEffect(() => {
-        priceToken(farm.lp_address, setPrice);
-    }, [farm]);
-
-    const handleDepositChange = (e: any) => {
-        setLPDepositAmount(e.target.value);
-    };
 
     const handleEthDepositChange = (e: any) => {
         setEthDepositAmount(e.target.value);
     };
 
-    function depositAmount() {
-        if (lpDepositAmount === lpUserBal) {
-            depositAll(
-                setLPUserBal,
-                currentWallet,
-                farm,
-                lpDepositAmount,
-                setLPDepositAmount,
-                setLoading,
-                setLoaderMessage,
-                setSuccess,
-                setSecondaryMessage,
-                setLink,
-                setHash
-            );
-        } else {
-            deposit(
-                setLPUserBal,
-                currentWallet,
-                farm,
-                lpDepositAmount,
-                setLPDepositAmount,
-                setLoading,
-                setLoaderMessage,
-                setSuccess,
-                setSecondaryMessage,
-                setLink,
-                setHash
-            );
-        }
-    }
-
-    function zapDeposit() {
-        if (ethDepositAmount === ethUserBal) {
-            zapInAll(
-                setEthUserBal,
-                currentWallet,
-                setLoading,
-                farm,
-                ethDepositAmount,
-                setEthDepositAmount,
-                setLoaderMessage,
-                setSuccess,
-                setSecondaryMessage,
-                setLink,
-                setHash
-            );
-        } else {
-            zapIn(
-                setEthUserBal,
-                currentWallet,
-                setLoading,
-                farm,
-                ethDepositAmount,
-                setEthDepositAmount,
-                setLoaderMessage,
-                setSuccess,
-                setSecondaryMessage,
-                setLink,
-                setHash
-            );
-        }
-    }
-    function maxDeposit() {
-        setLPDepositAmount(lpUserBal);
-    }
-
     function maxEthDeposit() {
         setEthDepositAmount(ethUserBal);
     }
 
-    return (
-        <div className="addliquidity_outsidetab">
-            {farm.token_type === "LP Token" ? (
-                <Toggle
-                    active={toggleType}
-                    farm={farm}
-                    onClick={() => setToggleType(!toggleType)}
-                />
-            ) : null}
+    async function zapDeposit() {
+        await zapIn({ ethZapAmount: ethDepositAmount });
+    }
 
+    return (
+        <div>
             <div className="addliquidity_descriptiontab">
                 <div className={`addliquidity_description ${lightMode && "addliquidity_description--light"}`}>
                     <p
@@ -152,141 +71,71 @@ const Deposit: React.FC<Props> = ({ farm }) => {
                     >
                         Description
                     </p>
-
-                    {toggleType ? (
-                        <p className="description_description">
-                            Deposit your tokens for {farm.platform}'s{" "}
-                            <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                                {farm.name}
-                            </a>{" "}
-                            pool. Your tokens wil be staked on {farm.platform} for fees and rewards. All rewards are
-                            sold to auto-compound your position. <br />
-                            <br />
-                            After depositing, remember to confirm the transaction in your wallet.{" "}
-                        </p>
-                    ) : (
-                        <p className="description_description">
-                            Deposit with ETH directly into the {farm.platform} liquidity pool for{" "}
-                            <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                                {farm.name}
-                            </a>
-                            . Your ETH will be swapped for LP tokens to earn fees and rewards, which are sold to
-                            auto-compound your LP position. Note that "Max" leaves a small amount of ETH for gas. You'll
-                            need it to exit the farm later.
-                            <br />
-                            <br />
-                            After depositing, remember to confirm the transaction in your wallet.
-                        </p>
-                    )}
+                    <p className="description_description">
+                        Deposit with ETH directly into the {farm.platform} liquidity pool for{" "}
+                        <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
+                            {farm.name}
+                        </a>
+                        . Your ETH will be swapped for LP tokens to earn fees and rewards, which are sold to
+                        auto-compound your LP position. Note that "Max" leaves a small amount of ETH for gas. You'll
+                        need it to exit the farm later.
+                        <br />
+                        <br />
+                        After depositing, remember to confirm the transaction in your wallet.
+                    </p>
                 </div>
 
                 <div className={`addliquidity_tab ${lightMode && "addliquidity_tab--light"}`}>
                     <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
-                        {toggleType ? (
-                            <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
-                                <p>{farm.name} balance:</p>
-                                {price * lpUserBal < 0.01 ? <p>0</p> : <p>{lpUserBal}</p>}
-                            </div>
-                        ) : (
-                            <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
-                                <p>ETH balance:</p>
-                                <p>{ethUserBal.toFixed(5)}</p>
-                            </div>
-                        )}
+                        <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
+                            <p>ETH balance:</p>
+                            <p>{ethUserBal.toFixed(5)}</p>
+                        </div>
+                        <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
+                            <div className={`weth_deposit_amount ${lightMode && "weth_deposit_amount--light"}`}>
+                                <input
+                                    type="number"
+                                    className={`weth_bal_input ${lightMode && "weth_bal_input--light"}`}
+                                    placeholder="0.0"
+                                    value={ethDepositAmount}
+                                    onChange={handleEthDepositChange}
+                                />
 
-                        {toggleType ? (
-                            <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
-                                <div className={`weth_deposit_amount ${lightMode && "weth_deposit_amount--light"}`}>
-                                    <input
-                                        type="number"
-                                        className={`weth_bal_input ${lightMode && "weth_bal_input--light"}`}
-                                        placeholder="0.0"
-                                        value={lpDepositAmount}
-                                        onChange={handleDepositChange}
-                                    />
+                                <p
+                                    className={`deposit_max ${lightMode && "deposit_max--light"}`}
+                                    onClick={maxEthDeposit}
+                                >
+                                    max
+                                </p>
+                            </div>
 
-                                    <p
-                                        className={`deposit_max ${lightMode && "deposit_max--light"}`}
-                                        onClick={maxDeposit}
+                            <div className={`deposit_deposits ${lightMode && "deposit_deposits--light"}`}>
+                                {!ethDepositAmount || ethDepositAmount <= 0 ? (
+                                    <div
+                                        className={`deposit_zap1_button_disable ${
+                                            lightMode && "deposit_zap1_button_disable--light"
+                                        }`}
                                     >
-                                        max
-                                    </p>
-                                </div>
-
-                                <div className={`deposit_deposits ${lightMode && "deposit_deposits--light"}`}>
-                                    {!lpDepositAmount || lpDepositAmount <= 0 ? (
-                                        <div
-                                            className={`deposit_zap1_button_disable ${
-                                                lightMode && "deposit_zap1_button_disable--light"
-                                            }`}
-                                        >
-                                            <p>Deposit</p>
-                                        </div>
-                                    ) : lpDepositAmount > lpUserBal ? (
-                                        <div
-                                            className={`deposit_zap1_button_disable ${
-                                                lightMode && "deposit_zap1_button_disable--light"
-                                            }`}
-                                        >
-                                            <p>Insufficient Balance</p>
-                                        </div>
-                                    ) : (
-                                        <div
-                                            className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
-                                            onClick={depositAmount}
-                                        >
-                                            <p>Deposit</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
-                                <div className={`weth_deposit_amount ${lightMode && "weth_deposit_amount--light"}`}>
-                                    <input
-                                        type="number"
-                                        className={`weth_bal_input ${lightMode && "weth_bal_input--light"}`}
-                                        placeholder="0.0"
-                                        value={ethDepositAmount}
-                                        onChange={handleEthDepositChange}
-                                    />
-
-                                    <p
-                                        className={`deposit_max ${lightMode && "deposit_max--light"}`}
-                                        onClick={maxEthDeposit}
+                                        <p>Deposit</p>
+                                    </div>
+                                ) : ethDepositAmount > ethUserBal ? (
+                                    <div
+                                        className={`deposit_zap1_button_disable ${
+                                            lightMode && "deposit_zap1_button_disable--light"
+                                        }`}
                                     >
-                                        max
-                                    </p>
-                                </div>
-
-                                <div className={`deposit_deposits ${lightMode && "deposit_deposits--light"}`}>
-                                    {!ethDepositAmount || ethDepositAmount <= 0 ? (
-                                        <div
-                                            className={`deposit_zap1_button_disable ${
-                                                lightMode && "deposit_zap1_button_disable--light"
-                                            }`}
-                                        >
-                                            <p>Deposit</p>
-                                        </div>
-                                    ) : ethDepositAmount > ethUserBal ? (
-                                        <div
-                                            className={`deposit_zap1_button_disable ${
-                                                lightMode && "deposit_zap1_button_disable--light"
-                                            }`}
-                                        >
-                                            <p>Insufficient Balance</p>
-                                        </div>
-                                    ) : (
-                                        <div
-                                            className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
-                                            onClick={zapDeposit}
-                                        >
-                                            <p>Deposit</p>
-                                        </div>
-                                    )}
-                                </div>
+                                        <p>Insufficient Balance</p>
+                                    </div>
+                                ) : (
+                                    <div
+                                        className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
+                                        onClick={zapDeposit}
+                                    >
+                                        <p>Deposit</p>
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        </div>
                     </div>
 
                     {currentWallet ? null : (
@@ -297,27 +146,27 @@ const Deposit: React.FC<Props> = ({ farm }) => {
                 </div>
             </div>
 
-            {isLoading && (
+            {(isLoading || !!zapInError || status === "success") && (
                 <div className={`deposit_spinner ${lightMode && "deposit_spinner--light"}`}>
                     <div className={`deposit_spinner_top`}>
                         <div className={`deposit_spinner-left`}>
-                            {success === "success" ? (
+                            {status === "success" ? (
                                 <AiOutlineCheckCircle style={{ color: "#00E600", fontSize: "20px" }} />
-                            ) : success === "loading" ? (
+                            ) : isLoading ? (
                                 <MoonLoader size={20} loading={isLoading} color={"rgb(89, 179, 247)"} />
-                            ) : success === "fail" ? (
+                            ) : zapInError ? ( // TODO
                                 <MdOutlineErrorOutline style={{ color: "#e60000" }} />
                             ) : null}
                         </div>
 
                         <div className={`deposit_spinner_right`}>
-                            <p style={{ fontWeight: "700" }}>{loaderMessage}</p>
-                            <p className={`deposit_second`}>{secondaryMessage}</p>
+                            <p style={{ fontWeight: "700" }}>{loaderMsg}</p>
+                            <p className={`deposit_second`}>{secondaryMsg}</p>
                         </div>
                     </div>
 
                     <div className={`deposit_spinner_bottom`}>
-                        {link ? (
+                        {hash ? (
                             <div
                                 className={`deposit_spinner_bottom_left`}
                                 onClick={() => window.open(`${BLOCK_EXPLORER_URL}/tx/${hash}`, "_blank")}
@@ -329,9 +178,6 @@ const Deposit: React.FC<Props> = ({ farm }) => {
                         <div
                             className={`deposit_spinner_bottom_right`}
                             onClick={() => {
-                                setLoading(false);
-                                setLink(false);
-                                setHash("");
                                 refresh();
                             }}
                         >
@@ -344,4 +190,163 @@ const Deposit: React.FC<Props> = ({ farm }) => {
     );
 };
 
-export default Deposit;
+const FarmDeposit: React.FC<Props> = ({ farm }) => {
+    const { lightMode } = useApp();
+    const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
+    const { BLOCK_EXPLORER_URL } = useConstants();
+    const { formattedBalances } = useBalances([{ address: farm.lp_address, decimals: farm.decimals }]);
+    const { hash, isLoading, loaderMsg, secondaryMsg, deposit, status, depositError } = useDeposit(farm);
+    const [error, setError] = useState("");
+
+    const refresh = () => window.location.reload();
+
+    const lpUserBal = useMemo(() => formattedBalances[0] || 0, [formattedBalances]);
+
+    const [lpDepositAmount, setLPDepositAmount] = useState(0.0);
+
+    const { price } = usePriceOfToken(farm.lp_address);
+
+    const handleDepositChange = (e: any) => {
+        setLPDepositAmount(e.target.value);
+    };
+
+    function maxDeposit() {
+        setLPDepositAmount(lpUserBal);
+    }
+
+    async function depositAmount() {
+        deposit(
+            {
+                depositAmount: lpDepositAmount,
+            },
+            {
+                onError: (err: any) => setError(err),
+            }
+        );
+    }
+
+    return (
+        <div>
+            <div className="addliquidity_descriptiontab">
+                <div className={`addliquidity_description ${lightMode && "addliquidity_description--light"}`}>
+                    <p
+                        className={`addliquidity_description_title ${
+                            lightMode && "addliquidity_description_title--light"
+                        }`}
+                    >
+                        Description
+                    </p>
+                    <p className="description_description">
+                        Deposit your tokens for {farm.platform}'s{" "}
+                        <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
+                            {farm.name}
+                        </a>{" "}
+                        pool. Your tokens wil be staked on {farm.platform} for fees and rewards. All rewards are sold to
+                        auto-compound your position. <br />
+                        <br />
+                        After depositing, remember to confirm the transaction in your wallet.{" "}
+                    </p>
+                </div>
+
+                <div className={`addliquidity_tab ${lightMode && "addliquidity_tab--light"}`}>
+                    <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
+                        <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
+                            <p>{farm.name} balance:</p>
+                            {price * lpUserBal < 0.01 ? <p>0</p> : <p>{lpUserBal}</p>}
+                        </div>
+
+                        <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
+                            <div className={`weth_deposit_amount ${lightMode && "weth_deposit_amount--light"}`}>
+                                <input
+                                    type="number"
+                                    className={`weth_bal_input ${lightMode && "weth_bal_input--light"}`}
+                                    placeholder="0.0"
+                                    value={lpDepositAmount}
+                                    onChange={handleDepositChange}
+                                />
+
+                                <p className={`deposit_max ${lightMode && "deposit_max--light"}`} onClick={maxDeposit}>
+                                    max
+                                </p>
+                            </div>
+
+                            <div className={`deposit_deposits ${lightMode && "deposit_deposits--light"}`}>
+                                {!lpDepositAmount || lpDepositAmount <= 0 ? (
+                                    <div
+                                        className={`deposit_zap1_button_disable ${
+                                            lightMode && "deposit_zap1_button_disable--light"
+                                        }`}
+                                    >
+                                        <p>Deposit</p>
+                                    </div>
+                                ) : lpDepositAmount > lpUserBal ? (
+                                    <div
+                                        className={`deposit_zap1_button_disable ${
+                                            lightMode && "deposit_zap1_button_disable--light"
+                                        }`}
+                                    >
+                                        <p>Insufficient Balance</p>
+                                    </div>
+                                ) : (
+                                    <div
+                                        className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
+                                        onClick={depositAmount}
+                                    >
+                                        <p>Deposit</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {currentWallet ? null : (
+                        <div className={`no_overlay ${!currentWallet && "overlay"}`} onClick={connectWallet}>
+                            <p>connect wallet</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {(isLoading || !!depositError || status === "success") && (
+                <div className={`deposit_spinner ${lightMode && "deposit_spinner--light"}`}>
+                    <div className={`deposit_spinner_top`}>
+                        <div className={`deposit_spinner-left`}>
+                            {status === "success" ? (
+                                <AiOutlineCheckCircle style={{ color: "#00E600", fontSize: "20px" }} />
+                            ) : isLoading ? (
+                                <MoonLoader size={20} loading={isLoading} color={"rgb(89, 179, 247)"} />
+                            ) : depositError ? ( // TODO
+                                <MdOutlineErrorOutline style={{ color: "#e60000" }} />
+                            ) : null}
+                        </div>
+
+                        <div className={`deposit_spinner_right`}>
+                            <p style={{ fontWeight: "700" }}>{loaderMsg}</p>
+                            <p className={`deposit_second`}>{secondaryMsg}</p>
+                        </div>
+                    </div>
+
+                    <div className={`deposit_spinner_bottom`}>
+                        {hash ? (
+                            <div
+                                className={`deposit_spinner_bottom_left`}
+                                onClick={() => window.open(`${BLOCK_EXPLORER_URL}/tx/${hash}`, "_blank")}
+                            >
+                                <p>Details</p>
+                            </div>
+                        ) : null}
+
+                        <div
+                            className={`deposit_spinner_bottom_right`}
+                            onClick={() => {
+                                refresh();
+                            }}
+                        >
+                            <p>Dismiss</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};

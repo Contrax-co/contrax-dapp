@@ -31,3 +31,35 @@ export const FARM_APY = (currentWallet: string, address: string, networkName: st
     currentWallet,
     address,
 ];
+
+export const FEE_APY = (currentWallet: string, address: string, networkName: string) => [
+    "feeApy",
+    networkName,
+    currentWallet,
+    address,
+];
+
+export const ACCOUNT_BALANCE = (currentWallet: string, accountAddress: string, networkName: string) => [
+    "balance",
+    networkName,
+    currentWallet,
+    accountAddress,
+];
+
+export const FARM_ZAP_IN = (currentWallet: string, networkName: string, farmId: number) => [
+    "farm",
+    "function",
+    "zapIn",
+    farmId,
+    networkName,
+    currentWallet,
+];
+
+export const FARM_DEPOSIT = (currentWallet: string, networkName: string, farmId: number) => [
+    "farm",
+    "function",
+    "deposit",
+    farmId,
+    networkName,
+    currentWallet,
+];

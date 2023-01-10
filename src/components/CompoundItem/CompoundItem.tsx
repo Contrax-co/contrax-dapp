@@ -6,7 +6,6 @@ import PoolButton from "src/components/PoolButton/PoolButton";
 import Withdraw from "src/components/WithdrawPool/WithdrawPool";
 import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
-import { apyPool, calculateFeeAPY } from "./compound-functions";
 import Details from "src/components/CompoundItem/Details";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
@@ -17,6 +16,7 @@ import useFarmsVaultTotalSupply from "src/hooks/farms/useFarmsVaultTotalSupply";
 import usePriceOfToken from "src/hooks/usePriceOfToken";
 import { calculateFarmAPY, findCompoundAPY, findTotalAPY, totalFarmAPY } from "src/utils/common";
 import useFarmApy from "src/hooks/farms/useFarmApy";
+import useFeeApy from "src/hooks/useFeeApy";
 
 interface Props {
     farm: Farm;
@@ -42,7 +42,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
 
     const [details, setDetails] = useState(false);
     const { apy: rewardAPY } = useFarmApy(farm.lp_address);
-    const [feeAPY, setFeeAPY] = useState(0);
+    const { apy: feeAPY } = useFeeApy(farm.lp_address);
 
     const apyVisionCompound = useMemo(() => calculateFarmAPY(rewardAPY), [rewardAPY]);
     const compoundAPY = useMemo(
@@ -52,10 +52,6 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
 
     const totalAPY = useMemo(() => findTotalAPY(farm.rewards_apy || 0, farm.total_apy || 0, farm.platform), [farm]);
     const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]);
-
-    useEffect(() => {
-        calculateFeeAPY(farm.lp_address, setFeeAPY);
-    }, [farm, totalVaultBalance, userVaultBal, rewardAPY, feeAPY]);
 
     const key = uuid();
 
@@ -231,12 +227,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                             <RiArrowDownSLine />
                         </div>
                     ) : (
-                        <Details
-                            lightMode={lightMode}
-                            currentWallet={currentWallet}
-                            farm={farm}
-                            onClick={() => setDetails(false)}
-                        />
+                        <Details farm={farm} onClick={() => setDetails(false)} />
                     )}
                 </div>
             )}

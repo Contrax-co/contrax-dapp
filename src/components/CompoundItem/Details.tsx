@@ -1,59 +1,57 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { RiArrowUpSLine } from "react-icons/ri";
 import useApp from "src/hooks/useApp";
-import useWallet from "src/hooks/useWallet";
-import { priceOfToken, userTokenAmount, userVaultAmount } from "./details-functions";
+import useBalances from "src/hooks/useBalances";
+import usePriceOfToken from "src/hooks/usePriceOfToken";
+import { Farm } from "src/types";
 import "./Details.css";
 
-function Details({ pool, ...props }: any) {
+interface Props {
+    farm: Farm;
+    onClick: () => void;
+}
+
+const Details: React.FC<Props> = ({ farm, ...props }) => {
     const { lightMode } = useApp();
-    const { currentWallet } = useWallet();
-    const [price1, setPrice1] = useState(0);
-    const [price2, setPrice2] = useState(0);
-
-    const [lpPrice, setLPPrice] = useState(0);
-
-    const [unstakedTokenValue, setUnstakedTokenValue] = useState(0);
-    const [stakedTokenValue, setStakedTokenValue] = useState(0);
-
-    useEffect(() => {
-        priceOfToken(pool.token1, setPrice1);
-        priceOfToken(pool.token2, setPrice2);
-        priceOfToken(pool.lp_address, setLPPrice);
-
-        userTokenAmount(currentWallet, pool.lp_address, pool.lp_abi, setUnstakedTokenValue);
-        userVaultAmount(currentWallet, pool.vault_addr, pool.vault_abi, setStakedTokenValue);
-    }, [pool, currentWallet]);
+    const { price: price1 } = usePriceOfToken(farm.token1);
+    const { price: price2 } = usePriceOfToken(farm.token2);
+    const { price: lpPrice } = usePriceOfToken(farm.lp_address);
+    const { formattedBalances } = useBalances([
+        { address: farm.lp_address, decimals: farm.decimals },
+        { address: farm.vault_addr, decimals: farm.decimals },
+    ]);
+    const unstakedTokenValue = useMemo(() => formattedBalances[0], [formattedBalances]);
+    const stakedTokenValue = useMemo(() => formattedBalances[1], [formattedBalances]);
 
     return (
         <div>
             <div className={`details_top_container`}>
                 <div className={`details_leftside`}>
                     <div className={`details_dropdrown_header`}>
-                        {pool.alt1 ? <img className={`details_logo1`} alt={pool.alt1} src={pool.logo1} /> : null}
+                        {farm.alt1 ? <img className={`details_logo1`} alt={farm.alt1} src={farm.logo1} /> : null}
 
-                        {pool.alt2 ? <img className={`details_logo2`} alt={pool.alt2} src={pool.logo2} /> : null}
+                        {farm.alt2 ? <img className={`details_logo2`} alt={farm.alt2} src={farm.logo2} /> : null}
 
-                        {pool.pair2 ? (
+                        {farm.pair2 ? (
                             <p className={`details_pair_name ${lightMode && "details_pair_name--light"}`}>
-                                {pool.pair1}/{pool.pair2}
+                                {farm.pair1}/{farm.pair2}
                             </p>
                         ) : (
                             <p className={`details_pair_name ${lightMode && "details_pair_name--light"}`}>
-                                {pool.pair1}
+                                {farm.pair1}
                             </p>
                         )}
                     </div>
 
                     <div className={`token_details`}>
-                        {pool.alt1 ? (
+                        {farm.alt1 ? (
                             <div
                                 className={`details_single_token ${lightMode && "details_single_token--light"}`}
                                 style={{ marginRight: "10px" }}
                             >
-                                <img className={`mini_details_image`} alt={pool.alt1} src={pool.logo1} />
+                                <img className={`mini_details_image`} alt={farm.alt1} src={farm.logo1} />
                                 <p>
-                                    {pool.pair1} ={" "}
+                                    {farm.pair1} ={" "}
                                     {price1.toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
@@ -62,11 +60,11 @@ function Details({ pool, ...props }: any) {
                             </div>
                         ) : null}
 
-                        {pool.alt2 ? (
+                        {farm.alt2 ? (
                             <div className={`details_single_token ${lightMode && "details_single_token--light"}`}>
-                                <img className={`mini_details_image`} alt={pool.alt2} src={pool.logo2} />
+                                <img className={`mini_details_image`} alt={farm.alt2} src={farm.logo2} />
                                 <p>
-                                    {pool.pair2} ={" "}
+                                    {farm.pair2} ={" "}
                                     {price2.toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
@@ -86,16 +84,16 @@ function Details({ pool, ...props }: any) {
                         <p>Unstaked Position</p>
                         <div className={`unstaked_details`}>
                             <div className={`unstaked_details_header`}>
-                                {pool.alt1 ? (
-                                    <img className={`unstaked_images1`} alt={pool.alt1} src={pool.logo1} />
+                                {farm.alt1 ? (
+                                    <img className={`unstaked_images1`} alt={farm.alt1} src={farm.logo1} />
                                 ) : null}
 
-                                {pool.alt2 ? (
-                                    <img className={`unstaked_images2`} alt={pool.alt2} src={pool.logo2} />
+                                {farm.alt2 ? (
+                                    <img className={`unstaked_images2`} alt={farm.alt2} src={farm.logo2} />
                                 ) : null}
 
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {unstakedTokenValue.toFixed(3)} {pool.name}
+                                    {unstakedTokenValue.toFixed(3)} {farm.name}
                                 </p>
                             </div>
 
@@ -112,16 +110,16 @@ function Details({ pool, ...props }: any) {
                         <p>Staked Position</p>
                         <div className={`unstaked_details`}>
                             <div className={`unstaked_details_header`}>
-                                {pool.alt1 ? (
-                                    <img className={`unstaked_images1`} alt={pool.alt1} src={pool.logo1} />
+                                {farm.alt1 ? (
+                                    <img className={`unstaked_images1`} alt={farm.alt1} src={farm.logo1} />
                                 ) : null}
 
-                                {pool.alt2 ? (
-                                    <img className={`unstaked_images2`} alt={pool.alt2} src={pool.logo2} />
+                                {farm.alt2 ? (
+                                    <img className={`unstaked_images2`} alt={farm.alt2} src={farm.logo2} />
                                 ) : null}
 
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {stakedTokenValue.toFixed(3)} {pool.name}
+                                    {stakedTokenValue.toFixed(3)} {farm.name}
                                 </p>
                             </div>
                             <p className={`detailed_unstaked_pairs`}>
@@ -143,6 +141,6 @@ function Details({ pool, ...props }: any) {
             </div>
         </div>
     );
-}
+};
 
 export default Details;

@@ -24,8 +24,8 @@ const queryClient = new QueryClient({
 function App() {
     return (
         <Web3OnboardProvider web3Onboard={web3onboard}>
-            <WalletProvider>
-                <QueryClientProvider client={queryClient}>
+            <QueryClientProvider client={queryClient}>
+                <WalletProvider>
                     <AppProvider>
                         <Router>
                             <Routes>
@@ -39,8 +39,8 @@ function App() {
                             </Routes>
                         </Router>
                     </AppProvider>
-                </QueryClientProvider>
-            </WalletProvider>
+                </WalletProvider>
+            </QueryClientProvider>
         </Web3OnboardProvider>
     );
 }

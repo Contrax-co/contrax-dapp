@@ -16,6 +16,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
     const { provider, currentWallet } = useWallet();
 
     const getAllBalances = async () => {
+        if (!provider) return {};
         const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
         const contractCallContext: ContractCallContext[] = [];
 

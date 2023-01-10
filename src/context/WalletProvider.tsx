@@ -4,15 +4,44 @@ import * as ethers from "ethers";
 import { removeUserSession } from "../store/localStorage";
 import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
 import { defaultChainId } from "src/config/constants";
+import { useQuery } from "@tanstack/react-query";
+import { ACCOUNT_BALANCE } from "src/config/constants/query";
+import useConstants from "src/hooks/useConstants";
 
-export const WalletContext = React.createContext({
+interface IWalletContext {
+    currentWallet: string;
+    displayAccount: string;
+    connectWallet: () => void;
+    networkId: number;
+    logout: () => void;
+    signer?: ethers.ethers.providers.JsonRpcSigner;
+    provider?: ethers.ethers.providers.Web3Provider;
+    balance: number;
+    refetchBalance: () => void;
+}
+
+export const WalletContext = React.createContext<IWalletContext>({
+    /**
+     * The current connect wallet address
+     */
     currentWallet: "",
+    /**
+     * The current connected wallet address truncated
+     */
     displayAccount: "",
     connectWallet: () => {},
     networkId: defaultChainId,
     logout: () => {},
-    signer: null as any,
-    provider: null as any,
+    signer: undefined,
+    provider: undefined,
+    /**
+     * Balance of the native eth that the user has
+     */
+    balance: 0,
+    /**
+     * Refetches the balance of the user
+     */
+    refetchBalance: () => {},
 });
 
 interface IProps {
@@ -22,10 +51,10 @@ interface IProps {
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [{ wallet }, connect, disconnect, updateBalances, setWalletModules] = useConnectWallet();
     const connectedWallets = useWallets();
+    const { NETWORK_NAME } = useConstants();
     const [currentWallet, setCurrentWallet] = React.useState("");
-    const [networkId, setNetworkId] = React.useState(defaultChainId);
-    const [provider, setProvider] = React.useState<ethers.ethers.providers.Web3Provider | null>(null);
-    const [signer, setSigner] = React.useState<ethers.ethers.providers.JsonRpcSigner | null>(null);
+    const [provider, setProvider] = React.useState<ethers.ethers.providers.Web3Provider | undefined>(undefined);
+    const [signer, setSigner] = React.useState<ethers.ethers.providers.JsonRpcSigner | undefined>(undefined);
     const [
         {
             chains, // the list of chains that web3-onboard was initialized with
@@ -34,6 +63,12 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         },
         setChain, // function to call to initiate user to switch chains in their wallet
     ] = useSetChain();
+
+    const getBalance = async () => {
+        const balance = await provider?.getBalance(currentWallet);
+        const formattedBal = Number(ethers.utils.formatUnits(balance || 0, 18));
+        return formattedBal;
+    };
 
     const connectWallet = async () => {
         const wallets = await connect();
@@ -45,7 +80,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             });
 
             setCurrentWallet(wallets[0].accounts[0].address);
-            setNetworkId(parseInt(wallets[0].chains[0].id, 16));
         }
     };
 
@@ -92,7 +126,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         if (data) {
             const userInfo = JSON.parse(data);
             setCurrentWallet(userInfo.address);
-            setNetworkId(userInfo.networkId);
         }
     }, []);
 
@@ -130,6 +163,16 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     }, [connect]);
 
+    const { data: balance, refetch: refetchBalance } = useQuery(
+        ACCOUNT_BALANCE(currentWallet, currentWallet, NETWORK_NAME),
+        getBalance,
+        {
+            enabled: !!currentWallet && !!provider && !!NETWORK_NAME,
+            initialData: 0,
+            refetchInterval: 5000,
+        }
+    );
+
     return (
         <WalletContext.Provider
             value={{
@@ -140,6 +183,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 displayAccount,
                 signer,
                 provider,
+                balance,
+                refetchBalance,
             }}
         >
             {children}
