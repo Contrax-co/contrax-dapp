@@ -14,10 +14,8 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
-  },
-  "linterOptions": {
-    "exclude": ["src/**"]
-  },
+    "noEmit": true,
+    "baseUrl": "."
+  }, 
   "include": ["src"]
 }

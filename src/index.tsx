@@ -1,15 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import "src/config/walletConfig";
+import { setUpNotifications, NotificationsProvider } from "reapop";
+import Notifications from "./components/Notifications/Notifications";
 
-const root = ReactDOM.createRoot(document.getElementById('root')!);
+// Configuration for toast notifications
+setUpNotifications({
+    defaultProps: {
+        position: "top-right",
+        dismissible: true,
+        showDismissButton: true,
+        dismissAfter: 3000,
+    },
+});
+
+const root = ReactDOM.createRoot(document.getElementById("root")!);
 
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <React.StrictMode>
+        <NotificationsProvider>
+            <App />
+            <Notifications />
+        </NotificationsProvider>
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
