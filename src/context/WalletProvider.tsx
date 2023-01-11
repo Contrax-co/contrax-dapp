@@ -9,38 +9,55 @@ import { ACCOUNT_BALANCE } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
 
 interface IWalletContext {
+    /**
+     * The current connect wallet address
+     */
     currentWallet: string;
+
+    /**
+     * The current connected wallet address truncated
+     */
     displayAccount: string;
+
+    /**
+     * Connect wallet modal open for connecting any wallet
+     * @returns void
+     */
     connectWallet: () => void;
+
+    /**
+     * The current chain id in number form e.g 5
+     */
     networkId: number;
+
+    /**
+     * Disconnect wallet and logout user
+     * @returns void
+     */
     logout: () => void;
     signer?: ethers.ethers.providers.JsonRpcSigner;
     provider?: ethers.ethers.providers.Web3Provider;
+
+    /**
+     * Balance of the native eth that the user has
+     */
     balance: number;
+
+    /**
+     * Refetches the balance of the user
+     */
     refetchBalance: () => void;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({
-    /**
-     * The current connect wallet address
-     */
     currentWallet: "",
-    /**
-     * The current connected wallet address truncated
-     */
     displayAccount: "",
     connectWallet: () => {},
     networkId: defaultChainId,
     logout: () => {},
     signer: undefined,
     provider: undefined,
-    /**
-     * Balance of the native eth that the user has
-     */
     balance: 0,
-    /**
-     * Refetches the balance of the user
-     */
     refetchBalance: () => {},
 });
 

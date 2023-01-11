@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import useVaults from "src/hooks/vaults/useVaults";
 import { Multicall, ContractCallResults, ContractCallContext } from "ethereum-multicall";
 import useWallet from "src/hooks/useWallet";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +8,7 @@ import useConstants from "src/hooks/useConstants";
 import erc20 from "src/assets/abis/erc20.json";
 
 /**
- * @description Returns total supply for all tokens
+ * Returns total supply for all tokens
  */
 const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
     const { NETWORK_NAME } = useConstants();
@@ -76,7 +75,32 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         return b;
     }, [supplies]);
 
-    return { supplies, formattedSupplies, refetch, isLoading, isFetching };
+    return {
+        /**
+         * Object with address as key and supply as value in bignumber
+         */
+        supplies,
+
+        /**
+         * Object with address as key and supply as value in number readable format
+         */
+        formattedSupplies,
+
+        /**
+         * Refetch supplies, update state
+         */
+        refetch,
+
+        /**
+         * Is query loading, (Always returns false, if initialData is given to useQuery)
+         */
+        isLoading,
+
+        /**
+         * Is query fetching will return true if query is fetching in background
+         */
+        isFetching,
+    };
 };
 
 export default useTotalSupplies;

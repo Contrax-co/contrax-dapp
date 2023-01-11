@@ -9,7 +9,8 @@ import useConstants from "./useConstants";
 import erc20 from "src/assets/abis/erc20.json";
 
 /**
- * @description Returns balances for all tokens
+ * Returns balances for all tokens
+ * @param data Array of objects with address and decimals
  */
 const useBalances = (data: { address: string; decimals: number }[]) => {
     const { NETWORK_NAME } = useConstants();
@@ -33,6 +34,8 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
 
         const results: ContractCallResults = await multicall.call(contractCallContext);
         let ans: { [key: string]: ethers.BigNumber } = {};
+
+        // Organize/format data in object form with addresses as keys and balances as values
         Object.entries(results.results).forEach(([key, value]) => {
             ans[key] = ethers.BigNumber.from(value.callsReturnContext[0].returnValues[0].hex);
         });
@@ -45,6 +48,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
         isLoading,
         isFetching,
     } = useQuery(
+        // Query will rerun and fetch new data whenever any of the values changes in below function
         TOKEN_BALANCES(
             currentWallet,
             data.map((_) => _.address),
@@ -52,7 +56,11 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
         ),
         getAllBalances,
         {
+            // Will only run if all these are true:
             enabled: !!provider && !!currentWallet && data.length > 0 && !!NETWORK_NAME,
+
+            // Initial data to be returned when no query has ran
+            // Returns 0 for all the balances initially
             initialData: () => {
                 let b: { [key: string]: ethers.BigNumber } = {};
                 data.forEach((item) => {
@@ -76,7 +84,32 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
         return b;
     }, [balances]);
 
-    return { balances, formattedBalances, refetch, isLoading, isFetching };
+    return {
+        /**
+         * Object with address as key and balance as value in bignumber
+         */
+        balances,
+
+        /**
+         * Object with address as key and balance as value in number readable format
+         */
+        formattedBalances,
+
+        /**
+         * Refetch balances, update state
+         */
+        refetch,
+
+        /**
+         * Is query loading, (Always returns false, if initialData is given to useQuery)
+         */
+        isLoading,
+
+        /**
+         * Is query fetching will return true if query is fetching in background
+         */
+        isFetching,
+    };
 };
 
 export default useBalances;

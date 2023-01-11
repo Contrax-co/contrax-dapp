@@ -6,6 +6,10 @@ import { CovalentToken } from "src/types";
 import { USER_TOKENS } from "src/config/constants/query";
 import useConstants from "./useConstants";
 
+/**
+ * Gets the user tokens from covalent
+ * @returns Array of tokens
+ */
 const useUserTokens = () => {
     const { currentWallet, networkId } = useWallet();
 
@@ -32,7 +36,27 @@ const useUserTokens = () => {
         enabled: !!networkId && !!currentWallet,
     });
 
-    return { tokens, refetch, isLoading, isFetching };
+    return {
+        /**
+         * Array of tokens
+         */
+        tokens,
+
+        /**
+         * Can be called to refetch the data from the api
+         */
+        refetch,
+
+        /**
+         * Will be true for first time Api is called
+         */
+        isLoading,
+
+        /**
+         * Will be true whenever api is called even in background
+         */
+        isFetching,
+    };
 };
 
 export default useUserTokens;

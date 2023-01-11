@@ -2,7 +2,7 @@ import useFarms from "./useFarms";
 import useBalances from "../useBalances";
 
 /**
- * @description Returns balances for all vaults
+ * Returns balances for all vaults
  */
 const useFarmsVaultBalances = () => {
     const { farms } = useFarms();

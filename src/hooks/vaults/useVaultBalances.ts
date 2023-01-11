@@ -2,7 +2,7 @@ import useVaults from "src/hooks/vaults/useVaults";
 import useBalances from "../useBalances";
 
 /**
- * @description Returns balances for all vaults
+ * Returns balances for all vaults
  */
 const useVaultBalances = () => {
     const { vaults } = useVaults();

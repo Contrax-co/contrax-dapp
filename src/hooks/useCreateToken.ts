@@ -88,11 +88,29 @@ const useCreateToken = () => {
         mutationKey: CREATE_TOKEN(currentWallet, NETWORK_NAME),
     });
 
+    /**
+     * isMutating is number of times a function is being currently ran
+     */
     const isMutating = useIsMutating(CREATE_TOKEN(currentWallet, NETWORK_NAME));
 
     const isLoading = useMemo(() => isMutating > 0, [isMutating]);
 
-    return { createToken, createTokenAsync, isLoading };
+    return {
+        /**
+         * Create Token by calling this function, it can take callbacks to handle success and error
+         */
+        createToken,
+
+        /**
+         * Create Token by calling this function, it returns a promise
+         */
+        createTokenAsync,
+
+        /**
+         * Loading state for when creating token
+         */
+        isLoading,
+    };
 };
 
 export default useCreateToken;

@@ -2,7 +2,7 @@ import useFarms from "./useFarms";
 import useTotalSupplies from "../useTotalSupplies";
 
 /**
- * @description Returns total supply for all vaults
+ * Returns total supply for all vaults
  */
 const useFarmsVaultTotalSupply = () => {
     const { farms } = useFarms();

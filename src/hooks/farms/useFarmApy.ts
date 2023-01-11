@@ -6,7 +6,7 @@ import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 
 /**
- * @description Gets Apy from apy vision
+ * Gets Apy from apy vision
  * @param address
  * @returns apy
  */
