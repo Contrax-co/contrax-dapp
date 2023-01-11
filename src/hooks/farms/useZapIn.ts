@@ -68,6 +68,7 @@ const useZapIn = (farm: Farm) => {
             if (!zapperTxnStatus.status) {
                 throw new Error("Error zapping into vault!");
             } else {
+                dismissNotify(notiId);
                 notifySuccess("Zapped in!", `Success`);
                 refetchBalance();
             }

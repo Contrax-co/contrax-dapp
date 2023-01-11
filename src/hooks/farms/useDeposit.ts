@@ -95,6 +95,7 @@ const useDeposit = (farm: Farm) => {
                 throw new Error("Error depositing into vault!");
             } else {
                 notifySuccess("Deposit!", "Successful");
+                dismissNotify(notiId);
                 refetchBalances();
             }
         } catch (error: any) {

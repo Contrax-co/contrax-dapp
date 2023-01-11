@@ -41,8 +41,6 @@ const customTheme: Theme = {
 };
 
 const Notifications: React.FC<IProps> = () => {
-    console.log("old theme", atalhoTheme);
-
     // 1. Retrieve the notifications to display, and the function used to dismiss a notification.
     const { notifications, dismissNotification } = useNotifications();
     return (

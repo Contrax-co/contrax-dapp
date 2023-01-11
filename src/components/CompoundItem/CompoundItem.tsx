@@ -23,7 +23,6 @@ interface Props {
 }
 
 const CompoundItem: React.FC<Props> = ({ farm }) => {
-    const { currentWallet } = useWallet();
     const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
     const [buttonType, setButtonType] = useState("Deposit");

@@ -55,10 +55,28 @@ export const FARM_ZAP_IN = (currentWallet: string, networkName: string, farmId: 
     currentWallet,
 ];
 
+export const FARM_ZAP_OUT = (currentWallet: string, networkName: string, farmId: number) => [
+    "farm",
+    "function",
+    "zapOut",
+    farmId,
+    networkName,
+    currentWallet,
+];
+
 export const FARM_DEPOSIT = (currentWallet: string, networkName: string, farmId: number) => [
     "farm",
     "function",
     "deposit",
+    farmId,
+    networkName,
+    currentWallet,
+];
+
+export const FARM_WITHDRAW = (currentWallet: string, networkName: string, farmId: number) => [
+    "farm",
+    "function",
+    "withdraw",
     farmId,
     networkName,
     currentWallet,

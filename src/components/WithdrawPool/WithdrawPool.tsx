@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { getUserVaultBalance, withdraw, withdrawAll, zapOut } from "./withdraw-function";
+import { useState, useEffect, useMemo } from "react";
+import { getUserVaultBalance, withdraw, withdrawAll } from "./withdraw-function";
 import { MoonLoader } from "react-spinners";
 import "./Withdraw.css";
 import { AiOutlineCheckCircle } from "react-icons/ai";
@@ -10,13 +10,15 @@ import useWallet from "src/hooks/useWallet";
 import useConstants from "src/hooks/useConstants";
 import { Farm } from "src/types";
 import usePriceOfToken from "src/hooks/usePriceOfToken";
+import useBalances from "src/hooks/useBalances";
+import useZapOut from "src/hooks/farms/useZapOut";
+import useWithdraw from "src/hooks/farms/useWithdraw";
 
 interface Props {
     farm: Farm;
 }
 
 const WithdrawPool: React.FC<Props> = ({ farm }) => {
-    const { BLOCK_EXPLORER_URL } = useConstants();
     const { connectWallet, currentWallet } = useWallet();
     const { lightMode } = useApp();
     const [toggleType, setToggleType] = useState(() => {
@@ -26,74 +28,27 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
             return false;
         }
     });
-    const [loaderMessage, setLoaderMessage] = useState("");
-    const [isLoading, setLoading] = useState(false);
 
     const [withdrawAmt, setWithdrawAmt] = useState(0.0);
 
-    const [userVaultBal, setUserVaultBalance] = useState(0);
-    const [success, setSuccess] = useState("loading");
-    const [secondaryMessage, setSecondaryMessage] = useState("");
+    const { formattedBalances } = useBalances([{ address: farm.vault_addr, decimals: farm.decimals }]);
+    const userVaultBal = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances]);
+
+    const { zapOutAsync, isLoading: isZappingOut } = useZapOut(farm);
+    const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
 
     const { price } = usePriceOfToken(farm.lp_address);
-    const [link, setLink] = useState(false);
-    const [hash, setHash] = useState("");
-
-    const refresh = () => window.location.reload();
-
-    useEffect(() => {
-        getUserVaultBalance(farm, currentWallet, setUserVaultBalance);
-    }, [farm, currentWallet]);
 
     const handleWithdrawChange = (e: any) => {
         setWithdrawAmt(e.target.value);
     };
 
-    function withdrawFunction() {
-        if (withdrawAmt === userVaultBal) {
-            withdrawAll(
-                setUserVaultBalance,
-                currentWallet,
-                setSuccess,
-                setSecondaryMessage,
-                farm,
-                setWithdrawAmt,
-                setLoading,
-                setLoaderMessage,
-                setLink,
-                setHash
-            );
-        } else {
-            withdraw(
-                setUserVaultBalance,
-                currentWallet,
-                setSuccess,
-                setSecondaryMessage,
-                farm,
-                withdrawAmt,
-                setWithdrawAmt,
-                setLoading,
-                setLoaderMessage,
-                setLink,
-                setHash
-            );
-        }
+    async function withdrawFunction() {
+        await withdrawAsync({ withdrawAmount: withdrawAmt });
     }
 
-    function zapOutFunction() {
-        zapOut(
-            currentWallet,
-            setUserVaultBalance,
-            setSuccess,
-            setLoading,
-            setLoaderMessage,
-            farm,
-            withdrawAmt,
-            setWithdrawAmt,
-            setLink,
-            setHash,
-            setSecondaryMessage
-        );
+    async function zapOutFunction() {
+        await zapOutAsync({ withdrawAmt });
     }
 
     function withdrawMax() {
@@ -199,12 +154,13 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
                                             <p>Insufficient Balance</p>
                                         </div>
                                     ) : (
-                                        <div
+                                        <button
                                             className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
                                             onClick={withdrawFunction}
+                                            disabled={isWithdrawing}
                                         >
                                             <p>Withdraw</p>
-                                        </div>
+                                        </button>
                                     )}
                                 </div>
                             ) : (
@@ -226,12 +182,13 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
                                             <p>Insufficient Balance</p>
                                         </div>
                                     ) : (
-                                        <div
+                                        <button
                                             className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
                                             onClick={zapOutFunction}
+                                            disabled={isZappingOut}
                                         >
                                             <p>Withdraw</p>
-                                        </div>
+                                        </button>
                                     )}
                                 </div>
                             )}
@@ -245,50 +202,6 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
                     )}
                 </div>
             </div>
-
-            {isLoading && (
-                <div className={`withdraw_spinner ${lightMode && "withdraw_spinner--light"}`}>
-                    <div className={`withdraw_spinner_top`}>
-                        <div className={`withdraw_spinner-left`}>
-                            {success === "success" ? (
-                                <AiOutlineCheckCircle style={{ color: "#00E600", fontSize: "20px" }} />
-                            ) : success === "loading" ? (
-                                <MoonLoader size={20} loading={isLoading} color={"rgb(89, 179, 247)"} />
-                            ) : success === "fail" ? (
-                                <MdOutlineErrorOutline style={{ color: "#e60000" }} />
-                            ) : null}
-                        </div>
-
-                        <div className={`withdraw_spinner_right`}>
-                            <p style={{ fontWeight: "700" }}>{loaderMessage}</p>
-                            <p className={`withdraw_second`}>{secondaryMessage}</p>
-                        </div>
-                    </div>
-
-                    <div className={`withdraw_spinner_bottom`}>
-                        {link ? (
-                            <div
-                                className={`withdraw_spinner_bottom_left`}
-                                onClick={() => window.open(`${BLOCK_EXPLORER_URL}/tx/${hash}`, "_blank")}
-                            >
-                                <p>Details</p>
-                            </div>
-                        ) : null}
-
-                        <div
-                            className={`withdraw_spinner_bottom_right`}
-                            onClick={() => {
-                                setLoading(false);
-                                setLink(false);
-                                setHash("");
-                                refresh();
-                            }}
-                        >
-                            <p>Dismiss</p>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
