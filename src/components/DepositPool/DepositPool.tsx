@@ -43,8 +43,7 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
     const [ethDepositAmount, setEthDepositAmount] = useState(0.0);
-    const { hash, isLoading, loaderMsg, secondaryMsg, zapIn, status, zapInError } = useZapIn(farm);
-    const { BLOCK_EXPLORER_URL } = useConstants();
+    const { isLoading, zapIn, status } = useZapIn(farm);
 
     const refresh = () => window.location.reload();
 
@@ -56,8 +55,8 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
         setEthDepositAmount(ethUserBal);
     }
 
-    async function zapDeposit() {
-        await zapIn({ ethZapAmount: ethDepositAmount });
+    function zapDeposit() {
+        zapIn({ ethZapAmount: ethDepositAmount });
     }
 
     return (
@@ -145,47 +144,6 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
                     )}
                 </div>
             </div>
-
-            {(isLoading || !!zapInError || status === "success") && (
-                <div className={`deposit_spinner ${lightMode && "deposit_spinner--light"}`}>
-                    <div className={`deposit_spinner_top`}>
-                        <div className={`deposit_spinner-left`}>
-                            {status === "success" ? (
-                                <AiOutlineCheckCircle style={{ color: "#00E600", fontSize: "20px" }} />
-                            ) : isLoading ? (
-                                <MoonLoader size={20} loading={isLoading} color={"rgb(89, 179, 247)"} />
-                            ) : zapInError ? ( // TODO
-                                <MdOutlineErrorOutline style={{ color: "#e60000" }} />
-                            ) : null}
-                        </div>
-
-                        <div className={`deposit_spinner_right`}>
-                            <p style={{ fontWeight: "700" }}>{loaderMsg}</p>
-                            <p className={`deposit_second`}>{secondaryMsg}</p>
-                        </div>
-                    </div>
-
-                    <div className={`deposit_spinner_bottom`}>
-                        {hash ? (
-                            <div
-                                className={`deposit_spinner_bottom_left`}
-                                onClick={() => window.open(`${BLOCK_EXPLORER_URL}/tx/${hash}`, "_blank")}
-                            >
-                                <p>Details</p>
-                            </div>
-                        ) : null}
-
-                        <div
-                            className={`deposit_spinner_bottom_right`}
-                            onClick={() => {
-                                refresh();
-                            }}
-                        >
-                            <p>Dismiss</p>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
@@ -195,10 +153,7 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
     const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
     const { BLOCK_EXPLORER_URL } = useConstants();
     const { formattedBalances } = useBalances([{ address: farm.lp_address, decimals: farm.decimals }]);
-    const { hash, isLoading, loaderMsg, secondaryMsg, deposit, status, depositError } = useDeposit(farm);
-    const [error, setError] = useState("");
-
-    const refresh = () => window.location.reload();
+    const { isLoading, deposit } = useDeposit(farm);
 
     const lpUserBal = useMemo(() => formattedBalances[0] || 0, [formattedBalances]);
 
@@ -215,14 +170,9 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
     }
 
     async function depositAmount() {
-        deposit(
-            {
-                depositAmount: lpDepositAmount,
-            },
-            {
-                onError: (err: any) => setError(err),
-            }
-        );
+        deposit({
+            depositAmount: lpDepositAmount,
+        });
     }
 
     return (
@@ -306,47 +256,6 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
                     )}
                 </div>
             </div>
-
-            {(isLoading || !!depositError || status === "success") && (
-                <div className={`deposit_spinner ${lightMode && "deposit_spinner--light"}`}>
-                    <div className={`deposit_spinner_top`}>
-                        <div className={`deposit_spinner-left`}>
-                            {status === "success" ? (
-                                <AiOutlineCheckCircle style={{ color: "#00E600", fontSize: "20px" }} />
-                            ) : isLoading ? (
-                                <MoonLoader size={20} loading={isLoading} color={"rgb(89, 179, 247)"} />
-                            ) : depositError ? ( // TODO
-                                <MdOutlineErrorOutline style={{ color: "#e60000" }} />
-                            ) : null}
-                        </div>
-
-                        <div className={`deposit_spinner_right`}>
-                            <p style={{ fontWeight: "700" }}>{loaderMsg}</p>
-                            <p className={`deposit_second`}>{secondaryMsg}</p>
-                        </div>
-                    </div>
-
-                    <div className={`deposit_spinner_bottom`}>
-                        {hash ? (
-                            <div
-                                className={`deposit_spinner_bottom_left`}
-                                onClick={() => window.open(`${BLOCK_EXPLORER_URL}/tx/${hash}`, "_blank")}
-                            >
-                                <p>Details</p>
-                            </div>
-                        ) : null}
-
-                        <div
-                            className={`deposit_spinner_bottom_right`}
-                            onClick={() => {
-                                refresh();
-                            }}
-                        >
-                            <p>Dismiss</p>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

@@ -4,12 +4,27 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "src/config/walletConfig";
+import { setUpNotifications, NotificationsProvider } from "reapop";
+import Notifications from "./components/Notifications/Notifications";
+
+// Configuration for toast notifications
+setUpNotifications({
+    defaultProps: {
+        position: "top-right",
+        dismissible: true,
+        showDismissButton: true,
+        dismissAfter: 3000,
+    },
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 
 root.render(
     <React.StrictMode>
-        <App />
+        <NotificationsProvider>
+            <App />
+            <Notifications />
+        </NotificationsProvider>
     </React.StrictMode>
 );
 
