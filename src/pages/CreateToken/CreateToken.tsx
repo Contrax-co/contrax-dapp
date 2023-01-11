@@ -1,13 +1,10 @@
-// @ts-nocheck
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import swal from "sweetalert";
-import { getUserSession } from "src/store/localStorage";
+import { useState } from "react";
 import Tokens from "./Tokens";
 import LoadingSpinner from "src/components/spinner/spinner";
 import "./createToken.css";
 import useApp from "src/hooks/useApp";
-import contractFile from "src/assets/abis/erc20.json";
+import useCreateToken from "src/hooks/useCreateToken";
+import useUserTokens from "src/hooks/useUserTokens";
 
 export default function CreateToken() {
     const { lightMode } = useApp();
@@ -20,94 +17,35 @@ export default function CreateToken() {
     const [tokenTradingFee, setTokenTradingFee] = useState(false);
     const [tokenTradingFeeValue, setTradingFeeValue] = useState("");
     const [tokenSupplyIncrease, settokenSupplyIncrease] = useState(false);
-    const [tokenAddress, setTokenAddress] = useState();
-    const [wallet, setWallet] = useState();
-    const [decimals, setDecimal] = useState();
-    const [totalSupply, setTotalSupply] = useState();
-    const [isLoading, setIsLoading] = useState(false);
+    const {refetch:refetchUserTokens} = useUserTokens()
 
-    useEffect(() => {
-        let walletData: any;
-        let sessionData = getUserSession();
-        if (sessionData) {
-            walletData = JSON.parse(sessionData);
-            setWallet(walletData.address);
-        }
-    }, []);
+    const { createTokenAsync, isLoading } = useCreateToken();
 
     const handleSubmit = async () => {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        const signer = provider.getSigner();
-        const { chainId } = await provider.getNetwork();
-
         let name = tokenName;
         let symbol = tokenSymbol;
         let decimal = Number(tokenDecimal);
-        let burnPercantageIdentifier = tokenBurn === "on" ? true : false;
+        let burnPercantageIdentifier = tokenBurn;
         let initialSupply = Number(tokenSupply);
-        let mintable = tokenSupplyIncrease === "on" ? true : false;
+        let mintable = tokenSupplyIncrease;
         let burnPercentage = Number(tokenBurnValue);
         let transactionFeePercentage = Number(tokenTradingFeeValue);
-        let transactionFeePercentageIdentiier = tokenTradingFee === "on" ? true : false;
+        let transactionFeePercentageIdentiier = tokenTradingFee;
 
-        const ldecimal = 1;
-        const hdecimal = 19;
-        const lts = -1;
-        const hts = 99999999999999999;
+        await createTokenAsync({
+            name,
+            symbol,
+            decimal,
+            burnPercantageIdentifier,
+            initialSupply,
+            mintable,
+            burnPercentage,
+            transactionFeePercentage,
+            transactionFeePercentageIdentiier,
+        });
 
-        if (decimal > ldecimal && decimal < hdecimal) {
-            if (symbol.length < 16) {
-                if (initialSupply > lts && initialSupply < hts) {
-                    if (name.length < 64) {
-                        setIsLoading(true);
-                        const dec: any = decimal.toString();
-                        setDecimal(dec);
-                        const ts: any = initialSupply.toString();
-                        setTotalSupply(ts);
-
-                        const metadata = contractFile;
-                        const factory = new ethers.ContractFactory(metadata.abi, metadata.bytecode, signer);
-
-                        const contract = await factory.deploy(
-                            name,
-                            symbol,
-                            decimal,
-                            initialSupply,
-                            burnPercentage,
-                            burnPercantageIdentifier,
-                            transactionFeePercentage,
-                            transactionFeePercentageIdentiier,
-                            mintable
-                        );
-                        contract.deployed();
-
-                        const add = contract.address;
-                        setTokenAddress(add);
-                        const addd = await contract.deployTransaction.wait();
-
-                        if (!addd.blockNumber) {
-                        } else {
-                            setIsLoading(false);
-
-                            swal({
-                                title: "Congratulations!",
-                                text: "Your token was created successfully! Please allow a few minutes for confirmation then the token will appear in your Token Table",
-                                icon: "success",
-                            }).then((data) => {});
-                        }
-                    } else {
-                        swal("Something went wrong", "Token Name must be between 1 and 64 characters");
-                    }
-                } else {
-                    swal("Something went wrong", "Token Supply must be between 1 and 99999999999999999");
-                }
-            } else {
-                swal("Something went wrong", "Token Name is more than 16 characters");
-            }
-        } else {
-            swal("Something went wrong", "Decimal must be a whole number between 1 and 18");
-        }
+        // Refetch user tokens after creating tokens, so tokens can be updated in UI
+        refetchUserTokens();
     };
 
     return (
@@ -156,9 +94,7 @@ export default function CreateToken() {
                                 <input
                                     className={`token-inputs ${lightMode && "token-inputs-light"}`}
                                     type="text"
-                                    disabled="disabled"
                                     id="disabled-input"
-                                    autocomplete="false"
                                     value="18"
                                     onChange={(e) => setTokenDecimal(e.target.value)}
                                 />
@@ -211,7 +147,12 @@ export default function CreateToken() {
                         {!isLoading ? (
                             <div>
                                 {tokenName && tokenDecimal && tokenSupply && tokenSymbol ? (
-                                    <button onClick={handleSubmit} type="button" className="deploy-token-btn">
+                                    <button
+                                        onClick={handleSubmit}
+                                        disabled={isLoading}
+                                        type="button"
+                                        className="deploy-token-btn"
+                                    >
                                         Deploy Token
                                     </button>
                                 ) : (

@@ -5,11 +5,12 @@ import "./Home.css";
 import Logout from "src/components/Logout/Logout";
 import { Outlet } from "react-router-dom";
 import useApp from "src/hooks/useApp";
+import useUserTokens from "src/hooks/useUserTokens";
 
 function Home() {
     const { lightMode } = useApp();
     const [open, setOpen] = useState(false);
-
+    useUserTokens();
     return (
         <div className={`page ${lightMode && "page--light"}`}>
             <div className="ac_page">

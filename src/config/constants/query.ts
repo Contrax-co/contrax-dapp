@@ -1,5 +1,7 @@
 // React Query query keys
 
+export const USER_TOKENS = (currentWallet: string, networkId: number) => ["user", "tokens", networkId, currentWallet];
+
 export const TOKEN_BALANCES = (currentWallet: string, addresses: string[], networkName: string) => [
     "token",
     "balances",
@@ -78,6 +80,14 @@ export const FARM_WITHDRAW = (currentWallet: string, networkName: string, farmId
     "function",
     "withdraw",
     farmId,
+    networkName,
+    currentWallet,
+];
+
+export const CREATE_TOKEN = (currentWallet: string, networkName: string) => [
+    "token",
+    "function",
+    "create",
     networkName,
     currentWallet,
 ];

@@ -1,49 +1,12 @@
-import { useEffect, useState } from "react";
-import { getUserSession } from "src/store/localStorage";
 import LoadingSpinner from "src/components/spinner/spinner";
 import "./tokens.css";
 import useApp from "src/hooks/useApp";
+import useUserTokens from "src/hooks/useUserTokens";
+import * as ethers from "ethers";
 
 export default function Tokens() {
     const { lightMode } = useApp();
-    const [wallet, setWallet] = useState();
-    const [datas, setData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        setIsLoading(true);
-        let walletData: any;
-        let sessionData = getUserSession();
-        if (sessionData) {
-            walletData = JSON.parse(sessionData);
-            setWallet(walletData.address);
-        }
-    }, [wallet]);
-
-    useEffect(() => {
-        getting();
-    });
-
-    async function getting() {
-        fetch(
-            `https://api.covalenthq.com/v1/42161/address/${wallet}/balances_v2/?quote-currency=USD&format=JSON&nft=false&no-nft-fetch=true/`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: "Basic Y2tleV81YzcwODllZTFiMTQ0NWM3Yjg0NjcyYmFlM2Q6", // TODO - auth key in plain text?
-                    "Content-Type": "application/json",
-                },
-            }
-        )
-            .then((response) => response.json())
-            .then(async (items) => {
-                setData(items.data.items);
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    }
+    const { tokens: datas, isLoading } = useUserTokens();
 
     return (
         <>
@@ -61,12 +24,20 @@ export default function Tokens() {
                             </tr>
                         </thead>
                         {isLoading ? (
-                            <div className="spinner-container">
-                                <LoadingSpinner />
-                            </div>
+                            <tfoot>
+                                <tr>
+                                    <td colSpan={5}>
+                                        <div className="spinner-container">
+                                            <center>
+                                                <LoadingSpinner />
+                                            </center>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
                         ) : (
                             <tbody>
-                                {datas.map((token: any, index) => {
+                                {datas?.map((token, index) => {
                                     return (
                                         <tr
                                             className={`table__input-token ${lightMode && "table--light-token "}`}
@@ -76,8 +47,11 @@ export default function Tokens() {
                                             <td>{token.contract_ticker_symbol}</td>
                                             <td>{token.contract_name}</td>
                                             <td className="hide-mobile">{token.contract_decimals}</td>
-
-                                            <td>{token.balance / Math.pow(10, token.contract_decimals)}</td>
+                                            <td>
+                                                {Number(
+                                                    ethers.utils.formatUnits(token.balance, token.contract_decimals)
+                                                )}
+                                            </td>
                                         </tr>
                                     );
                                 })}
