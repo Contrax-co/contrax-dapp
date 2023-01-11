@@ -1,0 +1,33 @@
+---
+title: "Exchange"
+description: "How exhange into tokens you need"
+---
+
+## Overview
+
+This tool lets you swap tokens to obtain the tokens needed for the single token farms. The exchange is a DEX that is connected to Sushiswap. Although you do not need LP tokens because of our zappers, you can use this page to swap from regular tokens into the LP tokens and viceversa when you want to use LP tokens instead of the zapper.
+
+## Swap Tool
+
+<Frame>![Swap](/images/swap.png)</Frame>
+The top amount is the token amount that you have and want to to exchange. You can
+see how much you have in USD and token amount on the right side (in the example:
+$129.14 in ETH, or 0.1073... Ether)
+
+The bottom amount will auto-fill with how much you will receive. Note the USD value on the side is _what you already have_ and not what you will recieve. In the example, we are swapping for USDC to enter the USDC farming pool.
+
+The "See Details" button will show you exactly what you are swapping, what you will recieve, and the USD value for both (which, in a fair swap, should be about the same)
+
+## How to Swap
+
+1. Ensure you have Arbitrum ETH or another token supported by exchange.
+2. Type you can type in the amount you want to swap (like 0.05 in the exmaple).
+3. Once your amount auto-fills, click "See Details" and the following screen will show:
+   <Frame>![Swap Details](/images/swap_details.png)</Frame>
+4. If you are satisfied with the swap and USD values, click "confirm swap"
+5. MetaMask wil pop up. Scroll down and confirm the transaction:
+   <Frame>![Swap Confirm](/images/swap_mm_confirm.png)</Frame>
+6. After a few seconds, you'll see a swapped confirmation from Contrax and MetaMask, as well as the updated values of your swapped assets, in this case, ETH and WETH-USDC:
+   <Frame>![Swap Confirmed](/images/swapped_confirmation.png)</Frame>
+
+_You can now join a farm with the token. Head over the Farms page, which you can learn how to use [here](../contrax-dapp/farms)._

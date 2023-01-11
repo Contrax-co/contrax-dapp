@@ -1,82 +1,77 @@
-import SidebarItem from './SidebarItem';
-import { MdSpaceDashboard } from 'react-icons/md';
-import { GiFarmTractor, GiToken } from 'react-icons/gi';
-import { HiDocumentText } from 'react-icons/hi';
-import { AiOutlineExport } from 'react-icons/ai';
-import { FaExchangeAlt } from 'react-icons/fa';
-import {RiFundsLine} from 'react-icons/ri'
-import logo from '../../images/logo.png';
-import logo2 from '../../images/logo-4x.png';
-import LightModeToggle from '../LightModeToggle';
-import './Sidebar.css';
+import SidebarItem from "./SidebarItem";
+import { MdSpaceDashboard } from "react-icons/md";
+import { GiFarmTractor, GiToken } from "react-icons/gi";
+import { HiDocumentText } from "react-icons/hi";
+import { AiOutlineExport } from "react-icons/ai";
+import { FaExchangeAlt } from "react-icons/fa";
+import { RiFundsLine } from "react-icons/ri";
+import logo from "src/assets/images/logo.png";
+import logo2 from "src/assets/images/logo-4x.png";
+import LightModeToggle from "src/components/LightModeToggle/LightModeToggle";
+import "./Sidebar.css";
+import { useNavigate, useLocation } from "react-router-dom";
+import { RoutesPaths } from "src/config/constants";
+import useApp from "src/hooks/useApp";
 
-function Sidebar({ lightMode, menuItem, setMenuItem, ...props }: any) {
-  return (
-    <div className={`sidebar_bg ${lightMode && 'sidebar_bg--light'}`}>
-      <img
-        className="contrax_logo"
-        alt="contrax-logo"
-        src={lightMode ? logo2 : logo}
-      />
+function Sidebar() {
+    const { lightMode } = useApp();
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
 
-      <div className="side_items">
-        <SidebarItem
-          title="Dashboard"
-          icon={<MdSpaceDashboard />}
-          onClick={() => setMenuItem('Dashboard')}
-          active={menuItem === 'Dashboard'}
-          lightMode={lightMode}
-        />
+    return (
+        <div className={`sidebar_bg ${lightMode && "sidebar_bg--light"}`}>
+            <img className="contrax_logo" alt="contrax-logo" src={lightMode ? logo2 : logo} />
 
-        <SidebarItem
-          title="Farms"
-          icon={<GiFarmTractor />}
-          onClick={() => setMenuItem('Farms')}
-          active={menuItem === 'Farms'}
-          lightMode={lightMode}
-        />
+            <div className="side_items">
+                <SidebarItem
+                    title="Dashboard"
+                    icon={<MdSpaceDashboard />}
+                    onClick={() => navigate(RoutesPaths.Home)}
+                    active={pathname === RoutesPaths.Home}
+                />
 
-        <SidebarItem
-          title="Exchange"
-          icon={<FaExchangeAlt />}
-          onClick={() => setMenuItem('Exchange')}
-          active={menuItem === 'Exchange'}
-          lightMode={lightMode}
-        />
+                <SidebarItem
+                    title="Farms"
+                    icon={<GiFarmTractor />}
+                    onClick={() => navigate(RoutesPaths.Farms)}
+                    active={pathname === RoutesPaths.Farms}
+                />
 
-        <SidebarItem
-          title="Create Token"
-          icon={<GiToken />}
-          onClick={() => setMenuItem('Create token')}
-          active={menuItem === 'Create token'}
-          lightMode={lightMode}
-        />
+                <SidebarItem
+                    title="Exchange"
+                    icon={<FaExchangeAlt />}
+                    onClick={() => navigate(RoutesPaths.Exchange)}
+                    active={pathname === RoutesPaths.Exchange}
+                />
 
-        <SidebarItem
-          title="Create Pool"
-          icon={<RiFundsLine />}
-          onClick={() => setMenuItem('Create pool')}
-          active={menuItem === 'Create pool'}
-          lightMode={lightMode}
-        />
+                <SidebarItem
+                    title="Create Token"
+                    icon={<GiToken />}
+                    onClick={() => navigate(RoutesPaths.CreateToken)}
+                    active={pathname === RoutesPaths.CreateToken}
+                />
 
-        <SidebarItem
-          title="User Guide"
-          onClick={() =>
-            window.open('https://contrax.gitbook.io/contrax-docs/', '_blank')
-          }
-          icon={<HiDocumentText />}
-          icon2={<AiOutlineExport />}
-          active={menuItem === 'Docs'}
-          lightMode={lightMode}
-        />
-      </div>
+                <SidebarItem
+                    title="Create Pool"
+                    icon={<RiFundsLine />}
+                    onClick={() => navigate(RoutesPaths.CreatePool)}
+                    active={pathname === RoutesPaths.CreatePool}
+                />
 
-      <div className="toggle_placement">
-        <LightModeToggle onClick={props.onClick} lightMode={lightMode} />
-      </div>
-    </div>
-  );
+                <SidebarItem
+                    title="User Guide"
+                    onClick={() => window.open("https://contrax.gitbook.io/contrax-docs/", "_blank")}
+                    icon={<HiDocumentText />}
+                    icon2={<AiOutlineExport />}
+                    // active={menuItem === "Docs"}
+                />
+            </div>
+
+            <div className="toggle_placement">
+                <LightModeToggle />
+            </div>
+        </div>
+    );
 }
 
 export default Sidebar;

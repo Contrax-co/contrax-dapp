@@ -1,0 +1,42 @@
+---
+title: "Arbitrum Bridge"
+description: "Move your ETH from Mainnet to Arbitrum"
+---
+
+## Bridge your ETH over to Arbitrum
+
+Once you are on Arbitrum, you will need ETH on Arbitrum to use Contrax. We are working on provding a gateway to purchase Arb ETH (AETH) directly, but currently you will need to bridge over mainnet ETH.
+
+There is an official bridge which takes more gas and eight days to transfer, but we will be using one of the trusted third party bridges that Arbitrum also recommends, Hop Network.
+
+Bridging is simple and the ETH will still be in your MetaMask afterwards, but on a different network. It can be reversed the same steps it takes.
+
+1. Go to the [Hop Network Arbitrum Bridge](https://app.hop.exchange) and click "Connect Wallet" and select "MetaMask."
+
+   <Frame>![Click Connect Wallet](/images/hop_network.png)</Frame>
+
+2. Ensure you are on Mainnet in MetaMask. To do this, click the MetaMask icon, and see your network. If it doesn't say "Ethereum Mainnet," click it and select mainnet.
+
+   <Frame>![Select Mainnet](/images/mm_network.png)</Frame>
+
+3. Once connected, we need to choose the From and To Networks. The From is "Mainnet" and the To is "Arbitrum."
+
+<Frame>![Select Networks](/images/hop_to_from.png)</Frame>
+
+You can select "Max" for your entire amount or manually type it in. Max may not list your true max, so just correct it if it does not.
+
+4. Click "Send" and the confirmation pop up will appear. It will remind you to make sure you are on the main network, which we did in step 2.
+
+5. Click "Send" and MetaMask will pop up. Scroll down and click "Confirm." Note that it will cost ~$3 - $10 worth of ETH as a gas cost to bridge no matter the amount, but once on Arbitrum, most transactions will be between 3 to 10 cents.
+
+6. You should see this pop up which lets you know the ETH is being bridged. It should take about 15 minutes to reach 64 confirmations:
+
+<Frame>![Bridging](/images/hop_confirmations.png)</Frame>
+
+7. Once completed, you will see "Complete" under source and destination. You can now switch your network to Arbitrum in MetaMask, and see your shiny new Arbitrum ETH.
+
+<Frame>![Complete](/images/mm_arb.png)</Frame>
+
+If you want to return your ETH to mainnet after you are done with your farming, just follow the same steps, but switch the From and To networks.
+
+_Now that you have Arbitrum ETH, you are all set to to start farming using our [Quick Start Guide](../start/quickstart)._
