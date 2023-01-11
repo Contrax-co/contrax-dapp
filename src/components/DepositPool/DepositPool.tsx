@@ -43,9 +43,7 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
     const [ethDepositAmount, setEthDepositAmount] = useState(0.0);
-    const { isLoading, zapIn, status } = useZapIn(farm);
-
-    const refresh = () => window.location.reload();
+    const { isLoading, zapIn } = useZapIn(farm);
 
     const handleEthDepositChange = (e: any) => {
         setEthDepositAmount(e.target.value);
@@ -110,28 +108,29 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
 
                             <div className={`deposit_deposits ${lightMode && "deposit_deposits--light"}`}>
                                 {!ethDepositAmount || ethDepositAmount <= 0 ? (
-                                    <div
+                                    <button
                                         className={`deposit_zap1_button_disable ${
                                             lightMode && "deposit_zap1_button_disable--light"
                                         }`}
                                     >
                                         <p>Deposit</p>
-                                    </div>
+                                    </button>
                                 ) : ethDepositAmount > ethUserBal ? (
-                                    <div
+                                    <button
                                         className={`deposit_zap1_button_disable ${
                                             lightMode && "deposit_zap1_button_disable--light"
                                         }`}
                                     >
                                         <p>Insufficient Balance</p>
-                                    </div>
+                                    </button>
                                 ) : (
-                                    <div
+                                    <button
                                         className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
                                         onClick={zapDeposit}
+                                        disabled={isLoading}
                                     >
                                         <p>Deposit</p>
-                                    </div>
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -151,11 +150,10 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
 const FarmDeposit: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
-    const { BLOCK_EXPLORER_URL } = useConstants();
     const { formattedBalances } = useBalances([{ address: farm.lp_address, decimals: farm.decimals }]);
     const { isLoading, deposit } = useDeposit(farm);
 
-    const lpUserBal = useMemo(() => formattedBalances[0] || 0, [formattedBalances]);
+    const lpUserBal = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances]);
 
     const [lpDepositAmount, setLPDepositAmount] = useState(0.0);
 
@@ -222,28 +220,29 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
 
                             <div className={`deposit_deposits ${lightMode && "deposit_deposits--light"}`}>
                                 {!lpDepositAmount || lpDepositAmount <= 0 ? (
-                                    <div
+                                    <button
                                         className={`deposit_zap1_button_disable ${
                                             lightMode && "deposit_zap1_button_disable--light"
                                         }`}
                                     >
                                         <p>Deposit</p>
-                                    </div>
+                                    </button>
                                 ) : lpDepositAmount > lpUserBal ? (
-                                    <div
+                                    <button
                                         className={`deposit_zap1_button_disable ${
                                             lightMode && "deposit_zap1_button_disable--light"
                                         }`}
                                     >
                                         <p>Insufficient Balance</p>
-                                    </div>
+                                    </button>
                                 ) : (
-                                    <div
+                                    <button
                                         className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
                                         onClick={depositAmount}
+                                        disabled={isLoading}
                                     >
                                         <p>Deposit</p>
-                                    </div>
+                                    </button>
                                 )}
                             </div>
                         </div>

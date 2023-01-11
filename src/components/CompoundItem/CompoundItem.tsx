@@ -35,8 +35,8 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
 
     const { formattedSupplies } = useFarmsVaultTotalSupply();
     const totalVaultBalance = useMemo(() => {
-        return formattedSupplies[farm.vault_addr] || 0;
-    }, [formattedBalances, farm]);
+        return formattedSupplies[farm.vault_addr];
+    }, [formattedSupplies, farm]);
 
     const { price: priceOfSingleToken } = usePriceOfToken(farm.lp_address);
 

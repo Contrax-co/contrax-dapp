@@ -16,7 +16,7 @@ const useDeposit = (farm: Farm) => {
     const { formattedBalances, refetch: refetchBalances } = useBalances([
         { address: farm.lp_address, decimals: farm.decimals },
     ]);
-    const lpUserBal = useMemo(() => formattedBalances[0] || 0, [formattedBalances]);
+    const lpUserBal = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances]);
 
     const _deposit = async ({ depositAmount }: { depositAmount: number }) => {
         if (!provider) return;

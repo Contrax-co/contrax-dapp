@@ -53,7 +53,13 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
         getAllBalances,
         {
             enabled: !!provider && !!currentWallet && data.length > 0 && !!NETWORK_NAME,
-            initialData: {},
+            initialData: () => {
+                let b: { [key: string]: ethers.BigNumber } = {};
+                data.forEach((item) => {
+                    b[item.address] = ethers.BigNumber.from(0);
+                });
+                return b;
+            },
         }
     );
 

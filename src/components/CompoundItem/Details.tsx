@@ -20,8 +20,8 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
         { address: farm.lp_address, decimals: farm.decimals },
         { address: farm.vault_addr, decimals: farm.decimals },
     ]);
-    const unstakedTokenValue = useMemo(() => formattedBalances[0], [formattedBalances]);
-    const stakedTokenValue = useMemo(() => formattedBalances[1], [formattedBalances]);
+    const unstakedTokenValue = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances]);
+    const stakedTokenValue = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances]);
 
     return (
         <div>
