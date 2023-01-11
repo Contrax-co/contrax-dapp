@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useMemo } from "react";
 import useApp from "src/hooks/useApp";
 import useVaultBalances from "src/hooks/vaults/useVaultBalances";
 import { Vault } from "src/types";

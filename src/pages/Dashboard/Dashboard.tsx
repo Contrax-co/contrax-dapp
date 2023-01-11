@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { BsCheckCircle } from "react-icons/bs";
 import { FiExternalLink, FiCopy } from "react-icons/fi";

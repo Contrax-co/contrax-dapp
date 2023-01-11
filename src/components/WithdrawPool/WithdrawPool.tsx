@@ -1,13 +1,8 @@
-import { useState, useEffect, useMemo } from "react";
-import { getUserVaultBalance, withdraw, withdrawAll } from "./withdraw-function";
-import { MoonLoader } from "react-spinners";
+import { useState, useMemo } from "react";
 import "./Withdraw.css";
-import { AiOutlineCheckCircle } from "react-icons/ai";
-import { MdOutlineErrorOutline } from "react-icons/md";
 import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
-import useConstants from "src/hooks/useConstants";
 import { Farm } from "src/types";
 import usePriceOfToken from "src/hooks/usePriceOfToken";
 import useBalances from "src/hooks/useBalances";

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CgArrowsExchangeAltV } from "react-icons/cg";
 import SwapValuesFrom from "./from/SwapValuesFrom";
 import SwapValuesTo from "./to/SwapValuesTo";

@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
-import { userTokenValue } from "./dashboard-functions";
+import { useMemo } from "react";
+import useBalances from "src/hooks/useBalances";
+import { Vault } from "src/types";
 import "./DashboardValue.css";
 
-function DashboardValues({ currentWallet, vault }: any) {
-    const [userVaultBalance, setUserVaultBalance] = useState(0);
+interface Props {
+    vault: Vault;
+}
 
-    useEffect(() => {
-        userTokenValue(currentWallet, vault, setUserVaultBalance);
-    }, [vault, currentWallet]);
+const DashboardValues: React.FC<Props> = ({ vault }) => {
+    const { formattedBalances } = useBalances([{ address: vault.vault_address, decimals: vault.decimals || 18 }]);
+    const userVaultBalance = useMemo(() => formattedBalances[vault.vault_address], [formattedBalances]);
 
     return (
         <div>
@@ -15,6 +17,6 @@ function DashboardValues({ currentWallet, vault }: any) {
             <div>{userVaultBalance.toFixed(5)}</div>
         </div>
     );
-}
+};
 
 export default DashboardValues;

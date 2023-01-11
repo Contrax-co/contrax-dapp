@@ -10,8 +10,8 @@ const Vaults: React.FC<Props> = ({ vaults }) => {
     return (
         <div className={`vaults_container`}>
             {vaults.map((vault) => (
-                <div className={`vaults`}>
-                    <VaultItem key={vault.id} vault={vault} />
+                <div className={`vaults`} key={vault.id}>
+                    <VaultItem vault={vault} />
                 </div>
             ))}
         </div>

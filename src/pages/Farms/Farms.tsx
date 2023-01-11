@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
 import "./Farms.css";
 import CompoundItem from "src/components/CompoundItem/CompoundItem";
-import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
 
