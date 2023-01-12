@@ -1,8 +1,8 @@
-import { createGlobalStyle } from 'styled-components/macro';
+import { createGlobalStyle } from "styled-components/macro";
 
-import scrollbars from '@theme/scrollbars';
-import * as colors from '@colors';
-import { weight } from '@theme/fonts';
+import scrollbars from "@theme/scrollbars";
+import * as colors from "@colors";
+import { weight } from "@theme/fonts";
 
 const GlobalStyle = createGlobalStyle`
   ${scrollbars};
