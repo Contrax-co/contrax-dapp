@@ -139,14 +139,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     );
 
     React.useEffect(() => {
-        const data = getUserSession();
-        if (data) {
-            const userInfo = JSON.parse(data);
-            setCurrentWallet(userInfo.address);
-        }
-    }, []);
-
-    React.useEffect(() => {
         network();
     }, [connectedChain, wallet, provider]);
 
@@ -158,6 +150,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 const signer = provider.getSigner();
                 setSigner(signer);
             });
+            setCurrentWallet(wallet.accounts[0].address);
         }
     }, [wallet]);
 
