@@ -38,7 +38,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
         return formattedSupplies[farm.vault_addr];
     }, [formattedSupplies, farm]);
 
-    const { platformSupplies } = useFarmsPlatformTotalSupply();
+    const { formattedSupplies: platformSupplies } = useFarmsPlatformTotalSupply();
     const totalPlatformBalance = useMemo(() => {
         return platformSupplies[farm.lp_address];
     }, [platformSupplies, farm]);

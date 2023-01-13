@@ -1,12 +1,12 @@
 import useFarms from "./useFarms";
-import useTotalPlatformSupplies from "../useTotalPlatformSupplies";
+import useTotalSupplies from "../useTotalSupplies";
 
 /**
  * Returns total supply for all farms on their respected
  */
 const useFarmsPlatformTotalSupply = () => {
     const { farms } = useFarms();
-    return useTotalPlatformSupplies(farms.map((item) => ({ address: item.lp_address, decimals: item.decimals })));
+    return useTotalSupplies(farms.map((item) => ({ address: item.lp_address, decimals: item.decimals })));
 };
 
 export default useFarmsPlatformTotalSupply;
