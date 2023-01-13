@@ -17,6 +17,7 @@ import usePriceOfToken from "src/hooks/usePriceOfToken";
 import { calculateFarmAPY, findCompoundAPY, findTotalAPY, totalFarmAPY } from "src/utils/common";
 import useFarmApy from "src/hooks/farms/useFarmApy";
 import useFeeApy from "src/hooks/useFeeApy";
+import useFarmsPlatformTotalSupply from "src/hooks/farms/useFarmPlatformBalance";
 
 interface Props {
     farm: Farm;
@@ -36,6 +37,11 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
     const totalVaultBalance = useMemo(() => {
         return formattedSupplies[farm.vault_addr];
     }, [formattedSupplies, farm]);
+
+    const { platformSupplies } = useFarmsPlatformTotalSupply();
+    const totalPlatformBalance = useMemo(() => {
+        return platformSupplies[farm.lp_address];
+    }, [platformSupplies, farm]);
 
     const { price: priceOfSingleToken } = usePriceOfToken(farm.lp_address);
 
@@ -119,28 +125,71 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                         </div>
 
                         {totalVaultBalance * priceOfSingleToken < 0.01 ? (
-                            <div className={`container ${lightMode && "container--light"}`}>
+                            <div className={`liquidity_container ${lightMode && "container--light"}`}>
                                 <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                     {(0).toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
                                     })}
                                 </p>
+                                <a
+                                    id={key}
+                                    data-tooltip-html={`<p>
+                                        <b>Total Value Locked:</b>
+                                    </p>
+                                    <p>Our vaults: ${(
+                                        totalPlatformBalance *
+                                        totalVaultBalance *
+                                        priceOfSingleToken
+                                    ).toLocaleString("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                    })}</p>
+                                    <p>Platform value: ${priceOfSingleToken.toLocaleString("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                    })}</p>`}
+                                >
+                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                                </a>
 
-                                <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>0</p>
+                                <Tooltip
+                                    anchorId={key}
+                                    className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                                />
                             </div>
                         ) : (
-                            <div className={`container ${lightMode && "container--light"}`}>
+                            <div className={`liquidity_container ${lightMode && "container--light"}`}>
                                 <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                     {(totalVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
                                     })}
                                 </p>
+                                <a
+                                    id={key}
+                                    data-tooltip-html={`<p>
+                                        <b>Total Value Locked:</b>
+                                    </p>
+                                    <p>Our vaults: ${(totalVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                    })}</p>
+                                    <p>Platform value: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
+                                        "en-US",
+                                        {
+                                            style: "currency",
+                                            currency: "USD",
+                                        }
+                                    )}</p>`}
+                                >
+                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                                </a>
 
-                                <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>
-                                    {totalVaultBalance.toFixed(10)}
-                                </p>
+                                <Tooltip
+                                    anchorId={key}
+                                    className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                                />
                             </div>
                         )}
 
@@ -235,3 +284,4 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
 };
 
 export default CompoundItem;
+
