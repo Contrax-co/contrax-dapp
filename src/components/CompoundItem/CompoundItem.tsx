@@ -59,6 +59,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
     const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]);
 
     const key = uuid();
+    const key1 = uuid();
 
     return (
         <div className={`pools ${lightMode && "pools--light"}`}>
@@ -133,7 +134,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                                     })}
                                 </p>
                                 <a
-                                    id={key}
+                                    id={key1}
                                     data-tooltip-html={`<p>
                                         <b>Total Value Locked:</b>
                                     </p>
@@ -154,7 +155,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                                 </a>
 
                                 <Tooltip
-                                    anchorId={key}
+                                    anchorId={key1}
                                     className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
                                 />
                             </div>
@@ -167,7 +168,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                                     })}
                                 </p>
                                 <a
-                                    id={key}
+                                    id={key1}
                                     data-tooltip-html={`<p>
                                         <b>Total Value Locked:</b>
                                     </p>
@@ -187,7 +188,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                                 </a>
 
                                 <Tooltip
-                                    anchorId={key}
+                                    anchorId={key1}
                                     className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
                                 />
                             </div>
