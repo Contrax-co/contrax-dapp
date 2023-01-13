@@ -12,6 +12,7 @@ import usePriceOfToken from "src/hooks/usePriceOfToken";
 import useBalances from "src/hooks/useBalances";
 import useZapIn from "src/hooks/farms/useZapIn";
 import useDeposit from "src/hooks/farms/useDeposit";
+import useEthPrice from "src/hooks/useEthPrice";
 
 interface Props {
     farm: Farm;
@@ -42,19 +43,21 @@ export default Deposit;
 const ZapDeposit: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
+    const { price: ethPrice } = useEthPrice();
     const [ethDepositAmount, setEthDepositAmount] = useState(0.0);
     const { isLoading, zapIn } = useZapIn(farm);
+    const ethUserBalanceDollars = useMemo(() => ethPrice * ethUserBal, [ethPrice, ethUserBal]);
 
     const handleEthDepositChange = (e: any) => {
         setEthDepositAmount(e.target.value);
     };
 
     function maxEthDeposit() {
-        setEthDepositAmount(ethUserBal);
+        setEthDepositAmount(ethUserBalanceDollars);
     }
 
     function zapDeposit() {
-        zapIn({ ethZapAmount: ethDepositAmount });
+        zapIn({ ethZapAmount: ethDepositAmount / ethPrice });
     }
 
     return (
@@ -86,7 +89,7 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
                     <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                         <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
                             <p>ETH balance:</p>
-                            <p>{ethUserBal.toFixed(5)}</p>
+                            <p>{ethUserBalanceDollars.toFixed(2)}$</p>
                         </div>
                         <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
                             <div className={`weth_deposit_amount ${lightMode && "weth_deposit_amount--light"}`}>
@@ -115,7 +118,7 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
                                     >
                                         <p>Deposit</p>
                                     </button>
-                                ) : ethDepositAmount > ethUserBal ? (
+                                ) : ethDepositAmount > ethUserBalanceDollars ? (
                                     <button
                                         className={`deposit_zap1_button_disable ${
                                             lightMode && "deposit_zap1_button_disable--light"
@@ -153,23 +156,24 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
     const { formattedBalances } = useBalances([{ address: farm.lp_address, decimals: farm.decimals }]);
     const { isLoading, deposit } = useDeposit(farm);
 
-    const lpUserBal = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances]);
-
+    const lpUserBal = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances,farm.lp_address]);
+    
     const [lpDepositAmount, setLPDepositAmount] = useState(0.0);
-
+    
     const { price } = usePriceOfToken(farm.lp_address);
+    const lpUserBalUsd = useMemo(() => lpUserBal * price, [price,lpUserBal]);
 
     const handleDepositChange = (e: any) => {
         setLPDepositAmount(e.target.value);
     };
 
     function maxDeposit() {
-        setLPDepositAmount(lpUserBal);
+        setLPDepositAmount(lpUserBalUsd);
     }
 
     async function depositAmount() {
         deposit({
-            depositAmount: lpDepositAmount,
+            depositAmount: lpDepositAmount / price,
         });
     }
 
@@ -200,7 +204,7 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
                     <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                         <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
                             <p>{farm.name} balance:</p>
-                            {price * lpUserBal < 0.01 ? <p>0</p> : <p>{lpUserBal}</p>}
+                            {lpUserBalUsd < 0.01 ? <p>0</p> : <p>{lpUserBalUsd}</p>}
                         </div>
 
                         <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
@@ -227,7 +231,7 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
                                     >
                                         <p>Deposit</p>
                                     </button>
-                                ) : lpDepositAmount > lpUserBal ? (
+                                ) : lpDepositAmount > lpUserBalUsd ? (
                                     <button
                                         className={`deposit_zap1_button_disable ${
                                             lightMode && "deposit_zap1_button_disable--light"
