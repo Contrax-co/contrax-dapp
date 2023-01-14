@@ -7,12 +7,18 @@ import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_ZAP_OUT } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
 import useBalances from "../useBalances";
+import useFarmsVaultBalances from "./useFarmsVaultBalances";
+import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
 
 const useZapOut = (farm: Farm) => {
     const { provider, signer, currentWallet } = useWallet();
     const { NETWORK_NAME, CONTRACTS, BLOCK_EXPLORER_URL } = useConstants();
     const { notifySuccess, notifyLoading, notifyError, dismissNotify } = useNotify();
     const { refetch: refetchVaultBalance } = useBalances([{ address: farm.vault_addr, decimals: farm.decimals }]);
+
+    const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
+
+    const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
 
     const _zapOut = async ({ withdrawAmt }: { withdrawAmt: number }) => {
         if (!provider || !signer || !farm) return;
@@ -96,6 +102,8 @@ const useZapOut = (farm: Farm) => {
             dismissNotify(notiId);
             notifyError("Error!", err.reason || err.message);
         }
+        refetchVaultBalances();
+        refetchVaultSupplies();
     };
 
     const {

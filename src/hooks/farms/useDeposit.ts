@@ -7,6 +7,8 @@ import useBalances from "../useBalances";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_DEPOSIT } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
+import useFarmsVaultBalances from "./useFarmsVaultBalances";
+import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
 
 const useDeposit = (farm: Farm) => {
     const { provider, signer, currentWallet } = useWallet();
@@ -17,6 +19,10 @@ const useDeposit = (farm: Farm) => {
         { address: farm.lp_address, decimals: farm.decimals },
     ]);
     const lpUserBal = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances]);
+
+    const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
+
+    const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
 
     const _deposit = async ({ depositAmount }: { depositAmount: number }) => {
         if (!provider) return;
@@ -103,6 +109,8 @@ const useDeposit = (farm: Farm) => {
             dismissNotify(notiId);
             notifyError("Error!", err.reason || err.message);
         }
+        refetchVaultBalances();
+        refetchVaultSupplies();
     };
 
     const {

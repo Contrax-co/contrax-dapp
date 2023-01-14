@@ -6,6 +6,8 @@ import * as ethers from "ethers";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_ZAP_IN } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
+import useFarmsVaultBalances from "./useFarmsVaultBalances";
+import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
 
 export interface ZapIn {
     ethZapAmount: number;
@@ -15,6 +17,10 @@ const useZapIn = (farm: Farm) => {
     const { refetchBalance, provider, signer, currentWallet, balance } = useWallet();
     const { NETWORK_NAME, CONTRACTS, BLOCK_EXPLORER_URL } = useConstants();
     const { notifySuccess, notifyLoading, notifyError, dismissNotify } = useNotify();
+
+    const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
+
+    const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
 
     const _zapIn = async ({ ethZapAmount }: ZapIn) => {
         if (!provider || !signer || !farm) return;
@@ -77,6 +83,8 @@ const useZapIn = (farm: Farm) => {
             dismissNotify(notiId);
             notifyError("Error!", err.reason || err.message);
         }
+        refetchVaultBalances();
+        refetchVaultSupplies();
     };
 
     const {
