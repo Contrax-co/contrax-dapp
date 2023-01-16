@@ -109,7 +109,10 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                                     currency: "USD",
                                 })}
                             </p>
-                            <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>{userVaultBal.toFixed(10)}</p>
+                            <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>
+                                {userVaultBal.toFixed(10)}
+                                &nbsp;{farm.name}
+                            </p>
                         </div>
                     )}
 

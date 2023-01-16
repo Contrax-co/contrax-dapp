@@ -79,6 +79,7 @@ const useZapIn = (farm: Farm) => {
                 refetchBalance();
             }
         } catch (error: any) {
+            console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(notiId);
             notifyError("Error!", err.reason || err.message);

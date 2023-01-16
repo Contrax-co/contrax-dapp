@@ -8,6 +8,7 @@ import usePriceOfToken from "src/hooks/usePriceOfToken";
 import useBalances from "src/hooks/useBalances";
 import useZapOut from "src/hooks/farms/useZapOut";
 import useWithdraw from "src/hooks/farms/useWithdraw";
+import useEthPrice from "src/hooks/useEthPrice";
 
 interface Props {
     farm: Farm;
@@ -23,6 +24,7 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
             return false;
         }
     });
+    const [showInUsd, setShowInUsd] = useState(false);
 
     const [withdrawAmt, setWithdrawAmt] = useState(0.0);
 
@@ -31,8 +33,16 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
 
     const { zapOutAsync, isLoading: isZappingOut } = useZapOut(farm);
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
-
+    const { price: ethPrice } = useEthPrice();
     const { price } = usePriceOfToken(farm.lp_address);
+    const maxBalanceLp = useMemo(
+        () => (showInUsd ? userVaultBal * price : userVaultBal),
+        [price, showInUsd, userVaultBal]
+    );
+    const maxBalanceEth = useMemo(
+        () => (showInUsd ? userVaultBal * price : (userVaultBal * price) / ethPrice),
+        [price, showInUsd, userVaultBal]
+    );
 
     const handleWithdrawChange = (e: any) => {
         setWithdrawAmt(e.target.value);
@@ -53,6 +63,13 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
     function withdrawEthMax() {
         setWithdrawAmt((userVaultBal * 999) / 1000);
     }
+
+    const handleShowInUsdChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+        // setShowInUsd(e.target.value === "true");
+        // if (e.target.value === "true") {
+        //     setLPDepositAmount(lpDepositAmount * price);
+        // } else setLPDepositAmount(lpDepositAmount / price);
+    };
 
     return (
         <div className="whole_tab">
@@ -99,7 +116,11 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
                         ) : (
                             <div className={`lp_bal ${lightMode && "lp_bal--light"}`}>
                                 <p>LP Balance:</p>
-                                <p>{userVaultBal.toFixed(10)}</p>
+                                <p>
+                                    {showInUsd && "$ "}
+                                    {toggleType ? maxBalanceLp : maxBalanceEth}
+                                    {!showInUsd && " " + farm.name}
+                                </p>
                             </div>
                         )}
 
@@ -112,7 +133,18 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
                                     value={withdrawAmt}
                                     onChange={handleWithdrawChange}
                                 />
-
+                                <select
+                                    value={showInUsd.toString()}
+                                    className="currency_select"
+                                    onChange={handleShowInUsdChange}
+                                >
+                                    <option value={"false"} className="currency_select">
+                                        {farm.name}
+                                    </option>
+                                    <option value={"true"} className="currency_select">
+                                        USD
+                                    </option>
+                                </select>
                                 {toggleType ? (
                                     <p
                                         className={`withdraw_max ${lightMode && "withdraw_max--light"}`}

@@ -102,8 +102,9 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
                         <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
                             <p>ETH balance:</p>
                             <p>
+                                {showInUsd && "$ "}
                                 {maxBalance.toFixed(2)}
-                                {showInUsd && "$"}
+                                {!showInUsd && " ETH"}
                             </p>
                         </div>
                         <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
@@ -240,8 +241,9 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
                             <p>{farm.name} balance:</p>
                             {
                                 <p>
+                                    {showInUsd && "$ "}
                                     {maxBalance}
-                                    {showInUsd && "$"}
+                                    {!showInUsd && ` ${farm.name}`}
                                 </p>
                             }
                         </div>
