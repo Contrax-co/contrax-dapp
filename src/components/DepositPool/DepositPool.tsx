@@ -46,19 +46,31 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
     const { price: ethPrice } = useEthPrice();
     const [ethDepositAmount, setEthDepositAmount] = useState(0.0);
     const { isLoading, zapIn } = useZapIn(farm);
-    const ethUserBalanceDollars = useMemo(() => ethPrice * ethUserBal, [ethPrice, ethUserBal]);
+    const [showInUsd, setShowInUsd] = useState(false);
+    const maxBalance = useMemo(
+        () => (showInUsd ? ethPrice * ethUserBal : ethUserBal),
+        [ethPrice, ethUserBal, showInUsd]
+    );
 
     const handleEthDepositChange = (e: any) => {
         setEthDepositAmount(e.target.value);
     };
 
     function maxEthDeposit() {
-        setEthDepositAmount(ethUserBalanceDollars);
+        setEthDepositAmount(maxBalance);
     }
 
     function zapDeposit() {
-        zapIn({ ethZapAmount: ethDepositAmount / ethPrice });
+        const amt = showInUsd ? ethDepositAmount / ethPrice : ethDepositAmount;
+        zapIn({ ethZapAmount: amt });
     }
+
+    const handleShowInUsdChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+        setShowInUsd(e.target.value === "true");
+        if (e.target.value === "true") {
+            setEthDepositAmount(ethDepositAmount * ethPrice);
+        } else setEthDepositAmount(ethDepositAmount / ethPrice);
+    };
 
     return (
         <div>
@@ -89,7 +101,10 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
                     <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                         <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
                             <p>ETH balance:</p>
-                            <p>{ethUserBalanceDollars.toFixed(2)}$</p>
+                            <p>
+                                {maxBalance.toFixed(2)}
+                                {showInUsd && "$"}
+                            </p>
                         </div>
                         <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
                             <div className={`weth_deposit_amount ${lightMode && "weth_deposit_amount--light"}`}>
@@ -100,7 +115,18 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
                                     value={ethDepositAmount}
                                     onChange={handleEthDepositChange}
                                 />
-
+                                <select
+                                    value={showInUsd.toString()}
+                                    className="currency_select"
+                                    onChange={handleShowInUsdChange}
+                                >
+                                    <option value={"false"} className="currency_select">
+                                        ETH
+                                    </option>
+                                    <option value={"true"} className="currency_select">
+                                        USD
+                                    </option>
+                                </select>
                                 <p
                                     className={`deposit_max ${lightMode && "deposit_max--light"}`}
                                     onClick={maxEthDeposit}
@@ -118,7 +144,7 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
                                     >
                                         <p>Deposit</p>
                                     </button>
-                                ) : ethDepositAmount > ethUserBalanceDollars ? (
+                                ) : ethDepositAmount > maxBalance ? (
                                     <button
                                         className={`deposit_zap1_button_disable ${
                                             lightMode && "deposit_zap1_button_disable--light"
@@ -155,20 +181,21 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
     const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
     const { formattedBalances } = useBalances([{ address: farm.lp_address, decimals: farm.decimals }]);
     const { isLoading, deposit } = useDeposit(farm);
+    const [showInUsd, setShowInUsd] = useState(false);
 
-    const lpUserBal = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances,farm.lp_address]);
-    
+    const lpUserBal = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances, farm.lp_address]);
+
     const [lpDepositAmount, setLPDepositAmount] = useState(0.0);
-    
+
     const { price } = usePriceOfToken(farm.lp_address);
-    const lpUserBalUsd = useMemo(() => lpUserBal * price, [price,lpUserBal]);
+    const maxBalance = useMemo(() => (showInUsd ? lpUserBal * price : lpUserBal), [price, showInUsd, lpUserBal]);
 
     const handleDepositChange = (e: any) => {
         setLPDepositAmount(e.target.value);
     };
 
     function maxDeposit() {
-        setLPDepositAmount(lpUserBalUsd);
+        setLPDepositAmount(maxBalance);
     }
 
     async function depositAmount() {
@@ -176,6 +203,13 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
             depositAmount: lpDepositAmount / price,
         });
     }
+
+    const handleShowInUsdChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+        setShowInUsd(e.target.value === "true");
+        if (e.target.value === "true") {
+            setLPDepositAmount(lpDepositAmount * price);
+        } else setLPDepositAmount(lpDepositAmount / price);
+    };
 
     return (
         <div>
@@ -204,7 +238,12 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
                     <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                         <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
                             <p>{farm.name} balance:</p>
-                            {lpUserBalUsd < 0.01 ? <p>0</p> : <p>{lpUserBalUsd}</p>}
+                            {
+                                <p>
+                                    {maxBalance}
+                                    {showInUsd && "$"}
+                                </p>
+                            }
                         </div>
 
                         <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
@@ -216,7 +255,18 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
                                     value={lpDepositAmount}
                                     onChange={handleDepositChange}
                                 />
-
+                                <select
+                                    value={showInUsd.toString()}
+                                    className="currency_select"
+                                    onChange={handleShowInUsdChange}
+                                >
+                                    <option value={"false"} className="currency_select">
+                                        {farm.name}
+                                    </option>
+                                    <option value={"true"} className="currency_select">
+                                        USD
+                                    </option>
+                                </select>
                                 <p className={`deposit_max ${lightMode && "deposit_max--light"}`} onClick={maxDeposit}>
                                     max
                                 </p>
@@ -231,7 +281,7 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
                                     >
                                         <p>Deposit</p>
                                     </button>
-                                ) : lpDepositAmount > lpUserBalUsd ? (
+                                ) : lpDepositAmount > maxBalance ? (
                                     <button
                                         className={`deposit_zap1_button_disable ${
                                             lightMode && "deposit_zap1_button_disable--light"
