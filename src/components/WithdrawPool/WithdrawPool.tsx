@@ -14,74 +14,103 @@ interface Props {
     farm: Farm;
 }
 
+enum WITHDRAW_TYPE {
+    ETH = "ETH",
+    LP = "LP",
+}
+
 const WithdrawPool: React.FC<Props> = ({ farm }) => {
     const { connectWallet, currentWallet } = useWallet();
     const { lightMode } = useApp();
-    const [toggleType, setToggleType] = useState(() => {
-        if (farm.token_type === "Token") {
-            return true;
-        } else {
-            return false;
-        }
-    });
+    const [withdrawType, setWithdrawType] = useState<WITHDRAW_TYPE>(
+        farm.token_type === "Token" ? WITHDRAW_TYPE.LP : WITHDRAW_TYPE.ETH
+    );
+
     const [showInUsd, setShowInUsd] = useState(false);
 
     const [withdrawAmt, setWithdrawAmt] = useState(0.0);
 
     const { formattedBalances } = useBalances([{ address: farm.vault_addr, decimals: farm.decimals }]);
-    const userVaultBal = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances]);
+    const userVaultBal = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances, farm.vault_addr]);
 
     const { zapOutAsync, isLoading: isZappingOut } = useZapOut(farm);
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
     const { price: ethPrice } = useEthPrice();
     const { price } = usePriceOfToken(farm.lp_address);
-    const maxBalanceLp = useMemo(
-        () => (showInUsd ? userVaultBal * price : userVaultBal),
-        [price, showInUsd, userVaultBal]
-    );
-    const maxBalanceEth = useMemo(
-        () => (showInUsd ? userVaultBal * price : (userVaultBal * price) / ethPrice),
-        [price, showInUsd, userVaultBal]
-    );
+
+    const maxBalance = useMemo(() => {
+        if (withdrawType === WITHDRAW_TYPE.LP) {
+            return showInUsd ? userVaultBal * price : userVaultBal;
+        } else {
+            return showInUsd ? userVaultBal * price : (userVaultBal * price) / ethPrice;
+        }
+    }, [withdrawType, showInUsd, userVaultBal, price, ethPrice]);
 
     const handleWithdrawChange = (e: any) => {
         setWithdrawAmt(e.target.value);
     };
 
+    const getLpAmount = () => {
+        // LP amount to withdraw
+        let amt = 0;
+        if (showInUsd) {
+            // WithdrawAmt is in USD
+            amt = withdrawAmt / price;
+        } else {
+            // withdrawAmt is in ETH
+            if (withdrawType === WITHDRAW_TYPE.ETH) amt = (withdrawAmt * ethPrice) / price;
+            // withdrawAmt is in LP
+            else amt = withdrawAmt;
+        }
+        return amt;
+    };
+
     async function withdrawFunction() {
-        await withdrawAsync({ withdrawAmount: withdrawAmt });
+        await withdrawAsync({ withdrawAmount: getLpAmount() });
     }
 
     async function zapOutFunction() {
-        await zapOutAsync({ withdrawAmt });
+        await zapOutAsync({ withdrawAmt: getLpAmount() });
     }
 
-    function withdrawMax() {
-        setWithdrawAmt(userVaultBal);
-    }
-
-    function withdrawEthMax() {
-        setWithdrawAmt((userVaultBal * 999) / 1000);
-    }
+    const setMax = () => {
+        setWithdrawAmt(maxBalance);
+    };
 
     const handleShowInUsdChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
-        // setShowInUsd(e.target.value === "true");
-        // if (e.target.value === "true") {
-        //     setLPDepositAmount(lpDepositAmount * price);
-        // } else setLPDepositAmount(lpDepositAmount / price);
+        setShowInUsd(e.target.value === "true");
+        if (e.target.value === "true") {
+            if (withdrawType === WITHDRAW_TYPE.ETH) {
+                setWithdrawAmt((prev) => prev * ethPrice);
+            } else {
+                setWithdrawAmt((prev) => prev * price);
+            }
+        } else {
+            if (withdrawType === WITHDRAW_TYPE.ETH) {
+                setWithdrawAmt((prev) => prev / ethPrice);
+            } else {
+                setWithdrawAmt((prev) => prev / price);
+            }
+        }
     };
 
     return (
         <div className="whole_tab">
             {farm.token_type === "LP Token" ? (
-                <Toggle active={toggleType} farm={farm} onClick={() => setToggleType(!toggleType)} />
+                <Toggle
+                    active={withdrawType === WITHDRAW_TYPE.LP}
+                    farm={farm}
+                    onClick={() =>
+                        setWithdrawType(withdrawType === WITHDRAW_TYPE.ETH ? WITHDRAW_TYPE.LP : WITHDRAW_TYPE.ETH)
+                    }
+                />
             ) : null}
 
             <div className="detail_container">
                 <div className={`withdrawal_description ${lightMode && "withdrawal_description--light"}`}>
                     <p className={`withdrawal_title ${lightMode && "withdrawal_title--light"}`}>Description</p>
 
-                    {toggleType ? (
+                    {withdrawType === WITHDRAW_TYPE.LP ? (
                         <p className="withdrawal_description2">
                             Withdraw into tokens for the {farm.platform} liquidity pool for{" "}
                             <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
@@ -118,8 +147,8 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
                                 <p>LP Balance:</p>
                                 <p>
                                     {showInUsd && "$ "}
-                                    {toggleType ? maxBalanceLp : maxBalanceEth}
-                                    {!showInUsd && " " + farm.name}
+                                    {maxBalance}
+                                    {!showInUsd && ` ${withdrawType === WITHDRAW_TYPE.LP ? farm.name : "ETH"}`}
                                 </p>
                             </div>
                         )}
@@ -139,86 +168,45 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
                                     onChange={handleShowInUsdChange}
                                 >
                                     <option value={"false"} className="currency_select">
-                                        {farm.name}
+                                        {withdrawType === WITHDRAW_TYPE.LP ? farm.name : "ETH"}
                                     </option>
                                     <option value={"true"} className="currency_select">
                                         USD
                                     </option>
                                 </select>
-                                {toggleType ? (
-                                    <p
-                                        className={`withdraw_max ${lightMode && "withdraw_max--light"}`}
-                                        onClick={withdrawMax}
-                                    >
-                                        max
-                                    </p>
-                                ) : (
-                                    <p
-                                        className={`withdraw_max ${lightMode && "withdraw_max--light"}`}
-                                        onClick={withdrawEthMax}
-                                    >
-                                        max
-                                    </p>
-                                )}
+
+                                <p className={`withdraw_max ${lightMode && "withdraw_max--light"}`} onClick={setMax}>
+                                    max
+                                </p>
                             </div>
 
-                            {toggleType ? (
-                                <div className={`withdraw_withdraw ${lightMode && "withdraw_withdraw--light"}`}>
-                                    {!withdrawAmt || withdrawAmt <= 0 ? (
-                                        <div
-                                            className={`withdraw_zap1_button_disable ${
-                                                lightMode && "withdraw_zap1_button_disable--light"
-                                            }`}
-                                        >
-                                            <p>Withdraw</p>
-                                        </div>
-                                    ) : withdrawAmt > userVaultBal ? (
-                                        <div
-                                            className={`withdraw_zap1_button_disable ${
-                                                lightMode && "withdraw_zap1_button_disable--light"
-                                            }`}
-                                        >
-                                            <p>Insufficient Balance</p>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
-                                            onClick={withdrawFunction}
-                                            disabled={isWithdrawing}
-                                        >
-                                            <p>Withdraw</p>
-                                        </button>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className={`withdraw_withdraw ${lightMode && "withdraw_withdraw--light"}`}>
-                                    {!withdrawAmt || withdrawAmt <= 0 ? (
-                                        <div
-                                            className={`withdraw_zap1_button_disable ${
-                                                lightMode && "withdraw_zap1_button_disable--light"
-                                            }`}
-                                        >
-                                            <p>Withdraw</p>
-                                        </div>
-                                    ) : withdrawAmt > userVaultBal ? (
-                                        <div
-                                            className={`withdraw_zap1_button_disable ${
-                                                lightMode && "withdraw_zap1_button_disable--light"
-                                            }`}
-                                        >
-                                            <p>Insufficient Balance</p>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
-                                            onClick={zapOutFunction}
-                                            disabled={isZappingOut}
-                                        >
-                                            <p>Withdraw</p>
-                                        </button>
-                                    )}
-                                </div>
-                            )}
+                            <div className={`withdraw_withdraw ${lightMode && "withdraw_withdraw--light"}`}>
+                                {!withdrawAmt || withdrawAmt <= 0 ? (
+                                    <div
+                                        className={`withdraw_zap1_button_disable ${
+                                            lightMode && "withdraw_zap1_button_disable--light"
+                                        }`}
+                                    >
+                                        <p>Withdraw</p>
+                                    </div>
+                                ) : withdrawAmt > maxBalance ? (
+                                    <div
+                                        className={`withdraw_zap1_button_disable ${
+                                            lightMode && "withdraw_zap1_button_disable--light"
+                                        }`}
+                                    >
+                                        <p>Insufficient Balance</p>
+                                    </div>
+                                ) : (
+                                    <button
+                                        className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
+                                        onClick={withdrawType === WITHDRAW_TYPE.LP ? withdrawFunction : zapOutFunction}
+                                        disabled={withdrawType === WITHDRAW_TYPE.LP ? isWithdrawing : isZappingOut}
+                                    >
+                                        <p>Withdraw</p>
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 
