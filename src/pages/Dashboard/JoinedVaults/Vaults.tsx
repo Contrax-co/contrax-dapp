@@ -1,12 +1,12 @@
 import VaultItem from "./VaultItem";
 import "./Vaults.css";
-import { Vault } from "src/types";
+import useVaults from "src/hooks/vaults/useVaults";
 
-interface Props {
-    vaults: Vault[];
-}
+interface Props {}
 
-const Vaults: React.FC<Props> = ({ vaults }) => {
+const Vaults: React.FC<Props> = () => {
+    const { vaults } = useVaults();
+
     return (
         <div className={`vaults_container`}>
             {vaults.map((vault) => (

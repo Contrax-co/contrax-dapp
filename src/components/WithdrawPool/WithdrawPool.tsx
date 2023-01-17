@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import "./Withdraw.css";
+import "./Withdraw.scss";
 import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
@@ -67,10 +67,12 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
 
     async function withdrawFunction() {
         await withdrawAsync({ withdrawAmount: getLpAmount() });
+        setWithdrawAmt(0);
     }
 
     async function zapOutFunction() {
         await zapOutAsync({ withdrawAmt: getLpAmount() });
+        setWithdrawAmt(0);
     }
 
     const setMax = () => {
@@ -176,7 +178,7 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
                                 </select>
 
                                 <p className={`withdraw_max ${lightMode && "withdraw_max--light"}`} onClick={setMax}>
-                                    max
+                                    MAX
                                 </p>
                             </div>
 

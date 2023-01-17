@@ -45,7 +45,7 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
     const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
     const { price: ethPrice } = useEthPrice();
     const [ethDepositAmount, setEthDepositAmount] = useState(0.0);
-    const { isLoading, zapIn } = useZapIn(farm);
+    const { isLoading, zapInAsync } = useZapIn(farm);
     const [showInUsd, setShowInUsd] = useState(false);
     const maxBalance = useMemo(
         () => (showInUsd ? ethPrice * ethUserBal : ethUserBal),
@@ -60,9 +60,10 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
         setEthDepositAmount(maxBalance);
     }
 
-    function zapDeposit() {
+    async function zapDeposit() {
         const amt = showInUsd ? ethDepositAmount / ethPrice : ethDepositAmount;
-        zapIn({ ethZapAmount: amt });
+        await zapInAsync({ ethZapAmount: amt });
+        setEthDepositAmount(0);
     }
 
     const handleShowInUsdChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
@@ -132,7 +133,7 @@ const ZapDeposit: React.FC<Props> = ({ farm }) => {
                                     className={`deposit_max ${lightMode && "deposit_max--light"}`}
                                     onClick={maxEthDeposit}
                                 >
-                                    max
+                                    MAX
                                 </p>
                             </div>
 
@@ -270,7 +271,7 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
                                     </option>
                                 </select>
                                 <p className={`deposit_max ${lightMode && "deposit_max--light"}`} onClick={maxDeposit}>
-                                    max
+                                    MAX
                                 </p>
                             </div>
 

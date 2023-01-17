@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { BsCheckCircle } from "react-icons/bs";
 import { FiExternalLink, FiCopy } from "react-icons/fi";
@@ -6,7 +6,6 @@ import "./Dashboard.css";
 import Vaults from "./JoinedVaults/Vaults";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
-import useVaults from "src/hooks/vaults/useVaults";
 import { copyToClipboard } from "src/utils";
 import useConstants from "src/hooks/useConstants";
 
@@ -14,7 +13,6 @@ function Dashboard() {
     const { lightMode } = useApp();
     const { currentWallet, displayAccount } = useWallet();
     const [copied, setCopied] = useState(false);
-    const { vaults } = useVaults();
     const { BLOCK_EXPLORER_URL } = useConstants();
 
     const copy = () => {
@@ -59,7 +57,7 @@ function Dashboard() {
                 <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
                     Joined Vaults
                 </p>
-                <Vaults vaults={vaults} />
+                <Vaults />
             </div>
         </div>
     );

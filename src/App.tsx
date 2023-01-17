@@ -30,8 +30,8 @@ function App() {
                         <Router>
                             <Routes>
                                 <Route path="/" element={<Home />}>
-                                    <Route path="" element={<Dashboard />} />
-                                    <Route path="farms" element={<Farms />} />
+                                    <Route path="" element={<Farms />} />
+                                    <Route path="dashboard" element={<Dashboard />} />
                                     <Route path="create-token" element={<CreateToken />} />
                                     <Route path="create-pool" element={<CreatePool />} />
                                     <Route path="exchange" element={<Exchange />} />

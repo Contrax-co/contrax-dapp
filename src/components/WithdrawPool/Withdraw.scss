@@ -360,6 +360,38 @@
   cursor: not-allowed;
 }
 
+select {
+  /* Reset */
+  appearance: none;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  /* Personalize */
+  // width: 20em;
+  height: 2em;
+  padding: 0 1em 0 1em;
+  margin-left:auto;
+  margin-right:5px;
+  color: white;
+  border-radius: 0.25em;
+  background: black;
+  box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  /* <option> colors */
+  option {
+    color: inherit;
+    background-color: #320a28;
+  }
+  /* Remove focus outline */
+  &:focus {
+    outline: none;
+  }
+  /* Remove IE arrow */
+  &::-ms-expand {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .detail_container {
     display:flex;
