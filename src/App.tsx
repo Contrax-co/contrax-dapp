@@ -30,10 +30,11 @@ function App() {
                         <Router>
                             <Routes>
                                 <Route path="/" element={<Home />}>
-                                    <Route path="" element={<Farms />} />
-                                    <Route path="dashboard" element={<Dashboard />} />
+                                    <Route path="" element={<Dashboard />} />
+                                    <Route path="/farms" element={<Farms />} />
                                     <Route path="create-token" element={<CreateToken />} />
                                     <Route path="create-pool" element={<CreatePool />} />
+                                    <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
                                 </Route>
                             </Routes>
                         </Router>

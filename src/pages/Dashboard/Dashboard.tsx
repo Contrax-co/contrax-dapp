@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { BsCheckCircle } from "react-icons/bs";
 import { FiExternalLink, FiCopy } from "react-icons/fi";
@@ -8,17 +8,41 @@ import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import { copyToClipboard } from "src/utils";
 import useConstants from "src/hooks/useConstants";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
+import useVaults from "src/hooks/vaults/useVaults";
+import useVaultBalances from "src/hooks/vaults/useVaultBalances";
+import { useNavigate } from "react-router";
 
 function Dashboard() {
     const { lightMode } = useApp();
     const { currentWallet, displayAccount } = useWallet();
     const [copied, setCopied] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
+    const { vaults } = useVaults();
+    const { prices, isFetching } = usePriceOfTokens(vaults.map((vault) => vault.lp_address));
+    const { formattedBalances, isFetching: isFetching2 } = useVaultBalances();
+    const navigate = useNavigate();
+
+    const hasDeposits = useMemo(() => {
+        return Object.entries(formattedBalances).some(([key, value]) => {
+            const lp_addr = vaults.find((item) => item.vault_address === key)!.lp_address;
+            console.log(prices[lp_addr] * value > 0.01);
+            return prices[lp_addr] * value > 0.01;
+        });
+    }, [formattedBalances, prices]);
 
     const copy = () => {
         setCopied(true);
         copyToClipboard(currentWallet, () => setCopied(false));
     };
+
+    useEffect(() => {
+        if (!isFetching && !isFetching2) {
+            if (!hasDeposits) {
+                navigate("/farms");
+            }
+        }
+    }, [hasDeposits, isFetching, isFetching2]);
 
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">

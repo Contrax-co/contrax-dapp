@@ -1,6 +1,6 @@
 export const RoutesPaths = {
-    Home: "/dashboard",
-    Farms: "/",
+    Home: "/",
+    Farms: "/farms",
     CreateToken: "/create-token",
     CreatePool: "/create-pool",
     Exchange: "/exchange",
