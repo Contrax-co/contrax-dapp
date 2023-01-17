@@ -11,6 +11,7 @@ import "react-tooltip/dist/react-tooltip.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { web3onboard } from "./config/walletConfig";
 import { Web3OnboardProvider } from "@web3-onboard/react";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -38,6 +39,7 @@ function App() {
                         </Router>
                     </AppProvider>
                 </WalletProvider>
+                <ReactQueryDevtools />
             </QueryClientProvider>
         </Web3OnboardProvider>
     );

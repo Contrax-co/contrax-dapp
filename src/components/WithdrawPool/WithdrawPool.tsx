@@ -4,7 +4,7 @@ import Toggle from "src/components/CompoundItem/Toggle";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import { Farm } from "src/types";
-import usePriceOfToken from "src/hooks/usePriceOfToken";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import useBalances from "src/hooks/useBalances";
 import useZapOut from "src/hooks/farms/useZapOut";
 import useWithdraw from "src/hooks/farms/useWithdraw";
@@ -36,7 +36,9 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
     const { zapOutAsync, isLoading: isZappingOut } = useZapOut(farm);
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
     const { price: ethPrice } = useEthPrice();
-    const { price } = usePriceOfToken(farm.lp_address);
+    const {
+        prices: { [farm.lp_address]: price },
+    } = usePriceOfTokens([farm.lp_address]);
 
     const maxBalance = useMemo(() => {
         if (withdrawType === WITHDRAW_TYPE.LP) {
@@ -141,12 +143,12 @@ const WithdrawPool: React.FC<Props> = ({ farm }) => {
                     <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                         {userVaultBal * price < 0.01 ? (
                             <div className={`lp_bal ${lightMode && "lp_bal--light"}`}>
-                                <p>LP Balance:</p>
+                                <p>{withdrawType === WITHDRAW_TYPE.LP ? "LP Balance:" : "ETH Balance:"}</p>
                                 <p>0</p>
                             </div>
                         ) : (
                             <div className={`lp_bal ${lightMode && "lp_bal--light"}`}>
-                                <p>LP Balance:</p>
+                                <p>{withdrawType === WITHDRAW_TYPE.LP ? "LP Balance:" : "ETH Balance:"}</p>
                                 <p>
                                     {showInUsd && "$ "}
                                     {maxBalance}

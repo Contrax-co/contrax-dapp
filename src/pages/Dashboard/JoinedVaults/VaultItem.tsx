@@ -3,11 +3,11 @@ import useApp from "src/hooks/useApp";
 import useVaultBalances from "src/hooks/vaults/useVaultBalances";
 import { Vault } from "src/types";
 import "./VaultItem.css";
-import usePriceOfToken from "src/hooks/usePriceOfToken";
 import useVaultTotalSupply from "src/hooks/vaults/useVaultTotalSupply";
 import { findTotalAPY, totalFarmAPY } from "src/utils/common";
 import useFeeApy from "src/hooks/useFeeApy";
 import useFarmApy from "src/hooks/farms/useFarmApy";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 
 interface Props {
     vault: Vault;
@@ -26,7 +26,9 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
         return formattedSupplies[vault.vault_address];
     }, [formattedSupplies, vault]);
 
-    const { price } = usePriceOfToken(vault.lp_address);
+    const {
+        prices: { [vault.lp_address]: price },
+    } = usePriceOfTokens([vault.lp_address]);
 
     const { apy: feeAPY } = useFeeApy(vault.lp_address);
 

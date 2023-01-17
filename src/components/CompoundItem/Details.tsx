@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { RiArrowUpSLine } from "react-icons/ri";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
-import usePriceOfToken from "src/hooks/usePriceOfToken";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { Farm } from "src/types";
 import "./Details.css";
 
@@ -13,9 +13,9 @@ interface Props {
 
 const Details: React.FC<Props> = ({ farm, ...props }) => {
     const { lightMode } = useApp();
-    const { price: price1 } = usePriceOfToken(farm.token1);
-    const { price: price2 } = usePriceOfToken(farm.token2);
-    const { price: lpPrice } = usePriceOfToken(farm.lp_address);
+    const {
+        prices: { [farm.token1]: price1, [farm.token2!]: price2, [farm.lp_address]: lpPrice },
+    } = usePriceOfTokens([farm.token1, farm.token2 || "", farm.lp_address]);
     const { formattedBalances } = useBalances([
         { address: farm.lp_address, decimals: farm.decimals },
         { address: farm.vault_addr, decimals: farm.decimals },

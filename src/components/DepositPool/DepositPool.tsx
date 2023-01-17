@@ -8,7 +8,7 @@ import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import useConstants from "src/hooks/useConstants";
 import { Farm } from "src/types";
-import usePriceOfToken from "src/hooks/usePriceOfToken";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import useBalances from "src/hooks/useBalances";
 import useZapIn from "src/hooks/farms/useZapIn";
 import useDeposit from "src/hooks/farms/useDeposit";
@@ -189,7 +189,9 @@ const FarmDeposit: React.FC<Props> = ({ farm }) => {
 
     const [lpDepositAmount, setLPDepositAmount] = useState(0.0);
 
-    const { price } = usePriceOfToken(farm.lp_address);
+    const {
+        prices: { [farm.lp_address]: price },
+    } = usePriceOfTokens([farm.lp_address]);
     const maxBalance = useMemo(() => (showInUsd ? lpUserBal * price : lpUserBal), [price, showInUsd, lpUserBal]);
 
     const handleDepositChange = (e: any) => {

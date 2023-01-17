@@ -1,9 +1,13 @@
 import useConstants from "./useConstants";
-import usePriceOfToken from "./usePriceOfToken";
+import usePriceOfTokens from "./usePriceOfTokens";
 
 const useEthPrice = () => {
     const { CONTRACTS } = useConstants();
-    return usePriceOfToken(CONTRACTS.wethAddress);
+    const {
+        prices: { [CONTRACTS.wethAddress]: price },
+        isFetching,
+    } = usePriceOfTokens([CONTRACTS.wethAddress]);
+    return { price, isFetching };
 };
 
 export default useEthPrice;

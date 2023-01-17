@@ -13,11 +13,11 @@ import uuid from "react-uuid";
 import { Farm } from "src/types";
 import useFarmsVaultBalances from "src/hooks/farms/useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "src/hooks/farms/useFarmsVaultTotalSupply";
-import usePriceOfToken from "src/hooks/usePriceOfToken";
 import { calculateFarmAPY, findCompoundAPY, findTotalAPY, totalFarmAPY } from "src/utils/common";
 import useFarmApy from "src/hooks/farms/useFarmApy";
 import useFeeApy from "src/hooks/useFeeApy";
 import useFarmsPlatformTotalSupply from "src/hooks/farms/useFarmPlatformBalance";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 
 interface Props {
     farm: Farm;
@@ -43,7 +43,9 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
         return platformSupplies[farm.lp_address];
     }, [platformSupplies, farm]);
 
-    const { price: priceOfSingleToken } = usePriceOfToken(farm.lp_address);
+    const {
+        prices: { [farm.lp_address]: priceOfSingleToken },
+    } = usePriceOfTokens([farm.lp_address]);
 
     const [details, setDetails] = useState(false);
     const { apy: rewardAPY } = useFarmApy(farm.lp_address);
@@ -253,12 +255,12 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                     <div className="drop_buttons">
                         <PoolButton
                             onClick={() => setButtonType("Deposit")}
-                            description="deposit"
+                            description="Deposit"
                             active={buttonType === "Deposit"}
                         />
                         <PoolButton
                             onClick={() => setButtonType("Withdraw")}
-                            description="withdraw"
+                            description="Withdraw"
                             active={buttonType === "Withdraw"}
                         />
                     </div>
@@ -287,4 +289,3 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
 };
 
 export default CompoundItem;
-
