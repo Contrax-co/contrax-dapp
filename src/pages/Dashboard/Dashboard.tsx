@@ -26,7 +26,6 @@ function Dashboard() {
     const hasDeposits = useMemo(() => {
         return Object.entries(formattedBalances).some(([key, value]) => {
             const lp_addr = vaults.find((item) => item.vault_address === key)!.lp_address;
-            console.log(prices[lp_addr] * value > 0.01);
             return prices[lp_addr] * value > 0.01;
         });
     }, [formattedBalances, prices]);

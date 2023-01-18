@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { web3onboard } from "./config/walletConfig";
 import { Web3OnboardProvider } from "@web3-onboard/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Exchange from "./pages/Exchange/Exchange";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -32,6 +33,7 @@ function App() {
                                 <Route path="/" element={<Home />}>
                                     <Route path="" element={<Dashboard />} />
                                     <Route path="/farms" element={<Farms />} />
+                                    <Route path="/exchange" element={<Exchange />} />
                                     <Route path="create-token" element={<CreateToken />} />
                                     <Route path="create-pool" element={<CreatePool />} />
                                     <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
