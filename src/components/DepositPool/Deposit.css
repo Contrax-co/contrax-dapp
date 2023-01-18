@@ -440,12 +440,6 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-.currency_select{
-  /* background-color: transparent; */
-  /* color: white; */
-  border: none;
-}
-
 @media (max-width: 768px) {
   .addliquidity_descriptiontab {
     width: 100%;

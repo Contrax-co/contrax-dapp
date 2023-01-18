@@ -208,7 +208,7 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
 
                         {currentWallet ? null : (
                             <div className={`no_overlay ${!currentWallet && "overlay"}`} onClick={connectWallet}>
-                                <p>connect wallet</p>
+                                <p>Connect Wallet</p>
                             </div>
                         )}
                     </div>
