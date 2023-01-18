@@ -5,13 +5,16 @@ import useBalances from "src/hooks/useBalances";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { Farm } from "src/types";
 import "./Details.css";
+import Toggle from "src/components/FarmItem/Toggle";
 
 interface Props {
     farm: Farm;
     onClick: () => void;
+    shouldUseLp: boolean;
+    setShouldUseLp: (shouldUseLp: boolean | ((prev: boolean) => boolean)) => void;
 }
 
-const Details: React.FC<Props> = ({ farm, ...props }) => {
+const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props }) => {
     const { lightMode } = useApp();
     const {
         prices: { [farm.token1]: price1, [farm.token2!]: price2, [farm.lp_address]: lpPrice },
@@ -27,6 +30,9 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
         <div>
             <div className={`details_top_container`}>
                 <div className={`details_leftside`}>
+                    {farm.token_type === "LP Token" ? (
+                        <Toggle active={shouldUseLp} farm={farm} onClick={() => setShouldUseLp((prev) => !prev)} />
+                    ) : null}
                     <div className={`details_dropdrown_header`}>
                         {farm.alt1 ? <img className={`details_logo1`} alt={farm.alt1} src={farm.logo1} /> : null}
 

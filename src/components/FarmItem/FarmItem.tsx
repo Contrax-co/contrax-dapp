@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
-import "./CompoundItem.css";
+import "./FarmItem.css";
 import Deposit from "src/components/DepositPool/DepositPool";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import Withdraw from "src/components/WithdrawPool/WithdrawPool";
 import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
-import Details from "src/components/CompoundItem/Details";
+import Details from "src/components/FarmItem/Details";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import uuid from "react-uuid";
@@ -23,10 +23,9 @@ interface Props {
     farm: Farm;
 }
 
-const CompoundItem: React.FC<Props> = ({ farm }) => {
+const FarmItem: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
-    const [buttonType, setButtonType] = useState("Deposit");
 
     const { formattedBalances } = useFarmsVaultBalances();
     const userVaultBal = useMemo(() => {
@@ -47,7 +46,6 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
         prices: { [farm.lp_address]: priceOfSingleToken },
     } = usePriceOfTokens([farm.lp_address]);
 
-    const [details, setDetails] = useState(false);
     const { apy: rewardAPY } = useFarmApy(farm.lp_address);
     const { apy: feeAPY } = useFeeApy(farm.lp_address);
 
@@ -139,7 +137,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                                     })}
                                 </p>
                                 <a
-                                    id={key1}
+                                    id={key}
                                     data-tooltip-html={`<p>
                                         <b>Total Value Locked:</b>
                                     </p>
@@ -160,7 +158,7 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                                 </a>
 
                                 <Tooltip
-                                    anchorId={key1}
+                                    anchorId={key}
                                     className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
                                 />
                             </div>
@@ -246,47 +244,52 @@ const CompoundItem: React.FC<Props> = ({ farm }) => {
                     </div>
 
                     <div className={`dropdown ${lightMode && "dropdown--light"}`}>
-                        {dropdown === false ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
+                        {!dropdown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
                     </div>
                 </div>
             </div>
-
-            {dropdown === false ? null : (
-                <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>
-                    <div className="drop_buttons">
-                        <PoolButton
-                            onClick={() => setButtonType("Deposit")}
-                            description="Deposit"
-                            active={buttonType === "Deposit"}
-                        />
-                        <PoolButton
-                            onClick={() => setButtonType("Withdraw")}
-                            description="Withdraw"
-                            active={buttonType === "Withdraw"}
-                        />
-                    </div>
-
-                    {buttonType === "Deposit" && <Deposit farm={farm} />}
-
-                    {buttonType === "Withdraw" && <Withdraw farm={farm} />}
-
-                    {details === false ? (
-                        <div
-                            className={`see_details_dropdown ${lightMode && "see_details_dropdown--light"}`}
-                            onClick={() => setDetails(true)}
-                        >
-                            <p className={`see_details_description ${lightMode && "see_details_description--light"}`}>
-                                See more details
-                            </p>
-                            <RiArrowDownSLine />
-                        </div>
-                    ) : (
-                        <Details farm={farm} onClick={() => setDetails(false)} />
-                    )}
-                </div>
-            )}
+            {dropdown && <DropDownView farm={farm} />}
         </div>
     );
 };
 
-export default CompoundItem;
+export default FarmItem;
+
+const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
+    const { lightMode } = useApp();
+    const [tab, setTab] = useState(1);
+    const [showMoreDetail, setShowMoreDetail] = useState(false);
+    const [shouldUseLp, setShouldUseLp] = useState(false);
+
+    return (
+        <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>
+            <div className="drop_buttons">
+                <PoolButton onClick={() => setTab(1)} description="Deposit" active={tab === 1} />
+                <PoolButton onClick={() => setTab(2)} description="Withdraw" active={tab === 2} />
+            </div>
+
+            {tab === 1 && <Deposit farm={farm} shouldUseLp={shouldUseLp} setShouldUseLp={setShouldUseLp} />}
+
+            {tab === 2 && <Withdraw farm={farm} shouldUseLp={shouldUseLp} setShouldUseLp={setShouldUseLp} />}
+
+            {!showMoreDetail ? (
+                <div
+                    className={`see_details_dropdown ${lightMode && "see_details_dropdown--light"}`}
+                    onClick={() => setShowMoreDetail(true)}
+                >
+                    <p className={`see_details_description ${lightMode && "see_details_description--light"}`}>
+                        See more details
+                    </p>
+                    <RiArrowDownSLine />
+                </div>
+            ) : (
+                <Details
+                    farm={farm}
+                    onClick={() => setShowMoreDetail(false)}
+                    shouldUseLp={shouldUseLp}
+                    setShouldUseLp={setShouldUseLp}
+                />
+            )}
+        </div>
+    );
+};
