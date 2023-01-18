@@ -1,4 +1,4 @@
-.button {
+.pool-button {
   width: 100px;
   width: 100px;
   padding: 7px;
@@ -27,16 +27,16 @@
   background-color: #7cc4eb;
 }
 
-.button:first-child {
+.pool-button:first-child {
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
 }
 
-.button:last-child {
+.pool-button:last-child {
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
 }
 
-.button:hover {
+.pool-button:hover {
   cursor: pointer;
 }

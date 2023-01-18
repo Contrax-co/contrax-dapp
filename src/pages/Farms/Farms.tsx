@@ -1,7 +1,7 @@
 import "./Farms.css";
-import CompoundItem from "src/components/CompoundItem/CompoundItem";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
+import FarmItem from "src/components/FarmItem/FarmItem";
 
 function Farms() {
     const { lightMode } = useApp();
@@ -25,7 +25,7 @@ function Farms() {
 
             <div className="pools_list">
                 {farms.map((farm) => (
-                    <CompoundItem key={farm.id} farm={farm} />
+                    <FarmItem key={farm.id} farm={farm} />
                 ))}
             </div>
         </div>

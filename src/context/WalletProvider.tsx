@@ -151,6 +151,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 setSigner(signer);
             });
             setCurrentWallet(wallet.accounts[0].address);
+        } else {
+            setCurrentWallet("");
+            setSigner(undefined);
         }
     }, [wallet]);
 

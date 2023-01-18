@@ -1,4 +1,4 @@
-interface Addresses {
+export interface Addresses {
     factoryAddress: string;
     wethAddress: string;
 }

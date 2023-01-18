@@ -12,7 +12,7 @@ const PoolButton: React.FC<Props> = ({ description, active, ...props }) => {
     const { lightMode } = useApp();
     return (
         <div
-            className={`button ${lightMode && "button--light"} ${active && "button--selected"} ${
+            className={`pool-button ${lightMode && "button--light"} ${active && "button--selected"} ${
                 active && lightMode && "button--selected--light"
             }`}
             onClick={props.onClick}
