@@ -9,6 +9,7 @@ import useBalances from "src/hooks/useBalances";
 import useZapOut from "src/hooks/farms/useZapOut";
 import useWithdraw from "src/hooks/farms/useWithdraw";
 import useEthPrice from "src/hooks/useEthPrice";
+import { validateNumberDecimals } from "src/utils/common";
 
 interface Props {
     farm: Farm;
@@ -60,7 +61,7 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
             // WithdrawAmt in Eth input is in Eth
             else amt = (withdrawAmt * ethPrice) / price;
         }
-        return amt;
+        return Number(validateNumberDecimals(amt));
     };
 
     async function withdrawFunction() {
@@ -74,9 +75,7 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
     }
 
     const setMax = () => {
-        // Floor the decimals to 4
-
-        setWithdrawAmt(Math.floor(maxBalance * 10000000000) / 10000000000);
+        setWithdrawAmt(maxBalance);
     };
 
     const handleShowInUsdChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {

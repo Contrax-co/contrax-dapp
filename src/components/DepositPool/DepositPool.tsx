@@ -13,6 +13,7 @@ import useBalances from "src/hooks/useBalances";
 import useZapIn from "src/hooks/farms/useZapIn";
 import useDeposit from "src/hooks/farms/useDeposit";
 import useEthPrice from "src/hooks/useEthPrice";
+import { validateNumberDecimals } from "src/utils/common";
 
 interface Props {
     farm: Farm;
@@ -51,7 +52,7 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
     };
 
     function setMax() {
-        setDepositAmount(Math.floor(maxBalance * 10000000000) / 10000000000);
+        setDepositAmount(maxBalance);
     }
 
     const getLpAmount = () => {
@@ -68,7 +69,7 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
             // Deposit is in ETH
             else amt = depositAmount;
         }
-        return amt;
+        return Number(validateNumberDecimals(amt));
     };
 
     const handleDeposit = async () => {
