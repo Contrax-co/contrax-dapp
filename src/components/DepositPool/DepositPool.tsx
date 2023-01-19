@@ -51,7 +51,7 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
     };
 
     function setMax() {
-        setDepositAmount(Math.floor(maxBalance * 1000000000000) / 1000000000000);
+        setDepositAmount(Math.floor(maxBalance * 10000000000) / 10000000000);
     }
 
     const getLpAmount = () => {

@@ -76,7 +76,7 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
     const setMax = () => {
         // Floor the decimals to 4
 
-        setWithdrawAmt(Math.floor(maxBalance * 1000000000000) / 1000000000000);
+        setWithdrawAmt(Math.floor(maxBalance * 10000000000) / 10000000000);
     };
 
     const handleShowInUsdChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
