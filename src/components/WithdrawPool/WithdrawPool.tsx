@@ -50,13 +50,15 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
         // LP amount to withdraw
         let amt = 0;
         if (showInUsd) {
-            // WithdrawAmt is in USD
-            amt = withdrawAmt / price;
+            // WithdrawAmt in Lp input is in USD
+            if (shouldUseLp) amt = withdrawAmt / price;
+            // WithdrawAmt in Eth input is in USD
+            else amt = withdrawAmt / price;
         } else {
-            // withdrawAmt is in ETH
-            if (!shouldUseLp) amt = (withdrawAmt * ethPrice) / price;
-            // withdrawAmt is in LP
-            else amt = withdrawAmt;
+            // WithdrawAmt in LP input is in LP
+            if (shouldUseLp) amt = withdrawAmt;
+            // WithdrawAmt in Eth input is in Eth
+            else amt = (withdrawAmt * ethPrice) / price;
         }
         return amt;
     };
@@ -72,7 +74,9 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
     }
 
     const setMax = () => {
-        setWithdrawAmt(maxBalance);
+        // Floor the decimals to 4
+
+        setWithdrawAmt(Math.floor(maxBalance * 1000000000000) / 1000000000000);
     };
 
     const handleShowInUsdChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
