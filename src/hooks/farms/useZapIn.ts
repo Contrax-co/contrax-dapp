@@ -29,12 +29,13 @@ const useZapIn = (farm: Farm) => {
         try {
             const gasPrice: any = await provider.getGasPrice();
             let formattedBal = ethers.utils.parseUnits(ethZapAmount.toString(), 18);
-
+            console.log("zap amt", ethZapAmount);
+            console.log("formatted", formattedBal.toString());
+            console.log("balance", balance.toString());
             // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
-            if (ethZapAmount === balance) {
-                const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 11));
+            const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 11));
+            if (ethZapAmount + gasToRemove >= balance)
                 formattedBal = ethers.utils.parseUnits((ethZapAmount - gasToRemove).toString(), 18);
-            }
 
             let zapperTxn;
             try {

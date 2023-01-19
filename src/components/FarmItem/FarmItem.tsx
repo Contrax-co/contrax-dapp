@@ -259,7 +259,7 @@ const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [tab, setTab] = useState(1);
     const [showMoreDetail, setShowMoreDetail] = useState(false);
-    const [shouldUseLp, setShouldUseLp] = useState(false);
+    const [shouldUseLp, setShouldUseLp] = useState(farm.token_type === "LP Token" ? false : true);
 
     return (
         <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>
