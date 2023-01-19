@@ -149,10 +149,13 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                         style: "currency",
                                         currency: "USD",
                                     })}</p>
-                                    <p>Platform value: ${priceOfSingleToken.toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    })}</p>`}
+                                    <p>Platform value: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
+                                        "en-US",
+                                        {
+                                            style: "currency",
+                                            currency: "USD",
+                                        }
+                                    )}</p>`}
                                 >
                                     <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
                                 </a>
@@ -293,3 +296,4 @@ const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
         </div>
     );
 };
+
