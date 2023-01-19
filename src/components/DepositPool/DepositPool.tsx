@@ -51,19 +51,21 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
     };
 
     function setMax() {
-        setDepositAmount(maxBalance);
+        setDepositAmount(Math.floor(maxBalance * 1000000000000) / 1000000000000);
     }
 
     const getLpAmount = () => {
-        // LP amount to withdraw
+        // Amount to withdraw
         let amt = 0;
         if (showInUsd) {
-            // Deposit is in USD
-            amt = depositAmount / lpPrice;
+            // Deposit is in USD => convert to LP
+            if (shouldUseLp) amt = depositAmount / lpPrice;
+            // Deposit is in USD => convert to Eth
+            else amt = depositAmount / ethPrice;
         } else {
-            // Deposit is in ETH
-            if (!shouldUseLp) amt = (depositAmount * ethPrice) / lpPrice;
             // Deposit is in LP
+            if (shouldUseLp) amt = depositAmount;
+            // Deposit is in ETH
             else amt = depositAmount;
         }
         return amt;
@@ -144,7 +146,7 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
                                 <p>
                                     {showInUsd && "$ "}
                                     {maxBalance.toFixed(4)}
-                                    {!showInUsd && shouldUseLp ? ` ${farm.name}` : " ETH"}
+                                    {!showInUsd && (shouldUseLp ? ` ${farm.name}` : " ETH")}
                                 </p>
                             </div>
                             <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>
