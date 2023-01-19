@@ -33,6 +33,7 @@
 .vault_item_logo1 {
   width: 60px;
   height: 60px;
+  border-radius: 999px;
 }
 
 .vault_item_logo2 {
@@ -40,6 +41,7 @@
   height: 60px;
   margin-left: -5px;
   margin-right: 10px;
+  border-radius: 999px;
 }
 
 .vault_item_name {
