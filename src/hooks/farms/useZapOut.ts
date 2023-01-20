@@ -9,6 +9,7 @@ import useNotify from "src/hooks/useNotify";
 import useBalances from "../useBalances";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import { validateNumberDecimals } from "src/utils/common";
 
 const useZapOut = (farm: Farm) => {
     const { provider, signer, currentWallet } = useWallet();
@@ -29,11 +30,7 @@ const useZapOut = (farm: Farm) => {
              * Execute the actual withdraw functionality from smart contract
              */
             let formattedBal;
-            if (farm.decimals !== 18) {
-                formattedBal = ethers.utils.parseUnits(withdrawAmt.toString(), farm.decimals);
-            } else {
-                formattedBal = ethers.utils.parseUnits(Number(withdrawAmt).toFixed(16), farm.decimals);
-            }
+            formattedBal = ethers.utils.parseUnits(validateNumberDecimals(withdrawAmt), farm.decimals || 18);
 
             const vaultContract = new ethers.Contract(farm.vault_addr, farm.vault_abi, signer);
             await vaultContract.approve(farm.zapper_addr, formattedBal);

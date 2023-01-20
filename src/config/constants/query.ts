@@ -7,7 +7,7 @@ export const TOKEN_BALANCES = (currentWallet: string, addresses: string[], netwo
     "balances",
     networkName,
     currentWallet,
-    addresses,
+    addresses.sort(),
 ];
 
 export const TOKEN_TOTAL_SUPPLIES = (currentWallet: string, addresses: string[], networkName: string) => [
@@ -15,7 +15,7 @@ export const TOKEN_TOTAL_SUPPLIES = (currentWallet: string, addresses: string[],
     "totalSupply",
     networkName,
     currentWallet,
-    addresses,
+    addresses.sort(),
 ];
 
 export const TOKEN_PRICE = (currentWallet: string, address: string, networkName: string) => [

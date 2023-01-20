@@ -101,7 +101,7 @@ function TopBar({ openModal }: any) {
                 </div>
             ) : (
                 <div className={`connect_wallet`} onClick={connectWallet}>
-                    connect to wallet
+                    Connect Wallet
                 </div>
             )}
         </div>

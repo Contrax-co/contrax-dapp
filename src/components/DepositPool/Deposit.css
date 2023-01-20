@@ -1,39 +1,12 @@
-.addliquidity_outsidetab {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
 
-.addliquidity_descriptiontab {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  margin-top: 10px;
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-bottom: 30px;
-  justify-content: space-between;
-}
 
-.addliquidity_description {
-  flex: 1;
-  color: white;
-  font: bold;
-  margin-right: 30px;
-}
 
-.addliquidity_description--light {
-  color: black;
-}
+
+
+
 
 .addliquidity_description_title {
   color: rgb(203, 201, 201);
-}
-
-.addliquidity_description_title--light {
-  color: black;
 }
 
 .description_description {
@@ -49,26 +22,6 @@
 
 .span:hover {
   cursor: pointer;
-}
-
-.addliquidity_tab {
-  width: 50%;
-  height: 100%;
-  border: 0.5px solid #043b71;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  margin-right: 70px;
-  position: relative !important;
-}
-
-.addliquidity_tab--light {
-  color: #009aff;
-  background-color: white;
-  border: 0.5px solid #009aff;
 }
 
 .no_overlay {
@@ -103,7 +56,7 @@
 .addliquidity_weth_bal {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: right;
 }
 
 .addliquidity_weth_bal > p {
@@ -118,7 +71,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  gap:10px;
 }
 
 .deposit_tab-disable {
@@ -441,15 +394,7 @@ input::-webkit-inner-spin-button {
 }
 
 @media (max-width: 768px) {
-  .addliquidity_descriptiontab {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 30px;
-    justify-content: center;
-  }
+  
 
   .addliquidity_description_title {
     font-size: 15px;
@@ -458,11 +403,6 @@ input::-webkit-inner-spin-button {
 
   .description_description {
     font-size: 13px;
-  }
-
-  .addliquidity_tab {
-    margin-right: 0;
-    width: 90%;
   }
 
   .inside_toggle {

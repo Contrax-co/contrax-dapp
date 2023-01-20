@@ -1,0 +1,36 @@
+@import "./_mixins.scss";
+
+.custom-button {
+    @include button();
+}
+
+.custom-button-light {
+    @include button();
+    background-color: #61cddf;
+}
+
+.custom-button-disabled {
+    @include button();
+    background-color: rgb(156, 178, 193);
+    cursor: not-allowed;
+}
+
+.custom-button:disabled,
+.custom-button[disabled] {
+    @include button();
+    background-color: rgb(156, 178, 193);
+    cursor: not-allowed;
+}
+.custom-button-light:disabled,
+.custom-button-light[disabled] {
+    @include button();
+    background-color: rgb(156, 178, 193);
+    cursor: not-allowed;
+}
+
+.custom-button:active {
+    transform: scale(0.95);
+}
+.custom-button-light:active {
+    transform: scale(0.95);
+}

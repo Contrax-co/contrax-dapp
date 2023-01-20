@@ -8,6 +8,7 @@ import { FARM_ZAP_IN } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import { validateNumberDecimals } from "src/utils/common";
 
 export interface ZapIn {
     ethZapAmount: number;
@@ -28,12 +29,17 @@ const useZapIn = (farm: Farm) => {
         let notiId = notifyLoading("Approving zapping!", "Please wait...");
         try {
             const gasPrice: any = await provider.getGasPrice();
-            let formattedBal = ethers.utils.parseUnits(ethZapAmount.toString(), 18);
 
+            let formattedBal = ethers.utils.parseUnits(ethZapAmount.toString(), 18);
             // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
-            if (ethZapAmount === balance) {
-                const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 11));
-                formattedBal = ethers.utils.parseUnits((ethZapAmount - gasToRemove).toString(), 18);
+            const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 11));
+            if (ethZapAmount + gasToRemove >= balance) {
+                if (ethZapAmount - gasToRemove <= 0) {
+                    notifyError("Zap Failed", "Not enough ETH to cover gas cost");
+                    dismissNotify(notiId);
+                    return;
+                }
+                formattedBal = ethers.utils.parseUnits(validateNumberDecimals(ethZapAmount - gasToRemove), 18);
             }
 
             let zapperTxn;
@@ -79,6 +85,7 @@ const useZapIn = (farm: Farm) => {
                 refetchBalance();
             }
         } catch (error: any) {
+            console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(notiId);
             notifyError("Error!", err.reason || err.message);
