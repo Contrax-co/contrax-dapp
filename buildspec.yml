@@ -1,11 +1,14 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 18.12.1
   pre_build:
     commands:
       - echo Pre build commands started...
       - echo npm install started.
-      - npm install --force
+      - npm install
       - echo Finished installing packages.
   build:
     commands:
