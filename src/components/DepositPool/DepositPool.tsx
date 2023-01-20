@@ -13,6 +13,8 @@ import useBalances from "src/hooks/useBalances";
 import useZapIn from "src/hooks/farms/useZapIn";
 import useDeposit from "src/hooks/farms/useDeposit";
 import useEthPrice from "src/hooks/useEthPrice";
+import { validateNumberDecimals } from "src/utils/common";
+import styles from "./Deposit.module.scss";
 
 interface Props {
     farm: Farm;
@@ -51,7 +53,7 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
     };
 
     function setMax() {
-        setDepositAmount(Math.floor(maxBalance * 1000000000000) / 1000000000000);
+        setDepositAmount(maxBalance);
     }
 
     const getLpAmount = () => {
@@ -68,7 +70,7 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
             // Deposit is in ETH
             else amt = depositAmount;
         }
-        return amt;
+        return Number(validateNumberDecimals(amt));
     };
 
     const handleDeposit = async () => {
@@ -101,10 +103,14 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
     };
 
     return (
-        <div className="addliquidity_outsidetab">
+        <div className={styles.addliquidity_outsidetab}>
             <div>
-                <div className="addliquidity_descriptiontab">
-                    <div className={`addliquidity_description ${lightMode && "addliquidity_description--light"}`}>
+                <div className={styles.addliquidity_descriptiontab}>
+                    <div
+                        className={`${styles.addliquidity_description} ${
+                            lightMode && styles["addliquidity_description--light"]
+                        }`}
+                    >
                         <p
                             className={`addliquidity_description_title ${
                                 lightMode && "addliquidity_description_title--light"
@@ -139,7 +145,7 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
                         )}
                     </div>
 
-                    <div className={`addliquidity_tab ${lightMode && "addliquidity_tab--light"}`}>
+                    <div className={`${styles.addliquidity_tab} ${lightMode && styles["addliquidity_tab--light"]}`}>
                         <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                             <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
                                 <p>Balance:</p>
@@ -179,29 +185,25 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
                                 <div className={`deposit_deposits ${lightMode && "deposit_deposits--light"}`}>
                                     {!depositAmount || depositAmount <= 0 ? (
                                         <button
-                                            className={`deposit_zap1_button_disable ${
-                                                lightMode && "deposit_zap1_button_disable--light"
-                                            }`}
+                                            className={`custom-button ${lightMode && "custom-button-light"}`}
+                                            disabled={true}
                                         >
-                                            <p>Deposit</p>
+                                            Deposit
                                         </button>
                                     ) : depositAmount > maxBalance ? (
                                         <button
-                                            className={`deposit_zap1_button_disable ${
-                                                lightMode && "deposit_zap1_button_disable--light"
-                                            }`}
+                                            className={`custom-button ${lightMode && "custom-button-light"}`}
+                                            disabled={true}
                                         >
-                                            <p>Insufficient Balance</p>
+                                            Insufficient Balance
                                         </button>
                                     ) : (
                                         <button
-                                            className={`deposit_zap_button ${
-                                                lightMode && "deposit_zap_button--light"
-                                            } ${isZapping || (isDepositing && "deposit_zap1_button_disable")}`}
+                                            className={`custom-button ${lightMode && "custom-button-light"}`}
                                             onClick={handleDeposit}
                                             disabled={isZapping || isDepositing}
                                         >
-                                            <p>Deposit</p>
+                                            Deposit
                                         </button>
                                     )}
                                 </div>
