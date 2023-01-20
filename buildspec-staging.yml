@@ -1,16 +1,19 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 16
   pre_build:
     commands:
       - echo Pre build commands started...
-      - echo npm install started.
-      - npm install --force
+      - echo yarn install started.
+      - yarn install
       - echo Finished installing packages.
   build:
     commands:
       - echo Generating build directory for react.
-      - npm run build 
+      - yarn build 
       - echo Finished generating build directory.
 
   post_build:
