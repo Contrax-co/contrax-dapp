@@ -148,11 +148,11 @@ const Deposit: React.FC<Props> = ({ farm, shouldUseLp }) => {
                     <div className={`${styles.addliquidity_tab} ${lightMode && styles["addliquidity_tab--light"]}`}>
                         <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                             <div className={`addliquidity_weth_bal ${lightMode && "addliquidity_weth_bal--light"}`}>
-                                <p>Balance:</p>
+                                <p>{shouldUseLp ? ` ${farm.name}` : " ETH"} Balance:</p>
+                                <p style={{ marginLeft: 10 }}></p>
                                 <p>
                                     {showInUsd && "$ "}
                                     {maxBalance.toFixed(4)}
-                                    {!showInUsd && (shouldUseLp ? ` ${farm.name}` : " ETH")}
                                 </p>
                             </div>
                             <div className={`deposit_tab ${!currentWallet && "deposit_tab-disable"}`}>

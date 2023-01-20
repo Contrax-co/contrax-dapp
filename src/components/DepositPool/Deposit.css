@@ -56,7 +56,7 @@
 .addliquidity_weth_bal {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: right;
 }
 
 .addliquidity_weth_bal > p {
