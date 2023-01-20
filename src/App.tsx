@@ -13,6 +13,7 @@ import { web3onboard } from "./config/walletConfig";
 import { Web3OnboardProvider } from "@web3-onboard/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Exchange from "./pages/Exchange/Exchange";
+import "./styles/global.scss";
 
 const queryClient = new QueryClient({
     defaultOptions: {
