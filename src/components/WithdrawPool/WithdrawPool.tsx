@@ -61,7 +61,7 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
             // WithdrawAmt in Eth input is in Eth
             else amt = (withdrawAmt * ethPrice) / price;
         }
-        return Number(validateNumberDecimals(amt));
+        return Number(validateNumberDecimals(amt, farm.decimals));
     };
 
     async function withdrawFunction() {

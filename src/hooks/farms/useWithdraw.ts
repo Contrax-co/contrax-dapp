@@ -9,6 +9,7 @@ import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_WITHDRAW } from "src/config/constants/query";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import { validateNumberDecimals } from "src/utils/common";
 
 const useWithdraw = (farm: Farm) => {
     const { provider, signer, currentWallet } = useWallet();
@@ -35,12 +36,10 @@ const useWithdraw = (farm: Farm) => {
              * Execute the actual withdraw functionality from smart contract
              */
             let formattedBal;
-            if (farm.decimals !== 18) {
-                formattedBal = ethers.utils.parseUnits(withdrawAmount.toString(), farm.decimals);
-            } else {
-                formattedBal = ethers.utils.parseUnits(Number(withdrawAmount).toFixed(16), farm.decimals);
-            }
-
+            formattedBal = ethers.utils.parseUnits(
+                validateNumberDecimals(withdrawAmount, farm.decimals),
+                farm.decimals
+            );
             dismissNotify(notiId);
             notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
 
@@ -91,6 +90,7 @@ const useWithdraw = (farm: Farm) => {
             }
         } catch (error) {
             let err = JSON.parse(JSON.stringify(error));
+            console.log(err);
             dismissNotify(notiId);
             notifyError("Error!", err.reason || err.message);
         }
