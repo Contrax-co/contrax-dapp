@@ -1,0 +1,67 @@
+// @mixin centerTranslate($scale: 1, $rotate: 0) {
+//     position: absolute;
+//     left: 50vw;
+//     top: 50vh;
+//     transform: translateX(-50%) translateY(-50%) scale($scale) rotate($rotate);
+//   }
+
+@mixin farmDescriptionWithInputContainer() {
+    display: flex;
+    margin-top: 10px;
+    gap: 20px;
+    padding: 0 30px;
+
+    @include devices(tablet) {
+        flex-direction: column;
+        padding-bottom: 30px;
+    }
+}
+
+@mixin farmDescriptionWithInputInput() {
+    border: 0.5px solid #043b71;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    position: relative !important;
+    flex: 1;
+    max-width: 600px;
+
+    @include devices(tablet) {
+        margin-right: 0;
+        width: 90%;
+    }
+}
+
+@mixin button() {
+    background-color: rgb(89, 179, 247);
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    padding: 5px 5px;
+    min-width: 120px;
+    min-height: 50px;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+// $breakpoint is the variable that can have several values
+@mixin devices($breakpoint) {
+    //the name of the mixin is devices
+
+    @if $breakpoint == tablet {
+        @media only screen and (max-width: 768px) {
+            @content;
+        }
+    }
+
+    @if $breakpoint == mobile {
+        @media only screen and (max-width: 500px) {
+            @content;
+        }
+    }
+}

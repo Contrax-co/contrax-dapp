@@ -10,6 +10,7 @@ import useZapOut from "src/hooks/farms/useZapOut";
 import useWithdraw from "src/hooks/farms/useWithdraw";
 import useEthPrice from "src/hooks/useEthPrice";
 import { validateNumberDecimals } from "src/utils/common";
+import styles from "./Withdraw.module.scss";
 
 interface Props {
     farm: Farm;
@@ -97,8 +98,12 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
 
     return (
         <div className="whole_tab">
-            <div className="detail_container">
-                <div className={`withdrawal_description ${lightMode && "withdrawal_description--light"}`}>
+            <div className={styles.addliquidity_descriptiontab}>
+                <div
+                    className={`${styles.addliquidity_description} ${
+                        lightMode && styles["addliquidity_description--light"]
+                    }`}
+                >
                     <p className={`withdrawal_title ${lightMode && "withdrawal_title--light"}`}>Description</p>
 
                     {shouldUseLp ? (
@@ -126,7 +131,7 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
                     )}
                 </div>
 
-                <div className={`withdraw_tab ${lightMode && "withdraw_tab--light"}`}>
+                <div className={`${styles.addliquidity_tab} ${lightMode && styles["addliquidity_tab--light"]}`}>
                     <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                         {userVaultBal * price < 0.01 ? (
                             <div className={`lp_bal ${lightMode && "lp_bal--light"}`}>
@@ -175,28 +180,26 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
 
                             <div className={`withdraw_withdraw ${lightMode && "withdraw_withdraw--light"}`}>
                                 {!withdrawAmt || withdrawAmt <= 0 ? (
-                                    <div
-                                        className={`withdraw_zap1_button_disable ${
-                                            lightMode && "withdraw_zap1_button_disable--light"
-                                        }`}
+                                    <button
+                                        className={`custom-button ${lightMode && "custom-button-light"}`}
+                                        disabled={true}
                                     >
-                                        <p>Withdraw</p>
-                                    </div>
+                                        Withdraw
+                                    </button>
                                 ) : withdrawAmt > maxBalance ? (
-                                    <div
-                                        className={`withdraw_zap1_button_disable ${
-                                            lightMode && "withdraw_zap1_button_disable--light"
-                                        }`}
+                                    <button
+                                        className={`custom-button ${lightMode && "custom-button-light"}`}
+                                        disabled={true}
                                     >
-                                        <p>Insufficient Balance</p>
-                                    </div>
+                                        Insufficient Balance
+                                    </button>
                                 ) : (
                                     <button
-                                        className={`deposit_zap_button ${lightMode && "deposit_zap_button--light"}`}
+                                        className={`custom-button ${lightMode && "custom-button-light"}`}
                                         onClick={shouldUseLp ? withdrawFunction : zapOutFunction}
                                         disabled={shouldUseLp ? isWithdrawing : isZappingOut}
                                     >
-                                        <p>Withdraw</p>
+                                        Withdraw
                                     </button>
                                 )}
                             </div>

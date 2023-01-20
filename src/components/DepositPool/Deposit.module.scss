@@ -1,0 +1,33 @@
+@import "../../styles/mixins";
+
+.addliquidity_outsidetab {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.addliquidity_descriptiontab {
+    @include farmDescriptionWithInputContainer();
+}
+
+.addliquidity_description {
+    flex: 1;
+    color: white;
+    font: bold;
+}
+
+.addliquidity_description--light {
+    color: black;
+}
+
+.addliquidity_tab {
+   @include farmDescriptionWithInputInput();
+}
+
+.addliquidity_tab--light {
+    color: #009aff;
+    background-color: white;
+    border: 0.5px solid #009aff;
+}
