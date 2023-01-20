@@ -135,17 +135,18 @@ const WithdrawPool: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp }) =>
                     <div className={`inside_toggle ${!currentWallet && "inside_toggle-none"}`}>
                         {userVaultBal * price < 0.01 ? (
                             <div className={`lp_bal ${lightMode && "lp_bal--light"}`}>
-                                <p>Balance</p>
-                                <p>0</p>
+                                <p>{shouldUseLp ? ` ${farm.name}` : " ETH"} Balance:</p>
+                                <p style={{ marginLeft: 10 }}></p>
+                                <p>{showInUsd && "$ "}0</p>
                             </div>
                         ) : (
                             <div className={`lp_bal ${lightMode && "lp_bal--light"}`}>
                                 {/* <p>{withdrawType === WITHDRAW_TYPE.LP ? "LP Balance:" : "ETH Balance:"}</p> */}
-                                <p>Balance</p>
+                                <p>{shouldUseLp ? ` ${farm.name}` : " ETH"} Balance:</p>
+                                <p style={{ marginLeft: 10 }}></p>
                                 <p>
                                     {showInUsd && "$ "}
-                                    {maxBalance}
-                                    {!showInUsd && ` ${shouldUseLp ? farm.name : "ETH"}`}
+                                    {maxBalance.toFixed(4)}
                                 </p>
                             </div>
                         )}
