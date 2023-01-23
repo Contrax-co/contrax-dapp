@@ -1,5 +1,11 @@
 @import "./_mixins.scss";
 
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
 .custom-button {
     @include button();
 }
@@ -33,4 +39,36 @@
 }
 .custom-button-light:active {
     transform: scale(0.95);
+}
+
+
+select {
+    /* Reset */
+    // appearance: none;
+    border: 0;
+    outline: 0;
+    font: inherit;
+    /* Personalize */
+    // width: 20em;
+    height: 2em;
+    padding: 0 0em 0 1em;
+    margin-left: auto;
+    color: white;
+    border-radius: 0.25em;
+    background: black;
+    box-shadow: 0 0 1em 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    /* <option> colors */
+    option {
+        color: inherit;
+        background-color: #320a28;
+    }
+    /* Remove focus outline */
+    &:focus {
+        outline: none;
+    }
+    /* Remove IE arrow */
+    &::-ms-expand {
+        display: none;
+    }
 }
