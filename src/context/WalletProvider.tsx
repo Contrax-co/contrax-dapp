@@ -7,6 +7,7 @@ import { defaultChainId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ACCOUNT_BALANCE } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
+import { ARBITRUM_MAINNET } from "src/config/walletConfig";
 
 interface IWalletContext {
     /**
@@ -36,7 +37,7 @@ interface IWalletContext {
      */
     logout: () => void;
     signer?: ethers.ethers.providers.JsonRpcSigner;
-    provider?: ethers.ethers.providers.Web3Provider;
+    provider?: ethers.ethers.providers.Web3Provider | ethers.ethers.providers.JsonRpcProvider;
 
     /**
      * Balance of the native eth that the user has
@@ -70,7 +71,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const connectedWallets = useWallets();
     const { NETWORK_NAME } = useConstants();
     const [currentWallet, setCurrentWallet] = React.useState("");
-    const [provider, setProvider] = React.useState<ethers.ethers.providers.Web3Provider | undefined>(undefined);
+    const [provider, setProvider] = React.useState<
+        ethers.ethers.providers.Web3Provider | ethers.ethers.providers.JsonRpcProvider | undefined
+    >(undefined);
     const [signer, setSigner] = React.useState<ethers.ethers.providers.JsonRpcSigner | undefined>(undefined);
     const [
         {
@@ -139,6 +142,12 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     );
 
     React.useEffect(() => {
+        if (!provider) {
+            setProvider(new ethers.providers.JsonRpcProvider(ARBITRUM_MAINNET));
+        }
+    }, [provider]);
+
+    React.useEffect(() => {
         network();
     }, [connectedChain, wallet, provider]);
 
@@ -191,7 +200,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             value={{
                 currentWallet,
                 connectWallet,
-                networkId: parseInt(connectedChain?.id || "0", 16),
+                networkId: connectedChain?.id ? parseInt(connectedChain.id, 16) : defaultChainId,
                 logout,
                 displayAccount,
                 signer,

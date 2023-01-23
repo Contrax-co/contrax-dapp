@@ -6,11 +6,11 @@ import useConstants from "./useConstants";
 import useWallet from "./useWallet";
 
 const usePriceOfTokens = (addresses: string[]) => {
-    const { currentWallet } = useWallet();
     const { NETWORK_NAME, COINS_LLAMA_PRICE } = useConstants();
 
     const getPrice: QueryFunction<number> = async ({ queryKey }) => {
-        const tokenAddress = queryKey[4];
+        const tokenAddress = queryKey[3];
+        console.log("getting price", queryKey, COINS_LLAMA_PRICE, tokenAddress);
         const res = await axios.get(COINS_LLAMA_PRICE + tokenAddress);
         const prices = JSON.stringify(res.data);
         const parse = JSON.parse(prices);
@@ -22,7 +22,8 @@ const usePriceOfTokens = (addresses: string[]) => {
 
     const results = useQueries({
         queries: addresses.map((address) => ({
-            queryKey: TOKEN_PRICE(currentWallet, address || "", NETWORK_NAME),
+            // Query key index should be changed in getPrice function as well if changed here
+            queryKey: TOKEN_PRICE(address || "", NETWORK_NAME),
             queryFn: getPrice,
             initialData: 0,
         })),
