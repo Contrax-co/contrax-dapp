@@ -10,21 +10,14 @@ export const TOKEN_BALANCES = (currentWallet: string, addresses: string[], netwo
     addresses.sort(),
 ];
 
-export const TOKEN_TOTAL_SUPPLIES = (currentWallet: string, addresses: string[], networkName: string) => [
+export const TOKEN_TOTAL_SUPPLIES = (addresses: string[], networkName: string) => [
     "token",
     "totalSupply",
     networkName,
-    currentWallet,
     addresses.sort(),
 ];
 
-export const TOKEN_PRICE = (currentWallet: string, address: string, networkName: string) => [
-    "token",
-    "price",
-    networkName,
-    currentWallet,
-    address,
-];
+export const TOKEN_PRICE = (address: string, networkName: string) => ["token", "price", networkName, address];
 
 export const FARM_APY = (currentWallet: string, address: string, networkName: string) => [
     "farm",

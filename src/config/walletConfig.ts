@@ -6,7 +6,7 @@ import logo from "src/assets/images/logo-4x.png";
 import injectedModule from "@web3-onboard/injected-wallets";
 import { init } from "@web3-onboard/react";
 
-const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
+export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 
 const injected = injectedModule();
 const coinbaseWalletSdk = coinbaseWalletModule({ darkMode: true });
