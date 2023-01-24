@@ -1,5 +1,4 @@
-import React from "react";
-import { getUserSession, setUserSession } from "../store/localStorage";
+import React, { useMemo } from "react";
 import * as ethers from "ethers";
 import { removeUserSession } from "../store/localStorage";
 import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
@@ -45,6 +44,11 @@ interface IWalletContext {
     balance: number;
 
     /**
+     * Balance of the native eth that the user has in bignumber
+     */
+    balanceBigNumber: ethers.BigNumber;
+
+    /**
      * Refetches the balance of the user
      */
     refetchBalance: () => void;
@@ -59,6 +63,7 @@ export const WalletContext = React.createContext<IWalletContext>({
     signer: undefined,
     provider: undefined,
     balance: 0,
+    balanceBigNumber: ethers.BigNumber.from(0),
     refetchBalance: () => {},
 });
 
@@ -67,7 +72,7 @@ interface IProps {
 }
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
-    const [{ wallet }, connect, disconnect, updateBalances, setWalletModules] = useConnectWallet();
+    const [{ wallet }, connect, disconnect] = useConnectWallet();
     const connectedWallets = useWallets();
     const { NETWORK_NAME } = useConstants();
     const [currentWallet, setCurrentWallet] = React.useState("");
@@ -85,20 +90,15 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     ] = useSetChain();
 
     const getBalance = async () => {
-        const balance = await provider?.getBalance(currentWallet);
-        const formattedBal = Number(ethers.utils.formatUnits(balance || 0, 18));
-        return formattedBal;
+        if (!provider) return ethers.BigNumber.from(0);
+        const balance = await provider.getBalance(currentWallet);
+        return balance;
     };
 
     const connectWallet = async () => {
         const wallets = await connect();
         // TODO: Remove set user session
         if (wallets) {
-            setUserSession({
-                address: wallets[0].accounts[0].address,
-                networkId: wallets[0].chains[0].id,
-            });
-
             setCurrentWallet(wallets[0].accounts[0].address);
         }
     };
@@ -185,15 +185,17 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     }, [connect]);
 
-    const { data: balance, refetch: refetchBalance } = useQuery(
+    const { data: balanceBigNumber, refetch: refetchBalance } = useQuery(
         ACCOUNT_BALANCE(currentWallet, currentWallet, NETWORK_NAME),
         getBalance,
         {
             enabled: !!currentWallet && !!provider && !!NETWORK_NAME,
-            initialData: 0,
+            initialData: ethers.BigNumber.from(0),
             refetchInterval: 5000,
         }
     );
+
+    const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
 
     return (
         <WalletContext.Provider
@@ -206,6 +208,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 signer,
                 provider,
                 balance,
+                balanceBigNumber,
                 refetchBalance,
             }}
         >
