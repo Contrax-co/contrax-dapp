@@ -10256,6 +10256,7 @@ __metadata:
     sass: ^1.57.1
     stream-browserify: ^3.0.0
     stream-http: ^3.2.0
+    string_decoder: ^1.3.0
     styled-components: ^5.3.6
     sweetalert: ^2.1.2
     typescript: ^4.8.4
@@ -22161,7 +22162,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string_decoder@npm:^1.1.1":
+"string_decoder@npm:^1.1.1, string_decoder@npm:^1.3.0":
   version: 1.3.0
   resolution: "string_decoder@npm:1.3.0"
   dependencies:
