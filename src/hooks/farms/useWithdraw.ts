@@ -38,7 +38,7 @@ const useWithdraw = (farm: Farm) => {
             dismissNotify(notiId);
             notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
 
-            let withdrawTxn;
+            let withdrawTxn: any;
             if (max) {
                 withdrawTxn = await vaultContract.withdrawAll();
             } else {
@@ -52,7 +52,7 @@ const useWithdraw = (farm: Farm) => {
                     {
                         name: "View",
                         // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${depositTxn.hash}`, "_blank"),
+                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${withdrawTxn.hash}`, "_blank"),
                     },
                 ],
             });

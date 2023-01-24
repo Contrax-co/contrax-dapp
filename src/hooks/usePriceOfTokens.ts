@@ -10,7 +10,6 @@ const usePriceOfTokens = (addresses: string[]) => {
 
     const getPrice: QueryFunction<number> = async ({ queryKey }) => {
         const tokenAddress = queryKey[3];
-        console.log("getting price", queryKey, COINS_LLAMA_PRICE, tokenAddress);
         const res = await axios.get(COINS_LLAMA_PRICE + tokenAddress);
         const prices = JSON.stringify(res.data);
         const parse = JSON.parse(prices);

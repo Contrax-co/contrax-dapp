@@ -16,7 +16,6 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
 
     const getAllSupplies = async () => {
         if (!provider) return {};
-        console.log("getting supplies");
         const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
         const contractCallContext: ContractCallContext[] = [];
 
@@ -36,7 +35,6 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         Object.entries(results.results).forEach(([key, value]) => {
             ans[key] = ethers.BigNumber.from(value.callsReturnContext[0].returnValues[0].hex);
         });
-        console.log("res", results, ans);
         return ans;
     };
 

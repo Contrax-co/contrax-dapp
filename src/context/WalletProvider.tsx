@@ -1,7 +1,5 @@
 import React, { useMemo } from "react";
 import * as ethers from "ethers";
-import { removeUserSession } from "../store/localStorage";
-import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
 import { defaultChainId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ACCOUNT_BALANCE } from "src/config/constants/query";
@@ -78,7 +76,9 @@ const clientId = "BNN7bsHpQ9ce3JcedpapbQ06eoYt-tu_yxrQNeH0mjJTXCwZFTClUDjEYWlxdt
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [web3auth, setWeb3auth] = React.useState<Web3Auth>();
-    const [provider, setProvider] = React.useState<ethers.providers.Web3Provider | ethers.ethers.providers.JsonRpcProvider>();
+    const [provider, setProvider] = React.useState<
+        ethers.providers.Web3Provider | ethers.ethers.providers.JsonRpcProvider
+    >();
     const [currentWallet, setCurrentWallet] = React.useState<string>("");
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
 
@@ -120,11 +120,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
         init();
     }, []);
-    console.log("provider", provider);
-    console.log("signer", signer);
-    console.log("wallet", currentWallet);
-    console.log("networkId", networkId)
-    
+
     const getBalance = async () => {
         if (!provider) return ethers.BigNumber.from(0);
         const balance = await provider.getBalance(currentWallet);
@@ -184,7 +180,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     React.useEffect(() => {
         if (provider) {
-            console.log("geting sigener");
             const _signer = provider.getSigner();
             setSigner(_signer);
 
@@ -217,7 +212,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     );
 
     const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
-
     return (
         <WalletContext.Provider
             value={{
