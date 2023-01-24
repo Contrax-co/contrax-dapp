@@ -1,15 +1,9 @@
 .vaults_container {
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 400px));
 }
 
 .vaults {
   margin: 5px;
-}
-
-@media (max-width: 768px) {
-  .vaults_container{
-    display: flex;
-    flex-direction: column;
-  }
 }

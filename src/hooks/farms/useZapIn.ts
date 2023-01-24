@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Farm } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
@@ -11,10 +11,11 @@ import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
 
 export interface ZapIn {
     ethZapAmount: number;
+    max?: boolean;
 }
 
 const useZapIn = (farm: Farm) => {
-    const { refetchBalance, provider, signer, currentWallet, balance } = useWallet();
+    const { refetchBalance, provider, signer, currentWallet, balanceBigNumber } = useWallet();
     const { NETWORK_NAME, CONTRACTS, BLOCK_EXPLORER_URL } = useConstants();
     const { notifySuccess, notifyLoading, notifyError, dismissNotify } = useNotify();
 
@@ -22,43 +23,26 @@ const useZapIn = (farm: Farm) => {
 
     const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
 
-    const _zapIn = async ({ ethZapAmount }: ZapIn) => {
+    const _zapIn = async ({ ethZapAmount, max }: ZapIn) => {
         if (!provider || !signer || !farm) return;
         const zapperContract = new ethers.Contract(farm.zapper_addr, farm.zapper_abi, signer);
         let notiId = notifyLoading("Approving zapping!", "Please wait...");
         try {
-            const gasPrice: any = await provider.getGasPrice();
             let formattedBal = ethers.utils.parseUnits(ethZapAmount.toString(), 18);
-            console.log("zap amt", ethZapAmount);
-            console.log("formatted", formattedBal.toString());
-            console.log("balance", balance.toString());
             // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
-            const gasToRemove = Number(ethers.utils.formatUnits(gasPrice, 11));
-            if (ethZapAmount + gasToRemove >= balance)
-                formattedBal = ethers.utils.parseUnits((ethZapAmount - gasToRemove).toString(), 18);
-
-            let zapperTxn;
-            try {
-                const gasEstimated: any = await zapperContract.estimateGas.zapInETH(
-                    farm.vault_addr,
-                    0,
-                    CONTRACTS.wethAddress,
-                    {
-                        value: formattedBal,
-                    }
-                );
-                const gasMargin = gasEstimated * 1.1;
-
-                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, CONTRACTS.wethAddress, {
+            if (max) {
+                formattedBal = balanceBigNumber;
+                const gasPrice: any = await provider.getGasPrice();
+                const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, CONTRACTS.wethAddress, {
                     value: formattedBal,
-                    gasLimit: Math.ceil(gasMargin),
                 });
-            } catch {
-                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, CONTRACTS.wethAddress, {
-                    value: formattedBal,
-                    gasLimit: gasPrice / 20,
-                });
+                const gasToRemove = gasLimit.mul(gasPrice).mul(2);
+                formattedBal = balanceBigNumber.sub(gasToRemove);
             }
+
+            let zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, CONTRACTS.wethAddress, {
+                value: formattedBal,
+            });
             dismissNotify(notiId);
             notifyLoading("Zapping...", `Txn hash: ${zapperTxn.hash}`, {
                 id: notiId,

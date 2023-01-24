@@ -36,6 +36,8 @@ const useUserTokens = () => {
         enabled: !!networkId && !!currentWallet,
     });
 
+    console.log("isoading", isLoading, isFetching, tokens);
+
     return {
         /**
          * Array of tokens

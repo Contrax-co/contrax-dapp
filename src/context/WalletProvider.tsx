@@ -1,5 +1,4 @@
-import React from "react";
-import { getUserSession, setUserSession } from "../store/localStorage";
+import React, { useMemo } from "react";
 import * as ethers from "ethers";
 import { removeUserSession } from "../store/localStorage";
 import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
@@ -10,6 +9,7 @@ import useConstants from "src/hooks/useConstants";
 import { Web3Auth } from "@web3auth/modal";
 import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { ARBITRUM_MAINNET } from "src/config/walletConfig";
 
 interface IWalletContext {
     /**
@@ -39,12 +39,17 @@ interface IWalletContext {
      */
     logout: () => void;
     signer?: ethers.ethers.providers.JsonRpcSigner;
-    provider?: ethers.ethers.providers.Web3Provider;
+    provider?: ethers.ethers.providers.Web3Provider | ethers.ethers.providers.JsonRpcProvider;
 
     /**
      * Balance of the native eth that the user has
      */
     balance: number;
+
+    /**
+     * Balance of the native eth that the user has in bignumber
+     */
+    balanceBigNumber: ethers.BigNumber;
 
     /**
      * Refetches the balance of the user
@@ -61,6 +66,7 @@ export const WalletContext = React.createContext<IWalletContext>({
     signer: undefined,
     provider: undefined,
     balance: 0,
+    balanceBigNumber: ethers.BigNumber.from(0),
     refetchBalance: () => {},
 });
 
@@ -72,7 +78,7 @@ const clientId = "BNN7bsHpQ9ce3JcedpapbQ06eoYt-tu_yxrQNeH0mjJTXCwZFTClUDjEYWlxdt
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [web3auth, setWeb3auth] = React.useState<Web3Auth>();
-    const [provider, setProvider] = React.useState<ethers.providers.Web3Provider>();
+    const [provider, setProvider] = React.useState<ethers.providers.Web3Provider | ethers.ethers.providers.JsonRpcProvider>();
     const [currentWallet, setCurrentWallet] = React.useState<string>("");
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
 
@@ -117,11 +123,12 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     console.log("provider", provider);
     console.log("signer", signer);
     console.log("wallet", currentWallet);
-    console.log("networkId", networkId);
+    console.log("networkId", networkId)
+    
     const getBalance = async () => {
-        const balance = await provider?.getBalance(currentWallet);
-        const formattedBal = Number(ethers.utils.formatUnits(balance || 0, 18));
-        return formattedBal;
+        if (!provider) return ethers.BigNumber.from(0);
+        const balance = await provider.getBalance(currentWallet);
+        return balance;
     };
 
     const connectWallet = async () => {
@@ -158,7 +165,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     async function logout() {
         await web3auth?.logout();
-        setProvider(undefined);
     }
 
     const displayAccount = React.useMemo(
@@ -166,9 +172,15 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         [currentWallet]
     );
 
+    React.useEffect(() => {
+        if (!provider) {
+            setProvider(new ethers.providers.JsonRpcProvider(ARBITRUM_MAINNET));
+        }
+    }, [provider]);
+
     // React.useEffect(() => {
-    //     // network();
-    // }, [networkId]);
+    //     network();
+    // }, [connectedChain, wallet, provider]);
 
     React.useEffect(() => {
         if (provider) {
@@ -194,15 +206,17 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     }, [signer]);
 
-    const { data: balance, refetch: refetchBalance } = useQuery(
+    const { data: balanceBigNumber, refetch: refetchBalance } = useQuery(
         ACCOUNT_BALANCE(currentWallet, currentWallet, NETWORK_NAME),
         getBalance,
         {
             enabled: !!currentWallet && !!provider && !!NETWORK_NAME,
-            initialData: 0,
+            initialData: ethers.BigNumber.from(0),
             refetchInterval: 5000,
         }
     );
+
+    const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
 
     return (
         <WalletContext.Provider
@@ -215,6 +229,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 signer,
                 provider,
                 balance,
+                balanceBigNumber,
                 refetchBalance,
             }}
         >

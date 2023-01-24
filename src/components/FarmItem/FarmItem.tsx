@@ -1,9 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import "./FarmItem.css";
-import Deposit from "src/components/DepositPool/DepositPool";
 import PoolButton from "src/components/PoolButton/PoolButton";
-import Withdraw from "src/components/WithdrawPool/WithdrawPool";
 import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
 import Details from "src/components/FarmItem/Details";
@@ -18,6 +16,8 @@ import useFarmApy from "src/hooks/farms/useFarmApy";
 import useFeeApy from "src/hooks/useFeeApy";
 import useFarmsPlatformTotalSupply from "src/hooks/farms/useFarmPlatformBalance";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
+import DetailInput from "./components/DetailInput";
+import { FarmTransactionType } from "src/types/enums";
 
 interface Props {
     farm: Farm;
@@ -128,6 +128,7 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                             )}
                         </div>
 
+                        {/* Total Liquidity */}
                         {totalVaultBalance * priceOfSingleToken < 0.01 ? (
                             <div className={`liquidity_container ${lightMode && "container--light"}`}>
                                 <p className={`pool_name ${lightMode && "pool_name--light"}`}>
@@ -149,10 +150,13 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                         style: "currency",
                                         currency: "USD",
                                     })}</p>
-                                    <p>Platform value: ${priceOfSingleToken.toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    })}</p>`}
+                                    <p>Platform value: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
+                                        "en-US",
+                                        {
+                                            style: "currency",
+                                            currency: "USD",
+                                        }
+                                    )}</p>`}
                                 >
                                     <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
                                 </a>
@@ -268,9 +272,10 @@ const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
                 <PoolButton onClick={() => setTab(2)} description="Withdraw" active={tab === 2} />
             </div>
 
-            {tab === 1 && <Deposit farm={farm} shouldUseLp={shouldUseLp} setShouldUseLp={setShouldUseLp} />}
+            {tab === 1 && <DetailInput farm={farm} shouldUseLp={shouldUseLp} type={FarmTransactionType.Deposit} />}
+            {/* {tab === 1 && <Deposit farm={farm} shouldUseLp={shouldUseLp} setShouldUseLp={setShouldUseLp} />} */}
 
-            {tab === 2 && <Withdraw farm={farm} shouldUseLp={shouldUseLp} setShouldUseLp={setShouldUseLp} />}
+            {tab === 2 && <DetailInput farm={farm} shouldUseLp={shouldUseLp} type={FarmTransactionType.Withdraw} />}
 
             {!showMoreDetail ? (
                 <div

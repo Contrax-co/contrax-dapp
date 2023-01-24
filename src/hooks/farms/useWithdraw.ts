@@ -9,64 +9,40 @@ import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_WITHDRAW } from "src/config/constants/query";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import { validateNumberDecimals } from "src/utils/common";
 
 const useWithdraw = (farm: Farm) => {
     const { provider, signer, currentWallet } = useWallet();
     const { NETWORK_NAME, BLOCK_EXPLORER_URL } = useConstants();
     const { notifySuccess, notifyLoading, notifyError, dismissNotify } = useNotify();
-    const { formattedBalances, refetch: refetchVaultBalance } = useBalances([
-        { address: farm.vault_addr, decimals: farm.decimals },
-    ]);
-    const userVaultBal = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances]);
+    const { refetch: refetchVaultBalance } = useBalances([{ address: farm.vault_addr, decimals: farm.decimals }]);
 
     const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
 
     const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
 
-    const _withdraw = async ({ withdrawAmount }: { withdrawAmount: number }) => {
+    const _withdraw = async ({ withdrawAmount, max }: { withdrawAmount: number; max?: boolean }) => {
         if (!provider || !signer || !farm) return;
         const notiId = notifyLoading("Approving Withdraw!", "Please wait...");
         try {
             const vaultContract = new ethers.Contract(farm.vault_addr, farm.vault_abi, signer);
 
-            const gasPrice1: any = await provider.getGasPrice();
-
             /*
              * Execute the actual withdraw functionality from smart contract
              */
             let formattedBal;
-            if (farm.decimals !== 18) {
-                formattedBal = ethers.utils.parseUnits(withdrawAmount.toString(), farm.decimals);
-            } else {
-                formattedBal = ethers.utils.parseUnits(Number(withdrawAmount).toFixed(16), farm.decimals);
-            }
-
+            formattedBal = ethers.utils.parseUnits(
+                validateNumberDecimals(withdrawAmount, farm.decimals),
+                farm.decimals
+            );
             dismissNotify(notiId);
             notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
 
             let withdrawTxn;
-            try {
-                if (withdrawAmount === userVaultBal) {
-                    const gasEstimated: any = await vaultContract.estimateGas.withdrawAll();
-                    const gasMargin = gasEstimated * 1.1;
-
-                    withdrawTxn = await vaultContract.withdrawAll({ gasLimit: Math.ceil(gasMargin) });
-                } else {
-                    const gasEstimated: any = await vaultContract.estimateGas.withdraw(formattedBal);
-                    const gasMargin = gasEstimated * 1.1;
-
-                    withdrawTxn = await vaultContract.withdraw(formattedBal, { gasLimit: Math.ceil(gasMargin) });
-                }
-            } catch {
-                if (withdrawAmount === userVaultBal) {
-                    withdrawTxn = await vaultContract.withdrawAll({
-                        gasLimit: gasPrice1 / 20,
-                    });
-                } else {
-                    withdrawTxn = await vaultContract.withdraw(formattedBal, {
-                        gasLimit: gasPrice1 / 20,
-                    });
-                }
+            if (max) {
+                withdrawTxn = await vaultContract.withdrawAll();
+            } else {
+                withdrawTxn = await vaultContract.withdraw(formattedBal);
             }
 
             dismissNotify(notiId);
@@ -91,6 +67,7 @@ const useWithdraw = (farm: Farm) => {
             }
         } catch (error) {
             let err = JSON.parse(JSON.stringify(error));
+            console.log(err);
             dismissNotify(notiId);
             notifyError("Error!", err.reason || err.message);
         }

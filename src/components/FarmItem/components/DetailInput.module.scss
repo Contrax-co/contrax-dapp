@@ -1,0 +1,72 @@
+@import "src/styles/_mixins.scss";
+@import "src/styles/variables.scss";
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    padding: 30px;
+    color: #fff;
+    gap:20px;
+
+    @include devices(desktop) {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+    @include devices(mobile) {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+}
+
+.inputContainer {
+    border: 0.5px solid $border-color;
+    border-radius: 10px;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+
+    @include devices(tablet) {
+        grid-template-columns: 1fr;
+        padding: 8px;
+    }
+}
+
+.inputWrapper {
+    background-color: $background-dark;
+    border-radius: 10px;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    & input{
+        background-color: transparent;
+        border: none;
+        color: white;
+        padding: 5px;  
+        outline: none;
+        width:200px;
+        @include devices(tablet){
+            width:80px;
+        }
+        @include devices(mobile){
+            width:70px;
+        }
+    }
+}
+.maxContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.maxBtn{
+    cursor: pointer;
+    font-weight: bold;
+}
+.select{
+    width:120px;
+}

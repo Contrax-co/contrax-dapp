@@ -12,10 +12,11 @@ import erc20 from "src/assets/abis/erc20.json";
  */
 const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
     const { NETWORK_NAME } = useConstants();
-    const { provider, currentWallet } = useWallet();
+    const { provider } = useWallet();
 
     const getAllSupplies = async () => {
         if (!provider) return {};
+        console.log("getting supplies");
         const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
         const contractCallContext: ContractCallContext[] = [];
 
@@ -35,6 +36,7 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         Object.entries(results.results).forEach(([key, value]) => {
             ans[key] = ethers.BigNumber.from(value.callsReturnContext[0].returnValues[0].hex);
         });
+        console.log("res", results, ans);
         return ans;
     };
 
@@ -45,13 +47,12 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         isFetching,
     } = useQuery(
         TOKEN_TOTAL_SUPPLIES(
-            currentWallet,
             data.map((_) => _.address),
             NETWORK_NAME
         ),
         getAllSupplies,
         {
-            enabled: !!provider && !!currentWallet && data.length > 0 && !!NETWORK_NAME,
+            enabled: !!provider && data.length > 0 && !!NETWORK_NAME,
             initialData: () => {
                 let b: { [key: string]: ethers.BigNumber } = {};
                 data.forEach((item) => {
@@ -61,7 +62,6 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
             },
         }
     );
-
     const formattedSupplies = useMemo(() => {
         let b: { [key: string]: number } = {};
         Object.entries(supplies).map(([key, value]) => {
