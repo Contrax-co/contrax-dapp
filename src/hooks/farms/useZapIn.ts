@@ -50,7 +50,7 @@ const useZapIn = (farm: Farm) => {
                     {
                         name: "View",
                         // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${depositTxn.hash}`, "_blank"),
+                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${zapperTxn.hash}`, "_blank"),
                     },
                 ],
             });
