@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { getUserSession, setUserSession } from "../store/localStorage";
 import * as ethers from "ethers";
 import { removeUserSession } from "../store/localStorage";
@@ -45,6 +45,11 @@ interface IWalletContext {
     balance: number;
 
     /**
+     * Balance of the native eth that the user has in bignumber
+     */
+    balanceBigNumber: ethers.BigNumber;
+
+    /**
      * Refetches the balance of the user
      */
     refetchBalance: () => void;
@@ -59,6 +64,7 @@ export const WalletContext = React.createContext<IWalletContext>({
     signer: undefined,
     provider: undefined,
     balance: 0,
+    balanceBigNumber: ethers.BigNumber.from(0),
     refetchBalance: () => {},
 });
 
@@ -85,9 +91,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     ] = useSetChain();
 
     const getBalance = async () => {
-        const balance = await provider?.getBalance(currentWallet);
-        const formattedBal = Number(ethers.utils.formatUnits(balance || 0, 18));
-        return formattedBal;
+        if (!provider) return ethers.BigNumber.from(0);
+        const balance = await provider.getBalance(currentWallet);
+        return balance;
     };
 
     const connectWallet = async () => {
@@ -185,15 +191,17 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     }, [connect]);
 
-    const { data: balance, refetch: refetchBalance } = useQuery(
+    const { data: balanceBigNumber, refetch: refetchBalance } = useQuery(
         ACCOUNT_BALANCE(currentWallet, currentWallet, NETWORK_NAME),
         getBalance,
         {
             enabled: !!currentWallet && !!provider && !!NETWORK_NAME,
-            initialData: 0,
+            initialData: ethers.BigNumber.from(0),
             refetchInterval: 5000,
         }
     );
+
+    const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
 
     return (
         <WalletContext.Provider
@@ -206,6 +214,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 signer,
                 provider,
                 balance,
+                balanceBigNumber,
                 refetchBalance,
             }}
         >

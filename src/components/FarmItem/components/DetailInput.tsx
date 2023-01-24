@@ -29,6 +29,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { isLoading: isDepositing, depositAsync } = useDeposit(farm);
     const { isLoading: isZappingOut, zapOutAsync } = useZapOut(farm);
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
+    const [max, setMax] = React.useState(false);
 
     const {
         prices: { [farm.lp_address]: tokenPrice },
@@ -56,10 +57,6 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
             }
         }
     }, [shouldUseLp, showInUsd, userVaultBal, tokenPrice, ethPrice, userLpBal, type]);
-
-    function setMax() {
-        setAmount(maxBalance);
-    }
 
     const getTokenAmount = () => {
         let amt = 0;
@@ -101,20 +98,30 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
         e.preventDefault();
         if (type === FarmTransactionType.Deposit) {
             if (shouldUseLp) {
-                await depositAsync({ depositAmount: getTokenAmount() });
+                await depositAsync({ depositAmount: getTokenAmount(), max });
             } else {
-                await zapInAsync({ ethZapAmount: getTokenAmount() });
+                await zapInAsync({ ethZapAmount: getTokenAmount(), max });
             }
         } else {
             if (shouldUseLp) {
-                await withdrawAsync({ withdrawAmount: getTokenAmount() });
+                await withdrawAsync({ withdrawAmount: getTokenAmount(), max });
             } else {
-                await zapOutAsync({ withdrawAmt: getTokenAmount() });
+                await zapOutAsync({ withdrawAmt: getTokenAmount(), max });
             }
         }
         setAmount(0);
+        setMax(false);
         refetch();
     };
+
+    const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        setAmount(Number(e.target.value));
+        setMax(false);
+    };
+
+    React.useEffect(() => {
+        if (max) setAmount(maxBalance);
+    }, [max, maxBalance]);
 
     return (
         <div className={styles.container}>
@@ -142,11 +149,11 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                             required
                             value={amount}
                             max={maxBalance}
-                            onChange={(e) => setAmount(Number(e.target.value))}
+                            onChange={handleInput}
                         />
                     </div>
                     <div className={styles.maxContainer}>
-                        <p className={styles.maxBtn} onClick={setMax}>
+                        <p className={styles.maxBtn} onClick={() => setMax(true)}>
                             MAX
                         </p>
                         <select value={showInUsd.toString()} onChange={handleShowInUsdChange} className={styles.select}>

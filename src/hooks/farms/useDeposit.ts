@@ -9,79 +9,56 @@ import { FARM_DEPOSIT } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import { validateNumberDecimals } from "src/utils/common";
+import { useApprovalErc20 } from "../useApproval";
 
 const useDeposit = (farm: Farm) => {
     const { provider, signer, currentWallet } = useWallet();
     const { NETWORK_NAME, BLOCK_EXPLORER_URL } = useConstants();
     const { notifySuccess, notifyLoading, notifyError, dismissNotify } = useNotify();
+    const { approve } = useApprovalErc20();
 
-    const { formattedBalances, refetch: refetchBalances } = useBalances([
-        { address: farm.lp_address, decimals: farm.decimals },
-    ]);
-    const lpUserBal = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances]);
+    const { refetch: refetchBalances, balances } = useBalances([{ address: farm.lp_address, decimals: farm.decimals }]);
+    const lpUserBal = useMemo(() => balances[farm.lp_address], [balances, farm.lp_address]);
 
     const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
 
     const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
 
-    const _deposit = async ({ depositAmount }: { depositAmount: number }) => {
+    const _deposit = async ({ depositAmount, max }: { depositAmount: number; max?: boolean }) => {
         if (!provider) return;
 
         let notiId = notifyLoading("Approving deposit!", "Please wait...");
         try {
             const vaultContract = new ethers.Contract(farm.vault_addr, farm.vault_abi, signer);
 
-            const gasPrice1: any = await provider.getGasPrice();
-
             /*
              * Execute the actual deposit functionality from smart contract
              */
             let formattedBal;
-            if (farm.decimals !== 18) {
-                formattedBal = ethers.utils.parseUnits(depositAmount.toString(), farm.decimals);
+
+            if (max) {
+                // Deposit all
+                formattedBal = lpUserBal;
             } else {
-                if (depositAmount === lpUserBal) {
-                    // Deposit all
-                    formattedBal = ethers.utils.parseUnits(
-                        Number(Number(depositAmount) + Number(depositAmount)).toFixed(16),
-                        farm.decimals
-                    );
-                } else {
-                    // Deposit
-                    formattedBal = ethers.utils.parseUnits(Number(depositAmount).toFixed(16), farm.decimals);
-                }
+                // Deposit
+                formattedBal = ethers.utils.parseUnits(
+                    validateNumberDecimals(depositAmount, farm.decimals),
+                    farm.decimals
+                );
             }
 
             // approve the vault to spend asset
-            const lpContract = new ethers.Contract(farm.lp_address, farm.lp_abi, signer);
-            await lpContract.approve(farm.vault_addr, formattedBal);
+            await approve(farm.lp_address, farm.vault_addr, lpUserBal);
 
             dismissNotify(notiId);
             notifyLoading("Confirm Deposit!", "", { id: notiId });
 
             let depositTxn: any;
-            try {
-                if (depositAmount === lpUserBal) {
-                    const gasEstimated: any = await vaultContract.estimateGas.depositAll();
-                    const gasMargin = gasEstimated * 1.1;
-
-                    depositTxn = await vaultContract.depositAll({ gasLimit: Math.ceil(gasMargin) });
-                } else {
-                    const gasEstimated: any = await vaultContract.estimateGas.deposit(formattedBal);
-                    const gasMargin = gasEstimated * 1.1;
-
-                    depositTxn = await vaultContract.deposit(formattedBal, { gasLimit: Math.ceil(gasMargin) });
-                }
-            } catch {
-                if (depositAmount === lpUserBal) {
-                    //the abi of the vault contract needs to be checked
-                    depositTxn = await vaultContract.depositAll({
-                        gasLimit: gasPrice1 / 20,
-                    });
-                } else {
-                    //the abi of the vault contract needs to be checked
-                    depositTxn = await vaultContract.deposit(formattedBal, { gasLimit: gasPrice1 / 20 });
-                }
+            if (max) {
+                depositTxn = await vaultContract.depositAll();
+            } else {
+                depositTxn = await vaultContract.deposit(formattedBal);
             }
 
             dismissNotify(notiId);
