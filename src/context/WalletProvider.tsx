@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { getUserSession, setUserSession } from "../store/localStorage";
 import * as ethers from "ethers";
 import { removeUserSession } from "../store/localStorage";
 import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
@@ -73,7 +72,7 @@ interface IProps {
 }
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
-    const [{ wallet }, connect, disconnect, updateBalances, setWalletModules] = useConnectWallet();
+    const [{ wallet }, connect, disconnect] = useConnectWallet();
     const connectedWallets = useWallets();
     const { NETWORK_NAME } = useConstants();
     const [currentWallet, setCurrentWallet] = React.useState("");
@@ -100,11 +99,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         const wallets = await connect();
         // TODO: Remove set user session
         if (wallets) {
-            setUserSession({
-                address: wallets[0].accounts[0].address,
-                networkId: wallets[0].chains[0].id,
-            });
-
             setCurrentWallet(wallets[0].accounts[0].address);
         }
     };

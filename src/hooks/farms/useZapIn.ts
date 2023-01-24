@@ -8,7 +8,6 @@ import { FARM_ZAP_IN } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
-import { validateNumberDecimals } from "src/utils/common";
 
 export interface ZapIn {
     ethZapAmount: number;

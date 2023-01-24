@@ -21,7 +21,7 @@ interface Props {
 
 const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { lightMode } = useApp();
-    const { connectWallet, currentWallet, balance: ethUserBal } = useWallet();
+    const { balance: ethUserBal } = useWallet();
     const { price: ethPrice } = useEthPrice();
     const [amount, setAmount] = React.useState(0.0);
     const [showInUsd, setShowInUsd] = React.useState(true);
@@ -56,7 +56,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 return showInUsd ? userVaultBal * tokenPrice : (userVaultBal * tokenPrice) / ethPrice;
             }
         }
-    }, [shouldUseLp, showInUsd, userVaultBal, tokenPrice, ethPrice, userLpBal, type]);
+    }, [shouldUseLp, showInUsd, userVaultBal, tokenPrice, ethPrice, userLpBal, type, ethUserBal]);
 
     const getTokenAmount = () => {
         let amt = 0;

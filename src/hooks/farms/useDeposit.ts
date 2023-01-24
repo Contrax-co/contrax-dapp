@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import * as ethers from "ethers";
