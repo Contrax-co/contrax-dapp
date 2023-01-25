@@ -8,6 +8,7 @@ import { Web3Auth } from "@web3auth/modal";
 import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { ARBITRUM_MAINNET } from "src/config/walletConfig";
+import { MetamaskAdapter } from "@web3auth/metamask-adapter";
 
 interface IWalletContext {
     /**
@@ -101,6 +102,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                         tickerName: "Ether",
                     },
                 });
+                const metamaskAdapter = new MetamaskAdapter({
+                    sessionTime: 3600, // 1 hour in seconds
+                });
 
                 const openloginAdapter = new OpenloginAdapter({
                     loginSettings: {
@@ -108,6 +112,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                     },
                 });
                 web3auth.configureAdapter(openloginAdapter);
+                web3auth.configureAdapter(metamaskAdapter);
 
                 setWeb3auth(web3auth);
 
