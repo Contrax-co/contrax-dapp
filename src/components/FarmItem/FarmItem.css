@@ -275,7 +275,7 @@
 @media (max-width: 768px) {
 
   .pools {
-    overflow: scroll;
+    overflow: auto;
   }
 
   .logo {

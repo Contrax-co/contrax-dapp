@@ -119,6 +119,17 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
         setMax(false);
     };
 
+    const dontShowUsdSelect = React.useMemo(() => {
+        switch (farm.name) {
+            case "Usdt":
+                return true;
+            case "Usdc":
+                return true;
+            default:
+                return false;
+        }
+    }, [farm]);
+
     React.useEffect(() => {
         if (max) setAmount(maxBalance);
     }, [max, maxBalance]);
@@ -141,8 +152,8 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 <div></div>
 
                 <div className={styles.inputWrapper}>
-                    <div>
-                        <span style={{ marginBottom: 2 }}>$</span>
+                    <div style={{ display: "grid", gridTemplateColumns: "min-content 1fr" }}>
+                        <span style={{ marginBottom: 2, opacity: showInUsd ? 1 : 0 }}>$</span>
                         <input
                             type="number"
                             placeholder="0.0"
@@ -156,14 +167,20 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                         <p className={styles.maxBtn} onClick={() => setMax(true)}>
                             MAX
                         </p>
-                        <select value={showInUsd.toString()} onChange={handleShowInUsdChange} className={styles.select}>
-                            <option value={"false"} className="currency_select">
-                                {shouldUseLp ? farm.name : "ETH"}
-                            </option>
-                            <option value={"true"} className="currency_select">
-                                USD
-                            </option>
-                        </select>
+                        {!dontShowUsdSelect && (
+                            <select
+                                value={showInUsd.toString()}
+                                onChange={handleShowInUsdChange}
+                                className={styles.select}
+                            >
+                                <option value={"false"} className="currency_select">
+                                    {shouldUseLp ? farm.name : "ETH"}
+                                </option>
+                                <option value={"true"} className="currency_select">
+                                    USD
+                                </option>
+                            </select>
+                        )}
                     </div>
                 </div>
                 <button
