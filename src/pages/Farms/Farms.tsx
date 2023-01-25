@@ -17,7 +17,6 @@ function Farms() {
                 <p className={`farm__asset`}>ASSET</p>
                 <div className={`farm__second__title`}>
                     <p>DEPOSITED</p>
-                    <p>SHARE</p>
                     <p>TOTAL LIQUIDITY</p>
                     <p>APY</p>
                 </div>
