@@ -161,6 +161,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     async function logout() {
         await web3auth?.logout();
+        setProvider(undefined);
     }
 
     const displayAccount = React.useMemo(
