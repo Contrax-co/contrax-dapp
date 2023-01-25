@@ -95,6 +95,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                         chainNamespace: CHAIN_NAMESPACES.EIP155,
                         chainId: "0xA4B1",
                         rpcTarget: "https://arb1.arbitrum.io/rpc", // This is the public RPC we have added, please pass on your own endpoint while creating an app
+                        blockExplorer: "https://arbiscan.io/",
+                        displayName: "Arbitrum One",
+                        ticker: "ETH",
+                        tickerName: "Ether",
                     },
                 });
 
@@ -161,6 +165,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     async function logout() {
         await web3auth?.logout();
+        setProvider(undefined);
     }
 
     const displayAccount = React.useMemo(

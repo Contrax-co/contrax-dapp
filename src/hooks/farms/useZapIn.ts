@@ -36,10 +36,9 @@ const useZapIn = (farm: Farm) => {
                 const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, CONTRACTS.wethAddress, {
                     value: formattedBal,
                 });
-                const gasToRemove = gasLimit.mul(gasPrice).mul(2);
+                const gasToRemove = gasLimit.mul(gasPrice).mul(8);
                 formattedBal = balanceBigNumber.sub(gasToRemove);
             }
-
             let zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, CONTRACTS.wethAddress, {
                 value: formattedBal,
             });
