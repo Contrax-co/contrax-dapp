@@ -9,6 +9,7 @@ import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { ARBITRUM_MAINNET } from "src/config/walletConfig";
 import { MetamaskAdapter } from "@web3auth/metamask-adapter";
+import { WalletConnectV1Adapter } from "@web3auth/wallet-connect-v1-adapter";
 
 interface IWalletContext {
     /**
@@ -111,6 +112,14 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                         mfaLevel: "none", // Pass on the mfa level of your choice: default, optional, mandatory, none
                     },
                 });
+                const walletConnectV1Adapter = new WalletConnectV1Adapter({
+                    adapterSettings: {
+                        bridge: "https://bridge.walletconnect.org",
+                    },
+                    sessionTime: 3600, // 1 day in seconds
+                });
+
+                web3auth.configureAdapter(walletConnectV1Adapter);
                 web3auth.configureAdapter(openloginAdapter);
                 web3auth.configureAdapter(metamaskAdapter);
 
