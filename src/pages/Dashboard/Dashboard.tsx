@@ -12,6 +12,9 @@ import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import useVaults from "src/hooks/vaults/useVaults";
 import useVaultBalances from "src/hooks/vaults/useVaultBalances";
 import { useNavigate } from "react-router";
+import { useSearchParams } from "react-router-dom";
+
+let redirected = false;
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -22,6 +25,7 @@ function Dashboard() {
     const { prices, isFetching } = usePriceOfTokens(vaults.map((vault) => vault.lp_address));
     const { formattedBalances, isFetching: isFetching2 } = useVaultBalances();
     const navigate = useNavigate();
+    const [params] = useSearchParams();
 
     const hasDeposits = useMemo(() => {
         return Object.entries(formattedBalances).some(([key, value]) => {
@@ -38,7 +42,9 @@ function Dashboard() {
     useEffect(() => {
         if (!isFetching && !isFetching2) {
             if (!hasDeposits) {
-                navigate("/farms");
+                if (params.get("redirect") === "false") redirected = true;
+                if (!redirected) navigate("/farms");
+                redirected = true;
             }
         }
     }, [hasDeposits, isFetching, isFetching2]);
