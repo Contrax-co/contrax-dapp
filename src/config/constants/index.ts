@@ -1,5 +1,5 @@
 export const RoutesPaths = {
-    Home: "/",
+    Home: "/?redirect=false",
     Farms: "/farms",
     CreateToken: "/create-token",
     CreatePool: "/create-pool",

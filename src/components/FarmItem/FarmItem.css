@@ -36,7 +36,7 @@
 
 .title_container {
   display: flex;
-  flex: 2;
+  flex: 1.6;
   align-items: center;
 }
 
@@ -129,7 +129,7 @@
 
 .pool_info {
   display: flex;
-  flex: 6;
+  flex: 3.6;
   justify-content: space-around;
 }
 
@@ -275,7 +275,7 @@
 @media (max-width: 768px) {
 
   .pools {
-    overflow: scroll;
+    overflow: auto;
   }
 
   .logo {
