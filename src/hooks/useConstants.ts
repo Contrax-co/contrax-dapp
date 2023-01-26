@@ -27,3 +27,4 @@ function getNetworkName(id: number) {
             return "arbitrum";
     }
 }
+

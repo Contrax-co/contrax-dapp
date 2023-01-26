@@ -252,3 +252,4 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 };
 
 export default WalletProvider;
+
