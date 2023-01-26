@@ -13,6 +13,7 @@ const Exchange: React.FC<IProps> = () => {
         <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
             <SwapWidget
                 theme={lightMode ? lightTheme : darkTheme}
+                // @ts-ignore
                 provider={provider}
                 onConnectWalletClick={connectWallet}
             />
