@@ -131,14 +131,14 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                 data-tooltip-html={`<p>
                                         <b>Total Value Locked:</b>
                                     </p>
-                                    <p>Liquidity: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
+                                    <p>Pool Liquidity: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
                                         "en-US",
                                         {
                                             style: "currency",
                                             currency: "USD",
                                         }
                                     )}</p>
-                                    <p>Pool Liquidity: ${(totalVaultBalance * priceOfSingleToken).toLocaleString(
+                                    <p>Vault Liquidity: ${(totalVaultBalance * priceOfSingleToken).toLocaleString(
                                         "en-US",
                                         {
                                             style: "currency",
