@@ -138,10 +138,13 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                             currency: "USD",
                                         }
                                     )}</p>
-                                    <p>Platform: ${(totalVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    })}</p>
+                                    <p>Pool Liquidity: ${(totalVaultBalance * priceOfSingleToken).toLocaleString(
+                                        "en-US",
+                                        {
+                                            style: "currency",
+                                            currency: "USD",
+                                        }
+                                    )}</p>
                                     <p>
                                     Share: ${((userVaultBal / totalVaultBalance) * 100).toFixed(2)}%
                                     </p>
