@@ -87,13 +87,14 @@ interface IProps {
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
+
     const { data: signer } = useSigner();
+
     // const {setOpen} = useModal()
     const { address: currentWallet } = useAccount();
-    const { disconnectAsync, disconnect, status } = useDisconnect();
-    const { connectors, connectAsync } = useConnect();
+    const { disconnect } = useDisconnect();
+    const { connectors } = useConnect();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
-
     const { NETWORK_NAME } = useConstants();
 
     // React.useEffect(() => {
@@ -162,7 +163,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         //     chainId: defaultChainId,
         // });
     };
-    console.log(provider, signer);
+
 
     // async function network() {
     //     const chainId = 42161;
