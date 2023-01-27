@@ -121,7 +121,7 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                         {/* Total Liquidity */}
                         <div className={`liquidity_container ${lightMode && "container--light"}`}>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {(totalVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
+                                {(totalPlatformBalance * priceOfSingleToken).toLocaleString("en-US", {
                                     style: "currency",
                                     currency: "USD",
                                 })}
