@@ -16,9 +16,9 @@ function Farms() {
             <div className={`farm__title ${lightMode && "farm__title--light"}`}>
                 <p className={`farm__asset`}>ASSET</p>
                 <div className={`farm__second__title`}>
-                    <p>DEPOSITED</p>
+                    <p className="farm__second__title__deposite">DEPOSITED</p>
                     <p>TOTAL LIQUIDITY</p>
-                    <p>APY</p>
+                    <p className="farm__second__title__apy">APY</p>
                 </div>
             </div>
 

@@ -59,6 +59,16 @@
   align-items: center;
 }
 
+.farm__second__title__deposite {
+  width: 100px;
+  text-align: right;
+}
+
+.farm__second__title__apy {
+  width: 65px;
+  text-align: left;
+}
+
 .pools_list {
   display: flex;
   flex-direction: column;
