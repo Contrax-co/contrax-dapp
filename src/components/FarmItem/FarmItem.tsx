@@ -132,6 +132,7 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                         {
                                             style: "currency",
                                             currency: "USD",
+                                            maximumFractionDigits: 0,
                                         }
                                     )}</p>
                                     <p>Vault Liquidity: ${(totalVaultBalance * priceOfSingleToken).toLocaleString(
@@ -139,6 +140,7 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                         {
                                             style: "currency",
                                             currency: "USD",
+                                            maximumFractionDigits: 0,
                                         }
                                     )}</p>
                                     <p>
