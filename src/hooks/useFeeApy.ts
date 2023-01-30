@@ -19,8 +19,8 @@ const useFeeApy = (address?: string) => {
         refetch,
         isLoading,
         isFetching,
-    } = useQuery(FEE_APY(currentWallet, address || "", NETWORK_NAME), getApy, {
-        enabled: !!NETWORK_NAME && !!address && !!currentWallet && !!CHAIN_ID,
+    } = useQuery(FEE_APY(address || "", NETWORK_NAME), getApy, {
+        enabled: !!NETWORK_NAME && !!address && !!CHAIN_ID,
         initialData: 0,
     });
 

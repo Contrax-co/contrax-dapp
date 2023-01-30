@@ -49,6 +49,7 @@ const openloginAdapter = new OpenloginAdapter({
     loginSettings: {
         mfaLevel: "none", // Pass on the mfa level of your choice: default, optional, mandatory, none
     },
+    web3AuthNetwork: "testnet",
 });
 web3AuthInstance.configureAdapter(openloginAdapter);
 
