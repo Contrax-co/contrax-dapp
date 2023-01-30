@@ -11,7 +11,7 @@ import uuid from "react-uuid";
 import { Farm } from "src/types";
 import useFarmsVaultBalances from "src/hooks/farms/useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "src/hooks/farms/useFarmsVaultTotalSupply";
-import { calculateFarmAPY, findCompoundAPY, totalFarmAPY } from "src/utils/common";
+import { calculateFarmAPY, findCompoundAPY, findTotalAPY, totalFarmAPY } from "src/utils/common";
 import useFarmApy from "src/hooks/farms/useFarmApy";
 import useFeeApy from "src/hooks/useFeeApy";
 import useFarmsPlatformTotalSupply from "src/hooks/farms/useFarmPlatformBalance";
@@ -50,8 +50,13 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
     const { apy: feeAPY } = useFeeApy(farm.lp_address);
 
     const apyVisionCompound = useMemo(() => calculateFarmAPY(rewardAPY), [rewardAPY]);
+    const compoundAPY = useMemo(
+        () => findCompoundAPY(farm.rewards_apy || 0, farm.total_apy || 0, farm.platform),
+        [farm]
+    );
 
-    const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]) || farm?.total_apy || 0;
+    const totalAPY = useMemo(() => findTotalAPY(farm.rewards_apy || 0, farm.total_apy || 0, farm.platform), [farm]);
+    const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]);
 
     const key = uuid();
     const key1 = uuid();
@@ -158,26 +163,48 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                         </div>
 
                         <div className={`container1 ${lightMode && "container1--light"}`}>
-                            <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
-                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                    {apyVisionAPY.toFixed(2)}%
-                                </p>
-                                <a
-                                    id={key}
-                                    data-tooltip-html={`<p>
+                            {!farm.total_apy ? (
+                                <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
+                                    <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                        {apyVisionAPY.toFixed(2)}%
+                                    </p>
+                                    <a
+                                        id={key}
+                                        data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
                                         <p>LP Rewards: ${rewardAPY.toFixed(2)}%</p>
                                         <p>Trading Fees: ${feeAPY.toFixed(2)}%</p>
                                         <p>Compounding: ${apyVisionCompound.toFixed(2)}%</p>`}
-                                >
-                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                                </a>
-                                <Tooltip
-                                    anchorId={key}
-                                    className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
-                                />
-                            </div>
+                                    >
+                                        <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                                    </a>
+                                    <Tooltip
+                                        anchorId={key}
+                                        className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                                    />
+                                </div>
+                            ) : (
+                                <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
+                                    <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                        {totalAPY.toFixed(2)}%
+                                    </p>
+                                    <a
+                                        id={key}
+                                        data-tooltip-html={`<p>
+                <b>Base APRs</b>
+            </p>
+            <p>LP Rewards: ${Number(farm.rewards_apy).toFixed(2)}%</p>
+            <p>Compounding: ${compoundAPY.toFixed(2)}%</p>`}
+                                    >
+                                        <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                                    </a>
+                                    <Tooltip
+                                        anchorId={key}
+                                        className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
 
