@@ -11,10 +11,11 @@ import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { injectedWallet, rainbowWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { WEB3AUTH_CLIENT_ID } from "./constants";
 
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 
-const clientId = "BNN7bsHpQ9ce3JcedpapbQ06eoYt-tu_yxrQNeH0mjJTXCwZFTClUDjEYWlxdtDP9hVngAi_609tp_M_VNVym9E";
+const clientId = WEB3AUTH_CLIENT_ID as string;
 
 // Configure chains & providers with the Alchemy provider.
 // Popular providers are Alchemy (alchemy.com), Infura (infura.io), Quicknode (quicknode.com) etc.
