@@ -16,8 +16,10 @@ import "./styles/global.scss";
 import { WagmiConfig } from "wagmi";
 import { wagmiClient, chains } from "./config/walletConfig";
 import "@rainbow-me/rainbowkit/styles.css";
+import Logo from "src/assets/images/logo.png";
 
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import WalletDisclaimer from "./components/WalletDisclaimer/WalletDisclaimer";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -31,7 +33,11 @@ function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <WagmiConfig client={wagmiClient}>
-                <RainbowKitProvider chains={chains} showRecentTransactions={false}>
+                <RainbowKitProvider
+                    chains={chains}
+                    showRecentTransactions={false}
+                    appInfo={{ appName: "Contrax", disclaimer: WalletDisclaimer }}
+                >
                     <WalletProvider>
                         <AppProvider>
                             <Router>
