@@ -27,12 +27,7 @@ export const FARM_APY = (currentWallet: string, address: string, networkName: st
     address,
 ];
 
-export const FEE_APY = (currentWallet: string, address: string, networkName: string) => [
-    "feeApy",
-    networkName,
-    currentWallet,
-    address,
-];
+export const FEE_APY = (address: string, networkName: string) => ["feeApy", networkName, address];
 
 export const ACCOUNT_BALANCE = (currentWallet: string, accountAddress: string, networkName: string) => [
     "balance",

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { RoutesPaths } from "src/config/constants";
 import useApp from "src/hooks/useApp";
 import useConstants from "src/hooks/useConstants";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function TopBar({ openModal }: any) {
     const { lightMode } = useApp();
@@ -84,7 +85,11 @@ function TopBar({ openModal }: any) {
                     </div>
                 </div>
             ) : null}
-
+            <div style={{ flex: 1 }}></div>
+            <div>
+                <ConnectButton />
+            </div>
+            {/* 
             {currentWallet ? (
                 <div className={`connect_wallet2 ${lightMode && "connect_wallet2--light"}`}>
                     <div className={`ethBal ${lightMode && "ethBal--light"}`}>
@@ -103,7 +108,7 @@ function TopBar({ openModal }: any) {
                 <div className={`connect_wallet`} onClick={connectWallet}>
                     Connect Wallet
                 </div>
-            )}
+            )} */}
         </div>
     );
 }

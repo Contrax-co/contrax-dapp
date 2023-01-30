@@ -10,18 +10,23 @@ import useBalances from "../useBalances";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
 import { validateNumberDecimals } from "src/utils/common";
+import { useApprovalErc20 } from "../useApproval";
 
 const useZapOut = (farm: Farm) => {
     const { provider, signer, currentWallet } = useWallet();
     const { NETWORK_NAME, CONTRACTS, BLOCK_EXPLORER_URL } = useConstants();
     const { notifySuccess, notifyLoading, notifyError, dismissNotify } = useNotify();
-    const { refetch: refetchVaultBalance } = useBalances([{ address: farm.vault_addr, decimals: farm.decimals }]);
+    const { refetch: refetchVaultBalance, balances } = useBalances([
+        { address: farm.vault_addr, decimals: farm.decimals },
+    ]);
+    const vaultUserBalance = useMemo(() => balances[farm.vault_addr], [balances, farm.vault_addr]);
+    const { approve } = useApprovalErc20();
 
     const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
 
     const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
 
-    const _zapOut = async ({ withdrawAmt }: { withdrawAmt: number }) => {
+    const _zapOut = async ({ withdrawAmt, max }: { withdrawAmt: number; max?: boolean }) => {
         if (!provider || !signer || !farm) return;
         const zapperContract = new ethers.Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const notiId = notifyLoading("Approving Withdraw!", "Please wait...");
@@ -32,47 +37,18 @@ const useZapOut = (farm: Farm) => {
             let formattedBal;
             formattedBal = ethers.utils.parseUnits(validateNumberDecimals(withdrawAmt), farm.decimals || 18);
 
-            const vaultContract = new ethers.Contract(farm.vault_addr, farm.vault_abi, signer);
-            await vaultContract.approve(farm.zapper_addr, formattedBal);
-
-            const lpContract = new ethers.Contract(farm.lp_address, farm.lp_abi, signer);
-            await lpContract.approve(farm.zapper_addr, formattedBal);
-
-            const gasPrice: any = await provider.getGasPrice();
+            await approve(farm.vault_addr, farm.zapper_addr, vaultUserBalance);
+            await approve(farm.lp_address, farm.zapper_addr, vaultUserBalance);
 
             dismissNotify(notiId);
             notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
 
-            let withdrawTxn;
-            try {
-                const gasEstimated: any = await zapperContract.estimateGas.zapOutAndSwap(
-                    farm.vault_addr,
-                    formattedBal,
-                    CONTRACTS.wethAddress,
-                    0
-                );
-                const gasMargin = gasEstimated * 1.1;
-
-                withdrawTxn = await zapperContract.zapOutAndSwap(
-                    farm.vault_addr,
-                    formattedBal,
-                    CONTRACTS.wethAddress,
-                    0,
-                    {
-                        gasLimit: Math.ceil(gasMargin),
-                    }
-                );
-            } catch {
-                withdrawTxn = await zapperContract.zapOutAndSwap(
-                    farm.vault_addr,
-                    formattedBal,
-                    CONTRACTS.wethAddress,
-                    0,
-                    {
-                        gasLimit: gasPrice / 20,
-                    }
-                );
-            }
+            let withdrawTxn = await zapperContract.zapOutAndSwap(
+                farm.vault_addr,
+                max ? vaultUserBalance : formattedBal,
+                CONTRACTS.wethAddress,
+                0
+            );
 
             dismissNotify(notiId);
             notifyLoading("Withdrawing...", `Txn hash: ${withdrawTxn.hash}`, {
@@ -81,7 +57,7 @@ const useZapOut = (farm: Farm) => {
                     {
                         name: "View",
                         // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${depositTxn.hash}`, "_blank"),
+                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${withdrawTxn.hash}`, "_blank"),
                     },
                 ],
             });

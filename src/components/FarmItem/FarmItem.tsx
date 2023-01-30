@@ -118,88 +118,49 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                     )}
 
                     <div className="pool_info">
-                        <div className={`container__apy ${lightMode && "container__apy--light"}`}>
-                            {userVaultBal * priceOfSingleToken < 0.01 ? (
-                                <p className={`pool_name__apy ${lightMode && "pool_name__apy--light"}`}></p>
-                            ) : (
-                                <p className={`pool_name__apy ${lightMode && "pool_name__apy--light"}`}>
-                                    {((userVaultBal / totalVaultBalance) * 100).toFixed(2)} %
-                                </p>
-                            )}
-                        </div>
-
                         {/* Total Liquidity */}
-                        {totalVaultBalance * priceOfSingleToken < 0.01 ? (
-                            <div className={`liquidity_container ${lightMode && "container--light"}`}>
-                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                    {(0).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    })}
-                                </p>
-                                <a
-                                    id={key}
-                                    data-tooltip-html={`<p>
+                        <div className={`liquidity_container ${lightMode && "container--light"}`}>
+                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                {(totalPlatformBalance * priceOfSingleToken).toLocaleString("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                    maximumFractionDigits: 0,
+                                })}
+                            </p>
+                            <a
+                                id={key1}
+                                data-tooltip-html={`<p>
                                         <b>Total Value Locked:</b>
                                     </p>
-                                    <p>Our vaults: ${(
-                                        totalPlatformBalance *
-                                        totalVaultBalance *
-                                        priceOfSingleToken
-                                    ).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    })}</p>
-                                    <p>Platform value: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
+                                    <p>Pool Liquidity: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
                                         "en-US",
                                         {
                                             style: "currency",
                                             currency: "USD",
+                                            maximumFractionDigits: 0,
                                         }
-                                    )}</p>`}
-                                >
-                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                                </a>
-
-                                <Tooltip
-                                    anchorId={key}
-                                    className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
-                                />
-                            </div>
-                        ) : (
-                            <div className={`liquidity_container ${lightMode && "container--light"}`}>
-                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                    {(totalVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    })}
-                                </p>
-                                <a
-                                    id={key1}
-                                    data-tooltip-html={`<p>
-                                        <b>Total Value Locked:</b>
-                                    </p>
-                                    <p>Our vaults: ${(totalVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    })}</p>
-                                    <p>Platform value: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
+                                    )}</p>
+                                    <p>Vault Liquidity: ${(totalVaultBalance * priceOfSingleToken).toLocaleString(
                                         "en-US",
                                         {
                                             style: "currency",
                                             currency: "USD",
+                                            maximumFractionDigits: 0,
                                         }
-                                    )}</p>`}
-                                >
-                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                                </a>
+                                    )}</p>
+                                    <p>
+                                    Share: ${((userVaultBal / totalVaultBalance) * 100).toFixed(2)}%
+                                    </p>
+                                    `}
+                            >
+                                <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                            </a>
 
-                                <Tooltip
-                                    anchorId={key1}
-                                    className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
-                                />
-                            </div>
-                        )}
+                            <Tooltip
+                                anchorId={key1}
+                                className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                            />
+                        </div>
 
                         <div className={`container1 ${lightMode && "container1--light"}`}>
                             {!farm.total_apy ? (
@@ -231,10 +192,10 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                     <a
                                         id={key}
                                         data-tooltip-html={`<p>
-                                            <b>Base APRs</b>
-                                        </p>
-                                        <p>LP Rewards: ${Number(farm.rewards_apy).toFixed(2)}%</p>
-                                        <p>Compounding: ${compoundAPY.toFixed(2)}%</p>`}
+                <b>Base APRs</b>
+            </p>
+            <p>LP Rewards: ${Number(farm.rewards_apy).toFixed(2)}%</p>
+            <p>Compounding: ${compoundAPY.toFixed(2)}%</p>`}
                                     >
                                         <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
                                     </a>
