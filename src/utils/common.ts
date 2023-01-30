@@ -1,19 +1,19 @@
-// export const findTotalAPY = (apy: number, totalAPY: number, platform: string) => {
-//     // Compounded APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
-//     let rate;
-//     if (platform === "Dodo") {
-//         rate = apy / 100;
-//     } else {
-//         rate = apy / 100;
-//     }
+export const findTotalAPY = (apy: number, totalAPY: number, platform: string) => {
+    // Compounded APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
+    let rate;
+    if (platform === "Dodo") {
+        rate = apy / 100;
+    } else {
+        rate = apy / 100;
+    }
 
-//     const period = 365; //weekly
+    const period = 365; //weekly
 
-//     const baseAPY = totalAPY / 100 - apy / 100;
+    const baseAPY = totalAPY / 100 - apy / 100;
 
-//     const APY = (1 + rate / period) ** period - 1 + baseAPY;
-//     return APY * 100;
-// };
+    const APY = (1 + rate / period) ** period - 1 + baseAPY;
+    return APY * 100;
+};
 
 export const findCompoundAPY = (apy: number, totalAPY: number, platform: string) => {
     // Compounded APY = (((1 + (0.9*rate/period))^period) - 1)
