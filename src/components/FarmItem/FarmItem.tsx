@@ -121,7 +121,7 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                         {/* Total Liquidity */}
                         <div className={`liquidity_container ${lightMode && "container--light"}`}>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {(totalVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
+                                {(totalPlatformBalance * priceOfSingleToken).toLocaleString("en-US", {
                                     style: "currency",
                                     currency: "USD",
                                 })}
@@ -131,17 +131,20 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                 data-tooltip-html={`<p>
                                         <b>Total Value Locked:</b>
                                     </p>
-                                    <p>Liquidity: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
+                                    <p>Pool Liquidity: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
                                         "en-US",
                                         {
                                             style: "currency",
                                             currency: "USD",
                                         }
                                     )}</p>
-                                    <p>Platform: ${(totalVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    })}</p>
+                                    <p>Vault Liquidity: ${(totalVaultBalance * priceOfSingleToken).toLocaleString(
+                                        "en-US",
+                                        {
+                                            style: "currency",
+                                            currency: "USD",
+                                        }
+                                    )}</p>
                                     <p>
                                     Share: ${((userVaultBal / totalVaultBalance) * 100).toFixed(2)}%
                                     </p>

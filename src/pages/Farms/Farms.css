@@ -59,12 +59,33 @@
   align-items: center;
 }
 
+.farm__second__title__deposite {
+  width: 110px;
+  text-align: right;
+}
+
+.farm__second__title__apy {
+  width: 65px;
+  text-align: left;
+}
+
 .pools_list {
   display: flex;
   flex-direction: column;
   width: 100%;
   margin-top: 10px;
   margin-bottom: 20px;
+}
+
+@media (max-width: 1440px) { 
+  .farm__second__title__deposite {
+    width: 100px;
+  }
+}
+@media (max-width: 1024px) { 
+  .farm__second__title__deposite {
+    width: 90px;
+  }
 }
 
 @media (max-width: 768px) { 
