@@ -1,51 +1,150 @@
-import coinbaseWalletModule from "@web3-onboard/coinbase";
-import enrkypt from "@web3-onboard/enkrypt";
-import gnosisModule from "@web3-onboard/gnosis";
-import mewWallet from "@web3-onboard/mew-wallet";
-import logo from "src/assets/images/logo-4x.png";
-import injectedModule from "@web3-onboard/injected-wallets";
-import { init } from "@web3-onboard/react";
+import { arbitrum } from "wagmi/chains";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { publicProvider } from "wagmi/providers/public";
+import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
+// import { Web3Auth } from "@web3auth/modal";
+import { Web3AuthCore } from "@web3auth/core";
+import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
+import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
+import { createClient, WagmiConfig, configureChains } from "wagmi";
+import { getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { injectedWallet, rainbowWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 
-const injected = injectedModule();
-const coinbaseWalletSdk = coinbaseWalletModule({ darkMode: true });
-const enrkyptModule = enrkypt();
-const gnosis = gnosisModule();
-const mewWalletModule = mewWallet();
+const clientId = "BNN7bsHpQ9ce3JcedpapbQ06eoYt-tu_yxrQNeH0mjJTXCwZFTClUDjEYWlxdtDP9hVngAi_609tp_M_VNVym9E";
 
-const web3onboard = init({
-    wallets: [injected, coinbaseWalletSdk, enrkyptModule, gnosis, mewWalletModule],
-    chains: [
-        {
-            id: "0xA4B1",
-            token: "ETH",
-            label: "Arbitrum One",
-            rpcUrl: ARBITRUM_MAINNET,
-        },
-    ],
-    appMetadata: {
-        name: "Contrax",
-        icon: logo,
-        logo: logo,
-        description: "Contrax",
-        agreement: {
-            version: "1.0.0",
-            termsUrl: "https://beta.contrax.finance/termsofuse.pdf",
-        },
-    },
-    accountCenter: {
-        desktop: {
-            position: "topRight",
-            enabled: true,
-            minimal: false,
-        },
-        mobile: {
-            position: "topRight",
-            enabled: true,
-            minimal: true,
-        },
+// Configure chains & providers with the Alchemy provider.
+// Popular providers are Alchemy (alchemy.com), Infura (infura.io), Quicknode (quicknode.com) etc.
+export const { chains, provider, webSocketProvider } = configureChains(
+    [arbitrum],
+    [
+        jsonRpcProvider({
+            rpc: (chain) => ({
+                http: ARBITRUM_MAINNET,
+            }),
+        }),
+
+        publicProvider(),
+    ]
+);
+// Instantiating Web3Auth
+const web3AuthInstance = new Web3AuthCore({
+    clientId,
+    chainConfig: {
+        chainNamespace: CHAIN_NAMESPACES.EIP155,
+        chainId: "0x" + chains[0].id.toString(16),
+        rpcTarget: "https://arb1.arbitrum.io/rpc",
+        displayName: chains[0].name,
+        tickerName: chains[0].nativeCurrency?.name,
+        ticker: chains[0].nativeCurrency?.symbol,
+        blockExplorer: "https://arbiscan.io/",
     },
 });
 
-export { web3onboard };
+const openloginAdapter = new OpenloginAdapter({
+    loginSettings: {
+        mfaLevel: "none", // Pass on the mfa level of your choice: default, optional, mandatory, none
+    },
+});
+web3AuthInstance.configureAdapter(openloginAdapter);
+
+const { wallets } = getDefaultWallets({
+    appName: "Contrax",
+    chains,
+});
+
+const connectors = connectorsForWallets([
+    {
+        groupName: "Social",
+        wallets: [
+            {
+                id: "google",
+                name: "Google",
+                iconUrl: "",
+                iconBackground: "magenta",
+                createConnector: () => {
+                    const connector = new Web3AuthConnector({
+                        chains,
+                        options: {
+                            web3AuthInstance,
+                            loginParams: {
+                                loginProvider: "google",
+                            },
+                        },
+                    });
+
+                    return {
+                        connector,
+                    };
+                },
+            },
+            {
+                id: "Facebook",
+                name: "Facebook",
+                iconUrl: "",
+                iconBackground: "blue",
+                createConnector: () => {
+                    const connector = new Web3AuthConnector({
+                        chains,
+                        options: {
+                            web3AuthInstance,
+                            loginParams: {
+                                loginProvider: "facebook",
+                            },
+                        },
+                    });
+
+                    return {
+                        connector,
+                    };
+                },
+            },
+            {
+                id: "github",
+                name: "Github",
+                iconUrl: "",
+                iconBackground: "black",
+                createConnector: () => {
+                    const connector = new Web3AuthConnector({
+                        chains,
+                        options: {
+                            web3AuthInstance,
+                            loginParams: {
+                                loginProvider: "github",
+                            },
+                        },
+                    });
+
+                    return {
+                        connector,
+                    };
+                },
+            },
+        ],
+    },
+    ...wallets,
+]);
+export const wagmiClient = createClient({
+    autoConnect: true,
+    connectors,
+    // connectors: [
+    //     new Web3AuthConnector({
+    //         chains,
+    //         options: {
+    //             web3AuthInstance,
+    //         },
+    //     }),
+    //     new InjectedConnector({
+    //         chains,
+    //         options: {
+    //             name: "Injected",
+    //             shimDisconnect: true,
+    //         },
+    //     }),
+    // ],
+    provider,
+    webSocketProvider,
+});
