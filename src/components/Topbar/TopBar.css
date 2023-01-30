@@ -174,7 +174,7 @@
   .topbar_placement {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
     left: 0;
     padding-top: 10px;
     padding-right: 20px;

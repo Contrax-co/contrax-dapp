@@ -4,7 +4,7 @@ import useVaultBalances from "src/hooks/vaults/useVaultBalances";
 import { Vault } from "src/types";
 import "./VaultItem.css";
 import useVaultTotalSupply from "src/hooks/vaults/useVaultTotalSupply";
-import { findTotalAPY, totalFarmAPY } from "src/utils/common";
+import { totalFarmAPY } from "src/utils/common";
 import useFeeApy from "src/hooks/useFeeApy";
 import useFarmApy from "src/hooks/farms/useFarmApy";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
@@ -35,7 +35,6 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
     const { apy: rewardAPY } = useFarmApy(vault.lp_address);
 
     const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]);
-    const totalAPY = useMemo(() => findTotalAPY(vault.rewards_apy || 0, vault.total_apy || 0, vault.platform), [vault]);
     if (tokenAmount * price >= 0.01)
         return (
             <div className={`vaults`}>
@@ -80,11 +79,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                     <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
                                         APY
                                     </p>
-                                    {!vault.total_apy ? (
-                                        <p> {apyVisionAPY.toFixed(2)}%</p>
-                                    ) : (
-                                        <p> {totalAPY.toFixed(2)}%</p>
-                                    )}
+                                    <p> {apyVisionAPY.toFixed(2)}%</p>
                                 </div>
 
                                 <div className={`vault_items_bottom_categories`}>
