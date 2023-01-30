@@ -85,7 +85,10 @@ function TopBar({ openModal }: any) {
                     </div>
                 </div>
             ) : null}
-            <ConnectButton />
+            <div style={{ flex: 1 }}></div>
+            <div>
+                <ConnectButton />
+            </div>
             {/* 
             {currentWallet ? (
                 <div className={`connect_wallet2 ${lightMode && "connect_wallet2--light"}`}>
