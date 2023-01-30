@@ -7,23 +7,6 @@ import "src/config/walletConfig";
 import { setUpNotifications, NotificationsProvider } from "reapop";
 import Notifications from "./components/Notifications/Notifications";
 
-import { WagmiConfig } from "wagmi";
-import { wagmiClient, chains } from "./config/walletConfig";
-import "@rainbow-me/rainbowkit/styles.css";
-import Logo from "src/assets/images/logo.png";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import WalletDisclaimer from "./components/WalletDisclaimer/WalletDisclaimer";
-
-const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            refetchOnWindowFocus: false,
-        },
-    },
-});
-
 // Configuration for toast notifications
 setUpNotifications({
     defaultProps: {
@@ -37,22 +20,12 @@ setUpNotifications({
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 
 root.render(
-    <QueryClientProvider client={queryClient}>
-        <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider
-                chains={chains}
-                showRecentTransactions={false}
-                appInfo={{ appName: "Contrax", disclaimer: WalletDisclaimer }}
-            >
-                <React.StrictMode>
-                    <NotificationsProvider>
-                        <App />
-                        <Notifications />
-                    </NotificationsProvider>
-                </React.StrictMode>
-            </RainbowKitProvider>
-        </WagmiConfig>
-    </QueryClientProvider>
+    <React.StrictMode>
+        <NotificationsProvider>
+            <App />
+            <Notifications />
+        </NotificationsProvider>
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
