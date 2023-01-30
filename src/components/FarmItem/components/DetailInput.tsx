@@ -158,7 +158,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                             type="number"
                             placeholder="0.0"
                             required
-                            value={amount}
+                            value={amount.toString()}
                             max={maxBalance}
                             onChange={handleInput}
                         />

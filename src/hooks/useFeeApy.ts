@@ -11,7 +11,7 @@ const useFeeApy = (address?: string) => {
 
     const getApy = async () => {
         const res = await axios.get(APY_VISION_STATS_URL + `/pools/${address}?accessToken=${APY_TOKEN}`);
-        return Number(res.data[0]["fee_apys_30d"]) || 0;
+        return Number(res.data[0]["fee_apys_inception"]) || 0;
     };
 
     const {

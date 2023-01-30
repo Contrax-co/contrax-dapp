@@ -104,6 +104,27 @@ const connectors = connectorsForWallets([
                 },
             },
             {
+                id: "discord",
+                name: "Discord",
+                iconUrl: "",
+                iconBackground: "blue",
+                createConnector: () => {
+                    const connector = new Web3AuthConnector({
+                        chains,
+                        options: {
+                            web3AuthInstance,
+                            loginParams: {
+                                loginProvider: "discord",
+                            },
+                        },
+                    });
+
+                    return {
+                        connector,
+                    };
+                },
+            },
+            {
                 id: "github",
                 name: "Github",
                 iconUrl: "",
