@@ -71,7 +71,7 @@ interface IWalletContext {
 export const WalletContext = React.createContext<IWalletContext>({
     currentWallet: "",
     displayAccount: "",
-    connectWallet: () => {},
+    connectWallet: () => Promise<any>,
     networkId: defaultChainId,
     logout: () => {},
     signer: undefined,
@@ -96,6 +96,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const { connectors } = useConnect();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { NETWORK_NAME } = useConstants();
+    const { openConnectModal } = useConnectModal();
 
     // React.useEffect(() => {
     //     const init = async () => {
@@ -156,14 +157,14 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     };
 
     const connectWallet = async () => {
-        // setOpen(true)
-        console.log("connectors", connectors);
+        if (openConnectModal) openConnectModal();
+
+        return false;
         // await connectAsync({
         //     connector: connectors[0],
         //     chainId: defaultChainId,
         // });
     };
-
 
     // async function network() {
     //     const chainId = 42161;
