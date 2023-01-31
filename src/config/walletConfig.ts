@@ -65,8 +65,8 @@ const connectors = connectorsForWallets([
             {
                 id: "google",
                 name: "Google",
-                iconUrl: "",
-                iconBackground: "magenta",
+                iconUrl: "https://www.vectorlogo.zone/logos/google/google-tile.svg",
+                iconBackground: "white",
                 createConnector: () => {
                     const connector = new Web3AuthConnector({
                         chains,
@@ -86,8 +86,8 @@ const connectors = connectorsForWallets([
             {
                 id: "Facebook",
                 name: "Facebook",
-                iconUrl: "",
-                iconBackground: "blue",
+                iconUrl: "https://www.vectorlogo.zone/logos/facebook/facebook-tile.svg",
+                iconBackground: "white",
                 createConnector: () => {
                     const connector = new Web3AuthConnector({
                         chains,
@@ -107,8 +107,8 @@ const connectors = connectorsForWallets([
             {
                 id: "discord",
                 name: "Discord",
-                iconUrl: "",
-                iconBackground: "blue",
+                iconUrl: "https://www.vectorlogo.zone/logos/discordapp/discordapp-tile.svg",
+                iconBackground: "white",
                 createConnector: () => {
                     const connector = new Web3AuthConnector({
                         chains,
@@ -128,8 +128,8 @@ const connectors = connectorsForWallets([
             {
                 id: "github",
                 name: "Github",
-                iconUrl: "",
-                iconBackground: "black",
+                iconUrl: "https://www.vectorlogo.zone/logos/github/github-tile.svg",
+                iconBackground: "white",
                 createConnector: () => {
                     const connector = new Web3AuthConnector({
                         chains,
