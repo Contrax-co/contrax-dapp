@@ -20,6 +20,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import WalletDisclaimer from "./components/WalletDisclaimer/WalletDisclaimer";
+import Test from "./pages/Test/Test";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -48,6 +49,7 @@ function App() {
                                         <Route path="/exchange" element={<Exchange />} />
                                         <Route path="create-token" element={<CreateToken />} />
                                         <Route path="create-pool" element={<CreatePool />} />
+                                        <Route path="test" element={<Test />} />
                                         <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
                                     </Route>
                                 </Routes>
