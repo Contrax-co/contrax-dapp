@@ -64,6 +64,13 @@
   text-align: right;
 }
 
+  .farm__second__title__tvl__desktop {
+    display: block;
+  }
+  .farm__second__title__tvl__mobile {
+    display: none;
+  }
+
 .farm__second__title__apy {
   width: 65px;
   text-align: left;
@@ -103,4 +110,21 @@
   margin-top:5px;
  }
 }
-
+@media (max-width: 650px) { 
+  .farms {
+    padding: 10px;
+  }
+  .farm__second__title__deposite {
+    width: 62px;
+  }
+  .farm__second__title__tvl__desktop {
+    display: none;
+  }
+  .farm__second__title__tvl__mobile {
+    display: block;
+    width: 40px;
+  }
+  .farm__second__title__apy {
+    width: 46px;
+  }
+}

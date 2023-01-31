@@ -53,7 +53,6 @@
   width: 60px;
   height: 60px;
   border-radius: 999px;
-
 }
 
 .logo {
@@ -273,6 +272,29 @@
   line-height: 6px;
 }
 
+@media (max-width: 1440px) {
+  .logo{
+    margin-left: -42px;
+  }
+}
+@media (max-width: 1024px) {
+  .logo{
+    width: 45px;
+    height: 45px;
+    margin-left: -34px;
+  }
+  .logofirst{
+    width: 45px;
+    height: 45px;
+  }
+  .pool_name {
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .tvlLP {
+    font-size: 13px;
+  }
+}
 @media (max-width: 768px) {
 
   .pools {
@@ -282,6 +304,7 @@
   .logo {
     width: 20px;
     height: 20px;
+    margin-left: -5px;
   }
 
   .logofirst {
@@ -297,7 +320,7 @@
   }
 
   .pool_name {
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 800;
   }
 
@@ -334,8 +357,9 @@
 
 
   .pool_name {
+    font-size: 11px;
     margin-bottom: 2px;
-    max-width: 80px;
+    max-width: 88px;
   }
   .tvlLP {
     margin: 0;
