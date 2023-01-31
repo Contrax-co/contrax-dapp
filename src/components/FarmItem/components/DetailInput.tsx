@@ -133,9 +133,9 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     React.useEffect(() => {
         if (max) setAmount(maxBalance);
     }, [max, maxBalance]);
-
+    console.log("theme: ", lightMode);
     return (
-        <div className={styles.container}>
+        <div className={`${styles.container} ${lightMode && styles.container_light}`}>
             {/* Left */}
             <div>
                 <div>Description</div>
@@ -143,7 +143,10 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 <Description farm={farm} shouldUseLp={shouldUseLp} type={type} />
             </div>
             {/* Right */}
-            <form className={styles.inputContainer} onSubmit={handleSubmit}>
+            <form
+                className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
+                onSubmit={handleSubmit}
+            >
                 <div style={{ textAlign: "right" }}>
                     {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
                     {showInUsd && "$ "}
@@ -151,7 +154,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 </div>
                 <div></div>
 
-                <div className={styles.inputWrapper}>
+                <div className={`${styles.inputWrapper} ${lightMode && styles.inputWrapper_light}`}>
                     <div style={{ display: "grid", gridTemplateColumns: "min-content 1fr" }}>
                         <span style={{ marginBottom: 2, opacity: showInUsd ? 1 : 0 }}>$</span>
                         <input
@@ -171,7 +174,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                             <select
                                 value={showInUsd.toString()}
                                 onChange={handleShowInUsdChange}
-                                className={styles.select}
+                                className={`${styles.select} ${lightMode && styles.select_light}`}
                             >
                                 <option value={"false"} className="currency_select">
                                     {shouldUseLp ? farm.name : "ETH"}
