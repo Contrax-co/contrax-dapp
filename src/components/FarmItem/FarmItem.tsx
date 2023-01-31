@@ -121,11 +121,14 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                         {/* Total Liquidity */}
                         <div className={`liquidity_container ${lightMode && "container--light"}`}>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {(totalPlatformBalance * priceOfSingleToken).toLocaleString("en-US", {
-                                    style: "currency",
-                                    currency: "USD",
-                                    maximumFractionDigits: 0,
-                                })}
+                                {(Math.round((totalPlatformBalance * priceOfSingleToken) / 1000) * 1000).toLocaleString(
+                                    "en-US",
+                                    {
+                                        style: "currency",
+                                        currency: "USD",
+                                        maximumFractionDigits: 0,
+                                    }
+                                )}
                             </p>
                             <a
                                 id={key1}
@@ -149,7 +152,7 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                         }
                                     )}</p>
                                     <p>
-                                    Share: ${((userVaultBal / totalVaultBalance) * 100).toFixed(2)}%
+                                    Share: ${((userVaultBal / totalVaultBalance) * 100 || 0).toFixed(2)}%
                                     </p>
                                     `}
                             >
