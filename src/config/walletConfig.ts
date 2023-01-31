@@ -12,7 +12,10 @@ import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { injectedWallet, rainbowWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { WEB3AUTH_CLIENT_ID } from "./constants";
-
+import googleIcon from "./../assets/images/google-logo.svg";
+import facebookIcon from "./../assets/images/facebook-icon.svg";
+import discordIcon from "./../assets/images/discordapp-icon.svg";
+import githubIcon from "./../assets/images/github-icon.svg";
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 
 const clientId = WEB3AUTH_CLIENT_ID as string;
@@ -65,7 +68,7 @@ const connectors = connectorsForWallets([
             {
                 id: "google",
                 name: "Google",
-                iconUrl: "https://www.vectorlogo.zone/logos/google/google-tile.svg",
+                iconUrl: googleIcon,
                 iconBackground: "white",
                 createConnector: () => {
                     const connector = new Web3AuthConnector({
@@ -86,7 +89,7 @@ const connectors = connectorsForWallets([
             {
                 id: "Facebook",
                 name: "Facebook",
-                iconUrl: "https://www.vectorlogo.zone/logos/facebook/facebook-tile.svg",
+                iconUrl: facebookIcon,
                 iconBackground: "white",
                 createConnector: () => {
                     const connector = new Web3AuthConnector({
@@ -107,7 +110,7 @@ const connectors = connectorsForWallets([
             {
                 id: "discord",
                 name: "Discord",
-                iconUrl: "https://www.vectorlogo.zone/logos/discordapp/discordapp-tile.svg",
+                iconUrl: discordIcon,
                 iconBackground: "white",
                 createConnector: () => {
                     const connector = new Web3AuthConnector({
@@ -128,7 +131,7 @@ const connectors = connectorsForWallets([
             {
                 id: "github",
                 name: "Github",
-                iconUrl: "https://www.vectorlogo.zone/logos/github/github-tile.svg",
+                iconUrl: githubIcon,
                 iconBackground: "white",
                 createConnector: () => {
                     const connector = new Web3AuthConnector({
