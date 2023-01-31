@@ -8,14 +8,16 @@ import { useWebSocketProvider } from "wagmi";
 interface IProps {}
 
 const Exchange: React.FC<IProps> = () => {
-    const { connectWallet } = useWallet();
+    const { connectWallet, currentWallet, provider: normalProvider, signer } = useWallet();
     const { lightMode } = useApp();
-    const provider = useWebSocketProvider();
+    // const provider = useWebSocketProvider();
+
     return (
         <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
             <SwapWidget
                 theme={lightMode ? lightTheme : darkTheme}
-                provider={provider}
+                // @ts-ignore
+                provider={signer?.provider}
                 onConnectWalletClick={connectWallet}
             />
         </div>

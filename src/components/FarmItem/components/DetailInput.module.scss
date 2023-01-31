@@ -17,6 +17,9 @@
         padding: 10px;
     }
 }
+.container_light {
+    color: #000;
+}
 
 .inputContainer {
     border: 0.5px solid $border-color;
@@ -32,6 +35,9 @@
         grid-template-columns: 1fr;
         padding: 8px;
     }
+}
+.inputContainer_light{
+    border: 1px solid rgb(210, 232, 239);
 }
 
 .inputWrapper {
@@ -51,6 +57,12 @@
         width: 100%;
     }
 }
+.inputWrapper_light{
+    background-color: rgb(231, 240, 247);
+    & input {
+        color: #000;
+    }
+}
 .maxContainer {
     display: flex;
     align-items: center;
@@ -63,4 +75,13 @@
 }
 .select {
     width: 120px;
+}
+.select_light {
+    background: #fff;
+    color: black;
+    box-shadow: none;
+    border-right: 14px solid transparent;
+    option {
+        background-color: #fff;
+    }
 }
