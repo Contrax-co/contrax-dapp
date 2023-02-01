@@ -135,25 +135,36 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                 data-tooltip-html={`<p>
                                         <b>Total Value Locked:</b>
                                     </p>
-                                    <p>Pool Liquidity: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
-                                        "en-US",
-                                        {
-                                            style: "currency",
-                                            currency: "USD",
-                                            maximumFractionDigits: 0,
-                                        }
-                                    )}</p>
-                                    <p>Vault Liquidity: ${(totalVaultBalance * priceOfSingleToken).toLocaleString(
-                                        "en-US",
-                                        {
-                                            style: "currency",
-                                            currency: "USD",
-                                            maximumFractionDigits: 0,
-                                        }
-                                    )}</p>
-                                    <p>
+                                    ${
+                                        totalPlatformBalance * priceOfSingleToken
+                                            ? `<p>
+                                                Pool Liquidity:
+                                                ${(totalPlatformBalance * priceOfSingleToken).toLocaleString("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                    maximumFractionDigits: 0,
+                                                })}
+                                            </p>`
+                                            : ``
+                                    }
+                                    ${
+                                        totalVaultBalance * priceOfSingleToken
+                                            ? `<p>Vault Liquidity: ${(
+                                                  totalVaultBalance * priceOfSingleToken
+                                              ).toLocaleString("en-US", {
+                                                  style: "currency",
+                                                  currency: "USD",
+                                                  maximumFractionDigits: 0,
+                                              })}</p>`
+                                            : ``
+                                    }
+                                    ${
+                                        (userVaultBal / totalVaultBalance) * 100
+                                            ? `<p>
                                     Share: ${((userVaultBal / totalVaultBalance) * 100 || 0).toFixed(2)}%
-                                    </p>
+                                    </p>`
+                                            : ``
+                                    }
                                     `}
                             >
                                 <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
@@ -176,9 +187,13 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                         data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
-                                        <p>LP Rewards: ${rewardAPY.toFixed(2)}%</p>
-                                        <p>Trading Fees: ${feeAPY.toFixed(2)}%</p>
-                                        <p>Compounding: ${apyVisionCompound.toFixed(2)}%</p>`}
+                                        ${rewardAPY ? `<p>LP Rewards: ${rewardAPY.toFixed(2)}%</p>` : ``}
+                                        ${feeAPY ? `<p>Trading Fees: ${feeAPY.toFixed(2)}%</p>` : ``}
+                                        ${
+                                            apyVisionCompound
+                                                ? `<p>Compounding: ${apyVisionCompound.toFixed(2)}%</p>`
+                                                : ``
+                                        }`}
                                     >
                                         <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
                                     </a>
@@ -194,11 +209,16 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                     </p>
                                     <a
                                         id={key}
-                                        data-tooltip-html={`<p>
-                <b>Base APRs</b>
-            </p>
-            <p>LP Rewards: ${Number(farm.rewards_apy).toFixed(2)}%</p>
-            <p>Compounding: ${compoundAPY.toFixed(2)}%</p>`}
+                                        data-tooltip-html={`
+                                            <p><b>Base APRs</b>
+                                            </p>
+                                            ${
+                                                farm.rewards_apy
+                                                    ? `<p>LP Rewards: ${Number(farm.rewards_apy).toFixed(2)}%</p>`
+                                                    : ``
+                                            }
+                                            ${compoundAPY ? `<p>Compounding: ${compoundAPY.toFixed(2)}%</p>` : ``}
+                                        `}
                                     >
                                         <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
                                     </a>
