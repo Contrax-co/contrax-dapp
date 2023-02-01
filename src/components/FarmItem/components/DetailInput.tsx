@@ -133,7 +133,6 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     React.useEffect(() => {
         if (max) setAmount(maxBalance);
     }, [max, maxBalance]);
-    console.log("theme: ", lightMode);
     return (
         <div className={`${styles.container} ${lightMode && styles.container_light}`}>
             {/* Left */}
