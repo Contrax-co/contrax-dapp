@@ -8,7 +8,7 @@ import Details from "src/components/FarmItem/Details";
 import useApp from "src/hooks/useApp";
 import useWallet from "src/hooks/useWallet";
 import uuid from "react-uuid";
-import { Farm } from "src/types";
+import { Farm, FarmDetails } from "src/types";
 import useFarmsVaultBalances from "src/hooks/farms/useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "src/hooks/farms/useFarmsVaultTotalSupply";
 import { calculateFarmAPY, findCompoundAPY, findTotalAPY, totalFarmAPY } from "src/utils/common";
@@ -20,7 +20,7 @@ import DetailInput from "./components/DetailInput";
 import { FarmTransactionType } from "src/types/enums";
 
 interface Props {
-    farm: Farm;
+    farm: FarmDetails;
 }
 
 const FarmItem: React.FC<Props> = ({ farm }) => {

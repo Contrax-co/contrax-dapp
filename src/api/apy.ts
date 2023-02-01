@@ -80,5 +80,6 @@ export const getApy = async (farm: Farm, chainId: number) => {
         feeApr: 0,
         rewardsApr: 0,
         apy: 0,
+        compounding: 0,
     };
 };

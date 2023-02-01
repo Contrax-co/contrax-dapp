@@ -12,12 +12,12 @@ import useWallet from "../useWallet";
  */
 const useFarmApy = (address: string) => {
     const { NETWORK_NAME, CHAIN_ID } = useConstants();
-    const { currentWallet } = useWallet();
 
     const getApy = async () => {
         const res = await axios.get(
             APY_VISION_URL + `/contractInsights/farmSearch/${CHAIN_ID}/${address}?accessToken=${APY_TOKEN}`
-        );        
+        );
+        // console.log("useFarmApy", address, res);
         return Number(res.data.results[0]["apy30d"]) || 0;
     };
 
@@ -26,8 +26,8 @@ const useFarmApy = (address: string) => {
         refetch,
         isLoading,
         isFetching,
-    } = useQuery(FARM_APY(currentWallet, address, NETWORK_NAME), getApy, {
-        enabled: !!NETWORK_NAME && !!address && !!currentWallet && !!CHAIN_ID,
+    } = useQuery(FARM_APY(address, NETWORK_NAME), getApy, {
+        enabled: !!NETWORK_NAME && !!address && !!CHAIN_ID,
         initialData: 0,
     });
 

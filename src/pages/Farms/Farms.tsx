@@ -1,11 +1,12 @@
 import "./Farms.css";
 import useApp from "src/hooks/useApp";
-import useFarms from "src/hooks/farms/useFarms";
+import useFarms, { useFarmDetails } from "src/hooks/farms/useFarms";
 import FarmItem from "src/components/FarmItem/FarmItem";
 
 function Farms() {
     const { lightMode } = useApp();
     const { farms } = useFarms();
+    const { farmDetails } = useFarmDetails();
 
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>
@@ -23,7 +24,7 @@ function Farms() {
             </div>
 
             <div className="pools_list">
-                {farms.map((farm) => (
+                {farmDetails.map((farm) => (
                     <FarmItem key={farm.id} farm={farm} />
                 ))}
             </div>

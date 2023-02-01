@@ -50,6 +50,20 @@ export interface Farm {
     vault_abi: any;
     lp_abi: any;
 }
+export interface FarmDetails extends Farm {
+    userVaultBal: number;
+    totalVaultBalance: number;
+    totalPlatformBalance: number;
+    priceOfSingleToken: number;
+    apys: Apys;
+}
+
+export interface Apys {
+    feeApr: number;
+    rewardsApr: number;
+    apy: number;
+    compounding: number;
+}
 
 export interface CovalentToken {
     balance: string;
