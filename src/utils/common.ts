@@ -1,3 +1,5 @@
+import { utils } from "ethers";
+
 export const findTotalAPY = (apy: number, totalAPY: number, platform: string) => {
     // Compounded APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
     let rate;
@@ -82,7 +84,12 @@ export const noExponents = (n: number) => {
     return str + z;
 };
 
-
+export const calcCompoundingApy = (rewardsApr: number) => {
+    const period = 365 / 7; // Number of Weeks
+    const rate = rewardsApr / 100;
+    const apy = ((1 + rate / period) ** period - 1) * 100;
+    return apy - rewardsApr;
+};
 
 export function getNetworkName(id: number) {
     switch (id) {
@@ -94,3 +101,11 @@ export function getNetworkName(id: number) {
             return "arbitrum";
     }
 }
+
+export const toWei = (value: string, decimals = 18) => {
+    return utils.parseUnits(value, decimals);
+};
+
+export const toEth = (value: string, decimals = 18) => {
+    return utils.formatUnits(value, decimals);
+};

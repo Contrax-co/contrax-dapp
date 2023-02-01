@@ -2,6 +2,11 @@ import { SUSHUISWAP_GRAPH_URL, SHUSHISWAP_CHEF_GRAPH_URL } from "src/config/cons
 import { FarmOriginPlatform } from "src/types/enums";
 import { Farm } from "src/types";
 import axios from "axios";
+import { coinsLamaPriceByChainId } from "src/config/constants/urls";
+import { addressesByChainId } from "src/config/constants/contracts";
+import { getPrice } from "./token";
+import { BigNumber, utils } from "ethers";
+import { calcCompoundingApy, findCompoundAPY, toEth, totalFarmAPY } from "src/utils/common";
 
 interface GraphResponse {
     apr: string;
@@ -21,64 +26,71 @@ interface ChefResponse {
     }[];
 }
 
-// export const getSushiswapApy = async (pairAddress: string) => {
-//   const res = await axios.get(COINS_LLAMA_PRICE + tokenAddress);
-//   const prices = JSON.stringify(res.data);
-//   const parse = JSON.parse(prices);
+export const getSushiswapApy = async (pairAddress: string, chainId: number) => {
+    const priceOfSushi = await getPrice(addressesByChainId[chainId].sushiAddress, chainId);
 
-//   const price = parse[`coins`][`${NETWORK_NAME}:${tokenAddress}`][`price`];
+    let query = `{
+    pair(id: "${pairAddress}") {
+      name
+      liquidityUSD
+      apr
+      feesUSD
+      id
+    }
+  }`;
+    let res = await axios.post(SUSHUISWAP_GRAPH_URL, { query });
+    let pairData: GraphResponse = res.data.data.pair;
+    query = ` {
+          miniChefs {
+            id
+            sushi
+            sushiPerSecond
+            totalAllocPoint
+            pools(where: {pair: "${pairAddress}"}){
+              allocPoint
+              pair
+            }
+          }
+        }`;
+    res = await axios.post(SHUSHISWAP_CHEF_GRAPH_URL, { query });
+    const chefData: ChefResponse = res.data.data.miniChefs[0];
+    let obj = {
+        allocPoint: Number(chefData.pools[0].allocPoint),
+        totalAllocPoint: Number(chefData.totalAllocPoint),
+        sushiPerSecond: BigNumber.from(chefData.sushiPerSecond),
+        sushiPerDay: BigNumber.from(chefData.sushiPerSecond).mul(60).mul(60).mul(24),
+        feeApr: Number(pairData.apr) * 100,
+        liquidityUSD: Number(pairData.liquidityUSD),
+    };
+    const sushiRewardPerDay = obj.sushiPerDay;
+    const sushiRewardPerYear = sushiRewardPerDay.mul(365);
 
-//     let query = `{
-//     pair(id: "${pairAddress}") {
-//       name
-//       liquidityUSD
-//       apr
-//       feesUSD
-//       id
-//     }
-//   }`;
-//     let res = await axios.post(SUSHUISWAP_GRAPH_URL, { query });
-//     let pairData: GraphResponse = res.data.data.pair;
-//     query = ` {
-//           miniChefs {
-//             id
-//             sushi
-//             sushiPerSecond
-//             totalAllocPoint
-//             pools(where: {pair: "${pairAddress}"}){
-//               allocPoint
-//               pair
-//             }
-//           }
-//         }`;
-//     res = await axios.post(SHUSHISWAP_CHEF_GRAPH_URL, { query });
-//     console.log(res);
-//     const chefData: ChefResponse = res.data.data.miniChefs[0];
-//     let obj = {
-//         allocPoint: BigInt(chefData.pools[0].allocPoint),
-//         totalAllocPoint: BigInt(chefData.totalAllocPoint),
-//         sushiPerSecond: chefData.sushiPerSecond,
-//         sushiPerDay: BigInt(chefData.sushiPerSecond) * BigInt(60) * BigInt(60) * BigInt(24),
-//         feeApr: Number(pairData.apr) * 100,
-//         liquidityUSD: BigInt(Number(pairData.liquidityUSD).toFixed()),
-//     };
-//     const sushiRewardPerDay = (obj.sushiPerDay * obj.allocPoint) / obj.totalAllocPoint;
-//     const sushiRewardPerYearUSD = sushiRewardPerDay * BigInt(365) * BigInt(sushiPrice);
-//     const rewardsApr = sushiRewardPerYearUSD / obj.liquidityUSD;
-//     console.log("rewardsApr", rewardsApr, pairAddress);
+    const sushiRewardPerYearUSD =
+        (Number(toEth(sushiRewardPerYear.toString())) * priceOfSushi * obj.allocPoint) / obj.totalAllocPoint;
 
-//     return {
-//         feeApr: 0,
-//         rewardsApr: 0,
-//         apy: 0,
-//     };
-// };
+    const rewardsApr = (sushiRewardPerYearUSD / obj.liquidityUSD) * 100;
+    const feeApr = obj.feeApr;
+    const compounding = calcCompoundingApy(rewardsApr);
+    const apy = rewardsApr + feeApr + compounding;
+
+    return {
+        feeApr,
+        rewardsApr,
+        apy,
+        compounding,
+    };
+};
 
 export const getApy = async (farm: Farm, chainId: number) => {
-    // getSushiswapApy(farm.lp_address.toLowerCase());
-    return {
-        feeApr: 0,
-        rewardsApr: 0,
-        apy: 0,
-    };
+    switch (farm.originPlatform) {
+        case FarmOriginPlatform.Shushiswap:
+            return getSushiswapApy(farm.lp_address.toLowerCase(), chainId);
+        default:
+            return {
+                feeApr: 0,
+                rewardsApr: 0,
+                apy: 0,
+                compounding: 0,
+            };
+    }
 };
