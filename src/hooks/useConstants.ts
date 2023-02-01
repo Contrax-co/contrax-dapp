@@ -1,5 +1,6 @@
 import { Addresses, addressesByChainId } from "src/config/constants/contracts";
 import { blockExplorersByChainId, coinsLamaPriceByChainId } from "src/config/constants/urls";
+import { getNetworkName } from "src/utils/common";
 import useWallet from "./useWallet";
 
 /**
@@ -16,14 +17,3 @@ const useConstants = () => {
 };
 
 export default useConstants;
-
-function getNetworkName(id: number) {
-    switch (id) {
-        case 42161:
-            return "arbitrum";
-        case 1:
-            return "mainnet";
-        default:
-            return "arbitrum";
-    }
-}

@@ -81,3 +81,16 @@ export const noExponents = (n: number) => {
     while (mag--) z += "0";
     return str + z;
 };
+
+
+
+export function getNetworkName(id: number) {
+    switch (id) {
+        case 42161:
+            return "arbitrum";
+        case 1:
+            return "mainnet";
+        default:
+            return "arbitrum";
+    }
+}

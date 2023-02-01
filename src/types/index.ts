@@ -1,3 +1,5 @@
+import { FarmOriginPlatform } from "./enums";
+
 export interface Vault {
     id: number;
     vault_address: string;
@@ -20,6 +22,7 @@ export interface Vault {
 
 export interface Farm {
     id: number;
+    originPlatform?: FarmOriginPlatform;
     token_type: string;
     name: string;
     platform: string;

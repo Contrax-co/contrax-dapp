@@ -1,6 +1,7 @@
 [
   {
     "id": 8,
+    "originPlatform": "Shushiswap",
     "token_type": "LP Token",
     "name": "Pls-Weth",
     "platform": "Plutus",
@@ -53,6 +54,7 @@
   },
   {
     "id": 1,
+    "originPlatform": "Shushiswap",
     "token_type": "LP Token",
     "name": "WETH-DAI",
     "platform": "SushiSwap",
@@ -78,6 +80,7 @@
   },
   {
     "id": 2,
+    "originPlatform": "Shushiswap",
     "token_type": "LP Token",
     "name": "WETH-USDC",
     "platform": "SushiSwap",
@@ -103,6 +106,7 @@
   },
   {
     "id": 3,
+    "originPlatform": "Shushiswap",
     "token_type": "LP Token",
     "name": "WETH-USDT",
     "platform": "SushiSwap",
@@ -128,6 +132,7 @@
   },
   {
     "id": 4,
+    "originPlatform": "Shushiswap",
     "token_type": "LP Token",
     "name": "WETH-WBTC",
     "platform": "SushiSwap",
