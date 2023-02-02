@@ -8,13 +8,13 @@ import useFarmsPlatformTotalSupply from "./useFarmPlatformBalance";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
 
+const farms = pools as Farm[];
 const useFarms = (): { farms: Farm[] } => {
-    return { farms: pools as Farm[] };
+    return { farms: useMemo(() => farms, [pools]) };
 };
 
 export default useFarms;
 
-const farms = pools as Farm[];
 export const useFarmDetails = (): { farmDetails: FarmDetails[] } => {
     const { CHAIN_ID } = useConstants();
     const [apysArr, setApys] = useState<Apys[]>([]);
@@ -24,11 +24,12 @@ export const useFarmDetails = (): { farmDetails: FarmDetails[] } => {
             .then((res) => setApys(res))
             .catch((err) => console.log(err));
     }, [farms]);
-
+    const ad = useMemo(() => farms.map((farm) => farm.lp_address), [farms]);
     const { formattedBalances } = useFarmsVaultBalances();
     const { formattedSupplies } = useFarmsVaultTotalSupply();
     const { formattedSupplies: platformSupplies } = useFarmsPlatformTotalSupply();
-    const { prices: priceOfSingleToken } = usePriceOfTokens(farms.map((farm) => farm.lp_address));
+    const { prices: priceOfSingleToken } = usePriceOfTokens(ad);
+
     const farmDetails = useMemo(() => {
         return farms.map((farm, index) => ({
             ...farm,
@@ -44,5 +45,9 @@ export const useFarmDetails = (): { farmDetails: FarmDetails[] } => {
             },
         }));
     }, [farms, apysArr, formattedBalances, formattedSupplies, platformSupplies, priceOfSingleToken]);
+    useEffect(() => {
+        console.log("rerender because of priceOfSingleToken");
+    }, [priceOfSingleToken]);
+
     return { farmDetails };
 };
