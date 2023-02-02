@@ -4,9 +4,7 @@ import pools from "src/config/constants/pools.json";
 import { Apys, Farm, FarmDetails } from "src/types";
 import useConstants from "../useConstants";
 import usePriceOfTokens from "../usePriceOfTokens";
-import useFarmApy from "./useFarmApy";
 import useFarmsPlatformTotalSupply from "./useFarmPlatformBalance";
-import useFarmsApy from "./useFarmsApy";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
 
@@ -22,14 +20,15 @@ export const useFarmDetails = (): { farmDetails: FarmDetails[] } => {
     const [apysArr, setApys] = useState<Apys[]>([]);
 
     useEffect(() => {
-        Promise.all(farms.map((farm) => getApy(farm, CHAIN_ID))).then((res) => setApys(res));
+        Promise.all(farms.map((farm) => getApy(farm, CHAIN_ID)))
+            .then((res) => setApys(res))
+            .catch((err) => console.log(err));
     }, [farms]);
 
     const { formattedBalances } = useFarmsVaultBalances();
     const { formattedSupplies } = useFarmsVaultTotalSupply();
     const { formattedSupplies: platformSupplies } = useFarmsPlatformTotalSupply();
     const { prices: priceOfSingleToken } = usePriceOfTokens(farms.map((farm) => farm.lp_address));
-
     const farmDetails = useMemo(() => {
         return farms.map((farm, index) => ({
             ...farm,
@@ -37,8 +36,13 @@ export const useFarmDetails = (): { farmDetails: FarmDetails[] } => {
             totalVaultBalance: formattedSupplies[farm.vault_addr],
             totalPlatformBalance: platformSupplies[farm.lp_address],
             priceOfSingleToken: priceOfSingleToken[farm.lp_address],
-            apys: apysArr[index],
+            apys: apysArr[index] || {
+                feeApr: 0,
+                rewardsApr: 0,
+                apy: 0,
+                compounding: 0,
+            },
         }));
-    }, [farms]);
+    }, [farms, apysArr, formattedBalances, formattedSupplies, platformSupplies, priceOfSingleToken]);
     return { farmDetails };
 };

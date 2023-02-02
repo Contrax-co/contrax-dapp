@@ -1,7 +1,6 @@
 [
   {
     "id": 8,
-    "originPlatform": "Shushiswap",
     "token_type": "LP Token",
     "name": "Pls-Weth",
     "platform": "Plutus",
