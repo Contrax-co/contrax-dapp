@@ -4173,7 +4173,74 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reduxjs/toolkit@npm:^1.6.1":
+"@react-spring/animated@npm:~9.6.1":
+  version: 9.6.1
+  resolution: "@react-spring/animated@npm:9.6.1"
+  dependencies:
+    "@react-spring/shared": ~9.6.1
+    "@react-spring/types": ~9.6.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: fd8b3dbb1ad3195d510888bd7ea2e2790ea4505442b70b19b30c462c2b68f56c9d66febbb7e4fa32a21e31b03c423176f6257879be80b22c0286e56789547ee3
+  languageName: node
+  linkType: hard
+
+"@react-spring/core@npm:~9.6.1":
+  version: 9.6.1
+  resolution: "@react-spring/core@npm:9.6.1"
+  dependencies:
+    "@react-spring/animated": ~9.6.1
+    "@react-spring/rafz": ~9.6.1
+    "@react-spring/shared": ~9.6.1
+    "@react-spring/types": ~9.6.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 7e0aaec8a6f68b3f2399533947cdbf1b2c4f94a6b01eb1d577516af7385cd302d775f1f3f10b838581edd70773d314ba066dbce0b63169b4cf2fd7791acc3d13
+  languageName: node
+  linkType: hard
+
+"@react-spring/rafz@npm:~9.6.1":
+  version: 9.6.1
+  resolution: "@react-spring/rafz@npm:9.6.1"
+  checksum: 3c8967b01ad29d212244a572193b465087104064b043e6bb303e4498e165f73bb8ef20d46af7bcdd351dc3370fb190fcee76a31d80a8b2c09cf04ef976e34556
+  languageName: node
+  linkType: hard
+
+"@react-spring/shared@npm:~9.6.1":
+  version: 9.6.1
+  resolution: "@react-spring/shared@npm:9.6.1"
+  dependencies:
+    "@react-spring/rafz": ~9.6.1
+    "@react-spring/types": ~9.6.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 4e2c905a1804fe0402753ce50fc563faa87dec7b6dd348cc21800c213ce71d77db4e299cf1b9c47a8ee557220b62ee64ac934867c11881b1124b63f59eb4c9f3
+  languageName: node
+  linkType: hard
+
+"@react-spring/types@npm:~9.6.1":
+  version: 9.6.1
+  resolution: "@react-spring/types@npm:9.6.1"
+  checksum: 803dc6c2d67773ee1e5d00d2feac291dad32cf4ca6a790554d6133dd4cd39aeb89b3beea4cc67f91c2d2e4bdbd1a995540dc7fee117138e207a105d255d39c1c
+  languageName: node
+  linkType: hard
+
+"@react-spring/web@npm:^9.5.0":
+  version: 9.6.1
+  resolution: "@react-spring/web@npm:9.6.1"
+  dependencies:
+    "@react-spring/animated": ~9.6.1
+    "@react-spring/core": ~9.6.1
+    "@react-spring/shared": ~9.6.1
+    "@react-spring/types": ~9.6.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 3c336a9d162136c0d1ec8adad31d8534d4309de46eea9fa50f735aa9ea0cd3350320654160ea1fc731ba06a3b4342c508d7b5b9035b7816ab0285f5e952dd118
+  languageName: node
+  linkType: hard
+
+"@reduxjs/toolkit@npm:^1.6.1, @reduxjs/toolkit@npm:^1.8.2":
   version: 1.9.2
   resolution: "@reduxjs/toolkit@npm:1.9.2"
   dependencies:
@@ -4352,6 +4419,45 @@ __metadata:
   version: 3.1.0
   resolution: "@socket.io/component-emitter@npm:3.1.0"
   checksum: db069d95425b419de1514dffe945cc439795f6a8ef5b9465715acf5b8b50798e2c91b8719cbf5434b3fe7de179d6cdcd503c277b7871cb3dd03febb69bdd50fa
+  languageName: node
+  linkType: hard
+
+"@socket.tech/ll-core@npm:^0.1.10, @socket.tech/ll-core@npm:^0.1.14":
+  version: 0.1.26
+  resolution: "@socket.tech/ll-core@npm:0.1.26"
+  checksum: 09b168d8f109f4bb4d1d6961d5c11a798f7d136b0e653c96e9069917b45c76bb563f8bd095179d750c1270ff433eb1dc48a3de32e87c84f7d7ffe905ca3cbc90
+  languageName: node
+  linkType: hard
+
+"@socket.tech/plugin@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@socket.tech/plugin@npm:1.0.3"
+  dependencies:
+    "@react-spring/web": ^9.5.0
+    "@reduxjs/toolkit": ^1.8.2
+    "@socket.tech/ll-core": ^0.1.10
+    "@socket.tech/socket-v2-sdk": ^1.21.3
+    ethers: ^5.6.9
+    react-feather: ^2.0.10
+    react-redux: ^8.0.2
+    swr: ^1.3.0
+  peerDependencies:
+    react: ">=17.0.1"
+    react-dom: ">=17.0.1"
+  checksum: dbd1966c109ca7edd0af50ed5b5341012fb464c3dcea7881bcae449d6d19550c8caef583f0874db8220e00bae354660373dbbd9d837d37d9b88fff85137286b7
+  languageName: node
+  linkType: hard
+
+"@socket.tech/socket-v2-sdk@npm:^1.21.3":
+  version: 1.21.5
+  resolution: "@socket.tech/socket-v2-sdk@npm:1.21.5"
+  dependencies:
+    "@socket.tech/ll-core": ^0.1.14
+    axios: ^0.27.2
+    ethers: ^5.6.5
+    form-data: ^4.0.0
+    tslib: ^2.4.0
+  checksum: 8f49cd4bc02061c08897bf9031f4b097d5a903753750c6623c15b942ad645ddd7119a8cea8166ec6275c1e0d84c493168146156eb3da3bb143245b560db25ab5
   languageName: node
   linkType: hard
 
@@ -8340,6 +8446,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
+  dependencies:
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
+  languageName: node
+  linkType: hard
+
 "axios@npm:^1.1.3":
   version: 1.3.1
   resolution: "axios@npm:1.3.1"
@@ -9738,6 +9854,7 @@ __metadata:
   dependencies:
     "@apollo/client": ^3.7.2
     "@rainbow-me/rainbowkit": ^0.8.1
+    "@socket.tech/plugin": ^1.0.3
     "@tanstack/react-query": ^4.24.4
     "@tanstack/react-query-devtools": ^4.22.0
     "@testing-library/jest-dom": ^5.16.5
@@ -12117,7 +12234,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:5.7.2, ethers@npm:^5.0.15, ethers@npm:^5.3.1, ethers@npm:^5.4.7, ethers@npm:^5.6.1, ethers@npm:^5.7.1, ethers@npm:^5.7.2":
+"ethers@npm:5.7.2, ethers@npm:^5.0.15, ethers@npm:^5.3.1, ethers@npm:^5.4.7, ethers@npm:^5.6.1, ethers@npm:^5.6.5, ethers@npm:^5.6.9, ethers@npm:^5.7.1, ethers@npm:^5.7.2":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
   dependencies:
@@ -12590,7 +12707,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.15.0":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.0":
   version: 1.15.2
   resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:
@@ -18825,7 +18942,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-feather@npm:^2.0.8":
+"react-feather@npm:^2.0.10, react-feather@npm:^2.0.8":
   version: 2.0.10
   resolution: "react-feather@npm:2.0.10"
   dependencies:
@@ -18933,7 +19050,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-redux@npm:>=7.2.2, react-redux@npm:^8.0.5":
+"react-redux@npm:>=7.2.2, react-redux@npm:^8.0.2, react-redux@npm:^8.0.5":
   version: 8.0.5
   resolution: "react-redux@npm:8.0.5"
   dependencies:
@@ -21067,6 +21184,15 @@ __metadata:
     es6-object-assign: ^1.1.0
     promise-polyfill: ^6.0.2
   checksum: 6f15adc82643c1374b70390ca56eca62f07365ca933c6b3722e2f651a19fff810120c2d7547e76de17a2b5da36e31f14d1a12358e69e0548c91b74e5af887bd3
+  languageName: node
+  linkType: hard
+
+"swr@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "swr@npm:1.3.0"
+  peerDependencies:
+    react: ^16.11.0 || ^17.0.0 || ^18.0.0
+  checksum: e7a184f0d560e9c8be85c023cc8e65e56a88a6ed46f9394b301b07f838edca23d2e303685319a4fcd620b81d447a7bcb489c7fa0a752c259f91764903c690cdb
   languageName: node
   linkType: hard
 

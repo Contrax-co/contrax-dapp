@@ -10,6 +10,7 @@ export const defaultChainId = 42161; // Arbitrum
 export const defaultNetworkName = "arbitrum";
 
 export const APY_TOKEN = process.env.REACT_APP_APY_TOKEN;
+export const SOCKET_API_KEY = process.env.REACT_APP_SOCKET_API_KEY;
 export const COVALENT_API_TOKEN = process.env.REACT_APP_COVALENT_API_KEY;
 export const COVALENT_HQ_URL = "https://api.covalenthq.com/v1";
 export const SUSHUISWAP_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/sushi-0m/sushiswap-arbitrum"

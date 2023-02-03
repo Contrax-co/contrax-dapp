@@ -5,6 +5,7 @@
   "dependencies": {
     "@apollo/client": "^3.7.2",
     "@rainbow-me/rainbowkit": "^0.8.1",
+    "@socket.tech/plugin": "^1.0.3",
     "@tanstack/react-query": "^4.24.4",
     "@tanstack/react-query-devtools": "^4.22.0",
     "@testing-library/jest-dom": "^5.16.5",
