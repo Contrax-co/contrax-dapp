@@ -4,19 +4,7 @@ import { defaultChainId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ACCOUNT_BALANCE } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
-import { ARBITRUM_MAINNET } from "src/config/walletConfig";
-import { MetamaskAdapter } from "@web3auth/metamask-adapter";
-import { WalletConnectV1Adapter } from "@web3auth/wallet-connect-v1-adapter";
-import {
-    createClient,
-    WagmiConfig,
-    configureChains,
-    useProvider,
-    useSigner,
-    useAccount,
-    useConnect,
-    useDisconnect,
-} from "wagmi";
+import { useProvider, useSigner, useAccount, useConnect, useDisconnect } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 interface IWalletContext {

@@ -1,9 +1,6 @@
 import React from "react";
-import { SwapWidget, darkTheme, lightTheme } from "@uniswap/widgets";
-import "@uniswap/widgets/fonts.css";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
-import { useWebSocketProvider } from "wagmi";
 import { Bridge } from "@socket.tech/plugin";
 import { defaultChainId, SOCKET_API_KEY } from "src/config/constants";
 
@@ -37,9 +34,8 @@ const lightSocketTheme = {
 };
 
 const Exchange: React.FC<IProps> = () => {
-    const { connectWallet, currentWallet, provider: normalProvider, signer } = useWallet();
+    const { signer } = useWallet();
     const { lightMode } = useApp();
-    // const provider = useWebSocketProvider();
 
     return (
         <div
@@ -53,13 +49,6 @@ const Exchange: React.FC<IProps> = () => {
                 paddingBottom: 20,
             }}
         >
-            {/* <SwapWidget
-                theme={lightMode ? lightTheme : darkTheme}
-                // @ts-ignore
-                provider={signer?.provider}
-                onConnectWalletClick={connectWallet}
-            /> */}
-
             {SOCKET_API_KEY ? (
                 <Bridge
                     provider={signer?.provider}
