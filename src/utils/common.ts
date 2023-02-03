@@ -88,7 +88,8 @@ export const calcCompoundingApy = (rewardsApr: number) => {
     const period = 365 / 7; // Number of Weeks
     const rate = rewardsApr / 100;
     const apy = ((1 + rate / period) ** period - 1) * 100;
-    return apy - rewardsApr;
+    // return apy - rewardsApr;
+    return apy;
 };
 
 export function getNetworkName(id: number) {

@@ -1,6 +1,8 @@
 [
   {
     "id": 1,
+    "originPlatform": "Sushiswap",
+
     "vault_address": "0xF73e52e7185dDE30eC58336bc186f392354bF784",
     "decimals": 18,
     "name": "WETH/DAI",
@@ -16,6 +18,8 @@
   },
   {
     "id": 2,
+    "originPlatform": "Sushiswap",
+
     "vault_address": "0x8C55e9D918B2315Eb3192C2bAFf07C2e9cf55E01",
     "decimals": 18,
     "name": "WETH/USDC",
@@ -31,6 +35,8 @@
   },
   {
     "id": 3,
+    "originPlatform": "Sushiswap",
+
     "vault_address": "0xa7bff08cADebFc239Aa6A127064Af4a05EA61Fcb",
     "dedimals": 18,
     "name": "WETH/USDT",
@@ -46,6 +52,8 @@
   },
   {
     "id": 4,
+    "originPlatform": "Sushiswap",
+
     "vault_address": "0x3043e7675c956EAfcDF006458b296F1fe8B0CA7C",
     "decimals": 18,
     "name": "WETH/WBTC",

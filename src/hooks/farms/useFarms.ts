@@ -4,6 +4,7 @@ import pools from "src/config/constants/pools.json";
 import { Apys, Farm, FarmDetails } from "src/types";
 import useConstants from "../useConstants";
 import usePriceOfTokens from "../usePriceOfTokens";
+import { useFarmApys } from "./useFarmApy";
 import useFarmsPlatformTotalSupply from "./useFarmPlatformBalance";
 import useFarmsVaultBalances from "./useFarmsVaultBalances";
 import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
@@ -16,19 +17,11 @@ const useFarms = (): { farms: Farm[] } => {
 export default useFarms;
 
 export const useFarmDetails = (): { farmDetails: FarmDetails[] } => {
-    const { CHAIN_ID } = useConstants();
-    const [apysArr, setApys] = useState<Apys[]>([]);
-
-    useEffect(() => {
-        Promise.all(farms.map((farm) => getApy(farm, CHAIN_ID)))
-            .then((res) => setApys(res))
-            .catch((err) => console.log(err));
-    }, [farms]);
-    const ad = useMemo(() => farms.map((farm) => farm.lp_address), [farms]);
     const { formattedBalances } = useFarmsVaultBalances();
     const { formattedSupplies } = useFarmsVaultTotalSupply();
     const { formattedSupplies: platformSupplies } = useFarmsPlatformTotalSupply();
-    const { prices: priceOfSingleToken } = usePriceOfTokens(ad);
+    const { prices: priceOfSingleToken } = usePriceOfTokens(farms.map((farm) => farm.lp_address));
+    const { apys } = useFarmApys();
 
     const farmDetails = useMemo(() => {
         return farms.map((farm, index) => ({
@@ -37,17 +30,13 @@ export const useFarmDetails = (): { farmDetails: FarmDetails[] } => {
             totalVaultBalance: formattedSupplies[farm.vault_addr],
             totalPlatformBalance: platformSupplies[farm.lp_address],
             priceOfSingleToken: priceOfSingleToken[farm.lp_address],
-            apys: apysArr[index] || {
-                feeApr: 0,
-                rewardsApr: 0,
-                apy: 0,
-                compounding: 0,
-            },
+            apys: apys[farm.lp_address],
         }));
-    }, [farms, apysArr, formattedBalances, formattedSupplies, platformSupplies, priceOfSingleToken]);
+    }, [farms, apys, formattedBalances, formattedSupplies, platformSupplies, priceOfSingleToken]);
+
     useEffect(() => {
-        console.log("rerender because of priceOfSingleToken");
-    }, [priceOfSingleToken]);
+        console.log("rerender because of farmDetails");
+    }, [farmDetails]);
 
     return { farmDetails };
 };

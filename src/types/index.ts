@@ -2,6 +2,7 @@ import { FarmOriginPlatform } from "./enums";
 
 export interface Vault {
     id: number;
+    originPlatform?: FarmOriginPlatform;
     vault_address: string;
     decimals?: number;
     name: string;

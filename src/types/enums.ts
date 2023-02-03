@@ -3,7 +3,7 @@ export enum FarmTransactionType {
     Withdraw = "Withdraw",
 }
 export enum FarmOriginPlatform {
-    Shushiswap = "Shushiswap",
+    Shushiswap = "Sushiswap",
 }
 export enum FarmTableColumns {
     Deposited = "DEPOSITED",

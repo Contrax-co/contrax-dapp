@@ -1,6 +1,6 @@
 import { SUSHUISWAP_GRAPH_URL, SHUSHISWAP_CHEF_GRAPH_URL } from "src/config/constants/index";
 import { FarmOriginPlatform } from "src/types/enums";
-import { Farm } from "src/types";
+import { Apys, Farm } from "src/types";
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
@@ -81,15 +81,19 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number) => {
     };
 };
 
-export const getApy = async (farm: Farm, chainId: number) => {
+export const getApy = async (
+    farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy">,
+    chainId: number
+): Promise<Apys> => {
+    console.log(farm)
     switch (farm.originPlatform) {
         case FarmOriginPlatform.Shushiswap:
             return getSushiswapApy(farm.lp_address.toLowerCase(), chainId);
         default:
             return {
                 feeApr: 0,
-                rewardsApr: 0,
-                apy: 0,
+                rewardsApr: Number(farm.rewards_apy || 0),
+                apy: Number(farm.total_apy || 0),
                 compounding: 0,
             };
     }
