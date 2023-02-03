@@ -3,6 +3,7 @@
     "id": 9,
     "token_type": "Token",
     "name": "Frax",
+    "stableCoin": true,
     "platform": "Stargate",
     "platform_alt": "Stargate logo",
     "total_apy": 7.75,
@@ -53,6 +54,7 @@
   {
     "id": 7,
     "token_type": "Token",
+    "stableCoin": true,
     "name": "Usdt",
     "platform": "Dodo",
     "platform_alt": "Dodo logo",
@@ -76,6 +78,7 @@
   {
     "id": 6,
     "token_type": "Token",
+    "stableCoin": true,
     "name": "Usdc",
     "platform": "Dodo",
     "platform_alt": "Dodo logo",

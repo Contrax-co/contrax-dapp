@@ -24,19 +24,17 @@ export const useFarmDetails = (): { farmDetails: FarmDetails[] } => {
     const { apys } = useFarmApys();
 
     const farmDetails = useMemo(() => {
-        return farms.map((farm, index) => ({
-            ...farm,
-            userVaultBal: formattedBalances[farm.vault_addr],
-            totalVaultBalance: formattedSupplies[farm.vault_addr],
-            totalPlatformBalance: platformSupplies[farm.lp_address],
-            priceOfSingleToken: priceOfSingleToken[farm.lp_address],
-            apys: apys[farm.lp_address],
-        }));
+        return farms.map((farm, index) => {
+            return {
+                ...farm,
+                userVaultBal: formattedBalances[farm.vault_addr],
+                totalVaultBalance: formattedSupplies[farm.vault_addr],
+                totalPlatformBalance: platformSupplies[farm.lp_address],
+                priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
+                apys: apys[farm.lp_address],
+            };
+        });
     }, [farms, apys, formattedBalances, formattedSupplies, platformSupplies, priceOfSingleToken]);
-
-    useEffect(() => {
-        console.log("rerender because of farmDetails");
-    }, [farmDetails]);
 
     return { farmDetails };
 };

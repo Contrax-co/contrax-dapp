@@ -23,6 +23,7 @@ export interface Vault {
 
 export interface Farm {
     id: number;
+    stableCoin?: boolean;
     originPlatform?: FarmOriginPlatform;
     token_type: string;
     name: string;

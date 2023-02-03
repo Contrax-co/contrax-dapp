@@ -18,9 +18,8 @@ interface Props {
 const FarmItem: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
-    const { userVaultBal, totalVaultBalance, totalPlatformBalance, priceOfSingleToken, apys } = farm;
+    const { userVaultBal, totalVaultBalance, totalPlatformBalance, priceOfSingleToken, apys, name, lp_address } = farm;
     const { compounding, feeApr, rewardsApr, apy } = apys;
-
     const key = uuid();
     const key1 = uuid();
 
