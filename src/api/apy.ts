@@ -5,8 +5,9 @@ import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { getPrice } from "./token";
-import { BigNumber, utils } from "ethers";
+import { BigNumber, utils, providers } from "ethers";
 import { calcCompoundingApy, findCompoundAPY, toEth, totalFarmAPY } from "src/utils/common";
+import { getGmxApyArbitrum } from "./getGmxApy";
 
 interface GraphResponse {
     apr: string;
@@ -83,12 +84,15 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number) => {
 
 export const getApy = async (
     farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy">,
-    chainId: number
+    chainId: number,
+    provider?: providers.Provider,
+    currentWallet?: string
 ): Promise<Apys> => {
-    console.log(farm)
     switch (farm.originPlatform) {
         case FarmOriginPlatform.Shushiswap:
             return getSushiswapApy(farm.lp_address.toLowerCase(), chainId);
+        case FarmOriginPlatform.GMX:
+            return getGmxApyArbitrum(provider, currentWallet);
         default:
             return {
                 feeApr: 0,

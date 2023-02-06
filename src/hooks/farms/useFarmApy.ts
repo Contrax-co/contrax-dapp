@@ -43,12 +43,13 @@ const useFarmApy = (farm: Pick<Farm, "lp_address" | "originPlatform">) => {
 export const useFarmApys = () => {
     const { farms } = useFarms();
     const { NETWORK_NAME, CHAIN_ID } = useConstants();
+    const { provider, currentWallet } = useWallet();
 
     const results = useQueries({
         queries: farms.map((farm) => ({
             // Query key index should be changed in getPrice function as well if changed here
             queryKey: FARM_APY(farm.lp_address, NETWORK_NAME),
-            queryFn: () => getApy(farm, CHAIN_ID),
+            queryFn: () => getApy(farm, CHAIN_ID, provider, currentWallet),
             initialData: {
                 feeApr: 0,
                 rewardsApr: 0,
@@ -66,7 +67,6 @@ export const useFarmApys = () => {
         });
         return obj;
     }, [farms, results]);
-
     const apys = useMemo(() => resulting, [JSON.stringify(resulting)]);
 
     const isFetching = useMemo(() => results.some((result) => result.isFetching), [results]);

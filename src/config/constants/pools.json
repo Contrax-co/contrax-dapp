@@ -103,6 +103,7 @@
   {
     "id": 5,
     "token_type": "Token",
+    "originPlatform": "GMX",
     "name": "GMX",
     "platform": "Gmx",
     "platform_alt": "Gmx logo",
