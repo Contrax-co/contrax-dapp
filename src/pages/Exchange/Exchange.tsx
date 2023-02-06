@@ -105,6 +105,7 @@ const Exchange: React.FC<IProps> = () => {
                         provider={signer?.provider}
                         API_KEY={SOCKET_API_KEY}
                         // enableSameChainSwaps
+                        singleTxOnly
                         enableRefuel
                         includeBridges={[
                             "polygon-bridge",
