@@ -5,16 +5,18 @@ import FarmItem from "src/components/FarmItem/FarmItem";
 import { FarmDetails } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import { useEffect, useState } from "react";
+import PoolButton from "src/components/PoolButton/PoolButton";
 
 function Farms() {
     const { lightMode } = useApp();
-    const { farmDetails: farms } = useFarmDetails();
+    const [tab, setTab] = useState(1);
+    const { farmDetails: farms, normalFarms, advancedFarms } = useFarmDetails();
     const [sortedFarms, setSortedFarms] = useState<FarmDetails[]>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
 
     useEffect(() => {
-        setSortedFarms(farms);
-    }, [farms]);
+        setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
+    }, [farms, tab]);
 
     const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDetails, b: FarmDetails) =>
         (decOrder ? 1 : -1) *
@@ -44,8 +46,8 @@ function Farms() {
 
     const handleSort = (column: FarmTableColumns) => {
         console.log("handleSort");
-        let temp = [...farms];
-        setSortedFarms(temp.sort(dynamicSort(column, decOrder)));
+        // let temp = [...sortedFarms!];
+        setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
         setDecOrder((prev) => !prev);
     };
 
@@ -53,6 +55,10 @@ function Farms() {
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Farms</p>
+            </div>
+            <div className="drop_buttons">
+                <PoolButton variant={2} onClick={() => setTab(1)} description="Normal" active={tab === 1} />
+                <PoolButton variant={2} onClick={() => setTab(2)} description="Advanced" active={tab === 2} />
             </div>
             <div className={`farm__title ${lightMode && "farm__title--light"}`}>
                 <p className={`farm__asset`}>ASSET</p>
@@ -77,7 +83,6 @@ function Farms() {
                     </p>
                 </div>
             </div>
-
             <div className="pools_list">
                 {sortedFarms?.map((farm) => (
                     <FarmItem key={farm.id} farm={farm} />
