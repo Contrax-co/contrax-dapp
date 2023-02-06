@@ -44,7 +44,7 @@ enum Tab {
     Onramp,
 }
 const Exchange: React.FC<IProps> = () => {
-    const { signer, connectWallet } = useWallet();
+    const { signer, currentWallet, connectWallet } = useWallet();
     const { lightMode } = useApp();
     const containerRef = useRef<HTMLDivElement>(null);
     const [tab, setTab] = React.useState<Tab>(Tab.Bridge);
@@ -52,6 +52,10 @@ const Exchange: React.FC<IProps> = () => {
     React.useEffect(() => {
         if (tab === Tab.Onramp) {
             const ramp = new RampInstantSDK({
+                userAddress: currentWallet,
+                defaultAsset: "ARBITRUM_ETH",
+                fiatValue: "500",
+                fiatCurrency: "USD",
                 hostAppName: "Contrax",
                 hostLogoUrl: `https://${window.location.host}/logo.svg`,
                 hostApiKey: "brs8apap5mdgrb5mfdk8pgmhnqxjugpr4nfpzg7f",
@@ -104,6 +108,8 @@ const Exchange: React.FC<IProps> = () => {
                     <Bridge
                         provider={signer?.provider}
                         API_KEY={SOCKET_API_KEY}
+                        defaultSourceToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+                        defaultDestToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
                         // enableSameChainSwaps
                         singleTxOnly
                         enableRefuel
