@@ -10,3 +10,8 @@ export enum FarmTableColumns {
     TotalLiquidity = "TOTAL LIQUIDITY",
     Apy = "APY",
 }
+
+export enum FarmType {
+    normal = "Token",
+    advanced = "LP Token",
+}
