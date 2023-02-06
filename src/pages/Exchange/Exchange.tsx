@@ -52,6 +52,9 @@ const Exchange: React.FC<IProps> = () => {
     React.useEffect(() => {
         if (tab === Tab.Onramp) {
             const ramp = new RampInstantSDK({
+                defaultAsset: "ARBITRUM_ETH",
+                fiatValue: "500",
+                fiatCurrency: "USD",
                 hostAppName: "Contrax",
                 hostLogoUrl: `https://${window.location.host}/logo.svg`,
                 hostApiKey: "brs8apap5mdgrb5mfdk8pgmhnqxjugpr4nfpzg7f",
