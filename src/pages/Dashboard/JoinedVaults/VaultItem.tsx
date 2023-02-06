@@ -30,11 +30,8 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
         prices: { [vault.lp_address]: price },
     } = usePriceOfTokens([vault.lp_address]);
 
-    const { apy: feeAPY } = useFeeApy(vault.lp_address);
+    const { apy, compounding, feeApr, rewardsApr } = useFarmApy(vault);
 
-    const { apy: rewardAPY } = useFarmApy(vault.lp_address);
-
-    const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]);
     if (tokenAmount * price >= 0.01)
         return (
             <div className={`vaults`}>
@@ -79,7 +76,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                     <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
                                         APY
                                     </p>
-                                    <p> {apyVisionAPY.toFixed(2)}%</p>
+                                    <p> {apy.toFixed(2)}%</p>
                                 </div>
 
                                 <div className={`vault_items_bottom_categories`}>

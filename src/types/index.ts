@@ -1,5 +1,8 @@
+import { FarmOriginPlatform } from "./enums";
+
 export interface Vault {
     id: number;
+    originPlatform?: FarmOriginPlatform;
     vault_address: string;
     decimals?: number;
     name: string;
@@ -20,6 +23,8 @@ export interface Vault {
 
 export interface Farm {
     id: number;
+    stableCoin?: boolean;
+    originPlatform?: FarmOriginPlatform;
     token_type: string;
     name: string;
     platform: string;
@@ -46,6 +51,20 @@ export interface Farm {
     vault_addr: string;
     vault_abi: any;
     lp_abi: any;
+}
+export interface FarmDetails extends Farm {
+    userVaultBal: number;
+    totalVaultBalance: number;
+    totalPlatformBalance: number;
+    priceOfSingleToken: number;
+    apys: Apys;
+}
+
+export interface Apys {
+    feeApr: number;
+    rewardsApr: number;
+    apy: number;
+    compounding: number;
 }
 
 export interface CovalentToken {

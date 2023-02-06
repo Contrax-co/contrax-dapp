@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import "./FarmItem.css";
 import PoolButton from "src/components/PoolButton/PoolButton";
@@ -6,58 +6,20 @@ import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
 import Details from "src/components/FarmItem/Details";
 import useApp from "src/hooks/useApp";
-import useWallet from "src/hooks/useWallet";
 import uuid from "react-uuid";
-import { Farm } from "src/types";
-import useFarmsVaultBalances from "src/hooks/farms/useFarmsVaultBalances";
-import useFarmsVaultTotalSupply from "src/hooks/farms/useFarmsVaultTotalSupply";
-import { calculateFarmAPY, findCompoundAPY, findTotalAPY, totalFarmAPY } from "src/utils/common";
-import useFarmApy from "src/hooks/farms/useFarmApy";
-import useFeeApy from "src/hooks/useFeeApy";
-import useFarmsPlatformTotalSupply from "src/hooks/farms/useFarmPlatformBalance";
-import usePriceOfTokens from "src/hooks/usePriceOfTokens";
+import { Farm, FarmDetails } from "src/types";
 import DetailInput from "./components/DetailInput";
 import { FarmTransactionType } from "src/types/enums";
 
 interface Props {
-    farm: Farm;
+    farm: FarmDetails;
 }
 
 const FarmItem: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
-
-    const { formattedBalances } = useFarmsVaultBalances();
-    const userVaultBal = useMemo(() => {
-        return formattedBalances[farm.vault_addr] || 0;
-    }, [formattedBalances, farm]);
-
-    const { formattedSupplies } = useFarmsVaultTotalSupply();
-    const totalVaultBalance = useMemo(() => {
-        return formattedSupplies[farm.vault_addr];
-    }, [formattedSupplies, farm]);
-
-    const { formattedSupplies: platformSupplies } = useFarmsPlatformTotalSupply();
-    const totalPlatformBalance = useMemo(() => {
-        return platformSupplies[farm.lp_address];
-    }, [platformSupplies, farm]);
-
-    const {
-        prices: { [farm.lp_address]: priceOfSingleToken },
-    } = usePriceOfTokens([farm.lp_address]);
-
-    const { apy: rewardAPY } = useFarmApy(farm.lp_address);
-    const { apy: feeAPY } = useFeeApy(farm.lp_address);
-
-    const apyVisionCompound = useMemo(() => calculateFarmAPY(rewardAPY), [rewardAPY]);
-    const compoundAPY = useMemo(
-        () => findCompoundAPY(farm.rewards_apy || 0, farm.total_apy || 0, farm.platform),
-        [farm]
-    );
-
-    const totalAPY = useMemo(() => findTotalAPY(farm.rewards_apy || 0, farm.total_apy || 0, farm.platform), [farm]);
-    const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]);
-
+    const { userVaultBal, totalVaultBalance, totalPlatformBalance, priceOfSingleToken, apys, name, lp_address } = farm;
+    const { compounding, feeApr, rewardsApr, apy } = apys;
     const key = uuid();
     const key1 = uuid();
 
@@ -135,25 +97,36 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                 data-tooltip-html={`<p>
                                         <b>Total Value Locked:</b>
                                     </p>
-                                    <p>Pool Liquidity: ${(totalPlatformBalance * priceOfSingleToken).toLocaleString(
-                                        "en-US",
-                                        {
-                                            style: "currency",
-                                            currency: "USD",
-                                            maximumFractionDigits: 0,
-                                        }
-                                    )}</p>
-                                    <p>Vault Liquidity: ${(totalVaultBalance * priceOfSingleToken).toLocaleString(
-                                        "en-US",
-                                        {
-                                            style: "currency",
-                                            currency: "USD",
-                                            maximumFractionDigits: 0,
-                                        }
-                                    )}</p>
-                                    <p>
+                                    ${
+                                        totalPlatformBalance * priceOfSingleToken
+                                            ? `<p>
+                                                Pool Liquidity:
+                                                ${(totalPlatformBalance * priceOfSingleToken).toLocaleString("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                    maximumFractionDigits: 0,
+                                                })}
+                                            </p>`
+                                            : ``
+                                    }
+                                    ${
+                                        totalVaultBalance * priceOfSingleToken
+                                            ? `<p>Vault Liquidity: ${(
+                                                  totalVaultBalance * priceOfSingleToken
+                                              ).toLocaleString("en-US", {
+                                                  style: "currency",
+                                                  currency: "USD",
+                                                  maximumFractionDigits: 0,
+                                              })}</p>`
+                                            : ``
+                                    }
+                                    ${
+                                        (userVaultBal / totalVaultBalance) * 100
+                                            ? `<p>
                                     Share: ${((userVaultBal / totalVaultBalance) * 100 || 0).toFixed(2)}%
-                                    </p>
+                                    </p>`
+                                            : ``
+                                    }
                                     `}
                             >
                                 <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
@@ -166,48 +139,32 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                         </div>
 
                         <div className={`container1 ${lightMode && "container1--light"}`}>
-                            {!farm.total_apy ? (
-                                <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
-                                    <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                        {apyVisionAPY.toFixed(2)}%
-                                    </p>
-                                    <a
-                                        id={key}
-                                        data-tooltip-html={`<p>
+                            <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
+                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>{apy.toFixed(2)}%</p>
+                                <a
+                                    id={key}
+                                    data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
-                                        <p>LP Rewards: ${rewardAPY.toFixed(2)}%</p>
-                                        <p>Trading Fees: ${feeAPY.toFixed(2)}%</p>
-                                        <p>Compounding: ${apyVisionCompound.toFixed(2)}%</p>`}
-                                    >
-                                        <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                                    </a>
-                                    <Tooltip
-                                        anchorId={key}
-                                        className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
-                                    />
-                                </div>
-                            ) : (
-                                <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
-                                    <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                        {totalAPY.toFixed(2)}%
-                                    </p>
-                                    <a
-                                        id={key}
-                                        data-tooltip-html={`<p>
-                <b>Base APRs</b>
-            </p>
-            <p>LP Rewards: ${Number(farm.rewards_apy).toFixed(2)}%</p>
-            <p>Compounding: ${compoundAPY.toFixed(2)}%</p>`}
-                                    >
-                                        <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                                    </a>
-                                    <Tooltip
-                                        anchorId={key}
-                                        className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
-                                    />
-                                </div>
-                            )}
+                                        ${
+                                            Number(rewardsApr.toFixed(2))
+                                                ? `<p>LP Rewards: ${rewardsApr.toFixed(2)}%</p>`
+                                                : ``
+                                        }
+                                        ${Number(feeApr.toFixed(2)) ? `<p>Trading Fees: ${feeApr.toFixed(2)}%</p>` : ``}
+                                        ${
+                                            Number(compounding.toFixed(2))
+                                                ? `<p>Compounding: ${compounding.toFixed(2)}%</p>`
+                                                : ``
+                                        }`}
+                                >
+                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                                </a>
+                                <Tooltip
+                                    anchorId={key}
+                                    className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                                />
+                            </div>
                         </div>
                     </div>
 

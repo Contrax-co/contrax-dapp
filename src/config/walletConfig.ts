@@ -1,15 +1,12 @@
 import { arbitrum } from "wagmi/chains";
-import { InjectedConnector } from "wagmi/connectors/injected";
 import { publicProvider } from "wagmi/providers/public";
 import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
-// import { Web3Auth } from "@web3auth/modal";
 import { Web3AuthCore } from "@web3auth/core";
-import { CHAIN_NAMESPACES, SafeEventEmitterProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
-import { createClient, WagmiConfig, configureChains } from "wagmi";
+import { createClient, configureChains } from "wagmi";
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { injectedWallet, rainbowWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { WEB3AUTH_CLIENT_ID } from "./constants";
 import googleIcon from "./../assets/images/google-logo.svg";
