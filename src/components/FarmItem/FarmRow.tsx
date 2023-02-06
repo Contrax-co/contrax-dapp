@@ -15,7 +15,7 @@ interface Props {
     farm: FarmDetails;
 }
 
-const FarmItem: React.FC<Props> = ({ farm }) => {
+const FarmRow: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
     const { userVaultBal, totalVaultBalance, totalPlatformBalance, priceOfSingleToken, apys, name, lp_address } = farm;
@@ -24,7 +24,7 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
     const key1 = uuid();
 
     return (
-        <div className={`pools ${lightMode && "pools--light"}`}>
+        <tr className={`pools ${lightMode && "pools--light"}`}>
             <div className="single_pool" key={farm.id} onClick={() => setDropDown(!dropdown)}>
                 <div className="row_items">
                     <div className="title_container">
@@ -123,8 +123,8 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                     ${
                                         (userVaultBal / totalVaultBalance) * 100
                                             ? `<p>
-                                                Share: ${((userVaultBal / totalVaultBalance) * 100 || 0).toFixed(2)}%
-                                                </p>`
+                                    Share: ${((userVaultBal / totalVaultBalance) * 100 || 0).toFixed(2)}%
+                                    </p>`
                                             : ``
                                     }
                                     `}
@@ -167,18 +167,17 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                             </div>
                         </div>
                     </div>
-
                     <div className={`dropdown ${lightMode && "dropdown--light"}`}>
                         {!dropdown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
                     </div>
                 </div>
             </div>
             {dropdown && <DropDownView farm={farm} />}
-        </div>
+        </tr>
     );
 };
 
-export default FarmItem;
+export default FarmRow;
 
 const DropDownView: React.FC<{ farm: FarmDetails }> = ({ farm }) => {
     const { lightMode } = useApp();

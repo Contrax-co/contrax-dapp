@@ -2,6 +2,7 @@ import "./Farms.css";
 import useApp from "src/hooks/useApp";
 import { useFarmDetails } from "src/hooks/farms/useFarms";
 import FarmItem from "src/components/FarmItem/FarmItem";
+import FarmRow from "src/components/FarmItem/FarmRow";
 import { FarmDetails } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import { useEffect, useState } from "react";
@@ -56,10 +57,25 @@ function Farms() {
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Farms</p>
             </div>
-            <div className="drop_buttons">
+            <div className="drop_buttons" style={{ padding: 0, marginBottom: 30 }}>
                 <PoolButton variant={2} onClick={() => setTab(1)} description="Normal" active={tab === 1} />
                 <PoolButton variant={2} onClick={() => setTab(2)} description="Advanced" active={tab === 2} />
             </div>
+            <table style={{ width: "100%" }}>
+                <thead>
+                    <tr>
+                        <th className={`farm_th ${lightMode && "farm__title--light"}`}>ASSET</th>
+                        <th className={`farm_th ${lightMode && "farm__title--light"}`}>DEPOSITED</th>
+                        <th className={`farm_th ${lightMode && "farm__title--light"}`}>TOTAL LIQUIDITY</th>
+                        <th className={`farm_th ${lightMode && "farm__title--light"}`}>APY</th>
+                    </tr>
+                </thead>
+                <tbody className="pools_list">
+                    {sortedFarms?.map((farm) => (
+                        <FarmRow key={farm.id} farm={farm} />
+                    ))}
+                </tbody>
+            </table>
             <div className={`farm__title ${lightMode && "farm__title--light"}`}>
                 <p className={`farm__asset`}>ASSET</p>
                 <div className={`farm__second__title`}>

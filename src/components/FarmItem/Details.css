@@ -84,9 +84,11 @@
 .details_leftside {
   flex: 1;
 }
+.details_section {
+  width: 48%;
+}
 
 .detailed_position {
-  flex: 1;
   color: white;
   background-color: #001428;
   border-radius: 15px;
@@ -97,9 +99,16 @@
   background-color: rgb(231, 240, 247);
 }
 
+.detials_rate{
+  padding: 40px;
+  padding-bottom: 10px;
+}
+
 .details_top_container {
   display: flex;
-  justify-self: space-between;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  row-gap: 16px;
   padding: 40px;
 }
 
@@ -174,5 +183,9 @@
 
   .details_retract_description {
     font-size:15px;
+  }
+
+  .details_section {
+    width: 100%;
   }
 }
