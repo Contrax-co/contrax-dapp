@@ -43,6 +43,15 @@
   color: white;
 }
 
+.farm_th {
+  font-size: 13px;
+  font-weight: bold;
+  padding-left: 30px;
+  padding-right: 30px;
+  color: white;
+  border: none;
+}
+
 .farm__title--light {
   color: black;
 }
