@@ -108,6 +108,8 @@ const Exchange: React.FC<IProps> = () => {
                     <Bridge
                         provider={signer?.provider}
                         API_KEY={SOCKET_API_KEY}
+                        defaultSourceToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+                        defaultDestToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
                         // enableSameChainSwaps
                         singleTxOnly
                         enableRefuel
