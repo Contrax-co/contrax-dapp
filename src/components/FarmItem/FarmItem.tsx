@@ -123,8 +123,8 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
                                     ${
                                         (userVaultBal / totalVaultBalance) * 100
                                             ? `<p>
-                                    Share: ${((userVaultBal / totalVaultBalance) * 100 || 0).toFixed(2)}%
-                                    </p>`
+                                                Share: ${((userVaultBal / totalVaultBalance) * 100 || 0).toFixed(2)}%
+                                                </p>`
                                             : ``
                                     }
                                     `}
@@ -180,7 +180,7 @@ const FarmItem: React.FC<Props> = ({ farm }) => {
 
 export default FarmItem;
 
-const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
+const DropDownView: React.FC<{ farm: FarmDetails }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [tab, setTab] = useState(1);
     const [showMoreDetail, setShowMoreDetail] = useState(false);

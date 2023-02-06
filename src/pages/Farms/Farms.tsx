@@ -56,7 +56,7 @@ function Farms() {
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Farms</p>
             </div>
-            <div className="drop_buttons">
+            <div className="drop_buttons" style={{ padding: 0, marginBottom: 30 }}>
                 <PoolButton variant={2} onClick={() => setTab(1)} description="Normal" active={tab === 1} />
                 <PoolButton variant={2} onClick={() => setTab(2)} description="Advanced" active={tab === 2} />
             </div>
