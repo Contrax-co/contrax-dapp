@@ -44,7 +44,7 @@ enum Tab {
     Onramp,
 }
 const Exchange: React.FC<IProps> = () => {
-    const { signer, connectWallet } = useWallet();
+    const { signer, currentWallet, connectWallet } = useWallet();
     const { lightMode } = useApp();
     const containerRef = useRef<HTMLDivElement>(null);
     const [tab, setTab] = React.useState<Tab>(Tab.Bridge);
@@ -52,6 +52,7 @@ const Exchange: React.FC<IProps> = () => {
     React.useEffect(() => {
         if (tab === Tab.Onramp) {
             const ramp = new RampInstantSDK({
+                userAddress: currentWallet,
                 defaultAsset: "ARBITRUM_ETH",
                 fiatValue: "500",
                 fiatCurrency: "USD",
