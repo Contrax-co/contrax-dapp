@@ -26,7 +26,9 @@ export const { chains, provider, webSocketProvider } = configureChains(
     [
         arbitrum,
         mainnet,
-        // , polygon, optimism, avalanche, gnosis, fantom, bsc
+
+        // polygon,
+        // optimism, avalanche, gnosis, fantom, bsc
     ],
     [
         jsonRpcProvider({

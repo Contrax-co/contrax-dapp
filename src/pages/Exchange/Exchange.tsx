@@ -103,7 +103,7 @@ const Exchange: React.FC<IProps> = () => {
             setProvider(_provider);
             setIsWeb3Auth(true);
         } catch {
-            switchNetworkAsync && (await switchNetworkAsync(chainId));
+            // switchNetworkAsync && (await switchNetworkAsync(chainId));
             setIsWeb3Auth(false);
         }
     };
