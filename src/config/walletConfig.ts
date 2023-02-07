@@ -82,7 +82,7 @@ export async function getWeb3AuthProvider(config: {
 
 const openloginAdapter = new OpenloginAdapter({
     loginSettings: {
-        mfaLevel: "mandatory", // Pass on the mfa level of your choice: default, optional, mandatory, none
+        mfaLevel: "none", // Pass on the mfa level of your choice: default, optional, mandatory, none
     },
     web3AuthNetwork: "cyan",
 });
