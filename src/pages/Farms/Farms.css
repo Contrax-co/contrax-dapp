@@ -43,13 +43,48 @@
   color: white;
 }
 
-.farm_th {
+.farm_table_row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 24px;
+  gap: 20px;
+  padding: 20px 26px;
+  text-align: center;
+  min-height: 10vh;
+}
+.farm_table_header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 24px;
+  gap: 20px;
+  padding: 20px 26px;
+  text-align: center;
+  color: white;
   font-size: 13px;
   font-weight: bold;
-  padding-left: 30px;
-  padding-right: 30px;
-  color: white;
-  border: none;
+}
+.farm_table_header_light {
+  color: black;
+}
+.farm_table_header > p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.farm_table_header span,.farm_table_header svg {
+  cursor: pointer;
+}
+
+.item_asset {
+  text-align: left;
+  justify-content: flex-start !important;
+}
+
+.farm_table_pool {
+  background-color: #012243;
+  border-radius: 20px;
+  margin-bottom: 7px;
+}
+.farm_table_pool_light {
+  background-color: white;
 }
 
 .farm__title--light {
@@ -61,29 +96,7 @@
   align-items: center;
 }
 
-.farm__second__title {
-  flex: 8;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
 
-.farm__second__title__deposite {
-  width: 110px;
-  text-align: right;
-}
-
-  .farm__second__title__tvl__desktop {
-    display: block;
-  }
-  .farm__second__title__tvl__mobile {
-    display: none;
-  }
-
-.farm__second__title__apy {
-  width: 65px;
-  text-align: left;
-}
 
 .pools_list {
   display: flex;
@@ -92,18 +105,6 @@
   margin-top: 10px;
   margin-bottom: 20px;
 }
-
-@media (max-width: 1440px) { 
-  .farm__second__title__deposite {
-    width: 100px;
-  }
-}
-@media (max-width: 1024px) { 
-  .farm__second__title__deposite {
-    width: 90px;
-  }
-}
-
 @media (max-width: 768px) { 
  .farm__title{
   padding-left:10px;
@@ -118,22 +119,13 @@
  .pools_list{
   margin-top:5px;
  }
+
+ .farm_table_row{
+  min-height: 9vh;
+ }
 }
 @media (max-width: 650px) { 
   .farms {
     padding: 10px;
-  }
-  .farm__second__title__deposite {
-    width: 62px;
-  }
-  .farm__second__title__tvl__desktop {
-    display: none;
-  }
-  .farm__second__title__tvl__mobile {
-    display: block;
-    width: 40px;
-  }
-  .farm__second__title__apy {
-    width: 46px;
   }
 }
