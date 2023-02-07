@@ -1,13 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
-import "./FarmItem.css";
+import "./FarmRow.css";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
 import Details from "src/components/FarmItem/Details";
 import useApp from "src/hooks/useApp";
 import uuid from "react-uuid";
-import { Farm, FarmDetails } from "src/types";
+import { FarmDetails } from "src/types";
 import DetailInput from "./components/DetailInput";
 import { FarmTransactionType } from "src/types/enums";
 
@@ -18,132 +18,67 @@ interface Props {
 const FarmRow: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
-    const { userVaultBal, totalVaultBalance, totalPlatformBalance, priceOfSingleToken, apys, name, lp_address } = farm;
+    const { userVaultBal, priceOfSingleToken, apys } = farm;
     const { compounding, feeApr, rewardsApr, apy } = apys;
     const key = uuid();
-    const key1 = uuid();
 
     return (
-        <tr className={`pools ${lightMode && "pools--light"}`}>
-            <div className="single_pool" key={farm.id} onClick={() => setDropDown(!dropdown)}>
-                <div className="row_items">
-                    <div className="title_container">
-                        <div className="pair">
-                            {farm.logo1 ? (
-                                <img
-                                    alt={farm.alt1}
-                                    className={`logofirst ${lightMode && "logofirst--light"}`}
-                                    src={farm.logo1}
-                                />
-                            ) : null}
+        <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
+            <div className="farm_table_row" key={farm.id} onClick={() => setDropDown(!dropdown)}>
+                <div className="title_container">
+                    <div className="pair">
+                        {farm.logo1 ? (
+                            <img
+                                alt={farm.alt1}
+                                className={`logofirst ${lightMode && "logofirst--light"}`}
+                                src={farm.logo1}
+                            />
+                        ) : null}
 
-                            {farm.logo2 ? (
-                                <img
-                                    alt={farm.alt2}
-                                    className={`logo ${lightMode && "logo--light"}`}
-                                    src={farm.logo2}
-                                />
-                            ) : null}
-                        </div>
+                        {farm.logo2 ? (
+                            <img alt={farm.alt2} className={`logo ${lightMode && "logo--light"}`} src={farm.logo2} />
+                        ) : null}
+                    </div>
 
-                        <div>
-                            <div className="pool_title">
-                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>{farm.name}</p>
-                                <div className="rewards_div">
-                                    <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm.platform}</p>
-                                    <img alt={farm.platform_alt} className="rewards_image" src={farm.platform_logo} />
-                                </div>
+                    <div>
+                        <div className="pool_title">
+                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>{farm.name}</p>
+                            <div className="rewards_div">
+                                <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm.platform}</p>
+                                <img alt={farm.platform_alt} className="rewards_image" src={farm.platform_logo} />
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* How much the user has deposited */}
+                {/* How much the user has deposited */}
 
-                    {userVaultBal * priceOfSingleToken < 0.01 ? (
-                        <div className={`container ${lightMode && "container--light"}`}>
-                            <p className={`pool_name ${lightMode && "pool_name--light"}`}></p>
-                            <p className={`tvlLP ${lightMode && "tvlLP--light"}`}></p>
-                        </div>
-                    ) : (
-                        <div className={`container ${lightMode && "container--light"}`}>
-                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {(userVaultBal * priceOfSingleToken).toLocaleString("en-US", {
-                                    style: "currency",
-                                    currency: "USD",
-                                })}
-                            </p>
-                            <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>
-                                {userVaultBal.toFixed(10)}
-                                &nbsp;{farm.name}
-                            </p>
-                        </div>
-                    )}
+                {userVaultBal * priceOfSingleToken < 0.01 ? (
+                    <div className={`container ${lightMode && "container--light"}`}>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}></p>
+                        <p className={`deposited ${lightMode && "deposited--light"}`}></p>
+                    </div>
+                ) : (
+                    <div className={`container ${lightMode && "container--light"}`}>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                            {(userVaultBal * priceOfSingleToken).toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                            })}
+                        </p>
+                        <p className={`deposited ${lightMode && "deposited--light"}`}>
+                            {userVaultBal.toFixed(10)}
+                            &nbsp;{farm.name}
+                        </p>
+                    </div>
+                )}
 
-                    <div className="pool_info">
-                        {/* Total Liquidity */}
-                        <div className={`liquidity_container ${lightMode && "container--light"}`}>
-                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {(Math.round((totalPlatformBalance * priceOfSingleToken) / 1000) * 1000).toLocaleString(
-                                    "en-US",
-                                    {
-                                        style: "currency",
-                                        currency: "USD",
-                                        maximumFractionDigits: 0,
-                                    }
-                                )}
-                            </p>
-                            <a
-                                id={key1}
-                                data-tooltip-html={`<p>
-                                        <b>Total Value Locked:</b>
-                                    </p>
-                                    ${
-                                        totalPlatformBalance * priceOfSingleToken
-                                            ? `<p>
-                                                Pool Liquidity:
-                                                ${(totalPlatformBalance * priceOfSingleToken).toLocaleString("en-US", {
-                                                    style: "currency",
-                                                    currency: "USD",
-                                                    maximumFractionDigits: 0,
-                                                })}
-                                            </p>`
-                                            : ``
-                                    }
-                                    ${
-                                        totalVaultBalance * priceOfSingleToken
-                                            ? `<p>Vault Liquidity: ${(
-                                                  totalVaultBalance * priceOfSingleToken
-                                              ).toLocaleString("en-US", {
-                                                  style: "currency",
-                                                  currency: "USD",
-                                                  maximumFractionDigits: 0,
-                                              })}</p>`
-                                            : ``
-                                    }
-                                    ${
-                                        (userVaultBal / totalVaultBalance) * 100
-                                            ? `<p>
-                                    Share: ${((userVaultBal / totalVaultBalance) * 100 || 0).toFixed(2)}%
-                                    </p>`
-                                            : ``
-                                    }
-                                    `}
-                            >
-                                <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                            </a>
-
-                            <Tooltip
-                                anchorId={key1}
-                                className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
-                            />
-                        </div>
-
-                        <div className={`container1 ${lightMode && "container1--light"}`}>
-                            <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
-                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>{apy.toFixed(2)}%</p>
-                                <a
-                                    id={key}
-                                    data-tooltip-html={`<p>
+                <div className={`container1 ${lightMode && "container1--light"}`}>
+                    <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{apy.toFixed(2)}%</p>
+                        <a
+                            id={key}
+                            data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
                                         ${
@@ -157,23 +92,19 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
                                                 ? `<p>Compounding: ${compounding.toFixed(2)}%</p>`
                                                 : ``
                                         }`}
-                                >
-                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                                </a>
-                                <Tooltip
-                                    anchorId={key}
-                                    className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
-                                />
-                            </div>
-                        </div>
+                        >
+                            <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                        </a>
+                        <Tooltip anchorId={key} className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`} />
                     </div>
-                    <div className={`dropdown ${lightMode && "dropdown--light"}`}>
-                        {!dropdown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
-                    </div>
+                </div>
+
+                <div className={`dropdown ${lightMode && "dropdown--light"}`}>
+                    {!dropdown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
                 </div>
             </div>
             {dropdown && <DropDownView farm={farm} />}
-        </tr>
+        </div>
     );
 };
 
