@@ -1,7 +1,6 @@
 import "./Farms.css";
 import useApp from "src/hooks/useApp";
 import { useFarmDetails } from "src/hooks/farms/useFarms";
-import FarmItem from "src/components/FarmItem/FarmItem";
 import FarmRow from "src/components/FarmItem/FarmRow";
 import { FarmDetails } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
