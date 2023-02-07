@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
-import "./FarmItem.css";
+import "./FarmRow.css";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
