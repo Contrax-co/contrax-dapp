@@ -107,7 +107,6 @@ const Exchange: React.FC<IProps> = () => {
                 return;
             }
             const chain = chains.find((c) => c.id === chainId);
-            console.log("chain", chain, pkey);
             const _provider = await getWeb3AuthProvider({
                 chainId: chain?.id!,
                 blockExplorer: chain?.blockExplorers?.default.url!,
