@@ -43,13 +43,38 @@
   color: white;
 }
 
-.farm_th {
+.farm_table_row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 24px;
+  gap: 20px;
+  padding: 20px 26px;
+  text-align: center;
+  min-height: 10vh;
+}
+.item_asset {
+  text-align: left;
+}
+.farm_table_header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 24px;
+  gap: 20px;
+  padding: 20px 26px;
+  text-align: center;
+  color: white;
   font-size: 13px;
   font-weight: bold;
-  padding-left: 30px;
-  padding-right: 30px;
-  color: white;
-  border: none;
+}
+.farm_table_header_light {
+  color: black;
+}
+
+.farm_table_pool {
+  background-color: #012243;
+  border-radius: 20px;
+  margin-bottom: 7px;
+}
+.farm_table_pool_light {
+  background-color: white;
 }
 
 .farm__title--light {
@@ -117,6 +142,10 @@
 
  .pools_list{
   margin-top:5px;
+ }
+
+ .farm_table_row{
+  min-height: 9vh;
  }
 }
 @media (max-width: 650px) { 

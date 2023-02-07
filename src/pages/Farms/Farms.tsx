@@ -13,6 +13,7 @@ function Farms() {
     const [tab, setTab] = useState(1);
     const { farmDetails: farms, normalFarms, advancedFarms } = useFarmDetails();
     const [sortedFarms, setSortedFarms] = useState<FarmDetails[]>();
+    const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
 
     useEffect(() => {
@@ -61,22 +62,18 @@ function Farms() {
                 <PoolButton variant={2} onClick={() => setTab(1)} description="Normal" active={tab === 1} />
                 <PoolButton variant={2} onClick={() => setTab(2)} description="Advanced" active={tab === 2} />
             </div>
-            <table style={{ width: "100%" }}>
-                <thead>
-                    <tr>
-                        <th className={`farm_th ${lightMode && "farm__title--light"}`}>ASSET</th>
-                        <th className={`farm_th ${lightMode && "farm__title--light"}`}>DEPOSITED</th>
-                        <th className={`farm_th ${lightMode && "farm__title--light"}`}>TOTAL LIQUIDITY</th>
-                        <th className={`farm_th ${lightMode && "farm__title--light"}`}>APY</th>
-                    </tr>
-                </thead>
-                <tbody className="pools_list">
-                    {sortedFarms?.map((farm) => (
-                        <FarmRow key={farm.id} farm={farm} />
-                    ))}
-                </tbody>
-            </table>
-            <div className={`farm__title ${lightMode && "farm__title--light"}`}>
+            <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
+                <p className="item_asset" style={{ marginLeft: 20 }}>
+                    ASSET
+                </p>
+                <p onClick={() => handleSort(FarmTableColumns.Deposited)}>DEPOSITED</p>
+                <p onClick={() => handleSort(FarmTableColumns.Apy)}>APY</p>
+                <p></p>
+            </div>
+            {sortedFarms?.map((farm) => (
+                <FarmRow key={farm.id} farm={farm} />
+            ))}
+            {/* <div className={`farm__title ${lightMode && "farm__title--light"}`}>
                 <p className={`farm__asset`}>ASSET</p>
                 <div className={`farm__second__title`}>
                     <p className="farm__second__title__deposite" onClick={() => handleSort(FarmTableColumns.Deposited)}>
@@ -103,7 +100,7 @@ function Farms() {
                 {sortedFarms?.map((farm) => (
                     <FarmItem key={farm.id} farm={farm} />
                 ))}
-            </div>
+            </div> */}
         </div>
     );
 }
