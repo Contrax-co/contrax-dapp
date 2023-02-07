@@ -161,7 +161,7 @@ const Exchange: React.FC<IProps> = () => {
                     <SwapWidget
                         theme={lightMode ? lightTheme : darkTheme}
                         // @ts-ignore
-                        provider={websocketProvider || wagmiSigner.provider}
+                        provider={websocketProvider || wagmiSigner?.provider}
                         onConnectWalletClick={connectWallet}
                         tokenList={tokenList}
                     />
