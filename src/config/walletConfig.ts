@@ -75,7 +75,6 @@ export async function getWeb3AuthProvider(config: {
             },
         },
     });
-    console.log("PrivateKeyProvider", PrivateKeyProvider, config);
     await PrivateKeyProvider.setupProvider(config.pkey);
     return new providers.Web3Provider(PrivateKeyProvider.provider!);
 }
