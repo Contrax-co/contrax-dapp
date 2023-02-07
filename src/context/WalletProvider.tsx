@@ -4,7 +4,16 @@ import { defaultChainId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ACCOUNT_BALANCE } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
-import { useProvider, useSigner, useAccount, useConnect, useDisconnect } from "wagmi";
+import {
+    useProvider,
+    useSigner,
+    useAccount,
+    useConnect,
+    useDisconnect,
+    useNetwork,
+    useSwitchNetwork,
+    Chain,
+} from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 interface IWalletContext {
@@ -54,6 +63,8 @@ interface IWalletContext {
      * Refetches the balance of the user
      */
     refetchBalance: () => void;
+    switchNetworkAsync: ((chainId_?: number | undefined) => Promise<Chain>) | undefined;
+    chains: Chain[];
 }
 
 export const WalletContext = React.createContext<IWalletContext>({
@@ -67,6 +78,8 @@ export const WalletContext = React.createContext<IWalletContext>({
     balance: 0,
     balanceBigNumber: ethers.BigNumber.from(0),
     refetchBalance: () => {},
+    chains: [],
+    switchNetworkAsync: undefined,
 });
 
 interface IProps {
@@ -76,6 +89,7 @@ interface IProps {
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
 
+    const { switchNetworkAsync, chains } = useSwitchNetwork();
     const { data: signer } = useSigner();
 
     const { address: currentWallet } = useAccount();
@@ -134,6 +148,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 balance,
                 balanceBigNumber,
                 refetchBalance,
+                switchNetworkAsync,
+                chains,
             }}
         >
             {children}
