@@ -6,11 +6,12 @@ import { defaultChainId, SOCKET_API_KEY } from "src/config/constants";
 import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
 
 import PoolButton from "src/components/PoolButton/PoolButton";
-import { SwapWidget, darkTheme, lightTheme } from "@uniswap/widgets";
+import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
 import "@uniswap/widgets/fonts.css";
 import styles from "./Exchange.module.scss";
-import { useSigner } from "wagmi";
+import { useSigner, useWebSocketProvider } from "wagmi";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
+import useFarms from "src/hooks/farms/useFarms";
 
 interface IProps {}
 
@@ -55,8 +56,25 @@ const Exchange: React.FC<IProps> = () => {
     const { lightMode } = useApp();
     const containerRef = useRef<HTMLDivElement>(null);
     const [provider, setProvider] = React.useState<any>();
+    const websocketProvider = useWebSocketProvider();
     const [tab, setTab] = React.useState<Tab>(Tab.Bridge);
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
+    const { farms } = useFarms();
+    const tokenList: TokenInfo[] = React.useMemo(
+        () =>
+            farms.map((farm) => {
+                const obj: TokenInfo = {
+                    address: farm.token1,
+                    chainId: 42161,
+                    decimals: farm.decimals,
+                    name: farm.name.split("-")[0],
+                    symbol: farm.name.split("-")[0],
+                };
+                console.log(obj);
+                return obj;
+            }),
+        [farms]
+    );
 
     React.useEffect(() => {
         if (tab === Tab.Onramp) {
@@ -114,12 +132,6 @@ const Exchange: React.FC<IProps> = () => {
 
     return (
         <div
-            onClick={() => {
-                // @ts-ignore
-                signer?.provider?.provider
-                    ?.request({ method: "eth_private_key" })
-                    .then((res: any) => console.log("pket", res));
-            }}
             style={{
                 paddingTop: 20,
                 overflow: "auto",
@@ -150,8 +162,9 @@ const Exchange: React.FC<IProps> = () => {
                     <SwapWidget
                         theme={lightMode ? lightTheme : darkTheme}
                         // @ts-ignore
-                        provider={signer?.provider}
+                        provider={websocketProvider}
                         onConnectWalletClick={connectWallet}
+                        tokenList={tokenList}
                     />
                 )}
                 {tab === Tab.Bridge && SOCKET_API_KEY && (
