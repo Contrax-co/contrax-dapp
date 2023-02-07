@@ -63,6 +63,7 @@
   display: flex;
   flex: 1.6;
   align-items: center;
+  text-align: left;
 }
 
 .pair {
@@ -131,13 +132,13 @@
   color: black;
 }
 
-.tvlLP {
+.deposited {
   color: lightgrey;
   font-size: 15px;
   font-weight: 600;
 }
 
-.tvlLP--light {
+.deposited--light {
   color: #8798ad;
 }
 
@@ -316,7 +317,7 @@
     font-size: 16px;
     font-weight: 800;
   }
-  .tvlLP {
+  .deposited {
     font-size: 13px;
   }
 }
@@ -358,7 +359,7 @@
     padding: 10px;
   }
 
-  .tvlLP {
+  .deposited {
     font-size: 11px;
     margin-top: 0;
   }
@@ -385,24 +386,10 @@
   .pool_name {
     font-size: 11px;
     margin-bottom: 2px;
-    max-width: 88px;
   }
-  .tvlLP {
+  .deposited {
     margin: 0;
-    max-width: 60px;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .container {
-    max-width: 100px;
-  }
-
-  .container1 {
-    max-width: 100px;
-  }
-
-  .container__apy {
-    max-width: 100px;
   }
 }

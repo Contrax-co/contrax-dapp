@@ -7,7 +7,7 @@ import { Tooltip } from "react-tooltip";
 import Details from "src/components/FarmItem/Details";
 import useApp from "src/hooks/useApp";
 import uuid from "react-uuid";
-import { Farm, FarmDetails } from "src/types";
+import { FarmDetails } from "src/types";
 import DetailInput from "./components/DetailInput";
 import { FarmTransactionType } from "src/types/enums";
 
@@ -18,15 +18,14 @@ interface Props {
 const FarmRow: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
-    const { userVaultBal, totalVaultBalance, totalPlatformBalance, priceOfSingleToken, apys, name, lp_address } = farm;
+    const { userVaultBal, priceOfSingleToken, apys } = farm;
     const { compounding, feeApr, rewardsApr, apy } = apys;
     const key = uuid();
-    const key1 = uuid();
 
     return (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
             <div className="farm_table_row" key={farm.id} onClick={() => setDropDown(!dropdown)}>
-                <div className="title_container item_asset">
+                <div className="title_container">
                     <div className="pair">
                         {farm.logo1 ? (
                             <img
@@ -57,7 +56,7 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
                 {userVaultBal * priceOfSingleToken < 0.01 ? (
                     <div className={`container ${lightMode && "container--light"}`}>
                         <p className={`pool_name ${lightMode && "pool_name--light"}`}></p>
-                        <p className={`tvlLP ${lightMode && "tvlLP--light"}`}></p>
+                        <p className={`deposited ${lightMode && "deposited--light"}`}></p>
                     </div>
                 ) : (
                     <div className={`container ${lightMode && "container--light"}`}>
@@ -67,7 +66,7 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
                                 currency: "USD",
                             })}
                         </p>
-                        <p className={`tvlLP ${lightMode && "tvlLP--light"}`}>
+                        <p className={`deposited ${lightMode && "deposited--light"}`}>
                             {userVaultBal.toFixed(10)}
                             &nbsp;{farm.name}
                         </p>

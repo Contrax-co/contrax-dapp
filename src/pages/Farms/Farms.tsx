@@ -7,6 +7,7 @@ import { FarmDetails } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import { useEffect, useState } from "react";
 import PoolButton from "src/components/PoolButton/PoolButton";
+import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 
 function Farms() {
     const { lightMode } = useApp();
@@ -48,9 +49,19 @@ function Farms() {
 
     const handleSort = (column: FarmTableColumns) => {
         console.log("handleSort");
-        // let temp = [...sortedFarms!];
-        setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
-        setDecOrder((prev) => !prev);
+        if (sortedBuy === undefined) {
+            setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
+            setSortedBuy(column);
+            setDecOrder((prev) => !prev);
+            return;
+        }
+        if (column === sortedBuy) {
+            setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
+            setDecOrder((prev) => !prev);
+        } else {
+            setSortedFarms((prev) => prev?.sort(dynamicSort(column, !decOrder)));
+            setSortedBuy(column);
+        }
     };
 
     return (
@@ -66,41 +77,31 @@ function Farms() {
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     ASSET
                 </p>
-                <p onClick={() => handleSort(FarmTableColumns.Deposited)}>DEPOSITED</p>
-                <p onClick={() => handleSort(FarmTableColumns.Apy)}>APY</p>
+                <p onClick={() => handleSort(FarmTableColumns.Deposited)}>
+                    <span>DEPOSITED</span>
+                    {sortedBuy === FarmTableColumns.Deposited ? (
+                        decOrder ? (
+                            <RiArrowDownSLine fontSize={21} />
+                        ) : (
+                            <RiArrowUpSLine fontSize={21} />
+                        )
+                    ) : null}
+                </p>
+                <p onClick={() => handleSort(FarmTableColumns.Apy)}>
+                    <span>APY</span>
+                    {sortedBuy === FarmTableColumns.Apy ? (
+                        decOrder ? (
+                            <RiArrowDownSLine fontSize={21} />
+                        ) : (
+                            <RiArrowUpSLine fontSize={21} />
+                        )
+                    ) : null}
+                </p>
                 <p></p>
             </div>
             {sortedFarms?.map((farm) => (
                 <FarmRow key={farm.id} farm={farm} />
             ))}
-            {/* <div className={`farm__title ${lightMode && "farm__title--light"}`}>
-                <p className={`farm__asset`}>ASSET</p>
-                <div className={`farm__second__title`}>
-                    <p className="farm__second__title__deposite" onClick={() => handleSort(FarmTableColumns.Deposited)}>
-                        DEPOSITED
-                    </p>
-                    <p
-                        className="farm__second__title__tvl__desktop"
-                        onClick={() => handleSort(FarmTableColumns.TotalLiquidity)}
-                    >
-                        TOTAL LIQUIDITY
-                    </p>
-                    <p
-                        className="farm__second__title__tvl__mobile"
-                        onClick={() => handleSort(FarmTableColumns.TotalLiquidity)}
-                    >
-                        TVL
-                    </p>
-                    <p className="farm__second__title__apy" onClick={() => handleSort(FarmTableColumns.Apy)}>
-                        APY
-                    </p>
-                </div>
-            </div>
-            <div className="pools_list">
-                {sortedFarms?.map((farm) => (
-                    <FarmItem key={farm.id} farm={farm} />
-                ))}
-            </div> */}
         </div>
     );
 }
