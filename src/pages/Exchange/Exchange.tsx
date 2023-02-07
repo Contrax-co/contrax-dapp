@@ -47,7 +47,7 @@ enum Tab {
     Onramp,
 }
 const Exchange: React.FC<IProps> = () => {
-    const { currentWallet, connectWallet, chains, switchNetworkAsync } = useWallet();
+    const { currentWallet, connectWallet, chains, switchNetworkAsync, signer: wagmiSigner } = useWallet();
     const [chainId, setChainId] = React.useState<number>(1);
     const { data: signer } = useSigner({
         chainId,
@@ -75,7 +75,6 @@ const Exchange: React.FC<IProps> = () => {
             }),
         [farms]
     );
-
     React.useEffect(() => {
         if (tab === Tab.Onramp) {
             const ramp = new RampInstantSDK({
@@ -162,7 +161,7 @@ const Exchange: React.FC<IProps> = () => {
                     <SwapWidget
                         theme={lightMode ? lightTheme : darkTheme}
                         // @ts-ignore
-                        provider={websocketProvider}
+                        provider={websocketProvider || wagmiSigner.provider}
                         onConnectWalletClick={connectWallet}
                         tokenList={tokenList}
                     />
