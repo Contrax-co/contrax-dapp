@@ -5,7 +5,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 30px;
-    color: #fff;
+    color: $color-white;
     gap: 20px;
 
     @include devices(desktop) {
@@ -18,7 +18,7 @@
     }
 }
 .container_light {
-    color: #000;
+    color: $color-black;
 }
 
 .inputContainer {
@@ -37,11 +37,11 @@
     }
 }
 .inputContainer_light{
-    border: 1px solid rgb(210, 232, 239);
+    border: 1px solid $border-color-light;
 }
 
 .inputWrapper {
-    background-color: $background-dark;
+    background-color: $background-primary;
     border-radius: 10px;
     padding: 5px 10px;
     display: flex;
@@ -60,7 +60,7 @@
 .inputWrapper_light{
     background-color: rgb(231, 240, 247);
     & input {
-        color: #000;
+        color: $color-black;
     }
 }
 .maxContainer {
@@ -77,11 +77,11 @@
     width: 120px;
 }
 .select_light {
-    background: #fff;
+    background: $color-white;
     color: black;
     box-shadow: none;
     border-right: 14px solid transparent;
     option {
-        background-color: #fff;
+        background-color: $color-white;
     }
 }
