@@ -9,7 +9,7 @@ export enum FarmOriginPlatform {
 export enum FarmTableColumns {
     Token = "TOKEN",
     Deposited = "DEPOSITED",
-    GrowthPercentage = "GROWTH PERCENTAGE",
+    GrowthPercentage = "GROWTH %",
 }
 
 export enum FarmType {
