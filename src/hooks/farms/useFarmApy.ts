@@ -16,13 +16,14 @@ import useFarms from "./useFarms";
  */
 const useFarmApy = (farm: Pick<Farm, "lp_address" | "originPlatform">) => {
     const { NETWORK_NAME, CHAIN_ID } = useConstants();
+    const { provider } = useWallet();
 
     const {
         data: apy,
         refetch,
         isLoading,
         isFetching,
-    } = useQuery(FARM_APY(farm.lp_address, NETWORK_NAME), () => getApy(farm, CHAIN_ID), {
+    } = useQuery(FARM_APY(farm.lp_address, NETWORK_NAME), () => getApy(farm, CHAIN_ID, provider), {
         enabled: !!NETWORK_NAME && !!farm.lp_address && !!CHAIN_ID,
         initialData: {
             feeApr: 0,

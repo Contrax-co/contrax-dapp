@@ -83,8 +83,16 @@
   border-radius: 20px;
   margin-bottom: 7px;
 }
+.farm_table_pool:hover {
+  background-color: #032a51;
+  cursor: pointer;
+}
 .farm_table_pool_light {
   background-color: white;
+}
+.farm_table_pool_light:hover {
+  background-color: white;
+  cursor: pointer;
 }
 
 .farm__title--light {
@@ -96,8 +104,6 @@
   align-items: center;
 }
 
-
-
 .pools_list {
   display: flex;
   flex-direction: column;
@@ -105,6 +111,25 @@
   margin-top: 10px;
   margin-bottom: 20px;
 }
+
+.change_network_section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 90px 24px;
+  text-align: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  font-style: italic;
+  background-color: #01224377;
+  border-radius: 20px;
+}
+.change_network_section_light {
+  color: #8798ad;
+  background-color: white;
+}
+
 @media (max-width: 768px) { 
  .farm__title{
   padding-left:10px;

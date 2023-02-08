@@ -5,7 +5,8 @@ import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { getPrice } from "./token";
-import { BigNumber, utils, providers } from "ethers";
+import { BigNumber, utils, providers, Contract } from "ethers";
+import { erc20ABI } from "wagmi";
 import { calcCompoundingApy, findCompoundAPY, toEth, totalFarmAPY } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
 
@@ -24,10 +25,16 @@ interface ChefResponse {
     pools: {
         allocPoint: string;
         pair: string;
+        rewarder: {
+            id: string;
+            rewardToken: string;
+            rewardPerSecond: string;
+            totalAllocPoint: string;
+        };
     }[];
 }
 
-export const getSushiswapApy = async (pairAddress: string, chainId: number) => {
+export const getSushiswapApy = async (pairAddress: string, chainId: number, provider: providers.Provider) => {
     const priceOfSushi = await getPrice(addressesByChainId[chainId].sushiAddress, chainId);
 
     let query = `{
@@ -50,6 +57,12 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number) => {
             pools(where: {pair: "${pairAddress}"}){
               allocPoint
               pair
+              rewarder{
+                id
+                rewardToken
+                rewardPerSecond
+                totalAllocPoint
+              }
             }
           }
         }`;
@@ -68,11 +81,28 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number) => {
 
     const sushiRewardPerYearUSD =
         (Number(toEth(sushiRewardPerYear.toString())) * priceOfSushi * obj.allocPoint) / obj.totalAllocPoint;
-
-    const rewardsApr = (sushiRewardPerYearUSD / obj.liquidityUSD) * 100;
+    let rewardsApr = (sushiRewardPerYearUSD / obj.liquidityUSD) * 100;
+    if (Number(chefData.pools[0].rewarder.id) !== 0) {
+        const rewarder = chefData.pools[0].rewarder;
+        const rewardTokenContract = new Contract(pairAddress, erc20ABI, provider);
+        const rewardTokenPrice = await getPrice(rewarder.rewardToken, chainId);
+        const balance = await rewardTokenContract.balanceOf(chefData.id);
+        const decimals = await rewardTokenContract.decimals();
+        const totalSupply = await rewardTokenContract.totalSupply();
+        const stakedLiquidityUSD =
+            (Number(toEth(balance, decimals)) * obj.liquidityUSD) / Number(toEth(totalSupply, decimals));
+        const rewardPerSecond = BigNumber.from(rewarder.rewardPerSecond);
+        const rewardPerDay = rewardPerSecond.mul(60).mul(60).mul(24);
+        const rewardPerYear = rewardPerDay.mul(365);
+        const rewardPerYearUSD = Number(toEth(rewardPerYear.toString(), decimals)) * rewardTokenPrice;
+        const rewarderApr = (rewardPerYearUSD / stakedLiquidityUSD) * 100;
+        console.log(rewarderApr);
+        rewardsApr += rewarderApr;
+    }
     const feeApr = obj.feeApr;
     const compounding = calcCompoundingApy(rewardsApr);
-    const apy = rewardsApr + feeApr + compounding;
+
+    const apy = feeApr + compounding; // RewardsApr is included in compounding
 
     return {
         feeApr,
@@ -85,12 +115,12 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number) => {
 export const getApy = async (
     farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy">,
     chainId: number,
-    provider?: providers.Provider,
+    provider: providers.Provider,
     currentWallet?: string
 ): Promise<Apys> => {
     switch (farm.originPlatform) {
         case FarmOriginPlatform.Shushiswap:
-            return getSushiswapApy(farm.lp_address.toLowerCase(), chainId);
+            return getSushiswapApy(farm.lp_address.toLowerCase(), chainId, provider);
         case FarmOriginPlatform.GMX:
             return getGmxApyArbitrum(provider, currentWallet);
         default:
