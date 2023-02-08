@@ -7,10 +7,13 @@ import { FarmTableColumns } from "src/types/enums";
 import { useEffect, useState } from "react";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
+import useWallet from "src/hooks/useWallet";
+import { defaultChainId } from "src/config/constants";
 
 function Farms() {
     const { lightMode } = useApp();
     const [tab, setTab] = useState(1);
+    const { networkId, signer } = useWallet();
     const { farmDetails: farms, normalFarms, advancedFarms } = useFarmDetails();
     const [sortedFarms, setSortedFarms] = useState<FarmDetails[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
@@ -98,9 +101,13 @@ function Farms() {
                 </p>
                 <p></p>
             </div>
-            {sortedFarms?.map((farm) => (
-                <FarmRow key={farm.id} farm={farm} />
-            ))}
+            {networkId === defaultChainId ? (
+                sortedFarms?.map((farm) => <FarmRow key={farm.id} farm={farm} />)
+            ) : (
+                <div className={`change_network_section ${lightMode && "change_network_section_light"}`}>
+                    <p>Please change network to Arbitrum to use the farms</p>
+                </div>
+            )}
         </div>
     );
 }

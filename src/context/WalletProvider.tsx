@@ -139,7 +139,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         if (chain) {
             setNetworkId(chain.id);
         }
-    }, [chain, currentWallet]);
+        if (!currentWallet) {
+            setNetworkId(defaultChainId);
+        }
+    }, [chain]);
 
     return (
         <WalletContext.Provider
