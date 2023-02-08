@@ -96,7 +96,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const { disconnect } = useDisconnect();
     const { connectors } = useConnect();
     const { chain } = useNetwork();
-    const [networkId, setNetworkId] = React.useState<number>(defaultChainId);    
+    const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { NETWORK_NAME } = useConstants();
     const { openConnectModal } = useConnectModal();
 
@@ -139,6 +139,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     React.useEffect(() => {
         if (chain) {
             setNetworkId(chain.id);
+        }
+        if (!currentWallet) {
+            setNetworkId(defaultChainId);
         }
     }, [chain]);
 
