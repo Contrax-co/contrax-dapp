@@ -95,7 +95,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const { address: currentWallet } = useAccount();
     const { disconnect } = useDisconnect();
     const { connectors } = useConnect();
-    const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
+    const { chain } = useNetwork();
+    const [networkId, setNetworkId] = React.useState<number>(defaultChainId);    
     const { NETWORK_NAME } = useConstants();
     const { openConnectModal } = useConnectModal();
 
@@ -134,6 +135,13 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     );
 
     const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
+
+    React.useEffect(() => {
+        if (chain) {
+            setNetworkId(chain.id);
+        }
+    }, [chain]);
+
     return (
         <WalletContext.Provider
             value={{
