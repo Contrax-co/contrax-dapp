@@ -1,4 +1,4 @@
-import { utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 
 export const findTotalAPY = (apy: number, totalAPY: number, platform: string) => {
     // Compounded APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
@@ -107,6 +107,6 @@ export const toWei = (value: string, decimals = 18) => {
     return utils.parseUnits(value, decimals);
 };
 
-export const toEth = (value: string, decimals = 18) => {
+export const toEth = (value: string | BigNumber, decimals = 18) => {
     return utils.formatUnits(value, decimals);
 };

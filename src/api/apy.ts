@@ -96,7 +96,6 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
         const rewardPerYear = rewardPerDay.mul(365);
         const rewardPerYearUSD = Number(toEth(rewardPerYear.toString(), decimals)) * rewardTokenPrice;
         const rewarderApr = (rewardPerYearUSD / stakedLiquidityUSD) * 100;
-        console.log(rewarderApr);
         rewardsApr += rewarderApr;
     }
     const feeApr = obj.feeApr;

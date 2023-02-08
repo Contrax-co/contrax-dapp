@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import useDeposit from "src/hooks/farms/useDeposit";
 import useWithdraw from "src/hooks/farms/useWithdraw";
@@ -12,6 +13,7 @@ import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
 import { validateNumberDecimals } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
+import farmFunctions from "src/api/pools";
 
 interface Props {
     farm: Farm;
@@ -21,7 +23,7 @@ interface Props {
 
 const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { lightMode } = useApp();
-    const { balance: ethUserBal } = useWallet();
+    const { balance: ethUserBal, balanceBigNumber, provider, currentWallet } = useWallet();
     const { price: ethPrice } = useEthPrice();
     const [amount, setAmount] = React.useState(0.0);
     const [showInUsd, setShowInUsd] = React.useState(true);
@@ -31,6 +33,15 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
     const [max, setMax] = React.useState(false);
 
+    const { data } = useQuery(
+        ["farm", farm.id, currentWallet, balanceBigNumber.toString()],
+        () => farmFunctions[farm.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
+        {
+            enabled: !!currentWallet && !!provider && !!farm,
+        }
+    );
+
+    console.log("farm", farm.name, data);
     const {
         prices: { [farm.lp_address]: tokenPrice },
     } = usePriceOfTokens([farm.lp_address]);
@@ -133,6 +144,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     React.useEffect(() => {
         if (max) setAmount(maxBalance);
     }, [max, maxBalance]);
+
     return (
         <div className={`${styles.container} ${lightMode && styles.container_light}`}>
             {/* Left */}
