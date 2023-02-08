@@ -4,7 +4,16 @@ import { defaultChainId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ACCOUNT_BALANCE } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
-import { useProvider, useSigner, useAccount, useConnect, useDisconnect } from "wagmi";
+import {
+    useProvider,
+    useSigner,
+    useAccount,
+    useConnect,
+    useDisconnect,
+    useNetwork,
+    useSwitchNetwork,
+    Chain,
+} from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 interface IWalletContext {
@@ -35,7 +44,7 @@ interface IWalletContext {
      */
     logout: () => void;
     signer?: ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer;
-    provider?:
+    provider:
         | ethers.ethers.providers.Web3Provider
         | ethers.ethers.providers.JsonRpcProvider
         | ethers.ethers.providers.Provider;
@@ -54,20 +63,23 @@ interface IWalletContext {
      * Refetches the balance of the user
      */
     refetchBalance: () => void;
+    switchNetworkAsync: ((chainId_?: number | undefined) => Promise<Chain>) | undefined;
+    chains: Chain[];
 }
 
 export const WalletContext = React.createContext<IWalletContext>({
-    currentWallet: "",
-    displayAccount: "",
-    connectWallet: () => Promise<any>,
-    networkId: defaultChainId,
-    logout: () => {},
-    signer: undefined,
-    provider: undefined,
-    balance: 0,
-    balanceBigNumber: ethers.BigNumber.from(0),
-    refetchBalance: () => {},
-});
+    // currentWallet: "",
+    // displayAccount: "",
+    // connectWallet: () => Promise<any>,
+    // networkId: defaultChainId,
+    // logout: () => {},
+    // signer: undefined,
+    // balance: 0,
+    // balanceBigNumber: ethers.BigNumber.from(0),
+    // refetchBalance: () => {},
+    // chains: [],
+    // switchNetworkAsync: undefined,
+} as IWalletContext);
 
 interface IProps {
     children: React.ReactNode;
@@ -76,11 +88,13 @@ interface IProps {
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
 
+    const { switchNetworkAsync, chains } = useSwitchNetwork();
     const { data: signer } = useSigner();
 
     const { address: currentWallet } = useAccount();
     const { disconnect } = useDisconnect();
     const { connectors } = useConnect();
+    const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { NETWORK_NAME } = useConstants();
     const { openConnectModal } = useConnectModal();
@@ -120,6 +134,16 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     );
 
     const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
+
+    React.useEffect(() => {
+        if (chain) {
+            setNetworkId(chain.id);
+        }
+        if (!currentWallet) {
+            setNetworkId(defaultChainId);
+        }
+    }, [chain]);
+
     return (
         <WalletContext.Provider
             value={{
@@ -134,6 +158,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 balance,
                 balanceBigNumber,
                 refetchBalance,
+                switchNetworkAsync,
+                chains,
             }}
         >
             {children}

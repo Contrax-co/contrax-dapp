@@ -4,11 +4,14 @@ import useApp from "src/hooks/useApp";
 import { Bridge } from "@socket.tech/plugin";
 import { defaultChainId, SOCKET_API_KEY } from "src/config/constants";
 import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
-import Logo from "src/assets/images/logo.png";
+
 import PoolButton from "src/components/PoolButton/PoolButton";
-import { SwapWidget, darkTheme, lightTheme } from "@uniswap/widgets";
+import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
 import "@uniswap/widgets/fonts.css";
 import styles from "./Exchange.module.scss";
+import { useSigner, useWebSocketProvider } from "wagmi";
+import { getWeb3AuthProvider } from "src/config/walletConfig";
+import useFarms from "src/hooks/farms/useFarms";
 
 interface IProps {}
 
@@ -44,14 +47,41 @@ enum Tab {
     Onramp,
 }
 const Exchange: React.FC<IProps> = () => {
-    const { signer, connectWallet } = useWallet();
+    const { currentWallet, connectWallet, chains, switchNetworkAsync, signer: wagmiSigner } = useWallet();
+    const [chainId, setChainId] = React.useState<number>(1);
+    const { data: signer } = useSigner({
+        chainId,
+    });
+
     const { lightMode } = useApp();
     const containerRef = useRef<HTMLDivElement>(null);
+    const [provider, setProvider] = React.useState<any>();
+    const websocketProvider = useWebSocketProvider();
     const [tab, setTab] = React.useState<Tab>(Tab.Bridge);
-
+    const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
+    const { farms } = useFarms();
+    const tokenList: TokenInfo[] = React.useMemo(
+        () =>
+            farms.map((farm) => {
+                const obj: TokenInfo = {
+                    address: farm.token1,
+                    chainId: 42161,
+                    decimals: farm.decimals,
+                    name: farm.name.split("-")[0],
+                    symbol: farm.name.split("-")[0],
+                };
+                console.log(obj);
+                return obj;
+            }),
+        [farms]
+    );
     React.useEffect(() => {
         if (tab === Tab.Onramp) {
             const ramp = new RampInstantSDK({
+                userAddress: currentWallet,
+                defaultAsset: "ARBITRUM_ETH",
+                fiatValue: "500",
+                fiatCurrency: "USD",
                 hostAppName: "Contrax",
                 hostLogoUrl: `https://${window.location.host}/logo.svg`,
                 hostApiKey: "brs8apap5mdgrb5mfdk8pgmhnqxjugpr4nfpzg7f",
@@ -63,6 +93,40 @@ const Exchange: React.FC<IProps> = () => {
             };
         }
     }, [containerRef, tab]);
+
+    const handleBridgeNetworkChange = async () => {
+        try {
+            // switchNetworkAsync && (await switchNetworkAsync(chainId));
+            // return;
+            // @ts-ignore
+            const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
+
+            if (!pkey) {
+                setIsWeb3Auth(true);
+                setProvider(undefined);
+                return;
+            }
+            const chain = chains.find((c) => c.id === chainId);
+            const _provider = await getWeb3AuthProvider({
+                chainId: chain?.id!,
+                blockExplorer: chain?.blockExplorers?.default.url!,
+                name: chain?.name!,
+                rpc: chain?.rpcUrls.public.http[0]!,
+                ticker: chain?.nativeCurrency.symbol!,
+                tickerName: chain?.nativeCurrency.name!,
+                pkey,
+            });
+            setProvider(_provider);
+            setIsWeb3Auth(true);
+        } catch {
+            // switchNetworkAsync && (await switchNetworkAsync(chainId));
+            setIsWeb3Auth(false);
+        }
+    };
+
+    React.useEffect(() => {
+        handleBridgeNetworkChange();
+    }, [currentWallet, chainId, signer]);
 
     return (
         <div
@@ -96,17 +160,23 @@ const Exchange: React.FC<IProps> = () => {
                     <SwapWidget
                         theme={lightMode ? lightTheme : darkTheme}
                         // @ts-ignore
-                        provider={signer?.provider}
+                        provider={websocketProvider || wagmiSigner?.provider}
                         onConnectWalletClick={connectWallet}
+                        tokenList={tokenList}
                     />
                 )}
                 {tab === Tab.Bridge && SOCKET_API_KEY && (
                     <Bridge
-                        provider={signer?.provider}
+                        provider={isWeb3Auth ? provider : signer?.provider}
+                        onSourceNetworkChange={(network) => {
+                            setChainId(network.chainId);
+                        }}
                         API_KEY={SOCKET_API_KEY}
+                        defaultSourceToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+                        defaultDestToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
                         // enableSameChainSwaps
                         singleTxOnly
-                        enableRefuel
+                        // enableRefuel
                         includeBridges={[
                             "polygon-bridge",
                             "hop",
@@ -121,6 +191,8 @@ const Exchange: React.FC<IProps> = () => {
                         ]}
                         defaultSourceNetwork={1}
                         defaultDestNetwork={defaultChainId}
+                        sourceNetworks={[1, defaultChainId]}
+                        destNetworks={[1, defaultChainId]}
                         customize={lightMode ? lightSocketTheme : darkSocketTheme}
                     />
                 )}
@@ -135,3 +207,4 @@ const Exchange: React.FC<IProps> = () => {
 };
 
 export default Exchange;
+
