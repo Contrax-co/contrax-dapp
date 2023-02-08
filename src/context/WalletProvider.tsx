@@ -44,7 +44,7 @@ interface IWalletContext {
      */
     logout: () => void;
     signer?: ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer;
-    provider?:
+    provider:
         | ethers.ethers.providers.Web3Provider
         | ethers.ethers.providers.JsonRpcProvider
         | ethers.ethers.providers.Provider;
@@ -68,19 +68,18 @@ interface IWalletContext {
 }
 
 export const WalletContext = React.createContext<IWalletContext>({
-    currentWallet: "",
-    displayAccount: "",
-    connectWallet: () => Promise<any>,
-    networkId: defaultChainId,
-    logout: () => {},
-    signer: undefined,
-    provider: undefined,
-    balance: 0,
-    balanceBigNumber: ethers.BigNumber.from(0),
-    refetchBalance: () => {},
-    chains: [],
-    switchNetworkAsync: undefined,
-});
+    // currentWallet: "",
+    // displayAccount: "",
+    // connectWallet: () => Promise<any>,
+    // networkId: defaultChainId,
+    // logout: () => {},
+    // signer: undefined,
+    // balance: 0,
+    // balanceBigNumber: ethers.BigNumber.from(0),
+    // refetchBalance: () => {},
+    // chains: [],
+    // switchNetworkAsync: undefined,
+} as IWalletContext);
 
 interface IProps {
     children: React.ReactNode;
@@ -96,7 +95,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const { disconnect } = useDisconnect();
     const { connectors } = useConnect();
     const { chain } = useNetwork();
-    const [networkId, setNetworkId] = React.useState<number>(defaultChainId);    
+    const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { NETWORK_NAME } = useConstants();
     const { openConnectModal } = useConnectModal();
 
@@ -140,7 +139,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         if (chain) {
             setNetworkId(chain.id);
         }
-    }, [chain]);
+    }, [chain, currentWallet]);
 
     return (
         <WalletContext.Provider
