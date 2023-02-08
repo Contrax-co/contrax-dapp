@@ -23,9 +23,9 @@ function Farms() {
         setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
     }, [farms, tab]);
 
-    // useEffect(() => {
-    //     setSortedBuy(undefined);
-    // }, [networkId]);
+    useEffect(() => {
+        setSortedBuy(undefined);
+    }, [networkId]);
 
     const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDetails, b: FarmDetails) =>
         (decOrder ? 1 : -1) *
@@ -74,7 +74,7 @@ function Farms() {
                     variant={2}
                     onClick={() => {
                         setTab(1);
-                        // setSortedBuy(undefined);
+                        setSortedBuy(undefined);
                     }}
                     description="Normal"
                     active={tab === 1}
@@ -83,7 +83,7 @@ function Farms() {
                     variant={2}
                     onClick={() => {
                         setTab(2);
-                        // setSortedBuy(undefined);
+                        setSortedBuy(undefined);
                     }}
                     description="Advanced"
                     active={tab === 2}
