@@ -70,10 +70,10 @@
   font-size: 1.1rem;
   padding: 1.2% 2%;
   border-radius: 5px;
-  border: 1.2px solid #232323;
+  border: 1.2px solid var(--border_color);
   margin-top: 7px;
   height: 40px;
-  background-color: #001428;
+  background-color: var(--background_primary);
   color: white;
 }
 
@@ -96,7 +96,7 @@
 }
 
 #disabled-input {
-  background-color: #8798ad46;
+  background-color: var(--background_light);
 }
 
 .token-special-labels {
@@ -129,10 +129,10 @@ input[type='checkbox'] {
   font-weight: 600;
   padding: 8px 10px;
   border-radius: 5px;
-  border: 1.2px solid #232323;
+  border: 1.2px solid var(--border_color);
   margin-top: 5px;
   height: 40px;
-  background-color: #001428;
+  background-color: var(--background_primary);
   color: white;
 }
 
