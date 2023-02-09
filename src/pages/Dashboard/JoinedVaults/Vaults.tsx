@@ -29,3 +29,4 @@ const Vaults: React.FC<Props> = () => {
 };
 
 export default Vaults;
+

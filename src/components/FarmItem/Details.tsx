@@ -237,3 +237,4 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
 };
 
 export default Details;
+

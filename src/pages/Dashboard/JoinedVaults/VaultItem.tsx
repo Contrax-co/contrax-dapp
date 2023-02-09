@@ -84,3 +84,4 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 };
 
 export default VaultItem;
+
