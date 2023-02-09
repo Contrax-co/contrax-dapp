@@ -6,6 +6,7 @@ import * as wethUsdc from "./weth-usdc";
 import * as wethWbtc from "./weth-wbtc";
 import * as plsWeth from "./pls-weth";
 import * as gmx from "./gmx";
+import * as usdcDodo from "./usdcDodo";
 
 const farmFunctions: { [key: number]: typeof wethUsdt } = {
     3: wethUsdt,
@@ -15,6 +16,7 @@ const farmFunctions: { [key: number]: typeof wethUsdt } = {
     4: wethWbtc,
     8: plsWeth,
     5: gmx,
+    6: usdcDodo,
 };
 
 export default farmFunctions;

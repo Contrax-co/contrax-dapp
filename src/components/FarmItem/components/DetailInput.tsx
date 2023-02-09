@@ -25,7 +25,6 @@ interface Props {
 
 const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { lightMode } = useApp();
-    const { refetchQueries } = useQueryClient();
     const { balance: ethUserBal, balanceBigNumber, provider, currentWallet } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { price: ethPrice } = useEthPrice();
@@ -45,7 +44,6 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
         }
     );
 
-    // console.log("farm", farm.name, data);
     const {
         prices: { [farm.lp_address]: tokenPrice },
     } = usePriceOfTokens([farm.lp_address]);
