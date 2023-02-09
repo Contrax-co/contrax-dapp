@@ -69,6 +69,14 @@
       ]
     },
     {
+      "group": "Smart Contracts",
+      "pages": [
+        "smart-contracts/deployment-address", 
+        "smart-contracts/compounding-address",
+        "smart-contracts/multisig"
+      ]
+    },
+    {
       "group": "FAQ",
       "pages": [
         "FAQ/dapp-faq"
