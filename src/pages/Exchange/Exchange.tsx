@@ -48,7 +48,7 @@ enum Tab {
 }
 const Exchange: React.FC<IProps> = () => {
     const { currentWallet, connectWallet, chains, switchNetworkAsync, signer: wagmiSigner } = useWallet();
-    const [chainId, setChainId] = React.useState<number>(1);
+    const [chainId, setChainId] = React.useState<number>(defaultChainId);
     const { data: signer } = useSigner({
         chainId,
     });
@@ -57,7 +57,7 @@ const Exchange: React.FC<IProps> = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [provider, setProvider] = React.useState<any>();
     const websocketProvider = useWebSocketProvider();
-    const [tab, setTab] = React.useState<Tab>(Tab.Bridge);
+    const [tab, setTab] = React.useState<Tab>(Tab.Swap);
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
     const { farms } = useFarms();
     const tokenList: TokenInfo[] = React.useMemo(
@@ -70,7 +70,6 @@ const Exchange: React.FC<IProps> = () => {
                     name: farm.name.split("-")[0],
                     symbol: farm.name.split("-")[0],
                 };
-                console.log(obj);
                 return obj;
             }),
         [farms]
@@ -96,8 +95,6 @@ const Exchange: React.FC<IProps> = () => {
 
     const handleBridgeNetworkChange = async () => {
         try {
-            // switchNetworkAsync && (await switchNetworkAsync(chainId));
-            // return;
             // @ts-ignore
             const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
 
@@ -125,8 +122,14 @@ const Exchange: React.FC<IProps> = () => {
     };
 
     React.useEffect(() => {
-        handleBridgeNetworkChange();
-    }, [currentWallet, chainId, signer]);
+        if (tab === Tab.Bridge) handleBridgeNetworkChange();
+    }, [currentWallet, chainId, signer, tab]);
+
+    React.useEffect(() => {
+        if (tab !== Tab.Bridge) {
+            setChainId(defaultChainId);
+        }
+    }, [tab]);
 
     return (
         <div
@@ -207,4 +210,3 @@ const Exchange: React.FC<IProps> = () => {
 };
 
 export default Exchange;
-
