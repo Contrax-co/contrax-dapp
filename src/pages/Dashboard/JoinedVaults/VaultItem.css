@@ -2,7 +2,7 @@
   padding: 20px;
   border-radius: 20px;
   color: white;
-  background-color: #08315a;
+  background-color: var(--background_secondary);
   height: fit-content;
   display: flex;
   flex-direction: column;
@@ -25,8 +25,8 @@
 }
 
 .vault_item--light {
-  color: black;
-  background-color: white;
+  color: var(--color_black);
+  background-color: var(--color_white);
 }
 
 .vault_item_logo1 {
@@ -71,7 +71,7 @@
 
 .vault_items_title {
   font-size: 15px;
-  color: rgb(151, 151, 151);
+  color: var(--color_grey);
 }
 
 .vault_rewards {

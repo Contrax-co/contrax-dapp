@@ -7,9 +7,9 @@ export enum FarmOriginPlatform {
     GMX = "GMX",
 }
 export enum FarmTableColumns {
+    Token = "TOKEN",
     Deposited = "DEPOSITED",
-    TotalLiquidity = "TOTAL LIQUIDITY",
-    Apy = "APY",
+    GrowthPercentage = "GROWTH %",
 }
 
 export enum FarmType {

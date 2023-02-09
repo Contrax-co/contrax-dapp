@@ -34,12 +34,14 @@ export const { chains, provider, webSocketProvider } = configureChains(
         jsonRpcProvider({
             rpc: (chain) => ({
                 http: chain.rpcUrls.default.http[0],
+                webSocket: chain.rpcUrls?.default?.webSocket && chain.rpcUrls?.default?.webSocket[0],
             }),
         }),
 
         publicProvider(),
     ]
 );
+
 // Instantiating Web3Auth
 const web3AuthInstance = new Web3AuthCore({
     clientId,

@@ -13,7 +13,7 @@ import { defaultChainId } from "src/config/constants";
 function Farms() {
     const { lightMode } = useApp();
     const [tab, setTab] = useState(1);
-    const { networkId, signer } = useWallet();
+    const { networkId } = useWallet();
     const { farmDetails: farms, normalFarms, advancedFarms } = useFarmDetails();
     const [sortedFarms, setSortedFarms] = useState<FarmDetails[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
@@ -23,6 +23,10 @@ function Farms() {
         setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
     }, [farms, tab]);
 
+    useEffect(() => {
+        setSortedBuy(undefined);
+    }, [networkId]);
+
     const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDetails, b: FarmDetails) =>
         (decOrder ? 1 : -1) *
         (column === FarmTableColumns.Deposited
@@ -31,13 +35,7 @@ function Farms() {
                 : a.userVaultBal * a.priceOfSingleToken > b.userVaultBal * b.priceOfSingleToken
                 ? 1
                 : 0
-            : column === FarmTableColumns.TotalLiquidity
-            ? a.totalPlatformBalance * a.priceOfSingleToken < b.totalPlatformBalance * b.priceOfSingleToken
-                ? -1
-                : a.totalPlatformBalance * a.priceOfSingleToken > b.totalPlatformBalance * b.priceOfSingleToken
-                ? 1
-                : 0
-            : column === FarmTableColumns.Apy
+            : column === FarmTableColumns.GrowthPercentage
             ? a.apys.apy < b.apys.apy
                 ? -1
                 : a.apys.apy > b.apys.apy
@@ -50,7 +48,6 @@ function Farms() {
             : 0);
 
     const handleSort = (column: FarmTableColumns) => {
-        console.log("handleSort");
         if (sortedBuy === undefined) {
             setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
             setSortedBuy(column);
@@ -72,15 +69,31 @@ function Farms() {
                 <p>Farms</p>
             </div>
             <div className="drop_buttons" style={{ padding: 0, marginBottom: 30 }}>
-                <PoolButton variant={2} onClick={() => setTab(1)} description="Normal" active={tab === 1} />
-                <PoolButton variant={2} onClick={() => setTab(2)} description="Advanced" active={tab === 2} />
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab(1);
+                        setSortedBuy(undefined);
+                    }}
+                    description="Normal"
+                    active={tab === 1}
+                />
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab(2);
+                        setSortedBuy(undefined);
+                    }}
+                    description="Advanced"
+                    active={tab === 2}
+                />
             </div>
             <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
                 <p className="item_asset" style={{ marginLeft: 20 }}>
-                    ASSET
+                    {FarmTableColumns.Token}
                 </p>
                 <p onClick={() => handleSort(FarmTableColumns.Deposited)}>
-                    <span>DEPOSITED</span>
+                    <span>{FarmTableColumns.Deposited}</span>
                     {sortedBuy === FarmTableColumns.Deposited ? (
                         decOrder ? (
                             <RiArrowDownSLine fontSize={21} />
@@ -89,9 +102,9 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                <p onClick={() => handleSort(FarmTableColumns.Apy)}>
-                    <span>APY</span>
-                    {sortedBuy === FarmTableColumns.Apy ? (
+                <p onClick={() => handleSort(FarmTableColumns.GrowthPercentage)}>
+                    <span>{FarmTableColumns.GrowthPercentage}</span>
+                    {sortedBuy === FarmTableColumns.GrowthPercentage ? (
                         decOrder ? (
                             <RiArrowDownSLine fontSize={21} />
                         ) : (
