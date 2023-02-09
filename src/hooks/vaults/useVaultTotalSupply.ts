@@ -6,7 +6,7 @@ import useTotalSupplies from "../useTotalSupplies";
  */
 const useVaultTotalSupply = () => {
     const { vaults } = useVaults();
-    return useTotalSupplies(vaults.map((item) => ({ address: item.vault_address, decimals: item.decimals || 18 })));
+    return useTotalSupplies(vaults.map((item) => ({ address: item.vault_addr, decimals: item.decimals || 18 })));
 };
 
 export default useVaultTotalSupply;

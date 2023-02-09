@@ -7,7 +7,7 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { getPrice } from "./token";
 import { BigNumber, utils, providers, Contract } from "ethers";
 import { erc20ABI } from "wagmi";
-import { calcCompoundingApy, findCompoundAPY, toEth, totalFarmAPY } from "src/utils/common";
+import { calcCompoundingApy, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
 
 interface GraphResponse {

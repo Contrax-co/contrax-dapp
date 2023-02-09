@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import useApp from "src/hooks/useApp";
 import useVaultBalances from "src/hooks/vaults/useVaultBalances";
-import { Vault } from "src/types";
+import { Farm } from "src/types";
 import "./VaultItem.css";
 import useVaultTotalSupply from "src/hooks/vaults/useVaultTotalSupply";
 import { totalFarmAPY } from "src/utils/common";
@@ -10,7 +10,7 @@ import useFarmApy from "src/hooks/farms/useFarmApy";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 
 interface Props {
-    vault: Vault;
+    vault: Farm;
 }
 
 const VaultItem: React.FC<Props> = ({ vault }) => {
@@ -18,12 +18,12 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
     const { formattedBalances } = useVaultBalances();
     const tokenAmount = useMemo(() => {
-        return formattedBalances[vault.vault_address];
+        return formattedBalances[vault.vault_addr];
     }, [formattedBalances, vault]);
 
     const { formattedSupplies } = useVaultTotalSupply();
     const vaultAmount = useMemo(() => {
-        return formattedSupplies[vault.vault_address];
+        return formattedSupplies[vault.vault_addr];
     }, [formattedSupplies, vault]);
 
     const {

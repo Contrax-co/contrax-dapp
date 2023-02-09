@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import useVaults from "src/hooks/vaults/useVaults";
 import { Multicall, ContractCallResults, ContractCallContext } from "ethereum-multicall";
 import useWallet from "src/hooks/useWallet";
 import { useQuery } from "@tanstack/react-query";

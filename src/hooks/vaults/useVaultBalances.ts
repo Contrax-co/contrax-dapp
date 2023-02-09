@@ -6,7 +6,7 @@ import useBalances from "../useBalances";
  */
 const useVaultBalances = () => {
     const { vaults } = useVaults();
-    return useBalances(vaults.map((item) => ({ address: item.vault_address, decimals: item.decimals || 18 })));
+    return useBalances(vaults.map((item) => ({ address: item.vault_addr, decimals: item.decimals || 18 })));
 };
 
 export default useVaultBalances;
