@@ -7,8 +7,8 @@ import useBalances from "../useBalances";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_DEPOSIT } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
-import useFarmsVaultBalances from "./useFarmsVaultBalances";
-import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import useFarmsBalances from "./useFarmsBalances";
+import useFarmsTotalSupply from "./useFarmsTotalSupply";
 import { validateNumberDecimals } from "src/utils/common";
 import { useApprovalErc20 } from "../useApproval";
 
@@ -21,9 +21,9 @@ const useDeposit = (farm: Farm) => {
     const { refetch: refetchBalances, balances } = useBalances([{ address: farm.lp_address, decimals: farm.decimals }]);
     const lpUserBal = useMemo(() => balances[farm.lp_address], [balances, farm.lp_address]);
 
-    const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
+    const { refetch: refetchVaultBalances } = useFarmsBalances();
 
-    const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
+    const { refetch: refetchVaultSupplies } = useFarmsTotalSupply();
 
     const _deposit = async ({ depositAmount, max }: { depositAmount: number; max?: boolean }) => {
         if (!provider) return;

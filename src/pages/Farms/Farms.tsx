@@ -27,12 +27,14 @@ function Farms() {
         setSortedBuy(undefined);
     }, [networkId]);
 
+    useEffect(() => console.log("farms rerendered"));
+
     const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDetails, b: FarmDetails) =>
         (decOrder ? 1 : -1) *
         (column === FarmTableColumns.Deposited
-            ? a.userVaultBal * a.priceOfSingleToken < b.userVaultBal * b.priceOfSingleToken
+            ? a.userVaultBalance * a.priceOfSingleToken < b.userVaultBalance * b.priceOfSingleToken
                 ? -1
-                : a.userVaultBal * a.priceOfSingleToken > b.userVaultBal * b.priceOfSingleToken
+                : a.userVaultBalance * a.priceOfSingleToken > b.userVaultBalance * b.priceOfSingleToken
                 ? 1
                 : 0
             : column === FarmTableColumns.GrowthPercentage

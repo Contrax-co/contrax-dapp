@@ -9,10 +9,10 @@ import useApp from "src/hooks/useApp";
 import { copyToClipboard } from "src/utils";
 import useConstants from "src/hooks/useConstants";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
-import useVaults from "src/hooks/vaults/useVaults";
-import useVaultBalances from "src/hooks/vaults/useVaultBalances";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
+import useFarms from "src/hooks/farms/useFarms";
+import useFarmsBalances from "src/hooks/farms/useFarmsBalances";
 
 let redirected = false;
 
@@ -21,9 +21,9 @@ function Dashboard() {
     const { currentWallet, displayAccount } = useWallet();
     const [copied, setCopied] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
-    const { vaults } = useVaults();
+    const { farms: vaults } = useFarms();
     const { prices, isFetching } = usePriceOfTokens(vaults.map((vault) => vault.lp_address));
-    const { formattedBalances, isFetching: isFetching2 } = useVaultBalances();
+    const { formattedBalances, isFetching: isFetching2 } = useFarmsBalances();
     const navigate = useNavigate();
     const [params] = useSearchParams();
 

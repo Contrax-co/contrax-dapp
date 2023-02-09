@@ -1,16 +1,16 @@
 import VaultItem from "./VaultItem";
 import styles from "./Vaults.module.scss";
-import useVaults from "src/hooks/vaults/useVaults";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import useApp from "src/hooks/useApp";
+import { useFarmDetails } from "src/hooks/farms/useFarms";
 
 interface Props {}
 
 const Vaults: React.FC<Props> = () => {
     const { lightMode } = useApp();
-    const { vaults } = useVaults();
     const { networkId } = useWallet();
+    const { farmDetails: vaults } = useFarmDetails();
 
     return (
         <div

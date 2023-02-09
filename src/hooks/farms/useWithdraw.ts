@@ -7,8 +7,8 @@ import useNotify from "src/hooks/useNotify";
 import useBalances from "../useBalances";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_WITHDRAW } from "src/config/constants/query";
-import useFarmsVaultBalances from "./useFarmsVaultBalances";
-import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import useFarmsBalances from "./useFarmsBalances";
+import useFarmsTotalSupply from "./useFarmsTotalSupply";
 import { validateNumberDecimals } from "src/utils/common";
 
 const useWithdraw = (farm: Farm) => {
@@ -17,9 +17,9 @@ const useWithdraw = (farm: Farm) => {
     const { notifySuccess, notifyLoading, notifyError, dismissNotify } = useNotify();
     const { refetch: refetchVaultBalance } = useBalances([{ address: farm.vault_addr, decimals: farm.decimals }]);
 
-    const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
+    const { refetch: refetchVaultBalances } = useFarmsBalances();
 
-    const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
+    const { refetch: refetchVaultSupplies } = useFarmsTotalSupply();
 
     const _withdraw = async ({ withdrawAmount, max }: { withdrawAmount: number; max?: boolean }) => {
         if (!provider || !signer || !farm) return;

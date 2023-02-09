@@ -18,7 +18,7 @@ interface Props {
 const FarmRow: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const [dropdown, setDropDown] = useState(false);
-    const { userVaultBal, priceOfSingleToken, apys } = farm;
+    const { userVaultBalance: userVaultBal, priceOfSingleToken, apys } = farm;
     const { compounding, feeApr, rewardsApr, apy } = apys;
     const key = uuid();
 
@@ -112,21 +112,26 @@ export default FarmRow;
 
 const DropDownView: React.FC<{ farm: FarmDetails }> = ({ farm }) => {
     const { lightMode } = useApp();
-    const [tab, setTab] = useState(1);
+    const [transactionType, setTransactionType] = useState<FarmTransactionType>(FarmTransactionType.Deposit);
     const [showMoreDetail, setShowMoreDetail] = useState(false);
     const [shouldUseLp, setShouldUseLp] = useState(farm.token_type === "LP Token" ? false : true);
 
     return (
         <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>
             <div className="drop_buttons">
-                <PoolButton onClick={() => setTab(1)} description="Deposit" active={tab === 1} />
-                <PoolButton onClick={() => setTab(2)} description="Withdraw" active={tab === 2} />
+                <PoolButton
+                    onClick={() => setTransactionType(FarmTransactionType.Deposit)}
+                    description={FarmTransactionType.Deposit}
+                    active={transactionType === FarmTransactionType.Deposit}
+                />
+                <PoolButton
+                    onClick={() => setTransactionType(FarmTransactionType.Withdraw)}
+                    description={FarmTransactionType.Withdraw}
+                    active={transactionType === FarmTransactionType.Withdraw}
+                />
             </div>
 
-            {tab === 1 && <DetailInput farm={farm} shouldUseLp={shouldUseLp} type={FarmTransactionType.Deposit} />}
-            {/* {tab === 1 && <Deposit farm={farm} shouldUseLp={shouldUseLp} setShouldUseLp={setShouldUseLp} />} */}
-
-            {tab === 2 && <DetailInput farm={farm} shouldUseLp={shouldUseLp} type={FarmTransactionType.Withdraw} />}
+            <DetailInput farm={farm} shouldUseLp={shouldUseLp} type={transactionType} />
 
             {!showMoreDetail ? (
                 <div

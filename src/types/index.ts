@@ -53,7 +53,7 @@ export interface Farm {
     lp_abi: any;
 }
 export interface FarmDetails extends Farm {
-    userVaultBal: number;
+    userVaultBalance: number;
     totalVaultBalance: number;
     totalPlatformBalance: number;
     priceOfSingleToken: number;

@@ -7,8 +7,8 @@ import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_ZAP_OUT } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
 import useBalances from "../useBalances";
-import useFarmsVaultBalances from "./useFarmsVaultBalances";
-import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import useFarmsBalances from "./useFarmsBalances";
+import useFarmsTotalSupply from "./useFarmsTotalSupply";
 import { validateNumberDecimals } from "src/utils/common";
 import { useApprovalErc20 } from "../useApproval";
 
@@ -22,9 +22,9 @@ const useZapOut = (farm: Farm) => {
     const vaultUserBalance = useMemo(() => balances[farm.vault_addr], [balances, farm.vault_addr]);
     const { approve } = useApprovalErc20();
 
-    const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
+    const { refetch: refetchVaultBalances } = useFarmsBalances();
 
-    const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
+    const { refetch: refetchVaultSupplies } = useFarmsTotalSupply();
 
     const _zapOut = async ({ withdrawAmt, max }: { withdrawAmt: number; max?: boolean }) => {
         if (!provider || !signer || !farm) return;

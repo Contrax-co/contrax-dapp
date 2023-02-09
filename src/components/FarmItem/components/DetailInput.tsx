@@ -6,15 +6,14 @@ import useZapOut from "src/hooks/farms/useZapOut";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import useEthPrice from "src/hooks/useEthPrice";
-import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import useWallet from "src/hooks/useWallet";
-import { Farm } from "src/types";
+import { Farm, FarmDetails } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
 import { validateNumberDecimals } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
 
 interface Props {
-    farm: Farm;
+    farm: FarmDetails;
     shouldUseLp: boolean;
     type: FarmTransactionType;
 }
@@ -31,46 +30,42 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
     const [max, setMax] = React.useState(false);
 
-    const {
-        prices: { [farm.lp_address]: tokenPrice },
-    } = usePriceOfTokens([farm.lp_address]);
+    const { priceOfSingleToken, userVaultBalance } = farm;
 
-    const { formattedBalances, refetch } = useBalances([
-        { address: farm.lp_address, decimals: farm.decimals },
-        { address: farm.vault_addr, decimals: farm.decimals },
-    ]);
+    const { formattedBalances, refetch } = useBalances([{ address: farm.lp_address, decimals: farm.decimals }]);
     const userLpBal = React.useMemo(() => formattedBalances[farm.lp_address], [formattedBalances, farm.lp_address]);
-    const userVaultBal = React.useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances, farm.vault_addr]);
 
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
             if (shouldUseLp) {
-                return showInUsd ? userLpBal * tokenPrice : userLpBal;
+                return showInUsd ? userLpBal * priceOfSingleToken : userLpBal;
             } else {
                 return showInUsd ? ethPrice * ethUserBal : ethUserBal;
             }
         } else {
             if (shouldUseLp) {
-                return showInUsd ? userVaultBal * tokenPrice : userVaultBal;
+                return showInUsd ? userVaultBalance * priceOfSingleToken : userVaultBalance;
             } else {
-                return showInUsd ? userVaultBal * tokenPrice : (userVaultBal * tokenPrice) / ethPrice;
+                return showInUsd
+                    ? userVaultBalance * priceOfSingleToken
+                    : (userVaultBalance * priceOfSingleToken) / ethPrice;
             }
         }
-    }, [shouldUseLp, showInUsd, userVaultBal, tokenPrice, ethPrice, userLpBal, type, ethUserBal]);
+    }, [shouldUseLp, showInUsd, userVaultBalance, priceOfSingleToken, ethPrice, userLpBal, type, ethUserBal]);
 
     const getTokenAmount = () => {
         let amt = 0;
 
         if (shouldUseLp) {
-            if (showInUsd) amt = amount / tokenPrice;
+            if (showInUsd) amt = amount / priceOfSingleToken;
             else amt = amount;
         } else {
             if (type === FarmTransactionType.Deposit) {
                 if (showInUsd) amt = amount / ethPrice;
                 else amt = amount;
             } else {
-                if (showInUsd) amt = amount / tokenPrice;
-                else amt = (amount * ethPrice) / tokenPrice;
+                if (showInUsd) amt = amount / priceOfSingleToken;
+                else amt = (amount * ethPrice) / priceOfSingleToken;
             }
         }
         return Number(validateNumberDecimals(amt, farm.decimals));
@@ -83,13 +78,13 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
             if (!shouldUseLp) {
                 setAmount((prev) => prev * ethPrice);
             } else {
-                setAmount((prev) => prev * tokenPrice);
+                setAmount((prev) => prev * priceOfSingleToken);
             }
         } else {
             if (!shouldUseLp) {
                 setAmount((prev) => prev / ethPrice);
             } else {
-                setAmount((prev) => prev / tokenPrice);
+                setAmount((prev) => prev / priceOfSingleToken);
             }
         }
     };

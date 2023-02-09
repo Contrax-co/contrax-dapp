@@ -6,8 +6,8 @@ import * as ethers from "ethers";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_ZAP_IN } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
-import useFarmsVaultBalances from "./useFarmsVaultBalances";
-import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import useFarmsBalances from "./useFarmsBalances";
+import useFarmsTotalSupply from "./useFarmsTotalSupply";
 
 export interface ZapIn {
     ethZapAmount: number;
@@ -19,9 +19,9 @@ const useZapIn = (farm: Farm) => {
     const { NETWORK_NAME, CONTRACTS, BLOCK_EXPLORER_URL } = useConstants();
     const { notifySuccess, notifyLoading, notifyError, dismissNotify } = useNotify();
 
-    const { refetch: refetchVaultBalances } = useFarmsVaultBalances();
+    const { refetch: refetchVaultBalances } = useFarmsBalances();
 
-    const { refetch: refetchVaultSupplies } = useFarmsVaultTotalSupply();
+    const { refetch: refetchVaultSupplies } = useFarmsTotalSupply();
 
     const _zapIn = async ({ ethZapAmount, max }: ZapIn) => {
         if (!provider || !signer || !farm) return;
