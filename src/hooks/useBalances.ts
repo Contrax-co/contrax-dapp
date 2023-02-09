@@ -79,6 +79,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
             // Formalize the balance
             const formattedBal = Number(ethers.utils.formatUnits(value, decimals));
             b[key] = formattedBal;
+            return;
         });
         return b;
     }, [balances]);

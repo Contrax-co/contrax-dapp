@@ -4,8 +4,6 @@ import useVaultBalances from "src/hooks/vaults/useVaultBalances";
 import { Farm } from "src/types";
 import "./VaultItem.css";
 import useVaultTotalSupply from "src/hooks/vaults/useVaultTotalSupply";
-import { totalFarmAPY } from "src/utils/common";
-import useFeeApy from "src/hooks/useFeeApy";
 import useFarmApy from "src/hooks/farms/useFarmApy";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 
@@ -30,7 +28,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
         prices: { [vault.lp_address]: price },
     } = usePriceOfTokens([vault.lp_address]);
 
-    const { apy, compounding, feeApr, rewardsApr } = useFarmApy(vault);
+    const { apy } = useFarmApy(vault);
 
     if (tokenAmount * price >= 0.01)
         return (

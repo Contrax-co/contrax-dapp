@@ -1,8 +1,6 @@
 import { useQueries, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useMemo } from "react";
 import { getApy } from "src/api/apy";
-import { APY_TOKEN, APY_VISION_URL } from "src/config/constants";
 import { FARM_APY } from "src/config/constants/query";
 import { Farm, Apys } from "src/types";
 import useConstants from "../useConstants";

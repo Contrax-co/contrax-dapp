@@ -2,10 +2,9 @@ import { SUSHUISWAP_GRAPH_URL, SHUSHISWAP_CHEF_GRAPH_URL } from "src/config/cons
 import { FarmOriginPlatform } from "src/types/enums";
 import { Apys, Farm } from "src/types";
 import axios from "axios";
-import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { getPrice } from "./token";
-import { BigNumber, utils, providers, Contract } from "ethers";
+import { BigNumber, providers, Contract } from "ethers";
 import { erc20ABI } from "wagmi";
 import { calcCompoundingApy, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
