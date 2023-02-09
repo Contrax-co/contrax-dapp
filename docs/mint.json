@@ -73,6 +73,7 @@
       "pages": [
         "smart-contracts/deployment-address", 
         "smart-contracts/compounding-address",
+        "smart-contracts/vault-address",
         "smart-contracts/multisig"
       ]
     },
