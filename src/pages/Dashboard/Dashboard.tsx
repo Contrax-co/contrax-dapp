@@ -32,7 +32,7 @@ function Dashboard() {
             const lp_addr = vaults.find((item) => item.vault_addr === key)!.lp_address;
             return prices[lp_addr] * value > 0.01;
         });
-    }, [formattedBalances, prices]);
+    }, [formattedBalances, prices, vaults]);
 
     const copy = () => {
         setCopied(true);
@@ -47,7 +47,7 @@ function Dashboard() {
                 redirected = true;
             }
         }
-    }, [hasDeposits, isFetching, isFetching2]);
+    }, [hasDeposits, isFetching, isFetching2, navigate, params]);
 
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">

@@ -6,11 +6,10 @@ import usePriceOfTokens from "../usePriceOfTokens";
 import useTotalSupplies from "../useTotalSupplies";
 import { useFarmApys } from "./useFarmApy";
 import useFarmsBalances from "./useFarmsBalances";
-import useFarmsTotalSupply from "./useFarmsTotalSupply";
 
 const farms = pools as Farm[];
 const useFarms = (): { farms: Farm[] } => {
-    return { farms: useMemo(() => farms, [pools]) };
+    return { farms: useMemo(() => farms, []) };
 };
 
 export default useFarms;
@@ -34,7 +33,7 @@ export const useFarmDetails = (): {
         usersVaultBalanceRefetch();
         totalVaultSuppliesRefetch();
         totalPlatformSuppliesRefetch();
-    }, []);
+    }, [totalPlatformSuppliesRefetch, totalVaultSuppliesRefetch, usersVaultBalanceRefetch]);
 
     const farmDetails = useMemo(() => {
         return farms.map((farm) => {
@@ -47,7 +46,7 @@ export const useFarmDetails = (): {
                 apys: apys[farm.lp_address],
             };
         });
-    }, [farms, apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
+    }, [apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
 
     const normalFarms = useMemo(() => {
         return farms.reduce((farms: FarmDetails[], farm: Farm) => {
@@ -63,7 +62,7 @@ export const useFarmDetails = (): {
             }
             return farms;
         }, []);
-    }, [farms, apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
+    }, [apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
 
     const advancedFarms = useMemo(() => {
         return farms.reduce((farms: FarmDetails[], farm: Farm) => {
@@ -79,7 +78,7 @@ export const useFarmDetails = (): {
             }
             return farms;
         }, []);
-    }, [farms, apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
+    }, [apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
 
     return { farmDetails, normalFarms, advancedFarms };
 };
