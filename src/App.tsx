@@ -16,19 +16,16 @@ import { WagmiConfig } from "wagmi";
 import { wagmiClient, chains } from "./config/walletConfig";
 import "@rainbow-me/rainbowkit/styles.css";
 import Logo from "src/assets/images/logo.png";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import WalletDisclaimer from "./components/WalletDisclaimer/WalletDisclaimer";
 import Test from "./pages/Test/Test";
+import { ReactHooksWrapper, setHook } from "react-hooks-outside";
+import { useNotifications } from "reapop";
+import { queryClient } from "./config/reactQuery";
 
-const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            refetchOnWindowFocus: false,
-        },
-    },
-});
+setHook("notifications", useNotifications);
 
 function App() {
     return (
@@ -54,6 +51,7 @@ function App() {
                                     </Route>
                                 </Routes>
                             </Router>
+                            <ReactHooksWrapper />
                         </AppProvider>
                     </WalletProvider>
                     <ReactQueryDevtools />

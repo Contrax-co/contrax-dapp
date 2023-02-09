@@ -1,7 +1,8 @@
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { getNetworkName } from "src/utils/common";
-import { Contract, providers, BigNumber } from "ethers";
+import { Contract, providers, BigNumber, Signer, constants } from "ethers";
+import { erc20ABI } from "wagmi";
 
 export const getPrice = async (tokenAddress: string, chainId: number) => {
     try {
@@ -20,7 +21,7 @@ export const getPrice = async (tokenAddress: string, chainId: number) => {
 export const getBalance = async (
     tokenAddress: string,
     address: string,
-    provider: providers.Provider
+    provider: providers.Provider | Signer
 ): Promise<BigNumber> => {
     try {
         const contract = new Contract(tokenAddress, ["function balanceOf(address) view returns (uint)"], provider);
@@ -29,5 +30,22 @@ export const getBalance = async (
     } catch (error) {
         console.error(error);
         return BigNumber.from(0);
+    }
+};
+
+export const approveErc20 = async (
+    contractAddress: string,
+    spender: string,
+    amount: BigNumber,
+    currentWallet: string,
+    signer: Signer
+) => {
+    const contract = new Contract(contractAddress, erc20ABI, signer);
+    // check allowance
+    const allowance = await contract.allowance(currentWallet, spender);
+    // if allowance is lower than amount, approve
+    if (amount.gt(allowance)) {
+        // approve
+        await contract.approve(spender, constants.MaxUint256);
     }
 };

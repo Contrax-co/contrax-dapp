@@ -155,4 +155,16 @@ export interface FarmData {
      * Token symbol for deposit or withdraw
      */
     Token_Token_Symbol: string;
+    /**
+     * Zap Enabled or not, used in showing zap toggle
+     */
+    Zap_Enabled?: boolean;
+    /**
+     * Price of token when depositing or withdrawing
+     */
+    TOKEN_PRICE: number;
+    /**
+     * Price of token which is used in zapping
+     */
+    ZAP_TOKEN_PRICE: number;
 }
