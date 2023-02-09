@@ -48,7 +48,6 @@ function Farms() {
             : 0);
 
     const handleSort = (column: FarmTableColumns) => {
-        console.log("handleSort");
         if (sortedBuy === undefined) {
             setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
             setSortedBuy(column);
