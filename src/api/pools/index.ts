@@ -8,6 +8,7 @@ import * as plsWeth from "./pls-weth";
 import * as gmx from "./gmx";
 import * as usdcDodo from "./usdcDodo";
 import * as usdtDodo from "./usdtDodo";
+import * as frax from "./frax";
 
 const farmFunctions: { [key: number]: typeof wethUsdt } = {
     3: wethUsdt,
@@ -19,6 +20,7 @@ const farmFunctions: { [key: number]: typeof wethUsdt } = {
     5: gmx,
     6: usdcDodo,
     7: usdtDodo,
+    9: frax,
 };
 
 export default farmFunctions;

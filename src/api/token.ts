@@ -46,6 +46,6 @@ export const approveErc20 = async (
     // if allowance is lower than amount, approve
     if (amount.gt(allowance)) {
         // approve
-        await contract.approve(spender, constants.MaxUint256);
+        await(await contract.approve(spender, constants.MaxUint256)).wait();
     }
 };
