@@ -75,3 +75,11 @@ export const CREATE_TOKEN = (currentWallet: string, networkName: string) => [
     networkName,
     currentWallet,
 ];
+
+export const FARM_DATA = (currentWallet: string, networkName: string, farmId: number) => [
+    "farm",
+    "data",
+    farmId,
+    networkName,
+    currentWallet,
+];

@@ -1,6 +1,7 @@
 import React from "react";
 import { getGmxApyArbitrum } from "src/api/getGmxApy";
 import useWallet from "src/hooks/useWallet";
+import { notify } from "reapop";
 
 const Test = () => {
     const { provider, currentWallet } = useWallet();
@@ -8,8 +9,16 @@ const Test = () => {
     React.useEffect(() => {
         getGmxApyArbitrum(provider, currentWallet).then(console.log);
     }, [provider, currentWallet]);
-
-    return <div>Test</div>;
+    const fn = () => {
+        notify({
+            message: "Test",
+        });
+    };
+    return (
+        <div onClick={fn} style={{ color: "red" }}>
+            Test
+        </div>
+    );
 };
 
 export default Test;
