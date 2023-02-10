@@ -54,6 +54,7 @@
     "id": 8,
     "token_type": "LP Token",
     "name": "Pls-Weth",
+    "originPlatform": "Sushiswap",
     "platform": "Plutus",
     "platform_alt": "Plutus logo",
     "total_apy": 33.2,
