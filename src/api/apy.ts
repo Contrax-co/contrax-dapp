@@ -2,12 +2,11 @@ import { SUSHUISWAP_GRAPH_URL, SHUSHISWAP_CHEF_GRAPH_URL } from "src/config/cons
 import { FarmOriginPlatform } from "src/types/enums";
 import { Apys, Farm } from "src/types";
 import axios from "axios";
-import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { getPrice } from "./token";
-import { BigNumber, utils, providers, Contract } from "ethers";
+import { BigNumber, providers, Contract } from "ethers";
 import { erc20ABI } from "wagmi";
-import { calcCompoundingApy, findCompoundAPY, toEth, totalFarmAPY } from "src/utils/common";
+import { calcCompoundingApy, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
 
 interface GraphResponse {
@@ -68,11 +67,12 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
         }`;
     res = await axios.post(SHUSHISWAP_CHEF_GRAPH_URL, { query });
     const chefData: ChefResponse = res.data.data.miniChefs[0];
+
     let obj = {
-        allocPoint: Number(chefData.pools[0].allocPoint),
-        totalAllocPoint: Number(chefData.totalAllocPoint),
-        sushiPerSecond: BigNumber.from(chefData.sushiPerSecond),
-        sushiPerDay: BigNumber.from(chefData.sushiPerSecond).mul(60).mul(60).mul(24),
+        allocPoint: chefData.pools[0] ? Number(chefData.pools[0].allocPoint) : 0,
+        totalAllocPoint: chefData ? Number(chefData.totalAllocPoint) : 0,
+        sushiPerSecond: chefData ? BigNumber.from(chefData.sushiPerSecond) : BigNumber.from(0),
+        sushiPerDay: chefData ? BigNumber.from(chefData.sushiPerSecond).mul(60).mul(60).mul(24) : BigNumber.from(0),
         feeApr: Number(pairData.apr) * 100,
         liquidityUSD: Number(pairData.liquidityUSD),
     };
@@ -82,7 +82,7 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     const sushiRewardPerYearUSD =
         (Number(toEth(sushiRewardPerYear.toString())) * priceOfSushi * obj.allocPoint) / obj.totalAllocPoint;
     let rewardsApr = (sushiRewardPerYearUSD / obj.liquidityUSD) * 100;
-    if (Number(chefData.pools[0].rewarder.id) !== 0) {
+    if (chefData.pools[0] && Number(chefData.pools[0].rewarder.id) !== 0) {
         const rewarder = chefData.pools[0].rewarder;
         const rewardTokenContract = new Contract(pairAddress, erc20ABI, provider);
         const rewardTokenPrice = await getPrice(rewarder.rewardToken, chainId);

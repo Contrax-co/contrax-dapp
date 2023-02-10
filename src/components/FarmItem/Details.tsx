@@ -3,7 +3,7 @@ import { RiArrowUpSLine } from "react-icons/ri";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
-import { Farm, FarmDetails } from "src/types";
+import { FarmDetails } from "src/types";
 import "./Details.css";
 import Toggle from "src/components/FarmItem/Toggle";
 
@@ -197,12 +197,12 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                         </div>
                     ) : null}
 
-                    {farm.userVaultBal / farm.totalVaultBalance ? (
+                    {farm.userVaultBalance / farm.totalVaultBalance ? (
                         <div className={`detailed_header`}>
                             <p>Share</p>
                             <div className={`unstaked_details`}>
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {((farm.userVaultBal / farm.totalVaultBalance) * 100 || 0).toFixed(2)}%
+                                    {((farm.userVaultBalance / farm.totalVaultBalance) * 100 || 0).toFixed(2)}%
                                 </p>
                                 {/* <div className={`unstaked_details_header`}>
                                     {farm.alt1 ? (

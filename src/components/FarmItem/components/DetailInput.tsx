@@ -1,27 +1,30 @@
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import useDeposit from "src/hooks/farms/useDeposit";
 import useWithdraw from "src/hooks/farms/useWithdraw";
 import useZapIn from "src/hooks/farms/useZapIn";
 import useZapOut from "src/hooks/farms/useZapOut";
 import useApp from "src/hooks/useApp";
-import useBalances from "src/hooks/useBalances";
 import useEthPrice from "src/hooks/useEthPrice";
-import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import useWallet from "src/hooks/useWallet";
-import { Farm } from "src/types";
+import { Farm, FarmDetails } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
 import { validateNumberDecimals } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
+import farmFunctions from "src/api/pools";
+import { FARM_DATA } from "src/config/constants/query";
+import useConstants from "src/hooks/useConstants";
 
 interface Props {
-    farm: Farm;
+    farm: FarmDetails;
     shouldUseLp: boolean;
     type: FarmTransactionType;
 }
 
 const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { lightMode } = useApp();
-    const { balance: ethUserBal } = useWallet();
+    const { balance: ethUserBal, balanceBigNumber, provider, currentWallet } = useWallet();
+    const { NETWORK_NAME } = useConstants();
     const { price: ethPrice } = useEthPrice();
     const [amount, setAmount] = React.useState(0.0);
     const [showInUsd, setShowInUsd] = React.useState(true);
@@ -30,49 +33,63 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { isLoading: isZappingOut, zapOutAsync } = useZapOut(farm);
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
     const [max, setMax] = React.useState(false);
+    const { priceOfSingleToken } = farm;
 
-    const {
-        prices: { [farm.lp_address]: tokenPrice },
-    } = usePriceOfTokens([farm.lp_address]);
-
-    const { formattedBalances, refetch } = useBalances([
-        { address: farm.lp_address, decimals: farm.decimals },
-        { address: farm.vault_addr, decimals: farm.decimals },
-    ]);
-    const userLpBal = React.useMemo(() => formattedBalances[farm.lp_address], [formattedBalances, farm.lp_address]);
-    const userVaultBal = React.useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances, farm.vault_addr]);
+    const { data: farmData, refetch } = useQuery(
+        FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
+        () => farmFunctions[farm.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
+        {
+            enabled: !!currentWallet && !!provider && !!farm,
+        }
+    );
 
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
             if (shouldUseLp) {
-                return showInUsd ? userLpBal * tokenPrice : userLpBal;
+                return (
+                    (showInUsd
+                        ? Number(farmData?.Max_Token_Deposit_Balance_Dollar)
+                        : Number(farmData?.Max_Token_Deposit_Balance)) || 0
+                );
             } else {
-                return showInUsd ? ethPrice * ethUserBal : ethUserBal;
+                return (
+                    (showInUsd
+                        ? Number(farmData?.Max_Zap_Deposit_Balance_Dollar)
+                        : Number(farmData?.Max_Zap_Deposit_Balance)) || 0
+                );
             }
         } else {
             if (shouldUseLp) {
-                return showInUsd ? userVaultBal * tokenPrice : userVaultBal;
+                return (
+                    (showInUsd
+                        ? Number(farmData?.Max_Token_Withdraw_Balance_Dollar)
+                        : Number(farmData?.Max_Token_Withdraw_Balance)) || 0
+                );
             } else {
-                return showInUsd ? userVaultBal * tokenPrice : (userVaultBal * tokenPrice) / ethPrice;
+                return (
+                    (showInUsd
+                        ? Number(farmData?.Max_Zap_Withdraw_Balance_Dollar)
+                        : Number(farmData?.Max_Zap_Withdraw_Balance)) || 0
+                );
             }
         }
-    }, [shouldUseLp, showInUsd, userVaultBal, tokenPrice, ethPrice, userLpBal, type, ethUserBal]);
+    }, [shouldUseLp, showInUsd, type, farmData]);
 
     const getTokenAmount = () => {
         let amt = 0;
-
-        if (shouldUseLp) {
-            if (showInUsd) amt = amount / tokenPrice;
-            else amt = amount;
-        } else {
-            if (type === FarmTransactionType.Deposit) {
-                if (showInUsd) amt = amount / ethPrice;
+        if (farmData)
+            if (shouldUseLp) {
+                if (showInUsd) amt = amount / farmData.TOKEN_PRICE;
                 else amt = amount;
             } else {
-                if (showInUsd) amt = amount / tokenPrice;
-                else amt = (amount * ethPrice) / tokenPrice;
+                if (type === FarmTransactionType.Deposit) {
+                    if (showInUsd) amt = amount / farmData.ZAP_TOKEN_PRICE;
+                    else amt = amount;
+                } else {
+                    if (showInUsd) amt = amount / farmData.TOKEN_PRICE;
+                    else amt = (amount * farmData.ZAP_TOKEN_PRICE) / farmData.TOKEN_PRICE;
+                }
             }
-        }
         return Number(validateNumberDecimals(amt, farm.decimals));
     };
 
@@ -83,13 +100,13 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
             if (!shouldUseLp) {
                 setAmount((prev) => prev * ethPrice);
             } else {
-                setAmount((prev) => prev * tokenPrice);
+                setAmount((prev) => prev * priceOfSingleToken);
             }
         } else {
             if (!shouldUseLp) {
                 setAmount((prev) => prev / ethPrice);
             } else {
-                setAmount((prev) => prev / tokenPrice);
+                setAmount((prev) => prev / priceOfSingleToken);
             }
         }
     };
@@ -111,7 +128,6 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
         }
         setAmount(0);
         setMax(false);
-        refetch();
     };
 
     const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -133,6 +149,12 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     React.useEffect(() => {
         if (max) setAmount(maxBalance);
     }, [max, maxBalance]);
+
+    // Use to reload farm balances data on eth balance change
+    React.useEffect(() => {
+        refetch();
+    }, [ethUserBal]);
+
     return (
         <div className={`${styles.container} ${lightMode && styles.container_light}`}>
             {/* Left */}

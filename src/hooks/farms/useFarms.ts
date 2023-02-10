@@ -1,18 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
-import { getApy } from "src/api/apy";
+import { useCallback, useMemo } from "react";
 import pools from "src/config/constants/pools.json";
-import { Apys, Farm, FarmDetails } from "src/types";
+import { Farm, FarmDetails } from "src/types";
 import { FarmType } from "src/types/enums";
-import useConstants from "../useConstants";
 import usePriceOfTokens from "../usePriceOfTokens";
+import useTotalSupplies from "../useTotalSupplies";
 import { useFarmApys } from "./useFarmApy";
-import useFarmsPlatformTotalSupply from "./useFarmPlatformBalance";
-import useFarmsVaultBalances from "./useFarmsVaultBalances";
-import useFarmsVaultTotalSupply from "./useFarmsVaultTotalSupply";
+import useFarmsBalances from "./useFarmsBalances";
 
 const farms = pools as Farm[];
 const useFarms = (): { farms: Farm[] } => {
-    return { farms: useMemo(() => farms, [pools]) };
+    return { farms: useMemo(() => farms, []) };
 };
 
 export default useFarms;
@@ -22,56 +19,66 @@ export const useFarmDetails = (): {
     normalFarms: FarmDetails[];
     advancedFarms: FarmDetails[];
 } => {
-    const { formattedBalances } = useFarmsVaultBalances();
-    const { formattedSupplies } = useFarmsVaultTotalSupply();
-    const { formattedSupplies: platformSupplies } = useFarmsPlatformTotalSupply();
+    const { formattedBalances: usersVaultBalances, refetch: usersVaultBalanceRefetch } = useFarmsBalances();
+    const { formattedSupplies: totalVaultSupplies, refetch: totalVaultSuppliesRefetch } = useTotalSupplies(
+        farms.map((farm) => ({ address: farm.vault_addr, decimals: farm.decimals }))
+    );
+    const { formattedSupplies: totalPlatformSupplies, refetch: totalPlatformSuppliesRefetch } = useTotalSupplies(
+        farms.map((farm) => ({ address: farm.lp_address, decimals: farm.decimals }))
+    );
     const { prices: priceOfSingleToken } = usePriceOfTokens(farms.map((farm) => farm.lp_address));
     const { apys } = useFarmApys();
 
+    const refetchBalances = useCallback(() => {
+        usersVaultBalanceRefetch();
+        totalVaultSuppliesRefetch();
+        totalPlatformSuppliesRefetch();
+    }, [totalPlatformSuppliesRefetch, totalVaultSuppliesRefetch, usersVaultBalanceRefetch]);
+
     const farmDetails = useMemo(() => {
-        return farms.map((farm, index) => {
+        return farms.map((farm) => {
             return {
                 ...farm,
-                userVaultBal: formattedBalances[farm.vault_addr],
-                totalVaultBalance: formattedSupplies[farm.vault_addr],
-                totalPlatformBalance: platformSupplies[farm.lp_address],
+                userVaultBalance: usersVaultBalances[farm.vault_addr],
+                totalVaultBalance: totalVaultSupplies[farm.vault_addr],
+                totalPlatformBalance: totalPlatformSupplies[farm.lp_address],
                 priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
                 apys: apys[farm.lp_address],
             };
         });
-    }, [farms, apys, formattedBalances, formattedSupplies, platformSupplies, priceOfSingleToken]);
+    }, [apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
 
     const normalFarms = useMemo(() => {
         return farms.reduce((farms: FarmDetails[], farm: Farm) => {
             if (farm.token_type === FarmType.normal) {
                 farms.push({
                     ...farm,
-                    userVaultBal: formattedBalances[farm.vault_addr],
-                    totalVaultBalance: formattedSupplies[farm.vault_addr],
-                    totalPlatformBalance: platformSupplies[farm.lp_address],
+                    userVaultBalance: usersVaultBalances[farm.vault_addr],
+                    totalVaultBalance: totalVaultSupplies[farm.vault_addr],
+                    totalPlatformBalance: totalPlatformSupplies[farm.lp_address],
                     priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
                     apys: apys[farm.lp_address],
                 });
             }
             return farms;
         }, []);
-    }, [farms, apys, formattedBalances, formattedSupplies, platformSupplies, priceOfSingleToken]);
+    }, [apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
 
     const advancedFarms = useMemo(() => {
         return farms.reduce((farms: FarmDetails[], farm: Farm) => {
             if (farm.token_type === FarmType.advanced) {
                 farms.push({
                     ...farm,
-                    userVaultBal: formattedBalances[farm.vault_addr],
-                    totalVaultBalance: formattedSupplies[farm.vault_addr],
-                    totalPlatformBalance: platformSupplies[farm.lp_address],
+                    userVaultBalance: usersVaultBalances[farm.vault_addr],
+                    totalVaultBalance: totalVaultSupplies[farm.vault_addr],
+                    totalPlatformBalance: totalPlatformSupplies[farm.lp_address],
                     priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
                     apys: apys[farm.lp_address],
                 });
             }
             return farms;
         }, []);
-    }, [farms, apys, formattedBalances, formattedSupplies, platformSupplies, priceOfSingleToken]);
+    }, [apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
 
     return { farmDetails, normalFarms, advancedFarms };
 };

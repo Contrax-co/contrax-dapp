@@ -53,7 +53,7 @@ export interface Farm {
     lp_abi: any;
 }
 export interface FarmDetails extends Farm {
-    userVaultBal: number;
+    userVaultBalance: number;
     totalVaultBalance: number;
     totalPlatformBalance: number;
     priceOfSingleToken: number;
@@ -96,4 +96,75 @@ export interface CreateToken {
     burnPercentage: number;
     transactionFeePercentage: number;
     transactionFeePercentageIdentiier: boolean;
+}
+
+export interface FarmData {
+    /**
+     * When Zapping in deposit column the max amount in token
+     */
+    Max_Zap_Deposit_Balance: string;
+    /**
+     * When Zapping in deposit column the max amount in token in Dollar
+     */
+    Max_Zap_Deposit_Balance_Dollar: string;
+    /**
+     * When Depositing in deposit column the max amount in token
+     */
+    Max_Token_Deposit_Balance: string;
+    /**
+     * When Depositing in deposit column the max amount in token in Dollar
+     */
+    Max_Token_Deposit_Balance_Dollar: string;
+    /**
+     * When Zapping in withdraw column the max amount in token
+     */
+    Max_Zap_Withdraw_Balance: string;
+    /**
+     * When Zapping in withdraw column the max amount in token in Dollar
+     */
+    Max_Zap_Withdraw_Balance_Dollar: string;
+    /**
+     * When Withdrawing in withdraw column the max amount in token
+     */
+    Max_Token_Withdraw_Balance: string;
+    /**
+     * When Withdrawing in withdraw column the max amount in token in Dollar
+     */
+    Max_Token_Withdraw_Balance_Dollar: string;
+    /**
+     * Token address of zapping token in deposit column
+     */
+    Zap_Deposit_Token_Address: string;
+    /**
+     * Token address of depositing token in deposit column
+     */
+    Token_Deposit_Token_Address: string;
+    /**
+     * Token address of zapping token in withdraw column
+     */
+    Zap_Withdraw_Token_Address: string;
+    /**
+     * Token address of withdrawing token in withdraw column
+     */
+    Token_Withdraw_Token_Address: string;
+    /**
+     * Token symbol for zap
+     */
+    Zap_Token_Symbol: string;
+    /**
+     * Token symbol for deposit or withdraw
+     */
+    Token_Token_Symbol: string;
+    /**
+     * Zap Enabled or not, used in showing zap toggle
+     */
+    Zap_Enabled?: boolean;
+    /**
+     * Price of token when depositing or withdrawing
+     */
+    TOKEN_PRICE: number;
+    /**
+     * Price of token which is used in zapping
+     */
+    ZAP_TOKEN_PRICE: number;
 }

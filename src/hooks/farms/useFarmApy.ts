@@ -1,40 +1,11 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { getApy } from "src/api/apy";
-import { APY_TOKEN, APY_VISION_URL } from "src/config/constants";
 import { FARM_APY } from "src/config/constants/query";
-import { Farm, Apys } from "src/types";
+import { Apys } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import useFarms from "./useFarms";
-
-/**
- * Gets Apy of Farm
- * @param farm
- * @returns apy
- */
-const useFarmApy = (farm: Pick<Farm, "lp_address" | "originPlatform">) => {
-    const { NETWORK_NAME, CHAIN_ID } = useConstants();
-    const { provider } = useWallet();
-
-    const {
-        data: apy,
-        refetch,
-        isLoading,
-        isFetching,
-    } = useQuery(FARM_APY(farm.lp_address, NETWORK_NAME), () => getApy(farm, CHAIN_ID, provider), {
-        enabled: !!NETWORK_NAME && !!farm.lp_address && !!CHAIN_ID,
-        initialData: {
-            feeApr: 0,
-            rewardsApr: 0,
-            apy: 0,
-            compounding: 0,
-        },
-    });
-
-    return { ...apy, refetch, isLoading, isFetching };
-};
 
 /**
  * Gets Apy of Farm
@@ -74,5 +45,3 @@ export const useFarmApys = () => {
 
     return { apys, isFetching };
 };
-
-export default useFarmApy;
