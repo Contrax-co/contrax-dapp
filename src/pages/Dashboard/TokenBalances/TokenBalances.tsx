@@ -17,7 +17,7 @@ export const TokenBalances: FC<IProps> = (props) => {
                             <p className={styles.name}>{token.name}</p>
                             <p className={styles.balance}>{ethers.utils.commify(token.balance)}</p>
                         </div>
-                        <p className={styles.usdBalannce}>${ethers.utils.commify(token.usdBalance)}</p>
+                        <p className={styles.usdBalance}>${ethers.utils.commify(token.usdBalance)}</p>
                     </div>
                 ) : null
             )}
