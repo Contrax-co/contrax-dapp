@@ -49,7 +49,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
                                 <div className={`vault_items_bottom_categories`}>
                                     <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
-                                        Growth Percentage
+                                        Growth %
                                     </p>
                                     <p> {apy.toFixed(2)}%</p>
                                 </div>
