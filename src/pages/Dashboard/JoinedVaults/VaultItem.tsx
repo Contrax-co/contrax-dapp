@@ -49,18 +49,18 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
                                 <div className={`vault_items_bottom_categories`}>
                                     <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
-                                        Pool Share
+                                        Growth Percentage
                                     </p>
-                                    <p>{((userVaultBalance / totalVaultBalance) * 100).toFixed(2)}%</p>
+                                    <p> {apy.toFixed(2)}%</p>
                                 </div>
                             </div>
 
-                            <div className={`vault_items_bottom_row`}>
+                            {/* <div className={`vault_items_bottom_row`}>
                                 <div className={`vault_items_bottom_categories`}>
                                     <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
-                                        APY
+                                        Pool Share
                                     </p>
-                                    <p> {apy.toFixed(2)}%</p>
+                                    <p>{((userVaultBalance / totalVaultBalance) * 100).toFixed(2)}%</p>
                                 </div>
 
                                 <div className={`vault_items_bottom_categories`}>
@@ -74,7 +74,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                         })}
                                     </p>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
