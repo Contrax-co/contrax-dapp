@@ -14,11 +14,8 @@ export const TokenBalances: FC<IProps> = (props) => {
                     <div className={styles.tokenCard}>
                         <img className={styles.tokenLogo} src={token.logo} alt="logo" />
                         <div className={styles.tokenDesription}>
-                            <p>TOKEN BALANCE</p>
-                            <p>
-                                <span className={styles.balance}>{ethers.utils.commify(token.balance)}</span>
-                                <span className={styles.unit}>{token.name}</span>
-                            </p>
+                            <p className={styles.name}>{token.name}</p>
+                            <p className={styles.balance}>{ethers.utils.commify(token.balance)}</p>
                         </div>
                     </div>
                 ) : null

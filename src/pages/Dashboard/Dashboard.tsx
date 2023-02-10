@@ -83,9 +83,14 @@ function Dashboard() {
                 </div>
             </div>
 
-            <TokenBalances />
+            <div className={`dashboard_section`}>
+                <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
+                    Token Balances
+                </p>
+                <TokenBalances />
+            </div>
 
-            <div className={`dashboard_vaults`}>
+            <div className={`dashboard_section`}>
                 <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
                     Joined Vaults
                 </p>
