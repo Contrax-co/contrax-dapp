@@ -1,0 +1,61 @@
+@import "src/styles/variables.scss";
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    overflow: auto;
+    padding: 10px 30px;
+}
+
+.tokenCard{
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: -webkit-fill-available;
+    padding: 10px 20px;
+    border-radius: 20px;
+    background-color: $background-secondary;
+
+    & p {
+        margin: 2px 0px;
+    }
+}
+
+.tokenLogo{
+    width: 35px;
+    height: 35px;
+}
+
+.tokenDesription {
+    color: $color-white;
+    font-size: 12px;
+}
+.balance {
+    font-weight: 700;
+    font-size: 16px;
+}
+.unit{
+    font-size: 10px;
+}
+
+@media only screen and (max-width: 1280px) {
+    .container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+@media only screen and (max-width: 1080px) {
+    .container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media only screen and (max-width: 660px) {
+    .container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media only screen and (max-width: 500px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+}

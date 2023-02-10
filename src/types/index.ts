@@ -67,6 +67,12 @@ export interface Apys {
     compounding: number;
 }
 
+export interface Token {
+    name: string;
+    logo: string;
+    balance: string;
+}
+
 export interface CovalentToken {
     balance: string;
     balance_24h: string;
