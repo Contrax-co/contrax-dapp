@@ -13,6 +13,7 @@ import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import useFarms from "src/hooks/farms/useFarms";
 import useFarmsBalances from "src/hooks/farms/useFarmsBalances";
+import { TokenBalances } from "./TokenBalances/TokenBalances";
 
 let redirected = false;
 
@@ -81,6 +82,8 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
+
+            <TokenBalances />
 
             <div className={`dashboard_vaults`}>
                 <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>

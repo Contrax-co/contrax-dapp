@@ -27,6 +27,8 @@ export interface Farm {
     originPlatform?: FarmOriginPlatform;
     token_type: string;
     name: string;
+    name1: string;
+    name2?: string;
     platform: string;
     platform_alt: string;
     total_apy?: number;
@@ -65,6 +67,14 @@ export interface Apys {
     rewardsApr: number;
     apy: number;
     compounding: number;
+}
+
+export interface Token {
+    address: string;
+    name: string;
+    logo: string;
+    balance: string;
+    decimals: number;
 }
 
 export interface CovalentToken {
