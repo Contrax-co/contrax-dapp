@@ -11,72 +11,27 @@ import useFarmsBalances from "./useFarmsBalances";
 import useFarmsTotalSupply from "./useFarmsTotalSupply";
 import { validateNumberDecimals } from "src/utils/common";
 import { useApprovalErc20 } from "../useApproval";
+import farmFunctions from "src/api/pools";
+import { queryClient } from "src/config/reactQuery";
 
 const useZapOut = (farm: Farm) => {
-    const { provider, signer, currentWallet } = useWallet();
-    const { NETWORK_NAME, CONTRACTS, BLOCK_EXPLORER_URL } = useConstants();
-    const { notifySuccess, notifyLoading, notifyError, dismissNotify } = useNotify();
-    const { refetch: refetchVaultBalance, balances } = useBalances([
-        { address: farm.vault_addr, decimals: farm.decimals },
-    ]);
-    const vaultUserBalance = useMemo(() => balances[farm.vault_addr], [balances, farm.vault_addr]);
-    const { approve } = useApprovalErc20();
+    const { signer, currentWallet, networkId: chainId } = useWallet();
+    const { NETWORK_NAME } = useConstants();
+    const { refetch: refetchVaultBalance } = useBalances([{ address: farm.vault_addr, decimals: farm.decimals }]);
 
     const { refetch: refetchVaultBalances } = useFarmsBalances();
 
     const { refetch: refetchVaultSupplies } = useFarmsTotalSupply();
 
     const _zapOut = async ({ withdrawAmt, max }: { withdrawAmt: number; max?: boolean }) => {
-        if (!provider || !signer || !farm) return;
-        const zapperContract = new ethers.Contract(farm.zapper_addr, farm.zapper_abi, signer);
-        const notiId = notifyLoading("Approving Withdraw!", "Please wait...");
-        try {
-            /*
-             * Execute the actual withdraw functionality from smart contract
-             */
-            let formattedBal;
-            formattedBal = ethers.utils.parseUnits(validateNumberDecimals(withdrawAmt), farm.decimals || 18);
-
-            await approve(farm.vault_addr, farm.zapper_addr, vaultUserBalance);
-            await approve(farm.lp_address, farm.zapper_addr, vaultUserBalance);
-
-            dismissNotify(notiId);
-            notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
-
-            let withdrawTxn = await zapperContract.zapOutAndSwap(
-                farm.vault_addr,
-                max ? vaultUserBalance : formattedBal,
-                CONTRACTS.wethAddress,
-                0
-            );
-
-            dismissNotify(notiId);
-            notifyLoading("Withdrawing...", `Txn hash: ${withdrawTxn.hash}`, {
-                id: notiId,
-                buttons: [
-                    {
-                        name: "View",
-                        // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${withdrawTxn.hash}`, "_blank"),
-                    },
-                ],
-            });
-
-            const withdrawTxnStatus = await withdrawTxn.wait(1);
-            if (!withdrawTxnStatus.status) {
-                throw new Error("Error withdrawing Try again!");
-            } else {
-                dismissNotify(notiId);
-                notifySuccess("Withdrawn!", `successfully`);
-                refetchVaultBalance();
-            }
-        } catch (error) {
-            let err = JSON.parse(JSON.stringify(error));
-            dismissNotify(notiId);
-            notifyError("Error!", err.reason || err.message);
-        }
-        refetchVaultBalances();
-        refetchVaultSupplies();
+        const cb = async () => {
+            refetchVaultBalance();
+            refetchVaultBalances();
+            refetchVaultSupplies();
+            // @ts-ignore
+            await queryClient.refetchQueries(["farm", "data"], { active: true });
+        };
+        await farmFunctions[farm.id].zapOut({ zapAmount: withdrawAmt, currentWallet, signer, chainId, max, cb });
     };
 
     const {

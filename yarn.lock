@@ -8769,6 +8769,7 @@ __metadata:
     react-app-rewired: ^2.2.1
     react-dom: ^18.2.0
     react-google-charts: ^4.0.0
+    react-hooks-outside: ^1.0.3
     react-icons: ^4.4.0
     react-jazzicon: ^1.0.4
     react-redux: ^8.0.5
@@ -11553,7 +11554,7 @@ __metadata:
 
 "fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -17454,6 +17455,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-hooks-outside@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "react-hooks-outside@npm:1.0.3"
+  peerDependencies:
+    react: 17.0.1
+    react-dom: 17.0.1
+    react-scripts: 4.0.0
+  checksum: 6c86151f19933144eefb53f252bff4b961e06629bbccb0c451dd9dae44beb5ddc7c5214d00ce3f8abc9373e02cdba69b43d1e1430ae20c47f30d6f935ea94b33
+  languageName: node
+  linkType: hard
+
 "react-icons@npm:^4.4.0":
   version: 4.7.1
   resolution: "react-icons@npm:4.7.1"
@@ -18189,7 +18201,7 @@ __metadata:
 
 "resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>":
   version: 1.22.1
-  resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=c3c19d"
+  resolution: "resolve@patch:resolve@npm%3A1.22.1#~builtin<compat/resolve>::version=1.22.1&hash=07638b"
   dependencies:
     is-core-module: ^2.9.0
     path-parse: ^1.0.7
@@ -18202,7 +18214,7 @@ __metadata:
 
 "resolve@patch:resolve@^2.0.0-next.4#~builtin<compat/resolve>":
   version: 2.0.0-next.4
-  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=c3c19d"
+  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.4#~builtin<compat/resolve>::version=2.0.0-next.4&hash=07638b"
   dependencies:
     is-core-module: ^2.9.0
     path-parse: ^1.0.7
@@ -20189,7 +20201,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.8.4#~builtin<compat/typescript>":
   version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=d73830"
+  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=701156"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
