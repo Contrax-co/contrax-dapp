@@ -1,6 +1,7 @@
 import { Farm, Token } from "src/types";
 import useFarms from "./farms/useFarms";
 import useBalances from "./useBalances";
+import usePriceOfTokens from "./usePriceOfTokens";
 
 export const useTokens = (): { tokens: Token[] } => {
     const { farms } = useFarms();
@@ -11,6 +12,7 @@ export const useTokens = (): { tokens: Token[] } => {
                 logo: farm.logo1,
                 name: farm.name1,
                 balance: "",
+                usdBalance: "",
                 decimals: farm.decimals,
             });
         }
@@ -21,16 +23,20 @@ export const useTokens = (): { tokens: Token[] } => {
                 logo: farm.logo2 || "",
                 name: farm.name2 || "",
                 balance: "",
+                usdBalance: "",
                 decimals: farm.decimals || 18,
             });
         }
         return result;
     }, []);
+    const { prices } = usePriceOfTokens(tokens.map((token) => token.address));
     const { formattedBalances } = useBalances(
         tokens.map((token) => ({ address: token.address, decimals: token.decimals }))
     );
     for (const token of tokens) {
         token.balance = formattedBalances[token.address].toFixed(2);
+        token.usdBalance = (prices[token.address] * formattedBalances[token.address]).toFixed(2);
     }
+    console.log(tokens);
     return { tokens };
 };

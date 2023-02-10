@@ -8,20 +8,22 @@
 }
 
 .tokenCard{
-    display: flex;
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
     align-items: center;
     gap: 18px;
     width: -webkit-fill-available;
     padding: 10px 20px;
     border-radius: 20px;
+    color: $color-white;
     background-color: $background-secondary;
-
     & p {
         margin: 2px 0px;
-        display: flex;
-        align-items: flex-end;
-        gap: 4px;
     }
+}
+.wrapper {
+    display: flex;
+    justify-content: space-between;
 }
 
 .tokenLogo{
@@ -29,9 +31,6 @@
     height: 35px;
 }
 
-.tokenDesription {
-    color: $color-white;
-}
 .name{
     font-size: 16px;
     font-weight: 600;
@@ -39,6 +38,10 @@
 .balance {
     font-size: 12px;
     font-weight: 400;
+}
+.usdBalance{
+    margin-left: auto;
+    font-weight: 500;
 }
 
 @media only screen and (max-width: 1280px) {
