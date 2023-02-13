@@ -55,23 +55,23 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
 
                 {/* APY */}
 
-                <div className={`container1 ${lightMode && "container1--light"}`}>
+                <div className={`container1 ${lightMode && "container1--light"} desktop`}>
                     <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{apy.toFixed(2)}%</p>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{apy.toFixed(3)}%</p>
                         <a
                             id={key}
                             data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
                                         ${
-                                            Number(rewardsApr.toFixed(2))
-                                                ? `<p>LP Rewards: ${rewardsApr.toFixed(2)}%</p>`
+                                            Number(rewardsApr.toFixed(3))
+                                                ? `<p>LP Rewards: ${rewardsApr.toFixed(3)}%</p>`
                                                 : ``
                                         }
-                                        ${Number(feeApr.toFixed(2)) ? `<p>Trading Fees: ${feeApr.toFixed(2)}%</p>` : ``}
+                                        ${Number(feeApr.toFixed(2)) ? `<p>Trading Fees: ${feeApr.toFixed(3)}%</p>` : ``}
                                         ${
-                                            Number(compounding.toFixed(2))
-                                                ? `<p>Compounding: ${compounding.toFixed(2)}%</p>`
+                                            Number(compounding.toFixed(3))
+                                                ? `<p>Compounding: ${compounding.toFixed(3)}%</p>`
                                                 : ``
                                         }`}
                         >
@@ -84,12 +84,12 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
                 {/* How much the user has deposited */}
 
                 {userVaultBal * priceOfSingleToken < 0.01 ? (
-                    <div className={`container ${lightMode && "container--light"}`}>
+                    <div className={`container ${lightMode && "container--light"} desktop`}>
                         <p className={`pool_name ${lightMode && "pool_name--light"}`}></p>
                         <p className={`deposited ${lightMode && "deposited--light"}`}></p>
                     </div>
                 ) : (
-                    <div className={`container ${lightMode && "container--light"}`}>
+                    <div className={`container ${lightMode && "container--light"} desktop`}>
                         <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                             {(userVaultBal * priceOfSingleToken).toLocaleString("en-US", {
                                 style: "currency",
@@ -102,6 +102,44 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
                         </p>
                     </div>
                 )}
+
+                {/* How much the user has Earned */}
+
+                <div className={`container1 ${lightMode && "container1--light"} desktop`}>
+                    <p className={`pool_name ${lightMode && "pool_name--light"}`}>--</p>
+                </div>
+
+                {/* Mobile View */}
+
+                <div className={`mobile-view ${lightMode && "mobile-view--light"}`}>
+                    {/* APY */}
+
+                    <div className={`container1 ${lightMode && "container1--light"} apy`}>
+                        <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>APY</p>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{apy.toFixed(3)}%</p>
+                    </div>
+
+                    {/* How much the user has deposited */}
+
+                    {userVaultBal * priceOfSingleToken < 0.01 ? null : (
+                        <div className={`container ${lightMode && "container--light"} deposite`}>
+                            <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>Deposited</p>
+                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                {(userVaultBal * priceOfSingleToken).toLocaleString("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                })}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* How much the user has Earned */}
+
+                    <div className={`container1 ${lightMode && "container1--light"} earned`}>
+                        <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>Earned</p>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>--</p>
+                    </div>
+                </div>
 
                 <div className={`dropdown ${lightMode && "dropdown--light"}`}>
                     {!dropdown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}

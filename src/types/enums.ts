@@ -10,6 +10,7 @@ export enum FarmTableColumns {
     Token = "TOKEN",
     Deposited = "DEPOSITED",
     APY = "APY",
+    EARNED = "EARNED",
 }
 
 export enum FarmType {

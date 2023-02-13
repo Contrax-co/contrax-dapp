@@ -104,9 +104,19 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                <p onClick={() => handleSort(FarmTableColumns.Deposited)}>
+                <p onClick={() => handleSort(FarmTableColumns.Deposited)} className={`header_deposite`}>
                     <span>{FarmTableColumns.Deposited}</span>
                     {sortedBuy === FarmTableColumns.Deposited ? (
+                        decOrder ? (
+                            <RiArrowDownSLine fontSize={21} />
+                        ) : (
+                            <RiArrowUpSLine fontSize={21} />
+                        )
+                    ) : null}
+                </p>
+                <p onClick={() => handleSort(FarmTableColumns.EARNED)} className={`header_earned`}>
+                    <span>{FarmTableColumns.EARNED}</span>
+                    {sortedBuy === FarmTableColumns.EARNED ? (
                         decOrder ? (
                             <RiArrowDownSLine fontSize={21} />
                         ) : (

@@ -11,25 +11,25 @@
   justify-content: space-between;
 }
 
-.farm_header > p {
+.farm_header>p {
   font-size: 34px;
   font-weight: bold;
   color: white;
 }
 
-.farm_header--light > p {
+.farm_header--light>p {
   font-size: 34px;
   font-weight: bold;
   color: black;
 }
 
-.farms > p {
+.farms>p {
   color: white;
   font-size: 30px;
   font-weight: bold;
 }
 
-.farms--light > p {
+.farms--light>p {
   color: #009aff;
 }
 
@@ -45,15 +45,16 @@
 
 .farm_table_row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 24px;
+  grid-template-columns: 2fr 1fr 1fr 1fr 24px;
   gap: 20px;
   padding: 20px 26px;
   text-align: center;
   min-height: 10vh;
 }
+
 .farm_table_header {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 24px;
+  grid-template-columns: 2fr 1fr 1fr 1fr 24px;
   gap: 20px;
   padding: 20px 26px;
   text-align: center;
@@ -61,15 +62,19 @@
   font-size: 13px;
   font-weight: bold;
 }
+
 .farm_table_header_light {
   color: black;
 }
-.farm_table_header > p {
+
+.farm_table_header>p {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.farm_table_header span,.farm_table_header svg {
+
+.farm_table_header span,
+.farm_table_header svg {
   cursor: pointer;
 }
 
@@ -83,13 +88,16 @@
   border-radius: 20px;
   margin-bottom: 7px;
 }
+
 .farm_table_pool:hover {
   background-color: #032a51;
   cursor: pointer;
 }
+
 .farm_table_pool_light {
   background-color: white;
 }
+
 .farm_table_pool_light:hover {
   background-color: white;
   cursor: pointer;
@@ -125,32 +133,63 @@
   background-color: #01224377;
   border-radius: 20px;
 }
+
 .change_network_section_light {
   color: #8798ad;
   background-color: white;
 }
 
-@media (max-width: 768px) { 
- .farm__title{
-  padding-left:10px;
-  padding-right:10px;
-  font-size:11px;
- }
+@media (max-width: 768px) {
+  .farm__title {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 11px;
+  }
 
- .farm_header > p {
-  font-size:20px;
- }
+  .farm_header>p {
+    font-size: 20px;
+  }
 
- .pools_list{
-  margin-top:5px;
- }
+  .pools_list {
+    margin-top: 5px;
+  }
 
- .farm_table_row{
-  min-height: 9vh;
- }
+  .farm_table_row {
+    min-height: 9vh;
+    grid-template-columns: 1fr 2fr 24px;
+  }
+
+  .farm_table_header {
+    display: none;
+  }
 }
-@media (max-width: 650px) { 
+
+@media (max-width: 650px) {
   .farms {
     padding: 10px;
   }
+
+  /* .farm_table_row {
+    grid-template-columns: 3fr 1fr 24px;
+  }
+
+  .farm_table_header {
+    grid-template-columns: 3fr 1fr 24px;
+  }
+
+  .container-deposite {
+    display: none !important;
+  }
+
+  .container-earn {
+    display: none !important;
+  }
+
+  .header_deposite {
+    display: none !important;
+  }
+
+  .header_earned {
+    display: none !important;
+  } */
 }

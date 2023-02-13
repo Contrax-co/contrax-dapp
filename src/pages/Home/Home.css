@@ -36,13 +36,13 @@
   padding-top: 20px;
 }
 
-.rightside > p {
+.rightside>p {
   color: white;
   font-size: 30px;
   font-weight: bold;
 }
 
-.rightside--light > p {
+.rightside--light>p {
   color: #009aff;
 }
 
@@ -50,15 +50,14 @@
   margin-bottom: 70px;
 }
 
-.hamburger_menu{
-  display:none;
+.hamburger_menu {
+  display: none;
 }
 
 
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .sidebar {
     display: none;
   }
-
 }
