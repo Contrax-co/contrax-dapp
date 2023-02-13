@@ -25,6 +25,8 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
     return (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
             <div className="farm_table_row" key={farm.id} onClick={() => setDropDown(!dropdown)}>
+                {/* Asset Name and Logo */}
+
                 <div className="title_container">
                     <div className="pair">
                         {farm.logo1 ? (
@@ -51,27 +53,7 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
                     </div>
                 </div>
 
-                {/* How much the user has deposited */}
-
-                {userVaultBal * priceOfSingleToken < 0.01 ? (
-                    <div className={`container ${lightMode && "container--light"}`}>
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}></p>
-                        <p className={`deposited ${lightMode && "deposited--light"}`}></p>
-                    </div>
-                ) : (
-                    <div className={`container ${lightMode && "container--light"}`}>
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                            {(userVaultBal * priceOfSingleToken).toLocaleString("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                            })}
-                        </p>
-                        <p className={`deposited ${lightMode && "deposited--light"}`}>
-                            {userVaultBal.toFixed(10)}
-                            &nbsp;{farm.name}
-                        </p>
-                    </div>
-                )}
+                {/* APY */}
 
                 <div className={`container1 ${lightMode && "container1--light"}`}>
                     <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
@@ -98,6 +80,28 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
                         <Tooltip anchorId={key} className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`} />
                     </div>
                 </div>
+
+                {/* How much the user has deposited */}
+
+                {userVaultBal * priceOfSingleToken < 0.01 ? (
+                    <div className={`container ${lightMode && "container--light"}`}>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}></p>
+                        <p className={`deposited ${lightMode && "deposited--light"}`}></p>
+                    </div>
+                ) : (
+                    <div className={`container ${lightMode && "container--light"}`}>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                            {(userVaultBal * priceOfSingleToken).toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                            })}
+                        </p>
+                        <p className={`deposited ${lightMode && "deposited--light"}`}>
+                            {userVaultBal.toFixed(10)}
+                            &nbsp;{farm.name}
+                        </p>
+                    </div>
+                )}
 
                 <div className={`dropdown ${lightMode && "dropdown--light"}`}>
                     {!dropdown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}

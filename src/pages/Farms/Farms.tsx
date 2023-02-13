@@ -94,9 +94,9 @@ function Farms() {
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     {FarmTableColumns.Token}
                 </p>
-                <p onClick={() => handleSort(FarmTableColumns.Deposited)}>
-                    <span>{FarmTableColumns.Deposited}</span>
-                    {sortedBuy === FarmTableColumns.Deposited ? (
+                <p onClick={() => handleSort(FarmTableColumns.APY)}>
+                    <span>{FarmTableColumns.APY}</span>
+                    {sortedBuy === FarmTableColumns.APY ? (
                         decOrder ? (
                             <RiArrowDownSLine fontSize={21} />
                         ) : (
@@ -104,9 +104,9 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                <p onClick={() => handleSort(FarmTableColumns.APY)}>
-                    <span>{FarmTableColumns.APY}</span>
-                    {sortedBuy === FarmTableColumns.APY ? (
+                <p onClick={() => handleSort(FarmTableColumns.Deposited)}>
+                    <span>{FarmTableColumns.Deposited}</span>
+                    {sortedBuy === FarmTableColumns.Deposited ? (
                         decOrder ? (
                             <RiArrowDownSLine fontSize={21} />
                         ) : (
