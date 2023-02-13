@@ -53,7 +53,7 @@ function TopBar({ openModal }: any) {
                     >
                         <p>Exchange</p>
                     </a>
-                    <a
+                    {/* <a
                         href="#token"
                         onClick={() => {
                             navigate(RoutesPaths.CreateToken);
@@ -61,8 +61,8 @@ function TopBar({ openModal }: any) {
                         }}
                     >
                         <p>Create Token</p>
-                    </a>
-                    <a
+                    </a> */}
+                    {/* <a
                         href="#pool"
                         onClick={() => {
                             navigate(RoutesPaths.CreatePool);
@@ -70,7 +70,7 @@ function TopBar({ openModal }: any) {
                         }}
                     >
                         <p>Create Pool</p>
-                    </a>
+                    </a> */}
                     <a
                         href="#docs"
                         onClick={() => {

@@ -44,7 +44,7 @@ const lightSocketTheme = {
 enum Tab {
     Swap,
     Bridge,
-    Onramp,
+    Buy,
 }
 const Exchange: React.FC<IProps> = () => {
     const { currentWallet, connectWallet, chains, switchNetworkAsync, signer: wagmiSigner } = useWallet();
@@ -75,7 +75,7 @@ const Exchange: React.FC<IProps> = () => {
         [farms]
     );
     React.useEffect(() => {
-        if (tab === Tab.Onramp) {
+        if (tab === Tab.Buy) {
             const ramp = new RampInstantSDK({
                 userAddress: currentWallet,
                 defaultAsset: "ARBITRUM_ETH",
@@ -151,12 +151,7 @@ const Exchange: React.FC<IProps> = () => {
                     description="Bridge"
                     active={tab === Tab.Bridge}
                 />
-                <PoolButton
-                    variant={2}
-                    onClick={() => setTab(Tab.Onramp)}
-                    description="Onramp"
-                    active={tab === Tab.Onramp}
-                />
+                <PoolButton variant={2} onClick={() => setTab(Tab.Buy)} description="Buy" active={tab === Tab.Buy} />
             </div>
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
                 {tab === Tab.Swap && SOCKET_API_KEY && (
@@ -199,8 +194,8 @@ const Exchange: React.FC<IProps> = () => {
                         customize={lightMode ? lightSocketTheme : darkSocketTheme}
                     />
                 )}
-                {tab === Tab.Onramp && (
-                    <div className={styles.darkOnramp}>
+                {tab === Tab.Buy && (
+                    <div className={styles.darkBuy}>
                         <div style={{ width: 375, height: 667 }} ref={containerRef}></div>
                     </div>
                 )}

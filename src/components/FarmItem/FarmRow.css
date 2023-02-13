@@ -27,27 +27,33 @@
   height: 15vh;
   justify-content: space-evenly;
 }
+
 .pool_row {
   width: 100%;
   height: 15vh;
 }
+
 .farm_row {
   width: 100%;
   background-color: #012243;
 }
+
 .farm_row_top {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   padding: 10px;
 }
+
 .farm_row_bottom {
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
   padding: 10px;
 }
+
 .farm_row_divider {
   padding: 10px;
 }
+
 .farm_row_main {
   height: 7vh;
   padding: 20px;
@@ -166,7 +172,7 @@
   align-items: center;
 }
 
-.liquidity_container{
+.liquidity_container {
   flex: 2;
   display: flex;
   justify-content: center;
@@ -299,29 +305,63 @@
 }
 
 @media (max-width: 1440px) {
-  .logo{
+  .logo {
     margin-left: -42px;
   }
 }
+
 @media (max-width: 1024px) {
-  .logo{
+  .logo {
     width: 45px;
     height: 45px;
     margin-left: -34px;
   }
-  .logofirst{
+
+  .logofirst {
     width: 45px;
     height: 45px;
   }
+
   .pool_name {
     font-size: 16px;
     font-weight: 800;
   }
+
   .deposited {
     font-size: 13px;
   }
 }
+
+.mobile-view {
+  display: none;
+}
+
 @media (max-width: 768px) {
+  .desktop {
+    display: none;
+  }
+
+  .mobile-view {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 8px;
+  }
+
+  .apy,
+  .earned,
+  .deposite {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 60px;
+  }
+
+  .pool_name_head {
+    color: var(--color_grey);
+    margin-bottom: -6px !important;
+  }
 
   .pools {
     overflow: auto;
@@ -387,9 +427,14 @@
     font-size: 11px;
     margin-bottom: 2px;
   }
+
   .deposited {
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .see_details_description {
+    font-size: 15px;
   }
 }
