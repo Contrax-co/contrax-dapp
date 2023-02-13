@@ -6,6 +6,7 @@ export enum FarmOriginPlatform {
     Shushiswap = "Sushiswap",
     GMX = "GMX",
     Dodo = "Dodo",
+    Frax = "Frax",
 }
 export enum FarmTableColumns {
     Token = "TOKEN",

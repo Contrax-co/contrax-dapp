@@ -30,6 +30,7 @@
   {
     "id": 9,
     "token_type": "Token",
+    "originPlatform": "Frax",
     "name": "FRAX",
     "name1": "FRAX",
     "stableCoin": true,

@@ -1,4 +1,9 @@
-import { SUSHUISWAP_GRAPH_URL, SHUSHISWAP_CHEF_GRAPH_URL, DODO_GRAPH_URL } from "src/config/constants/index";
+import {
+    SUSHUISWAP_GRAPH_URL,
+    SHUSHISWAP_CHEF_GRAPH_URL,
+    DODO_GRAPH_URL,
+    FRAX_APR_API_URL,
+} from "src/config/constants/index";
 import { FarmOriginPlatform } from "src/types/enums";
 import { Apys, Farm } from "src/types";
 import axios from "axios";
@@ -8,6 +13,7 @@ import { BigNumber, providers, Contract } from "ethers";
 import { erc20ABI } from "wagmi";
 import { calcCompoundingApy, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
+import jsonp from "jsonp";
 
 interface GraphResponse {
     apr: string;
@@ -101,7 +107,7 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     const feeApr = obj.feeApr;
     const compounding = calcCompoundingApy(rewardsApr);
 
-    const apy = feeApr + compounding; // RewardsApr is included in compounding
+    const apy = feeApr + compounding + rewardsApr; // RewardsApr is included in compounding
 
     return {
         feeApr,
@@ -143,6 +149,21 @@ const getDodoApy = async (pairAddress: string) => {
     };
 };
 
+const getFraxApy = async () => {
+    const res = await axios.get(`https://api.allorigins.win/get?url=${FRAX_APR_API_URL}`);
+    const apr =
+        JSON.parse(res.data.contents).find(
+            (item: any) => item.pid === 3 && item.token === "FRAX" && item.chainId === 110
+        ).apr * 100;
+
+    return {
+        feeApr: 0,
+        rewardsApr: 0,
+        apy: apr,
+        compounding: 0,
+    };
+};
+
 export const getApy = async (
     farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy">,
     chainId: number,
@@ -156,6 +177,8 @@ export const getApy = async (
             return getGmxApyArbitrum(provider, currentWallet);
         case FarmOriginPlatform.Dodo:
             return getDodoApy(farm.lp_address);
+        case FarmOriginPlatform.Frax:
+            return getFraxApy();
 
         default:
             return {
