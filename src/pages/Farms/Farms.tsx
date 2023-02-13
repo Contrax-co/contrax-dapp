@@ -37,7 +37,7 @@ function Farms() {
                 : a.userVaultBalance * a.priceOfSingleToken > b.userVaultBalance * b.priceOfSingleToken
                 ? 1
                 : 0
-            : column === FarmTableColumns.GrowthPercentage
+            : column === FarmTableColumns.APY
             ? a.apys.apy < b.apys.apy
                 ? -1
                 : a.apys.apy > b.apys.apy
@@ -104,9 +104,9 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                <p onClick={() => handleSort(FarmTableColumns.GrowthPercentage)}>
-                    <span>{FarmTableColumns.GrowthPercentage}</span>
-                    {sortedBuy === FarmTableColumns.GrowthPercentage ? (
+                <p onClick={() => handleSort(FarmTableColumns.APY)}>
+                    <span>{FarmTableColumns.APY}</span>
+                    {sortedBuy === FarmTableColumns.APY ? (
                         decOrder ? (
                             <RiArrowDownSLine fontSize={21} />
                         ) : (
