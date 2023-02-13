@@ -37,6 +37,5 @@ export const useTokens = (): { tokens: Token[] } => {
         token.balance = formattedBalances[token.address].toFixed(2);
         token.usdBalance = (prices[token.address] * formattedBalances[token.address]).toFixed(2);
     }
-    console.log(tokens);
     return { tokens };
 };
