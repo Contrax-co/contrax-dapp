@@ -77,7 +77,7 @@ function Farms() {
                         setTab(1);
                         setSortedBuy(undefined);
                     }}
-                    description="Normal"
+                    description="Single Tokens"
                     active={tab === 1}
                 />
                 <PoolButton
@@ -86,7 +86,7 @@ function Farms() {
                         setTab(2);
                         setSortedBuy(undefined);
                     }}
-                    description="Advanced"
+                    description="Dual Tokens"
                     active={tab === 2}
                 />
             </div>
