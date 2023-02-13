@@ -37,7 +37,7 @@ function Farms() {
                 : a.userVaultBalance * a.priceOfSingleToken > b.userVaultBalance * b.priceOfSingleToken
                 ? 1
                 : 0
-            : column === FarmTableColumns.GrowthPercentage
+            : column === FarmTableColumns.APY
             ? a.apys.apy < b.apys.apy
                 ? -1
                 : a.apys.apy > b.apys.apy
@@ -77,7 +77,7 @@ function Farms() {
                         setTab(1);
                         setSortedBuy(undefined);
                     }}
-                    description="Normal"
+                    description="Single Tokens"
                     active={tab === 1}
                 />
                 <PoolButton
@@ -86,7 +86,7 @@ function Farms() {
                         setTab(2);
                         setSortedBuy(undefined);
                     }}
-                    description="Advanced"
+                    description="Dual Tokens"
                     active={tab === 2}
                 />
             </div>
@@ -94,7 +94,17 @@ function Farms() {
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     {FarmTableColumns.Token}
                 </p>
-                <p onClick={() => handleSort(FarmTableColumns.Deposited)}>
+                <p onClick={() => handleSort(FarmTableColumns.APY)}>
+                    <span>{FarmTableColumns.APY}</span>
+                    {sortedBuy === FarmTableColumns.APY ? (
+                        decOrder ? (
+                            <RiArrowDownSLine fontSize={21} />
+                        ) : (
+                            <RiArrowUpSLine fontSize={21} />
+                        )
+                    ) : null}
+                </p>
+                <p onClick={() => handleSort(FarmTableColumns.Deposited)} className={`header_deposite`}>
                     <span>{FarmTableColumns.Deposited}</span>
                     {sortedBuy === FarmTableColumns.Deposited ? (
                         decOrder ? (
@@ -104,9 +114,9 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                <p onClick={() => handleSort(FarmTableColumns.GrowthPercentage)}>
-                    <span>{FarmTableColumns.GrowthPercentage}</span>
-                    {sortedBuy === FarmTableColumns.GrowthPercentage ? (
+                <p onClick={() => handleSort(FarmTableColumns.EARNED)} className={`header_earned`}>
+                    <span>{FarmTableColumns.EARNED}</span>
+                    {sortedBuy === FarmTableColumns.EARNED ? (
                         decOrder ? (
                             <RiArrowDownSLine fontSize={21} />
                         ) : (

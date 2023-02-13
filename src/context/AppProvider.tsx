@@ -1,7 +1,7 @@
 import React from "react";
 
 export const AppContext = React.createContext({
-    lightMode: false,
+    lightMode: true,
     toggleLight: () => {},
 });
 
@@ -15,7 +15,7 @@ const AppProvider: React.FC<Props> = ({ children }) => {
         if (data != null) {
             return JSON.parse(data);
         } else {
-            return false;
+            return true;
         }
     });
 

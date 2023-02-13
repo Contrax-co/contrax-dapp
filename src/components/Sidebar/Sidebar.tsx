@@ -44,19 +44,19 @@ function Sidebar() {
                     active={pathname === RoutesPaths.Exchange}
                 />
 
-                <SidebarItem
+                {/* <SidebarItem
                     title="Create Token"
                     icon={<GiToken />}
                     onClick={() => navigate(RoutesPaths.CreateToken)}
                     active={pathname === RoutesPaths.CreateToken}
-                />
+                /> */}
 
-                <SidebarItem
+                {/* <SidebarItem
                     title="Create Pool"
                     icon={<RiFundsLine />}
                     onClick={() => navigate(RoutesPaths.CreatePool)}
                     active={pathname === RoutesPaths.CreatePool}
-                />
+                /> */}
 
                 <SidebarItem
                     title="User Guide"
