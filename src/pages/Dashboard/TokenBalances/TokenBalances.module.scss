@@ -21,6 +21,10 @@
         margin: 2px 0px;
     }
 }
+.tokenCardLight{
+    background-color: $color-white;
+    color: $color-black;
+}
 .wrapper {
     display: flex;
     justify-content: space-between;
