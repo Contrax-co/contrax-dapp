@@ -86,6 +86,7 @@
   {
     "id": 7,
     "token_type": "Token",
+    "originPlatform": "Dodo",
     "stableCoin": true,
     "name": "USDT",
     "name1": "USDT",
@@ -112,6 +113,7 @@
     "id": 6,
     "token_type": "Token",
     "stableCoin": true,
+    "originPlatform": "Dodo",
     "name": "USDC",
     "name1": "USDC",
     "platform": "Dodo",

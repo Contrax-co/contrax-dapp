@@ -1,4 +1,4 @@
-import { SUSHUISWAP_GRAPH_URL, SHUSHISWAP_CHEF_GRAPH_URL } from "src/config/constants/index";
+import { SUSHUISWAP_GRAPH_URL, SHUSHISWAP_CHEF_GRAPH_URL, DODO_GRAPH_URL } from "src/config/constants/index";
 import { FarmOriginPlatform } from "src/types/enums";
 import { Apys, Farm } from "src/types";
 import axios from "axios";
@@ -111,6 +111,38 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     };
 };
 
+const getDodoApy = async (pairAddress: string) => {
+    const res = await axios.post(DODO_GRAPH_URL, {
+        query: `
+    {
+        lpToken(id: "${pairAddress.toLowerCase()}") {
+          pair {
+            feeUSD
+            volumeUSD
+            quoteReserve
+            baseReserve
+          }
+        }
+      }
+    `,
+    });
+    const pairData = res.data.data.lpToken.pair as {
+        feeUSD: string;
+        volumeUSD: string;
+        quoteReserve: string;
+        baseReserve: string;
+    };
+
+    const feeApr = Number(pairData.feeUSD) / (Number(pairData.quoteReserve) + Number(pairData.baseReserve));
+
+    return {
+        feeApr: feeApr,
+        rewardsApr: 0,
+        apy: feeApr,
+        compounding: 0,
+    };
+};
+
 export const getApy = async (
     farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy">,
     chainId: number,
@@ -122,6 +154,9 @@ export const getApy = async (
             return getSushiswapApy(farm.lp_address.toLowerCase(), chainId, provider);
         case FarmOriginPlatform.GMX:
             return getGmxApyArbitrum(provider, currentWallet);
+        case FarmOriginPlatform.Dodo:
+            return getDodoApy(farm.lp_address);
+
         default:
             return {
                 feeApr: 0,
