@@ -120,25 +120,6 @@
   margin-bottom: 20px;
 }
 
-.change_network_section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 90px 24px;
-  text-align: center;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-  font-style: italic;
-  background-color: #01224377;
-  border-radius: 20px;
-}
-
-.change_network_section_light {
-  color: #8798ad;
-  background-color: white;
-}
-
 @media (max-width: 768px) {
   .farm__title {
     padding-left: 10px;

@@ -6,6 +6,7 @@ import styles from "./TokenBalances.module.scss";
 import ethLogo from "src/assets/images/ethereum-icon.png";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import useWallet from "src/hooks/useWallet";
+import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 
 interface IProps {}
 
@@ -13,9 +14,9 @@ export const TokenBalances: FC<IProps> = (props) => {
     const { lightMode } = useApp();
     const { tokens } = useTokens();
     const ethAddress = "0x0000000000000000000000000000000000000000";
-    const { balance } = useWallet();
+    const { balance, signer } = useWallet();
     const { prices } = usePriceOfTokens([ethAddress]);
-    return (
+    return signer ? (
         <div className={styles.container}>
             <div className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}>
                 <img className={styles.tokenLogo} src={ethLogo} alt="logo" />
@@ -38,5 +39,9 @@ export const TokenBalances: FC<IProps> = (props) => {
                 ) : null
             )}
         </div>
+    ) : (
+        <EmptyComponent style={{ paddingTop: 50, paddingBottom: 50 }}>
+            Connect your wallet to view your balances
+        </EmptyComponent>
     );
 };

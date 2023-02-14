@@ -4,15 +4,16 @@ import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import useApp from "src/hooks/useApp";
 import { useFarmDetails } from "src/hooks/farms/useFarms";
+import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 
 interface Props {}
 
 const Vaults: React.FC<Props> = () => {
     const { lightMode } = useApp();
-    const { networkId } = useWallet();
+    const { networkId, signer } = useWallet();
     const { farmDetails: vaults } = useFarmDetails();
 
-    return (
+    return signer ? (
         <div
             className={styles.vaults_container}
             style={networkId === defaultChainId ? undefined : { display: "block" }}
@@ -25,6 +26,8 @@ const Vaults: React.FC<Props> = () => {
                 </div>
             )}
         </div>
+    ) : (
+        <EmptyComponent>Connect your wallet to view your joined Vaults</EmptyComponent>
     );
 };
 
