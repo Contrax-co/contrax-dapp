@@ -52,7 +52,10 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                     <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
                                         APY
                                     </p>
-                                    <p> {floorToFixed(apy, 2)}%</p>
+                                    <p>
+                                        {apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : floorToFixed(apy, 2).toString()}
+                                        %
+                                    </p>
                                 </div>
                             </div>
                         </div>

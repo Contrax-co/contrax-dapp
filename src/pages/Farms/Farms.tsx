@@ -28,8 +28,6 @@ function Farms() {
         setSortedBuy(undefined);
     }, [networkId]);
 
-    useEffect(() => console.log("farms rerendered"));
-
     const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDetails, b: FarmDetails) =>
         (decOrder ? 1 : -1) *
         (column === FarmTableColumns.Deposited

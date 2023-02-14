@@ -58,7 +58,9 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
 
                 <div className={`container1 ${lightMode && "container1--light"} desktop`}>
                     <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{floorToFixed(apy, 2)}%</p>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                            {apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : floorToFixed(apy, 2).toString()}%
+                        </p>
                         <a
                             id={key}
                             data-tooltip-html={`<p>
@@ -117,7 +119,9 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
 
                     <div className={`container1 ${lightMode && "container1--light"} apy`}>
                         <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>APY</p>
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{floorToFixed(apy, 2)}%</p>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                            {apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : floorToFixed(apy, 2).toString()}%
+                        </p>
                     </div>
 
                     {/* How much the user has deposited */}

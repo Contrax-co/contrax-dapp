@@ -35,8 +35,14 @@ export const useTokens = (): { tokens: Token[] } => {
         tokens.map((token) => ({ address: token.address, decimals: token.decimals }))
     );
     for (const token of tokens) {
-        token.balance = floorToFixed(formattedBalances[token.address], 2).toString();
-        token.usdBalance = floorToFixed(prices[token.address] * formattedBalances[token.address], 2).toString();
+        token.balance =
+            formattedBalances[token.address] < 0.01
+                ? formattedBalances[token.address].toPrecision(2).slice(0, -1)
+                : floorToFixed(formattedBalances[token.address], 2).toString();
+        token.usdBalance =
+            prices[token.address] * formattedBalances[token.address] < 0.01
+                ? (prices[token.address] * formattedBalances[token.address]).toPrecision(2).slice(0, -1)
+                : floorToFixed(prices[token.address] * formattedBalances[token.address], 2).toString();
     }
     return { tokens };
 };

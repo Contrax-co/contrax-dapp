@@ -7,6 +7,7 @@ import ethLogo from "src/assets/images/ethereum-icon.png";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import useWallet from "src/hooks/useWallet";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
+import { floorToFixed } from "src/utils/common";
 
 interface IProps {}
 
@@ -22,9 +23,20 @@ export const TokenBalances: FC<IProps> = (props) => {
                 <img className={styles.tokenLogo} src={ethLogo} alt="logo" />
                 <div className={styles.tokenDesription}>
                     <p className={styles.name}>ETH</p>
-                    <p className={styles.balance}>{ethers.utils.commify(balance.toFixed(2))}</p>
+                    <p className={styles.balance}>
+                        {ethers.utils.commify(
+                            balance < 0.01 ? balance.toPrecision(2).slice(0, -1) : floorToFixed(balance, 2).toString()
+                        )}
+                    </p>
                 </div>
-                <p className={styles.usdBalance}>${ethers.utils.commify((balance * prices[ethAddress]).toFixed(2))}</p>
+                <p className={styles.usdBalance}>
+                    $
+                    {ethers.utils.commify(
+                        balance * prices[ethAddress] < 0.01
+                            ? (balance * prices[ethAddress]).toPrecision(2).slice(0, -1)
+                            : floorToFixed(balance * prices[ethAddress], 2).toString()
+                    )}
+                </p>
             </div>
             {tokens.map((token) =>
                 Number(token.balance) > 0.01 ? (
