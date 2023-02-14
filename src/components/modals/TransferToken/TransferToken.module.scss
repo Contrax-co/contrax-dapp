@@ -1,0 +1,30 @@
+@import "src/styles/variables.scss";
+
+.backdrop {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000099;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+.container {
+    min-height: 200px;
+    min-width: 500px;
+    color: $color_white;
+    background-color: $background_secondary;
+    box-shadow: 20px 30px 25px rgb(0 0 0 / 15%);
+    border-radius: 20px;
+    padding: 35px 50px;
+}
+
+.transferForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
