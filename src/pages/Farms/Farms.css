@@ -45,7 +45,7 @@
 
 .farm_table_row {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 24px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 24px;
   gap: 20px;
   padding: 20px 26px;
   text-align: center;
@@ -54,7 +54,7 @@
 
 .farm_table_header {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 24px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 24px;
   gap: 20px;
   padding: 20px 26px;
   text-align: center;
@@ -120,23 +120,14 @@
   margin-bottom: 20px;
 }
 
-.change_network_section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 90px 24px;
-  text-align: center;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-  font-style: italic;
-  background-color: #01224377;
-  border-radius: 20px;
-}
+@media (max-width: 1280px) {
+  .farm_table_row {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 24px;
+  }
 
-.change_network_section_light {
-  color: #8798ad;
-  background-color: white;
+  .farm_table_header {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 24px;
+  }
 }
 
 @media (max-width: 768px) {

@@ -1,4 +1,5 @@
 import { Farm, Token } from "src/types";
+import { floorToFixed } from "src/utils/common";
 import useFarms from "./farms/useFarms";
 import useBalances from "./useBalances";
 import usePriceOfTokens from "./usePriceOfTokens";
@@ -34,8 +35,14 @@ export const useTokens = (): { tokens: Token[] } => {
         tokens.map((token) => ({ address: token.address, decimals: token.decimals }))
     );
     for (const token of tokens) {
-        token.balance = formattedBalances[token.address].toFixed(2);
-        token.usdBalance = (prices[token.address] * formattedBalances[token.address]).toFixed(2);
+        token.balance =
+            formattedBalances[token.address] < 0.01
+                ? formattedBalances[token.address].toPrecision(2).slice(0, -1)
+                : floorToFixed(formattedBalances[token.address], 2).toString();
+        token.usdBalance =
+            prices[token.address] * formattedBalances[token.address] < 0.01
+                ? (prices[token.address] * formattedBalances[token.address]).toPrecision(2).slice(0, -1)
+                : floorToFixed(prices[token.address] * formattedBalances[token.address], 2).toString();
     }
     return { tokens };
 };
