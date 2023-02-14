@@ -10,6 +10,7 @@ import uuid from "react-uuid";
 import { FarmDetails } from "src/types";
 import DetailInput from "./components/DetailInput";
 import { FarmTransactionType } from "src/types/enums";
+import { floorToFixed } from "src/utils/common";
 
 interface Props {
     farm: FarmDetails;
@@ -57,7 +58,7 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
 
                 <div className={`container1 ${lightMode && "container1--light"} desktop`}>
                     <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{apy.toFixed(3)}%</p>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{floorToFixed(apy, 2)}%</p>
                         <a
                             id={key}
                             data-tooltip-html={`<p>
@@ -116,7 +117,7 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
 
                     <div className={`container1 ${lightMode && "container1--light"} apy`}>
                         <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>APY</p>
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{apy.toFixed(3)}%</p>
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{floorToFixed(apy, 2)}%</p>
                     </div>
 
                     {/* How much the user has deposited */}
