@@ -9,6 +9,7 @@ import PoolButton from "src/components/PoolButton/PoolButton";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
+import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 
 function Farms() {
     const { lightMode } = useApp();
@@ -26,8 +27,6 @@ function Farms() {
     useEffect(() => {
         setSortedBuy(undefined);
     }, [networkId]);
-
-    useEffect(() => console.log("farms rerendered"));
 
     const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDetails, b: FarmDetails) =>
         (decOrder ? 1 : -1) *
@@ -129,9 +128,7 @@ function Farms() {
             {networkId === defaultChainId ? (
                 sortedFarms?.map((farm) => <FarmRow key={farm.id} farm={farm} />)
             ) : (
-                <div className={`change_network_section ${lightMode && "change_network_section_light"}`}>
-                    <p>Please change network to Arbitrum to use the farms</p>
-                </div>
+                <EmptyComponent>Please change network to Arbitrum to use the farms</EmptyComponent>
             )}
         </div>
     );

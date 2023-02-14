@@ -56,3 +56,7 @@ export const toWei = (value: string, decimals = 18) => {
 export const toEth = (value: string | BigNumber, decimals = 18) => {
     return utils.formatUnits(value, decimals);
 };
+
+export const floorToFixed = (value: number, decimalPlaces: number) =>
+    //@ts-ignore
+    Number(Math.floor(value + "e" + decimalPlaces) + "e-" + decimalPlaces);

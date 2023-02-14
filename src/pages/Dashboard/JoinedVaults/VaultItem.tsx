@@ -1,5 +1,6 @@
 import useApp from "src/hooks/useApp";
 import { FarmDetails } from "src/types";
+import { floorToFixed } from "src/utils/common";
 import "./VaultItem.css";
 
 interface Props {
@@ -51,30 +52,12 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                     <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
                                         APY
                                     </p>
-                                    <p> {apy.toFixed(2)}%</p>
+                                    <p>
+                                        {apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : floorToFixed(apy, 2).toString()}
+                                        %
+                                    </p>
                                 </div>
                             </div>
-
-                            {/* <div className={`vault_items_bottom_row`}>
-                                <div className={`vault_items_bottom_categories`}>
-                                    <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
-                                        Pool Share
-                                    </p>
-                                    <p>{((userVaultBalance / totalVaultBalance) * 100).toFixed(2)}%</p>
-                                </div>
-
-                                <div className={`vault_items_bottom_categories`}>
-                                    <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
-                                        Liquidity
-                                    </p>
-                                    <p>
-                                        {(totalVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        })}
-                                    </p>
-                                </div>
-                            </div> */}
                         </div>
                     </div>
                 </div>
