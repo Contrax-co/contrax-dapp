@@ -150,14 +150,15 @@ const getDodoApy = async (pairAddress: string, provider: providers.Provider, cha
     const feeApr = Number(data.feeUSD) / (Number(data.quoteReserve) + Number(data.baseReserve));
 
     const latestBlock = await provider.getBlockNumber();
+    const blocksAmount = 200000;
     const latestBlockTimestamp = (await provider.getBlock(latestBlock)).timestamp;
-    const oldBlockTimestamp = (await provider.getBlock(latestBlock - 200000)).timestamp;
+    const oldBlockTimestamp = (await provider.getBlock(latestBlock - blocksAmount)).timestamp;
     const mineContract = new Contract(addressesByChainId[chainId].dodoMineAddress, dodoMineAbi, provider);
     const price = await getPrice(addressesByChainId[chainId].dodoTokenAddress, chainId);
     const rewardPerBlock = Number(toEth(await mineContract.dodoPerBlock()));
 
     const difference = latestBlockTimestamp - oldBlockTimestamp;
-    const blocksPerDay = (difference / 200000) * 86400;
+    const blocksPerDay = (difference / blocksAmount) * 86400;
     const numOfBlocksPerDay = blocksPerDay;
     const rewardPerDay = rewardPerBlock * numOfBlocksPerDay;
     const rewardPerYear = rewardPerDay * 365;
@@ -166,7 +167,8 @@ const getDodoApy = async (pairAddress: string, provider: providers.Provider, cha
     let alloc = allocPoint.mul(100000).div(totalAlloc);
 
     const rewardPerYearUsd = rewardPerYear * price * (alloc.toNumber() / 100000);
-    const constant = 3.93;
+    const constant = 4.1;
+    // const constant = 1;
 
     let apr = (rewardPerYearUsd / data.staked) * 100;
     apr /= constant;
