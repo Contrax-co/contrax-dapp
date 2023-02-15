@@ -21,13 +21,16 @@ export const TokenBalances: FC<IProps> = (props) => {
             {tokens.map((token) =>
                 Number(token.balance) > 0 ? (
                     <div
-                        key={token.address}
+                        key={token.address + token.network}
                         className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
                         onClick={() => setSelectedToken(token)}
                     >
                         <img className={styles.tokenLogo} src={token.logo} alt="logo" />
                         <div className={styles.tokenDesription}>
-                            <p className={styles.name}>{token.name}</p>
+                            <p className={styles.name}>
+                                {token.name}
+                                {token.network ? <span className={styles.networkName}>({token.network})</span> : null}
+                            </p>
                             <p className={styles.balance}>{ethers.utils.commify(token.balance)}</p>
                         </div>
                         <p className={styles.usdBalance}>${ethers.utils.commify(token.usdBalance)}</p>

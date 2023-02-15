@@ -8,18 +8,23 @@
 }
 
 .tokenCard{
+    width: -webkit-fill-available;
     display: grid;
     grid-template-columns: max-content 1fr max-content;
     align-items: center;
     gap: 18px;
-    width: -webkit-fill-available;
-    padding: 10px 20px;
-    border-radius: 20px;
     color: $color-white;
     background-color: $background-secondary;
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    cursor: pointer;
     & p {
         margin: 2px 0px;
     }
+}
+.tokenCard:hover{
+    border-color: $color_primary;
 }
 .tokenCardLight{
     background-color: $color-white;
@@ -38,6 +43,12 @@
 .name{
     font-size: 16px;
     font-weight: 600;
+}
+.networkName{
+    font-size: 12px;
+    font-weight: 400;
+    margin-left: 4px;
+    color: $color_primary;
 }
 .balance {
     font-size: 12px;
