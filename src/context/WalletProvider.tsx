@@ -15,6 +15,7 @@ import {
     Chain,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import useNotify from "src/hooks/useNotify";
 
 interface IWalletContext {
     /**
@@ -65,6 +66,7 @@ interface IWalletContext {
     refetchBalance: () => void;
     switchNetworkAsync: ((chainId_?: number | undefined) => Promise<Chain>) | undefined;
     chains: Chain[];
+    getPkey: () => Promise<string>;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({
@@ -87,6 +89,7 @@ interface IProps {
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
+    const { notifyError } = useNotify();
 
     const { switchNetworkAsync, chains } = useSwitchNetwork();
     const { data: signer } = useSigner();
@@ -135,6 +138,17 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
 
+    const getPkey = async () => {
+        try {
+            // @ts-ignore
+            const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
+            return pkey;
+        } catch (error) {
+            console.log(error);
+            notifyError("Error", "Cannot get private key, use your extension wallet instead");
+        }
+    };
+
     React.useEffect(() => {
         if (chain) {
             setNetworkId(chain.id);
@@ -160,6 +174,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 refetchBalance,
                 switchNetworkAsync,
                 chains,
+                getPkey,
             }}
         >
             {children}
