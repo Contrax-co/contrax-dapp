@@ -56,11 +56,12 @@
         "start/wallet-funding",
         {"group": "Wallet Funding",
         "pages": [
-          "trasnfer/general",
+          "transfer/general",
           "transfer/coinbase",
           "transfer/cryptocom",
           "transfer/kraken"
-        ]
+          ]
+        }
       ]
     },
     {
