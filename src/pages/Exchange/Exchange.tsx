@@ -138,6 +138,7 @@ const Exchange: React.FC<IProps> = () => {
                 overflow: "auto",
                 gridTemplateRows: "553px",
                 paddingBottom: 20,
+                height: "100%",
             }}
         >
             <div className="drop_buttons">
