@@ -1,55 +1,43 @@
 import { ethers } from "ethers";
-import { FC } from "react";
+import { FC, useState } from "react";
 import useApp from "src/hooks/useApp";
 import { useTokens } from "src/hooks/useTokens";
 import styles from "./TokenBalances.module.scss";
-import ethLogo from "src/assets/images/ethereum-icon.png";
-import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import useWallet from "src/hooks/useWallet";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
-import { floorToFixed } from "src/utils/common";
+import { TransferToken } from "src/components/modals/TransferToken/TransferToken";
+import { Token } from "src/types";
 
 interface IProps {}
 
 export const TokenBalances: FC<IProps> = (props) => {
     const { lightMode } = useApp();
     const { tokens } = useTokens();
-    const ethAddress = "0x0000000000000000000000000000000000000000";
-    const { balance, signer } = useWallet();
-    const { prices } = usePriceOfTokens([ethAddress]);
+    const { signer } = useWallet();
+    const [selectedToken, setSelectedToken] = useState<Token>();
+
     return signer ? (
         <div className={styles.container}>
-            <div className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}>
-                <img className={styles.tokenLogo} src={ethLogo} alt="logo" />
-                <div className={styles.tokenDesription}>
-                    <p className={styles.name}>ETH</p>
-                    <p className={styles.balance}>
-                        {ethers.utils.commify(
-                            balance < 0.01 ? balance.toPrecision(2).slice(0, -1) : floorToFixed(balance, 2).toString()
-                        )}
-                    </p>
-                </div>
-                <p className={styles.usdBalance}>
-                    $
-                    {ethers.utils.commify(
-                        balance * prices[ethAddress] < 0.01
-                            ? (balance * prices[ethAddress]).toPrecision(2).slice(0, -1)
-                            : floorToFixed(balance * prices[ethAddress], 2).toString()
-                    )}
-                </p>
-            </div>
             {tokens.map((token) =>
-                Number(token.balance) > 0.01 ? (
-                    <div key={token.address} className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}>
+                Number(token.balance) > 0 ? (
+                    <div
+                        key={token.address + token.network}
+                        className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
+                        onClick={() => setSelectedToken(token)}
+                    >
                         <img className={styles.tokenLogo} src={token.logo} alt="logo" />
                         <div className={styles.tokenDesription}>
-                            <p className={styles.name}>{token.name}</p>
+                            <p className={styles.name}>
+                                {token.name}
+                                {token.network ? <span className={styles.networkName}>({token.network})</span> : null}
+                            </p>
                             <p className={styles.balance}>{ethers.utils.commify(token.balance)}</p>
                         </div>
                         <p className={styles.usdBalance}>${ethers.utils.commify(token.usdBalance)}</p>
                     </div>
                 ) : null
             )}
+            {selectedToken ? <TransferToken token={selectedToken} setSelectedToken={setSelectedToken} /> : null}
         </div>
     ) : (
         <EmptyComponent style={{ paddingTop: 50, paddingBottom: 50 }}>

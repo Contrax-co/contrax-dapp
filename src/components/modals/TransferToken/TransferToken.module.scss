@@ -1,0 +1,57 @@
+@import "src/styles/variables.scss";
+@import "src/styles/_mixins.scss";
+
+.backdrop {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000099;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+.container {
+    min-height: 200px;
+    min-width: 500px;
+    color: $color_white;
+    background-color: $background_secondary;
+    box-shadow: 20px 30px 25px rgb(0 0 0 / 15%);
+    border-radius: 20px;
+    padding: 35px 50px;
+    @include devices(tablet) {
+        min-width: 100px;
+        width: 80%;
+        padding: 30px;
+    }
+    @include devices(mobile) {
+        padding: 20px;
+    }
+}
+
+.transferForm{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.button {
+    color: #ffffff;
+    background-color: var(--color_primary);
+    padding: 16px 40px;
+    margin-top: 32px;
+    margin-bottom: 8px;
+    border: none;
+    border-radius: 10px;
+    font-size: larger;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.disabled {
+    background-color: var(--color_grey);
+    color: var(--background_primary);
+}

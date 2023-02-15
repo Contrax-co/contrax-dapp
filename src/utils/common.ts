@@ -43,7 +43,7 @@ export function getNetworkName(id: number) {
         case 42161:
             return "arbitrum";
         case 1:
-            return "mainnet";
+            return "ethereum";
         default:
             return "arbitrum";
     }

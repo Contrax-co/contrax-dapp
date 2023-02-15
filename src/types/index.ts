@@ -76,6 +76,7 @@ export interface Token {
     balance: string;
     usdBalance: string;
     decimals: number;
+    network?: string;
 }
 
 export interface CovalentToken {
