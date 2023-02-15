@@ -13,7 +13,7 @@ import { BigNumber, providers, Contract } from "ethers";
 import { erc20ABI } from "wagmi";
 import { calcCompoundingApy, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
-import jsonp from "jsonp";
+import dodoMineAbi from "src/assets/abis/dodoMine.json";
 
 interface GraphResponse {
     apr: string;
@@ -117,10 +117,15 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     };
 };
 
-const getDodoApy = async (pairAddress: string) => {
+const getDodoApy = async (pairAddress: string, provider: providers.Provider, chainId: number) => {
     const res = await axios.post(DODO_GRAPH_URL, {
         query: `
     {
+        pools(where: {lpToken:"${pairAddress.toLowerCase()}"}) {
+            id
+            staked
+            lpToken
+          },
         lpToken(id: "${pairAddress.toLowerCase()}") {
           pair {
             feeUSD
@@ -138,14 +143,43 @@ const getDodoApy = async (pairAddress: string) => {
         quoteReserve: string;
         baseReserve: string;
     };
+    const data = {
+        ...pairData,
+        staked: Number(res.data.data.pools[0].staked),
+    };
+    const feeApr = Number(data.feeUSD) / (Number(data.quoteReserve) + Number(data.baseReserve));
 
-    const feeApr = Number(pairData.feeUSD) / (Number(pairData.quoteReserve) + Number(pairData.baseReserve));
+    const latestBlock = await provider.getBlockNumber();
+    const blocksAmount = 200000;
+    const latestBlockTimestamp = (await provider.getBlock(latestBlock)).timestamp;
+    const oldBlockTimestamp = (await provider.getBlock(latestBlock - blocksAmount)).timestamp;
+    const mineContract = new Contract(addressesByChainId[chainId].dodoMineAddress, dodoMineAbi, provider);
+    const price = await getPrice(addressesByChainId[chainId].dodoTokenAddress, chainId);
+    const rewardPerBlock = Number(toEth(await mineContract.dodoPerBlock()));
 
+    const difference = latestBlockTimestamp - oldBlockTimestamp;
+    const blocksPerDay = (difference / blocksAmount) * 86400;
+    const numOfBlocksPerDay = blocksPerDay;
+    const rewardPerDay = rewardPerBlock * numOfBlocksPerDay;
+    const rewardPerYear = rewardPerDay * 365;
+    let { allocPoint } = await mineContract.poolInfos(4);
+    let totalAlloc = await mineContract.totalAllocPoint();
+    let alloc = allocPoint.mul(100000).div(totalAlloc);
+
+    const rewardPerYearUsd = rewardPerYear * price * (alloc.toNumber() / 100000);
+    const constant = 4.1;
+    // const constant = 1;
+
+    let apr = (rewardPerYearUsd / data.staked) * 100;
+    apr /= constant;
+
+    const compounding = calcCompoundingApy(apr);
+    const apy = compounding + apr;
     return {
-        feeApr: feeApr,
-        rewardsApr: 0,
-        apy: feeApr,
-        compounding: 0,
+        feeApr: 0,
+        rewardsApr: apr,
+        apy,
+        compounding,
     };
 };
 
@@ -176,7 +210,7 @@ export const getApy = async (
         case FarmOriginPlatform.GMX:
             return getGmxApyArbitrum(provider, currentWallet);
         case FarmOriginPlatform.Dodo:
-            return getDodoApy(farm.lp_address);
+            return getDodoApy(farm.lp_address, provider, chainId);
         case FarmOriginPlatform.Frax:
             return getFraxApy();
 
