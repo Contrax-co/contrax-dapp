@@ -24,7 +24,7 @@ export const useTokens = (): { tokens: Token[] } => {
             .getBalance(currentWallet)
             .then((bal) => setSecondChainEthBalance(Number(toEth(bal))))
             .catch((err) => console.log(err));
-    }, [provider]);
+    }, [provider, currentWallet]);
 
     const tokens = farms.reduce((result: Token[], farm: Farm) => {
         if (!result.find((_) => _.address === farm.token1.toLowerCase())) {
