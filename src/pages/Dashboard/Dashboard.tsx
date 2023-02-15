@@ -14,7 +14,6 @@ import { useSearchParams } from "react-router-dom";
 import useFarms from "src/hooks/farms/useFarms";
 import useFarmsBalances from "src/hooks/farms/useFarmsBalances";
 import { TokenBalances } from "./TokenBalances/TokenBalances";
-import { TransferToken } from "src/components/modals/TransferToken/TransferToken";
 
 let redirected = false;
 
@@ -97,7 +96,6 @@ function Dashboard() {
                 </p>
                 <Vaults />
             </div>
-            <TransferToken />
         </div>
     );
 }

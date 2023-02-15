@@ -28,3 +28,21 @@
     justify-content: center;
     align-items: center;
 }
+
+.button {
+    color: #ffffff;
+    background-color: var(--color_primary);
+    padding: 16px 40px;
+    margin-top: 32px;
+    margin-bottom: 8px;
+    border: none;
+    border-radius: 10px;
+    font-size: larger;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.disabled {
+    background-color: var(--color_grey);
+    color: var(--background_primary);
+}
