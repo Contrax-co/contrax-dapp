@@ -21,9 +21,7 @@ const Vaults: React.FC<Props> = () => {
             {networkId === defaultChainId ? (
                 vaults.map((vault) => <VaultItem vault={vault} key={vault.id} />)
             ) : (
-                <div className={`change_network_section ${lightMode && styles.change_network_section_light}`}>
-                    <p>Please change network to Arbitrum to use the farms</p>
-                </div>
+                <EmptyComponent>Change network to Arbitrum to view your joined Vaults</EmptyComponent>
             )}
         </div>
     ) : (
