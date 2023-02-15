@@ -18,8 +18,9 @@
     padding: 10px 20px;
     border: 1px solid transparent;
     border-radius: 20px;
-    cursor: pointer;
     box-sizing: border-box;
+    cursor: pointer;
+    transition: 0.3s;
     & p {
         margin: 2px 0px;
     }
