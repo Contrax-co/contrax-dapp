@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, FormEvent, useState } from "react";
 import useApp from "src/hooks/useApp";
 import { Token } from "src/types";
 import styles from "./TransferToken.module.scss";
@@ -13,7 +13,10 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
     const [reciverAddress, setReciverAddress] = useState<string>();
     const [amount, setAmount] = useState<number>();
 
-    const handleSubmit = () => {};
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        setSelectedToken(undefined);
+    };
 
     return (
         <div className={styles.backdrop} onClick={() => setSelectedToken(undefined)}>

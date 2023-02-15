@@ -1,4 +1,5 @@
 @import "src/styles/variables.scss";
+@import "src/styles/_mixins.scss";
 
 .backdrop {
     position: fixed;
@@ -20,6 +21,14 @@
     box-shadow: 20px 30px 25px rgb(0 0 0 / 15%);
     border-radius: 20px;
     padding: 35px 50px;
+    @include devices(tablet) {
+        min-width: 100px;
+        width: 80%;
+        padding: 30px;
+    }
+    @include devices(mobile) {
+        padding: 20px;
+    }
 }
 
 .transferForm{
