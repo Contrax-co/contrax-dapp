@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import useVaults from "src/hooks/vaults/useVaults";
 import { Multicall, ContractCallResults, ContractCallContext } from "ethereum-multicall";
 import useWallet from "src/hooks/useWallet";
 import { useQuery } from "@tanstack/react-query";
@@ -80,6 +79,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
             // Formalize the balance
             const formattedBal = Number(ethers.utils.formatUnits(value, decimals));
             b[key] = formattedBal;
+            return;
         });
         return b;
     }, [balances]);

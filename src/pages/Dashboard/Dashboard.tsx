@@ -9,10 +9,11 @@ import useApp from "src/hooks/useApp";
 import { copyToClipboard } from "src/utils";
 import useConstants from "src/hooks/useConstants";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
-import useVaults from "src/hooks/vaults/useVaults";
-import useVaultBalances from "src/hooks/vaults/useVaultBalances";
 import { useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
+import useFarms from "src/hooks/farms/useFarms";
+import useFarmsBalances from "src/hooks/farms/useFarmsBalances";
+import { TokenBalances } from "./TokenBalances/TokenBalances";
 
 let redirected = false;
 
@@ -21,18 +22,18 @@ function Dashboard() {
     const { currentWallet, displayAccount } = useWallet();
     const [copied, setCopied] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
-    const { vaults } = useVaults();
+    const { farms: vaults } = useFarms();
     const { prices, isFetching } = usePriceOfTokens(vaults.map((vault) => vault.lp_address));
-    const { formattedBalances, isFetching: isFetching2 } = useVaultBalances();
+    const { formattedBalances, isFetching: isFetching2 } = useFarmsBalances();
     const navigate = useNavigate();
     const [params] = useSearchParams();
 
     const hasDeposits = useMemo(() => {
         return Object.entries(formattedBalances).some(([key, value]) => {
-            const lp_addr = vaults.find((item) => item.vault_address === key)!.lp_address;
+            const lp_addr = vaults.find((item) => item.vault_addr === key)!.lp_address;
             return prices[lp_addr] * value > 0.01;
         });
-    }, [formattedBalances, prices]);
+    }, [formattedBalances, prices, vaults]);
 
     const copy = () => {
         setCopied(true);
@@ -47,7 +48,7 @@ function Dashboard() {
                 redirected = true;
             }
         }
-    }, [hasDeposits, isFetching, isFetching2]);
+    }, [hasDeposits, isFetching, isFetching2, navigate, params]);
 
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
@@ -82,7 +83,14 @@ function Dashboard() {
                 </div>
             </div>
 
-            <div className={`dashboard_vaults`}>
+            <div className={`dashboard_section`}>
+                <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
+                    Token Balances
+                </p>
+                <TokenBalances />
+            </div>
+
+            <div className={`dashboard_section`}>
                 <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
                     Joined Vaults
                 </p>

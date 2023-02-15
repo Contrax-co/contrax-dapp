@@ -7,11 +7,9 @@
 }
 
 .dashboard_header {
-  background-image: linear-gradient(
-    rgba(0, 154, 255, 0.5),
-    rgba(0, 154, 255, 0.1),
-    rgba(0, 154, 255, 0)
-  );
+  background-image: linear-gradient(rgba(0, 154, 255, 0.5),
+      rgba(0, 154, 255, 0.1),
+      rgba(0, 154, 255, 0));
   padding-top: 5px;
   padding: 30px;
   height: 20vh;
@@ -119,8 +117,9 @@
   color: black;
 }
 
-.dashboard_vaults {
+.dashboard_section {
   padding: 30px;
+  padding-top: 0px;
 }
 
 @media (max-height: 600px) {
@@ -129,7 +128,7 @@
   }
 
   .dashboard_address {
-    font-size:15px;
+    font-size: 15px;
   }
 
 

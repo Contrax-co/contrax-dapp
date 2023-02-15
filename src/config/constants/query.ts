@@ -19,13 +19,9 @@ export const TOKEN_TOTAL_SUPPLIES = (addresses: string[], networkName: string) =
 
 export const TOKEN_PRICE = (address: string, networkName: string) => ["token", "price", networkName, address];
 
-export const FARM_APY = (currentWallet: string, address: string, networkName: string) => [
-    "farm",
-    "apy",
-    networkName,
-    currentWallet,
-    address,
-];
+export const FARM_APY = (address: string, networkName: string) => ["farm", "apy", networkName, address];
+
+export const FARMS_APY = (addresses: string[], networkName: string) => ["farm", "apy", networkName, addresses];
 
 export const FEE_APY = (address: string, networkName: string) => ["feeApy", networkName, address];
 
@@ -76,6 +72,14 @@ export const CREATE_TOKEN = (currentWallet: string, networkName: string) => [
     "token",
     "function",
     "create",
+    networkName,
+    currentWallet,
+];
+
+export const FARM_DATA = (currentWallet: string, networkName: string, farmId: number) => [
+    "farm",
+    "data",
+    farmId,
     networkName,
     currentWallet,
 ];

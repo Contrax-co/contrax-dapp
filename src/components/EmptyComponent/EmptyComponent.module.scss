@@ -1,0 +1,19 @@
+@import "src/styles/variables.scss";
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 90px 24px;
+  text-align: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  font-style: italic;
+  background-color: #01224377;
+  border-radius: 20px;
+}
+.containerLight {
+  color: #8798ad;
+  background-color: white;
+}

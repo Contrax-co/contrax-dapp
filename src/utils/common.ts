@@ -1,56 +1,4 @@
-export const findTotalAPY = (apy: number, totalAPY: number, platform: string) => {
-    // Compounded APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
-    let rate;
-    if (platform === "Dodo") {
-        rate = apy / 100;
-    } else {
-        rate = apy / 100;
-    }
-
-    const period = 365; //weekly
-
-    const baseAPY = totalAPY / 100 - apy / 100;
-
-    const APY = (1 + rate / period) ** period - 1 + baseAPY;
-    return APY * 100;
-};
-
-export const findCompoundAPY = (apy: number, totalAPY: number, platform: string) => {
-    // Compounded APY = (((1 + (0.9*rate/period))^period) - 1)
-    let rate;
-    if (platform === "Dodo") {
-        rate = apy / 100;
-    } else {
-        rate = apy / 100;
-    }
-
-    const period = 365; //weekly
-
-    const baseAPY = totalAPY / 100 - apy / 100;
-
-    const APY = (1 + rate / period) ** period - 1 + baseAPY;
-    const compoundAPY = APY - totalAPY / 100;
-    return compoundAPY * 100 * 0.9;
-};
-
-export const calculateFarmAPY = (rewardAPY: number) => {
-    // Compounded APY = (((1 + (0.9*rate/period))^period) - 1)
-    const rate = rewardAPY / 100;
-    const period = 52;
-
-    const APY = (1 + (0.9 * rate) / period) ** period - 1;
-    return APY * 100;
-};
-
-export const totalFarmAPY = (rewardAPY: number, feeAPY: number) => {
-    // total APY = (((1 + (0.9*rate/period))^period) - 1) + baseAPY
-    const rate = rewardAPY / 100;
-    const baseAPY = feeAPY / 100;
-    const period = 52;
-
-    const APY = (1 + (0.9 * rate) / period) ** period - 1 + baseAPY;
-    return APY * 100;
-};
+import { BigNumber, utils } from "ethers";
 
 export function validateNumberDecimals(value: number, decimals: number = 18) {
     const newVal = noExponents(value);
@@ -65,7 +13,7 @@ export function validateNumberDecimals(value: number, decimals: number = 18) {
 
 export const noExponents = (n: number) => {
     var data = String(n).split(/[eE]/);
-    if (data.length == 1) return data[0];
+    if (data.length === 1) return data[0];
 
     var z = "",
         sign = n < 0 ? "-" : "",
@@ -81,3 +29,34 @@ export const noExponents = (n: number) => {
     while (mag--) z += "0";
     return str + z;
 };
+
+export const calcCompoundingApy = (rewardsApr: number) => {
+    const period = 365 / 7; // Number of Weeks
+    const rate = rewardsApr / 100;
+    const apy = ((1 + rate / period) ** period - 1) * 100;
+    return apy - rewardsApr;
+    // return apy;
+};
+
+export function getNetworkName(id: number) {
+    switch (id) {
+        case 42161:
+            return "arbitrum";
+        case 1:
+            return "mainnet";
+        default:
+            return "arbitrum";
+    }
+}
+
+export const toWei = (value: string, decimals = 18) => {
+    return utils.parseUnits(value, decimals);
+};
+
+export const toEth = (value: string | BigNumber, decimals = 18) => {
+    return utils.formatUnits(value, decimals);
+};
+
+export const floorToFixed = (value: number, decimalPlaces: number) =>
+    //@ts-ignore
+    Number(Math.floor(value + "e" + decimalPlaces) + "e-" + decimalPlaces);

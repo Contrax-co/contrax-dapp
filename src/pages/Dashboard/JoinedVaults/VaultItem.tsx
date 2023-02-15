@@ -1,41 +1,23 @@
-import { useMemo } from "react";
 import useApp from "src/hooks/useApp";
-import useVaultBalances from "src/hooks/vaults/useVaultBalances";
-import { Vault } from "src/types";
+import { FarmDetails } from "src/types";
+import { floorToFixed } from "src/utils/common";
 import "./VaultItem.css";
-import useVaultTotalSupply from "src/hooks/vaults/useVaultTotalSupply";
-import { totalFarmAPY } from "src/utils/common";
-import useFeeApy from "src/hooks/useFeeApy";
-import useFarmApy from "src/hooks/farms/useFarmApy";
-import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 
 interface Props {
-    vault: Vault;
+    vault: FarmDetails;
 }
 
 const VaultItem: React.FC<Props> = ({ vault }) => {
     const { lightMode } = useApp();
 
-    const { formattedBalances } = useVaultBalances();
-    const tokenAmount = useMemo(() => {
-        return formattedBalances[vault.vault_address];
-    }, [formattedBalances, vault]);
-
-    const { formattedSupplies } = useVaultTotalSupply();
-    const vaultAmount = useMemo(() => {
-        return formattedSupplies[vault.vault_address];
-    }, [formattedSupplies, vault]);
-
     const {
-        prices: { [vault.lp_address]: price },
-    } = usePriceOfTokens([vault.lp_address]);
+        userVaultBalance,
+        totalVaultBalance,
+        priceOfSingleToken,
+        apys: { apy },
+    } = vault;
 
-    const { apy: feeAPY } = useFeeApy(vault.lp_address);
-
-    const { apy: rewardAPY } = useFarmApy(vault.lp_address);
-
-    const apyVisionAPY = useMemo(() => totalFarmAPY(rewardAPY, feeAPY), [rewardAPY, feeAPY]);
-    if (tokenAmount * price >= 0.01)
+    if (userVaultBalance * priceOfSingleToken >= 0.01)
         return (
             <div className={`vaults`}>
                 <div>
@@ -59,38 +41,20 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                         Your Stake
                                     </p>
                                     <p>
-                                        {(tokenAmount * price).toLocaleString("en-US", {
+                                        {(userVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
                                             style: "currency",
                                             currency: "USD",
                                         })}
                                     </p>
                                 </div>
 
-                                <div className={`vault_items_bottom_categories`}>
-                                    <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
-                                        Pool Share
-                                    </p>
-                                    <p>{((tokenAmount / vaultAmount) * 100).toFixed(2)}%</p>
-                                </div>
-                            </div>
-
-                            <div className={`vault_items_bottom_row`}>
                                 <div className={`vault_items_bottom_categories`}>
                                     <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
                                         APY
                                     </p>
-                                    <p> {apyVisionAPY.toFixed(2)}%</p>
-                                </div>
-
-                                <div className={`vault_items_bottom_categories`}>
-                                    <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
-                                        Liquidity
-                                    </p>
                                     <p>
-                                        {(vaultAmount * price).toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        })}
+                                        {apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : floorToFixed(apy, 2).toString()}
+                                        %
                                     </p>
                                 </div>
                             </div>
