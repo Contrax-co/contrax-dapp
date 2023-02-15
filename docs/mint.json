@@ -49,12 +49,18 @@
     {
       "group": "Getting Started",
       "pages": [
+        "start/quickstart",
         "introduction",
         "start/defi",
         "start/wallet-setup",
         "start/wallet-funding",
-        "start/bridge",
-        "start/quickstart"
+        {"group": "Wallet Funding",
+        "pages": [
+          "trasnfer/general",
+          "transfer/coinbase",
+          "transfer/cryptocom",
+          "transfer/kraken"
+        ]
       ]
     },
     {
@@ -62,10 +68,11 @@
       "pages": [
         "contrax-dapp/dashboard",
         "contrax-dapp/farms",
-        "contrax-dapp/exchange",
-        "contrax-dapp/create-tokens",
-        "contrax-dapp/create-pools",
-        "contrax-dapp/dapp-faq"
+        "contrax-dapp/buy",
+        "contrax-dapp/bridge",
+        "contrax-dapp/swap",
+        "contrax-dapp/dapp-faq",
+        "contrax-dapp/Disclaimers"
       ]
     },
     {
