@@ -10,10 +10,15 @@ import useConstants from "./useConstants";
 import { BigNumber, Contract } from "ethers";
 
 const useTransfer = () => {
-    const { signer, currentWallet } = useWallet();
+    const { signer, currentWallet, balanceBigNumber } = useWallet();
     const { NETWORK_NAME } = useConstants();
 
-    const _transferEth = async ({ to, amount }: { to: string; amount: BigNumber }) => {
+    const _transferEth = async ({ to, amount, max }: { to: string; amount: BigNumber; max?: boolean }) => {
+        if (max) {
+            const gasPrice = await signer?.getGasPrice();
+            if (!gasPrice) return;
+            amount = balanceBigNumber.sub(gasPrice.mul(21000).mul(1000));
+        }
         const transactionConfig = await prepareSendTransaction({
             request: {
                 to,
@@ -21,6 +26,7 @@ const useTransfer = () => {
             },
             signer,
         });
+
         const res = await sendTransaction(transactionConfig);
         await res.wait();
     };
@@ -29,12 +35,17 @@ const useTransfer = () => {
         tokenAddress,
         to,
         amount,
+        max,
     }: {
         tokenAddress: string;
         to: string;
         amount: BigNumber;
+        max?: boolean;
     }) => {
         const contract = new Contract(tokenAddress, erc20ABI, signer);
+        if (max) {
+            amount = await contract.balanceOf(currentWallet);
+        }
         const res = await contract.transfer(to, amount);
         await res.wait();
     };

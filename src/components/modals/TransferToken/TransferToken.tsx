@@ -18,26 +18,34 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
     const [amount, setAmount] = useState<number>(0);
     const { transferEth, transferToken, isLoading } = useTransfer();
     const { notifyLoading, notifyError, notifySuccess, dismissNotify } = useNotify();
+    const [max, setMax] = useState(false);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const id = notifyLoading("Transferring...", "Please wait while we transfer your tokens");
         try {
             if (token.address === constants.AddressZero) {
-                await transferEth({ to: reciverAddress, amount: toWei(amount.toString(), token.decimals) });
+                await transferEth({ to: reciverAddress, amount: toWei(amount.toString(), token.decimals), max });
             } else {
                 await transferToken({
                     tokenAddress: token.address,
                     to: reciverAddress,
                     amount: toWei(amount.toString(), token.decimals),
+                    max,
                 });
             }
             notifySuccess("Success", "Tokens transferred successfully");
         } catch (error: any) {
-            notifyError("Error", error.message);
+            let err = JSON.parse(JSON.stringify(error));
+            notifyError("Error!", err.reason || err.message);
         }
         dismissNotify(id);
         setSelectedToken(undefined);
+    };
+
+    const handleMaxClick = () => {
+        setMax(true);
+        setAmount(Number(token.balance));
     };
 
     return (
@@ -71,13 +79,12 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
                             id="amount"
                             placeholder="e.g. 250"
                             value={amount}
-                            onChange={(e) => setAmount(Number(e.target.value))}
+                            onChange={(e) => {
+                                setAmount(Number(e.target.value));
+                                setMax(false);
+                            }}
                         />
-                        <button
-                            type="button"
-                            className={styles.maxButton}
-                            onClick={() => setAmount(Number(token.balance))}
-                        >
+                        <button type="button" className={styles.maxButton} onClick={handleMaxClick}>
                             MAX
                         </button>
                     </div>
