@@ -7,6 +7,7 @@ import useWallet from "src/hooks/useWallet";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { TransferToken } from "src/components/modals/TransferToken/TransferToken";
 import { Token } from "src/types";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {}
 
@@ -14,6 +15,7 @@ export const TokenBalances: FC<IProps> = (props) => {
     const { lightMode } = useApp();
     const { tokens } = useTokens();
     const { signer } = useWallet();
+    const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
 
     return signer ? (
@@ -23,7 +25,11 @@ export const TokenBalances: FC<IProps> = (props) => {
                     <div
                         key={token.address + token.network}
                         className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                        onClick={() => setSelectedToken(token)}
+                        onClick={() =>
+                            token.name === "ETH" && token.network === "Mainnet"
+                                ? navigate("/exchange/?tab=bridge")
+                                : setSelectedToken(token)
+                        }
                     >
                         <img className={styles.tokenLogo} src={token.logo} alt="logo" />
                         <div className={styles.tokenDesription}>
