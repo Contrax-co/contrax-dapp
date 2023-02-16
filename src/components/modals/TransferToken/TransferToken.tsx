@@ -70,7 +70,7 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken, refetchBala
                 </div>
                 <div className={styles.row}>
                     <label htmlFor="amount" className={styles.label}>
-                        Amount:
+                        Amount: <span style={{ fontSize: 14 }}>(Balance: {token.balance})</span>
                     </label>
                     <input
                         className={`${styles.inputs} ${lightMode && styles.inputs_light}`}
