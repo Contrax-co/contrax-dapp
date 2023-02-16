@@ -83,3 +83,19 @@ export const FARM_DATA = (currentWallet: string, networkName: string, farmId: nu
     networkName,
     currentWallet,
 ];
+
+export const TRANSFER_ETH = (currentWallet: string, networkName: string) => [
+    "eth",
+    "function",
+    "transfer",
+    networkName,
+    currentWallet,
+];
+
+export const TRANSFER_TOKEN = (currentWallet: string, networkName: string) => [
+    "token",
+    "function",
+    "transfer",
+    networkName,
+    currentWallet,
+];

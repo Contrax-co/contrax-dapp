@@ -15,6 +15,7 @@ import {
     Chain,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import useNotify from "src/hooks/useNotify";
 
 interface IWalletContext {
     /**
@@ -65,6 +66,8 @@ interface IWalletContext {
     refetchBalance: () => void;
     switchNetworkAsync: ((chainId_?: number | undefined) => Promise<Chain>) | undefined;
     chains: Chain[];
+    getPkey: () => Promise<string>;
+    mainnetBalance: ethers.BigNumber;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({
@@ -87,22 +90,25 @@ interface IProps {
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
+    const { notifyError } = useNotify();
 
     const { switchNetworkAsync, chains } = useSwitchNetwork();
     const { data: signer } = useSigner();
 
     const { address: currentWallet } = useAccount();
     const { disconnect } = useDisconnect();
-    const { connectors } = useConnect();
+    const mainnetProvider = useProvider({ chainId: 1 });
     const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { NETWORK_NAME } = useConstants();
     const { openConnectModal } = useConnectModal();
 
     const getBalance = async () => {
-        if (!provider || !currentWallet) return ethers.BigNumber.from(0);
+        if (!provider || !currentWallet)
+            return { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) };
         const balance = await provider.getBalance(currentWallet);
-        return balance;
+        const mainnetBalance = await mainnetProvider.getBalance(currentWallet);
+        return { balance, mainnetBalance };
     };
 
     const connectWallet = async () => {
@@ -123,17 +129,27 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         [currentWallet]
     );
 
-    const { data: balanceBigNumber, refetch: refetchBalance } = useQuery(
-        ACCOUNT_BALANCE(currentWallet!, currentWallet!, NETWORK_NAME),
-        getBalance,
-        {
-            enabled: !!currentWallet && !!provider && !!NETWORK_NAME,
-            initialData: ethers.BigNumber.from(0),
-            refetchInterval: 5000,
-        }
-    );
+    const {
+        data: { balance: balanceBigNumber,mainnetBalance },
+        refetch: refetchBalance,
+    } = useQuery(ACCOUNT_BALANCE(currentWallet!, currentWallet!, NETWORK_NAME), getBalance, {
+        enabled: !!currentWallet && !!provider && !!NETWORK_NAME,
+        initialData: { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) },
+        refetchInterval: 5000,
+    });
 
     const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
+
+    const getPkey = async () => {
+        try {
+            // @ts-ignore
+            const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
+            return pkey;
+        } catch (error) {
+            console.log(error);
+            notifyError("Error", "Cannot get private key, use your extension wallet instead");
+        }
+    };
 
     React.useEffect(() => {
         if (chain) {
@@ -160,6 +176,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 refetchBalance,
                 switchNetworkAsync,
                 chains,
+                mainnetBalance,
+                getPkey,
             }}
         >
             {children}
