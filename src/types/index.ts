@@ -53,6 +53,7 @@ export interface Farm {
     vault_addr: string;
     vault_abi: any;
     lp_abi: any;
+    withdraw_decimals?: number;
 }
 export interface FarmDetails extends Farm {
     userVaultBalance: number;
@@ -76,6 +77,7 @@ export interface Token {
     balance: string;
     usdBalance: string;
     decimals: number;
+    network?: string;
 }
 
 export interface CovalentToken {

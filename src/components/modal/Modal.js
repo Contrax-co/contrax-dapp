@@ -1,7 +1,7 @@
 import Button from "../button/Button";
 import { H3 } from "../text/Text";
 import { StyledCrossBtn, StyledModalContent, StyledModalDialog } from "./Modal.styles";
-import crossImage from "../../images/cross.svg";
+import crossImage from "../../assets/images/cross.svg";
 import { Image } from "../image/Image";
 import * as colors from "../../theme/colors";
 import Icon from "../icon/Icon";

@@ -1,4 +1,4 @@
-import { BigNumber, utils } from "ethers";
+import { BigNumber, BigNumberish, utils } from "ethers";
 
 export function validateNumberDecimals(value: number, decimals: number = 18) {
     const newVal = noExponents(value);
@@ -43,7 +43,7 @@ export function getNetworkName(id: number) {
         case 42161:
             return "arbitrum";
         case 1:
-            return "mainnet";
+            return "ethereum";
         default:
             return "arbitrum";
     }
@@ -53,7 +53,7 @@ export const toWei = (value: string, decimals = 18) => {
     return utils.parseUnits(value, decimals);
 };
 
-export const toEth = (value: string | BigNumber, decimals = 18) => {
+export const toEth = (value: string | BigNumberish, decimals = 18) => {
     return utils.formatUnits(value, decimals);
 };
 

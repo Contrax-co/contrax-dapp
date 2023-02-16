@@ -12,6 +12,7 @@ import styles from "./Exchange.module.scss";
 import { useSigner, useWebSocketProvider } from "wagmi";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
 import useFarms from "src/hooks/farms/useFarms";
+import { useSearchParams } from "react-router-dom";
 
 interface IProps {}
 
@@ -47,18 +48,21 @@ enum Tab {
     Buy,
 }
 const Exchange: React.FC<IProps> = () => {
-    const { currentWallet, connectWallet, chains, switchNetworkAsync, signer: wagmiSigner } = useWallet();
+    const { currentWallet, connectWallet, chains, signer: wagmiSigner } = useWallet();
     const [chainId, setChainId] = React.useState<number>(defaultChainId);
     const { data: signer } = useSigner({
         chainId,
     });
 
+    const [params] = useSearchParams();
+
     const { lightMode } = useApp();
     const containerRef = useRef<HTMLDivElement>(null);
     const [provider, setProvider] = React.useState<any>();
     const websocketProvider = useWebSocketProvider();
-    const [tab, setTab] = React.useState<Tab>(Tab.Swap);
+    const [tab, setTab] = React.useState<Tab>(Tab.Buy);
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
+
     const { farms } = useFarms();
     const tokenList: TokenInfo[] = React.useMemo(
         () =>
@@ -74,6 +78,11 @@ const Exchange: React.FC<IProps> = () => {
             }),
         [farms]
     );
+
+    React.useEffect(() => {
+        if (params.get("tab") === "bridge") setTab(Tab.Bridge);
+    }, [params]);
+
     React.useEffect(() => {
         if (tab === Tab.Buy) {
             const ramp = new RampInstantSDK({
@@ -91,7 +100,7 @@ const Exchange: React.FC<IProps> = () => {
                 ramp.close();
             };
         }
-    }, [containerRef, tab]);
+    }, [containerRef, tab, currentWallet]);
 
     const handleBridgeNetworkChange = async () => {
         try {
@@ -137,31 +146,25 @@ const Exchange: React.FC<IProps> = () => {
                 paddingTop: 20,
                 overflow: "auto",
                 gridTemplateRows: "553px",
-                // display: "grid",
-                // justifyContent: "center",
-                // alignItems: "center",
                 paddingBottom: 20,
+                height: "100%",
             }}
         >
             <div className="drop_buttons">
-                <PoolButton variant={2} onClick={() => setTab(Tab.Swap)} description="Swap" active={tab === Tab.Swap} />
+                <PoolButton variant={2} onClick={() => setTab(Tab.Buy)} description="Buy" active={tab === Tab.Buy} />
                 <PoolButton
                     variant={2}
                     onClick={() => setTab(Tab.Bridge)}
                     description="Bridge"
                     active={tab === Tab.Bridge}
                 />
-                <PoolButton variant={2} onClick={() => setTab(Tab.Buy)} description="Buy" active={tab === Tab.Buy} />
+                <PoolButton variant={2} onClick={() => setTab(Tab.Swap)} description="Swap" active={tab === Tab.Swap} />
             </div>
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
-                {tab === Tab.Swap && SOCKET_API_KEY && (
-                    <SwapWidget
-                        theme={lightMode ? lightTheme : darkTheme}
-                        // @ts-ignore
-                        provider={websocketProvider || wagmiSigner?.provider}
-                        onConnectWalletClick={connectWallet}
-                        tokenList={tokenList}
-                    />
+                {tab === Tab.Buy && (
+                    <div className={styles.darkBuy}>
+                        <div style={{ width: 375, height: 667 }} ref={containerRef}></div>
+                    </div>
                 )}
                 {tab === Tab.Bridge && SOCKET_API_KEY && (
                     <Bridge
@@ -194,10 +197,14 @@ const Exchange: React.FC<IProps> = () => {
                         customize={lightMode ? lightSocketTheme : darkSocketTheme}
                     />
                 )}
-                {tab === Tab.Buy && (
-                    <div className={styles.darkBuy}>
-                        <div style={{ width: 375, height: 667 }} ref={containerRef}></div>
-                    </div>
+                {tab === Tab.Swap && SOCKET_API_KEY && (
+                    <SwapWidget
+                        theme={lightMode ? lightTheme : darkTheme}
+                        // @ts-ignore
+                        provider={websocketProvider || wagmiSigner?.provider}
+                        onConnectWalletClick={connectWallet}
+                        tokenList={tokenList}
+                    />
                 )}
             </div>
         </div>

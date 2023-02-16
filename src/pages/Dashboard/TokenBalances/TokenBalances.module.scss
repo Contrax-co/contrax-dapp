@@ -1,24 +1,51 @@
-@import "src/styles/variables.scss";
+@import "../../../styles/variables";
 
 .container {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 16px;
-    overflow: auto;
 }
 
 .tokenCard{
+    max-width: 300px;
+    width: 100%;
     display: grid;
     grid-template-columns: max-content 1fr max-content;
     align-items: center;
     gap: 18px;
-    width: -webkit-fill-available;
-    padding: 10px 20px;
-    border-radius: 20px;
     color: $color-white;
     background-color: $background-secondary;
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: 0.3s;
     & p {
         margin: 2px 0px;
+    }
+}
+.tokenCard:hover{
+    border-color: $color_primary;
+    grid-template-columns: max-content 1fr max-content max-content;
+    position: relative;
+    padding-right: 40px;
+
+    &::after{
+        content: '>';
+        width: 40px;
+        height: 100%;
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: $color_primary;
+        border-top-right-radius: 16px;
+        border-bottom-right-radius: 16px;
+        font-size: 20px;
+        font-weight: 900;
     }
 }
 .tokenCardLight{
@@ -39,6 +66,12 @@
     font-size: 16px;
     font-weight: 600;
 }
+.networkName{
+    font-size: 12px;
+    font-weight: 400;
+    margin-left: 4px;
+    color: $color_primary;
+}
 .balance {
     font-size: 12px;
     font-weight: 400;
@@ -46,25 +79,4 @@
 .usdBalance{
     margin-left: auto;
     font-weight: 500;
-}
-
-@media only screen and (max-width: 1280px) {
-    .container {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-@media only screen and (max-width: 1080px) {
-    .container {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-@media only screen and (max-width: 660px) {
-    .container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media only screen and (max-width: 500px) {
-    .container {
-        grid-template-columns: 1fr;
-    }
 }
