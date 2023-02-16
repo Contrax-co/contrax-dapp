@@ -30,6 +30,10 @@
         padding: 20px;
     }
 }
+.container_light {
+    background-color: $color_white;
+    color: $color_black;
+}
 
 .transferForm {
     display: flex;
@@ -38,9 +42,64 @@
     align-items: center;
 }
 
+.row{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 10px 0px;
+    position: relative;
+}
+
+.label{
+    font-size: larger;
+    font-weight: bolder;
+}
+
+.inputs {
+  width: 96%;
+  font-weight: 500;
+  font-size: 1.1rem;
+  padding: 1.2% 2%;
+  border-radius: 5px;
+  border: 1.2px solid var(--border_color);
+  margin-top: 7px;
+  height: 40px;
+  background-color: var(--background_primary);
+  color: white;
+}
+
+.inputs_light {
+  border: 1.2px solid #c4cae0;
+  background-color: white;
+  color: black;
+}
+
+.inputs:focus {
+  outline: none;
+  border-color: var(--color_primary);
+}
+
+.maxButton {
+    position: absolute;
+    right: 20px;
+    bottom: 15%;
+    color: $color_primary;
+    background: transparent;
+    border: 1px solid $color_primary;
+    border-radius: 5px;
+    outline: none;
+    padding: 5px 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.maxButton:hover {
+    color: $color_white;
+    background-color: $color_primary;
+}
+
 .button {
-    color: #ffffff;
-    background-color: var(--color_primary);
+    color: $color_white;
+    background-color: $color_primary;
     padding: 16px 40px;
     margin-top: 32px;
     margin-bottom: 8px;
@@ -52,7 +111,11 @@
 }
 
 .button:disabled {
-    background-color: var(--color_grey);
-    color: var(--background_primary);
+    background-color: #276995;
+    color: $color_grey;
     cursor: not-allowed;
+}
+.button_light:disabled {
+    background-color: $color_grey;
+    color: #4e4e4e
 }

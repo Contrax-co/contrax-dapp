@@ -3,7 +3,7 @@ import useApp from "src/hooks/useApp";
 import useTransfer from "src/hooks/useTransfer";
 import { Token } from "src/types";
 import styles from "./TransferToken.module.scss";
-import { utils, constants } from "ethers";
+import { constants } from "ethers";
 import useNotify from "src/hooks/useNotify";
 import { toWei } from "src/utils/common";
 
@@ -42,15 +42,18 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
 
     return (
         <div className={styles.backdrop} onClick={() => setSelectedToken(undefined)}>
-            <div className={styles.container} onClick={(e) => e.stopPropagation()}>
+            <div
+                className={`${styles.container} ${lightMode && styles.container_light}`}
+                onClick={(e) => e.stopPropagation()}
+            >
                 <form className={styles.transferForm} onSubmit={handleSubmit}>
                     <h1 className={styles.heading}>Transfer {token.name}</h1>
-                    <div className="token-rows token-column">
-                        <label htmlFor="reciverAddress" className="token-label">
+                    <div className={styles.row}>
+                        <label htmlFor="reciverAddress" className={styles.label}>
                             Send To:
                         </label>
                         <input
-                            className={`token-inputs ${lightMode && "token-inputs-light"}`}
+                            className={`${styles.inputs} ${lightMode && styles.inputs_light}`}
                             type="text"
                             id="reciverAddress"
                             placeholder="Reciver Address"
@@ -58,20 +61,31 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
                             onChange={(e) => setReciverAddress(e.target.value)}
                         />
                     </div>
-                    <div className="token-rows token-column">
-                        <label htmlFor="amount" className="token-label">
+                    <div className={styles.row}>
+                        <label htmlFor="amount" className={styles.label}>
                             Amount:
                         </label>
                         <input
-                            className={`token-inputs ${lightMode && "token-inputs-light"}`}
+                            className={`${styles.inputs} ${lightMode && styles.inputs_light}`}
                             type="number"
                             id="amount"
                             placeholder="e.g. 250"
                             value={amount}
                             onChange={(e) => setAmount(Number(e.target.value))}
                         />
+                        <button
+                            type="button"
+                            className={styles.maxButton}
+                            onClick={() => setAmount(Number(token.balance))}
+                        >
+                            MAX
+                        </button>
                     </div>
-                    <button type="submit" disabled={isLoading} className={styles.button}>
+                    <button
+                        type="submit"
+                        disabled={isLoading || amount <= 0 || !reciverAddress}
+                        className={`${styles.button} ${lightMode && styles.button_light}`}
+                    >
                         Transfer
                     </button>
                 </form>
