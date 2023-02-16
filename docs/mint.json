@@ -49,14 +49,15 @@
     {
       "group": "Getting Started",
       "pages": [
-        "start/quickstart",
         "introduction",
         "start/defi",
+        "start/quickstart",
         "start/wallet-setup",
         {"group": "Wallet Funding",
         "pages": [
           "transfer/general",
           "transfer/coinbase",
+          "transfer/binance",
           "transfer/cryptocom",
           "transfer/kraken"
           ]
