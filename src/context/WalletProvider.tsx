@@ -67,6 +67,7 @@ interface IWalletContext {
     switchNetworkAsync: ((chainId_?: number | undefined) => Promise<Chain>) | undefined;
     chains: Chain[];
     getPkey: () => Promise<string>;
+    mainnetBalance: ethers.BigNumber;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({
@@ -96,16 +97,18 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     const { address: currentWallet } = useAccount();
     const { disconnect } = useDisconnect();
-    const { connectors } = useConnect();
+    const mainnetProvider = useProvider({ chainId: 1 });
     const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { NETWORK_NAME } = useConstants();
     const { openConnectModal } = useConnectModal();
 
     const getBalance = async () => {
-        if (!provider || !currentWallet) return ethers.BigNumber.from(0);
+        if (!provider || !currentWallet)
+            return { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) };
         const balance = await provider.getBalance(currentWallet);
-        return balance;
+        const mainnetBalance = await mainnetProvider.getBalance(currentWallet);
+        return { balance, mainnetBalance };
     };
 
     const connectWallet = async () => {
@@ -126,15 +129,14 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         [currentWallet]
     );
 
-    const { data: balanceBigNumber, refetch: refetchBalance } = useQuery(
-        ACCOUNT_BALANCE(currentWallet!, currentWallet!, NETWORK_NAME),
-        getBalance,
-        {
-            enabled: !!currentWallet && !!provider && !!NETWORK_NAME,
-            initialData: ethers.BigNumber.from(0),
-            refetchInterval: 5000,
-        }
-    );
+    const {
+        data: { balance: balanceBigNumber,mainnetBalance },
+        refetch: refetchBalance,
+    } = useQuery(ACCOUNT_BALANCE(currentWallet!, currentWallet!, NETWORK_NAME), getBalance, {
+        enabled: !!currentWallet && !!provider && !!NETWORK_NAME,
+        initialData: { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) },
+        refetchInterval: 5000,
+    });
 
     const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
 
@@ -174,6 +176,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 refetchBalance,
                 switchNetworkAsync,
                 chains,
+                mainnetBalance,
                 getPkey,
             }}
         >
