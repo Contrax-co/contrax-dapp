@@ -1,0 +1,87 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/_mixins.scss";
+
+.heading{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffc800;
+    & h1{
+        margin: 8px 0px;
+    }
+}
+.message{
+    color: #ffc800;
+    max-width: 500px;
+}
+.confirm {
+    margin-top: 30px;
+    & label{
+        margin-left: 8px;
+    }
+}
+.key{
+    color: $color_grey;
+    background-color: $background_primary;
+    width: 100%;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 30px;
+    box-sizing: border-box;
+    position: relative;
+
+    & input{
+        margin: 0px;
+        font-size: 13px;
+        font-weight: bold;
+        width: 70%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        background: transparent;
+        color: $color_white;
+        border: none;
+        outline: none;
+
+        @include devices(tablet) {
+            width: 65%;
+        }
+        @include devices(mobile) {
+            width: 50%;
+        }
+    }
+
+    .copyIcon{
+        position: absolute;
+        right: 100px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+
+    .showButton {
+        position: absolute;
+        right: 7px;
+        top: 50%;
+        width: 80px;
+        transform: translateY(-50%);
+        background-color: $color_primary;
+        color: $color_white;
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 20;
+    }
+    .showButton:disabled {
+        background-color: #276995;
+        color: $color_grey;
+        cursor: not-allowed;
+    }
+    .showButton_light:disabled {
+        background-color: $color_grey;
+        color: #4e4e4e
+    }
+}

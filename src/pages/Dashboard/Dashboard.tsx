@@ -14,6 +14,8 @@ import { useSearchParams } from "react-router-dom";
 import useFarms from "src/hooks/farms/useFarms";
 import useFarmsBalances from "src/hooks/farms/useFarmsBalances";
 import { TokenBalances } from "./TokenBalances/TokenBalances";
+import { AiFillSetting } from "react-icons/ai";
+import { SettingsModal } from "src/components/modals/SettingsModal/SettingsModal";
 
 let redirected = false;
 
@@ -21,6 +23,7 @@ function Dashboard() {
     const { lightMode } = useApp();
     const { currentWallet, displayAccount } = useWallet();
     const [copied, setCopied] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
     const { farms: vaults } = useFarms();
     const { prices, isFetching } = usePriceOfTokens(vaults.map((vault) => vault.lp_address));
@@ -53,24 +56,23 @@ function Dashboard() {
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
             <div className={`dashboard_header ${lightMode && "dashboard_header--light"}`}>
-                <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet)} />
+                <div>
+                    <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet)} />
 
-                <div className={`dashboard_middle`}>
-                    <div>
-                        <div
-                            className={`dashboard_address_header ${lightMode && "dashboard_address_header--light"}`}
-                            onClick={copy}
-                        >
-                            <p
-                                className={`dashboard_address ${lightMode && "dashboard_address--light"}`}
-                                style={{ marginRight: "10px" }}
+                    {currentWallet ? (
+                        <>
+                            <div
+                                className={`dashboard_address_header ${lightMode && "dashboard_address_header--light"}`}
+                                onClick={copy}
                             >
-                                {displayAccount}
-                            </p>
-                            {!copied ? <FiCopy /> : <BsCheckCircle />}
-                        </div>
-
-                        {currentWallet ? (
+                                <p
+                                    className={`dashboard_address ${lightMode && "dashboard_address--light"}`}
+                                    style={{ marginRight: "10px" }}
+                                >
+                                    {displayAccount}
+                                </p>
+                                {!copied ? <FiCopy /> : <BsCheckCircle />}
+                            </div>
                             <div
                                 className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}
                                 onClick={() => window.open(`${BLOCK_EXPLORER_URL}/address/${currentWallet}`, "_blank")}
@@ -78,8 +80,14 @@ function Dashboard() {
                                 <p style={{ marginRight: "10px" }}>View on Arbiscan</p>
                                 <FiExternalLink />
                             </div>
-                        ) : null}
-                    </div>
+                        </>
+                    ) : (
+                        <p className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}>No Wallet Connected</p>
+                    )}
+                </div>
+                <div>
+                    <AiFillSetting color="#ffffff" cursor="pointer" size={30} onClick={() => setOpenModal(true)} />
+                    {openModal ? <SettingsModal setOpenModal={setOpenModal} /> : null}
                 </div>
             </div>
 
