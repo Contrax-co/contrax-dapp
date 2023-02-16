@@ -16,6 +16,7 @@
 }
 .confirm {
     margin-top: 30px;
+    color: $color_grey;
     & label{
         margin-left: 8px;
     }
@@ -39,7 +40,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         background: transparent;
-        color: $color_white;
+        color: inherit;
         border: none;
         outline: none;
 
@@ -57,6 +58,7 @@
         top: 50%;
         transform: translateY(-50%);
         cursor: pointer;
+        color: inherit;
     }
 
     .showButton {
@@ -84,4 +86,8 @@
         background-color: $color_grey;
         color: #4e4e4e
     }
+}
+.key_light {
+    background-color: #f5f6f9;
+    color: $color_grey;
 }

@@ -18,7 +18,7 @@ export const SettingsModal: FC<IProps> = ({ setOpenModal }) => {
     const [show, setShow] = useState(false);
     const [copied, setCopied] = useState(false);
     const [privateKey, setPrivateKey] = useState("");
-    const { getPkey, currentWallet } = useWallet();
+    const { getPkey } = useWallet();
 
     useEffect(() => {
         if (!confirm) if (show) setShow(false);
@@ -48,7 +48,7 @@ export const SettingsModal: FC<IProps> = ({ setOpenModal }) => {
                 <input type="checkbox" name="confirm" id="confirm" onChange={() => setConfirm((prev) => !prev)} />
                 <label htmlFor="confirm">I Understand</label>
             </div>
-            <div className={styles.key}>
+            <div className={`${styles.key} ${lightMode && styles.key_light}`}>
                 {show ? (
                     <>
                         {/* <p>{privateKey}</p> */}
@@ -63,7 +63,11 @@ export const SettingsModal: FC<IProps> = ({ setOpenModal }) => {
                     <input type="text" readOnly value={"0xXXXXXXXXXXXXXXXXXXXXXXXXXXX"} />
                 )}
 
-                <button className={styles.showButton} disabled={!confirm} onClick={handleShow}>
+                <button
+                    className={`${styles.showButton} ${lightMode && styles.showButton_light}`}
+                    disabled={!confirm}
+                    onClick={handleShow}
+                >
                     {show ? "HIDE" : "SHOW"}
                 </button>
             </div>
