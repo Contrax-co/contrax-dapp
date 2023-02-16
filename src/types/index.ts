@@ -53,6 +53,7 @@ export interface Farm {
     vault_addr: string;
     vault_abi: any;
     lp_abi: any;
+    withdraw_decimals?: number;
 }
 export interface FarmDetails extends Farm {
     userVaultBalance: number;

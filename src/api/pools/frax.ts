@@ -23,8 +23,10 @@ export const getFarmData = async (
     farmData = {
         Max_Zap_Withdraw_Balance_Dollar: "0",
         Max_Zap_Withdraw_Balance: "0",
-        Max_Token_Withdraw_Balance: toEth(vaultBalance, farm.decimals),
-        Max_Token_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance, farm.decimals)) * tokenPrice).toString(),
+        Max_Token_Withdraw_Balance: toEth(vaultBalance, farm.withdraw_decimals || farm.decimals),
+        Max_Token_Withdraw_Balance_Dollar: (
+            Number(toEth(vaultBalance, farm.withdraw_decimals || farm.decimals)) * tokenPrice
+        ).toString(),
         Max_Token_Deposit_Balance: toEth(tokenBalance, farm.decimals),
         Max_Token_Deposit_Balance_Dollar: (Number(toEth(tokenBalance, farm.decimals)) * tokenPrice).toString(),
         Max_Zap_Deposit_Balance_Dollar: "0",
@@ -123,7 +125,10 @@ export const withdraw = async ({
          * Execute the actual withdraw functionality from smart contract
          */
         let formattedBal;
-        formattedBal = utils.parseUnits(validateNumberDecimals(withdrawAmount, farm.decimals), farm.decimals);
+        formattedBal = utils.parseUnits(
+            validateNumberDecimals(withdrawAmount, farm.withdraw_decimals || farm.decimals),
+            farm.withdraw_decimals || farm.decimals
+        );
         const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer);
         const lpContract = new Contract(farm.lp_address, farm.lp_abi, signer);
         const poolId = await lpContract.poolId();

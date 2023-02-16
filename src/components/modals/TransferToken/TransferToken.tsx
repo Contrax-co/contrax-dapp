@@ -10,9 +10,10 @@ import { toWei } from "src/utils/common";
 interface IProps {
     token: Token;
     setSelectedToken: Function;
+    refetchBalances: Function;
 }
 
-export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
+export const TransferToken: FC<IProps> = ({ token, setSelectedToken, refetchBalances }) => {
     const { lightMode } = useApp();
     const [reciverAddress, setReciverAddress] = useState<string>("");
     const [amount, setAmount] = useState<number>(0);
@@ -41,6 +42,7 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
         }
         dismissNotify(id);
         setSelectedToken(undefined);
+        refetchBalances();
     };
 
     const handleMaxClick = () => {

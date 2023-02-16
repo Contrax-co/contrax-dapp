@@ -13,7 +13,7 @@ interface IProps {}
 
 export const TokenBalances: FC<IProps> = (props) => {
     const { lightMode } = useApp();
-    const { tokens } = useTokens();
+    const { tokens, refetchBalances } = useTokens();
     const { signer } = useWallet();
     const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
@@ -43,7 +43,13 @@ export const TokenBalances: FC<IProps> = (props) => {
                     </div>
                 ) : null
             )}
-            {selectedToken ? <TransferToken token={selectedToken} setSelectedToken={setSelectedToken} /> : null}
+            {selectedToken ? (
+                <TransferToken
+                    token={selectedToken}
+                    setSelectedToken={setSelectedToken}
+                    refetchBalances={refetchBalances}
+                />
+            ) : null}
         </div>
     ) : (
         <EmptyComponent style={{ paddingTop: 50, paddingBottom: 50 }}>
