@@ -72,15 +72,16 @@
       ]
     },
     {
-      "group": "Contrax DApp",
+      "group": "DApp Pages",
       "pages": [
         "contrax-dapp/dashboard",
         "contrax-dapp/farms",
-        "contrax-dapp/buy",
-        "contrax-dapp/bridge",
-        "contrax-dapp/swap",
-        "contrax-dapp/dapp-faq",
-        "contrax-dapp/Disclaimers"
+        {"group": "Exchange",
+        "pages": [
+          "contrax-dapp/buy",
+          "contrax-dapp/bridge",
+          "contrax-dapp/swap"
+          ]}
       ]
     },
     {
