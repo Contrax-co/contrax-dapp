@@ -57,6 +57,8 @@ export const toEth = (value: string | BigNumberish, decimals = 18) => {
     return utils.formatUnits(value, decimals);
 };
 
-export const floorToFixed = (value: number, decimalPlaces: number) =>
+export const floorToFixed = (value: number, decimalPlaces: number) => {
     //@ts-ignore
-    Number(Math.floor(value + "e" + decimalPlaces) + "e-" + decimalPlaces);
+    const result = Number(Math.floor(value + "e" + decimalPlaces) + "e-" + decimalPlaces);
+    return result;
+};
