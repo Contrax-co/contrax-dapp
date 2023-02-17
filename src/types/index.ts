@@ -50,6 +50,8 @@ export interface Farm {
     rewards2_alt?: string;
     lp_address: string;
     decimals: number;
+    decimals1?: number;
+    decimals2?: number;
     vault_addr: string;
     vault_abi: any;
     lp_abi: any;
