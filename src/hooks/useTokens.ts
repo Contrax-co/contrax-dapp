@@ -28,8 +28,17 @@ export const useTokens = () => {
             const farm = farms.find(
                 (farm) => farm.token1.toLowerCase() === address || farm.token2?.toLowerCase() === address
             );
+            const decimals =
+                (farm?.token1.toLowerCase() === address
+                    ? // @ts-ignore
+                      farm.decimals1
+                    : // @ts-ignore
+                    farm?.decimals2
+                    ? // @ts-ignore
+                      farm?.decimals2
+                    : farm?.decimals) || 18;
             if (farm) {
-                arr.push({ address, decimals: farm.decimals });
+                arr.push({ address, decimals });
             }
         });
         return arr;
