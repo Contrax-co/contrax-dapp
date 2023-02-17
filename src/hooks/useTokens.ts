@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Token } from "src/types";
-import { floorToFixed, toEth } from "src/utils/common";
+import { floorToFixed } from "src/utils/common";
 import useFarms from "./farms/useFarms";
 import useBalances from "./useBalances";
 import usePriceOfTokens from "./usePriceOfTokens";
@@ -14,13 +14,8 @@ const usdBalDecimalPlaces = 2;
 
 export const useTokens = () => {
     const { farms } = useFarms();
-    const [secondChainEthBalance, setSecondChainEthBalance] = useState(0);
-    const { balance: ethBalance, networkId, mainnetBalance } = useWallet();
+    const { balance: ethBalance, networkId } = useWallet();
     const [tokens, setTokens] = useState<Token[]>([]);
-
-    useEffect(() => {
-        setSecondChainEthBalance(Number(toEth(mainnetBalance)));
-    }, [mainnetBalance]);
 
     const tokenAddresses = useMemo(() => {
         const set = new Set<string>();
@@ -80,25 +75,9 @@ export const useTokens = () => {
                     ? (ethBalance * prices[ethAddress]).toPrecision(2).slice(0, -1)
                     : floorToFixed(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
         };
-        const mainNetEthToken = {
-            address: ethAddress,
-            balance:
-                secondChainEthBalance < 1 / 10 ** tokenBalDecimalPlaces
-                    ? secondChainEthBalance.toPrecision(2).slice(0, -1)
-                    : floorToFixed(secondChainEthBalance, tokenBalDecimalPlaces).toString(),
-            decimals: 18,
-            logo: ethLogo,
-            name: "ETH",
-            network: networkId === 1 ? "Arbitrum" : "Mainnet",
-            usdBalance:
-                secondChainEthBalance * prices[ethAddress] < 1 / 10 ** usdBalDecimalPlaces
-                    ? (secondChainEthBalance * prices[ethAddress]).toPrecision(2).slice(0, -1)
-                    : floorToFixed(secondChainEthBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
-        };
         tokens.unshift(ethToken);
-        tokens.unshift(mainNetEthToken);
         setTokens(tokens);
-    }, [farms, formattedBalances, prices, secondChainEthBalance, tokenAddresses, ethBalance, networkId]);
+    }, [farms, formattedBalances, prices, tokenAddresses, ethBalance, networkId]);
 
     return { tokens, refetchBalances: refetch };
 };
