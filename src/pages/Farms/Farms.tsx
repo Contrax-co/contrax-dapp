@@ -19,6 +19,7 @@ function Farms() {
     const [sortedFarms, setSortedFarms] = useState<FarmDetails[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
+    const [openedFarm, setOpenedFarm] = useState<number | undefined>();
 
     useEffect(() => {
         setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
@@ -126,7 +127,9 @@ function Farms() {
                 <p></p>
             </div>
             {networkId === defaultChainId ? (
-                sortedFarms?.map((farm) => <FarmRow key={farm.id} farm={farm} />)
+                sortedFarms?.map((farm) => (
+                    <FarmRow key={farm.id} farm={farm} openedFarm={openedFarm} setOpenedFarm={setOpenedFarm} />
+                ))
             ) : (
                 <EmptyComponent>Please change network to Arbitrum to use the farms</EmptyComponent>
             )}

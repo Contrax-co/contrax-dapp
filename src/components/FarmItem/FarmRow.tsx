@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import "./FarmRow.css";
 import PoolButton from "src/components/PoolButton/PoolButton";
@@ -14,18 +14,29 @@ import { floorToFixed } from "src/utils/common";
 
 interface Props {
     farm: FarmDetails;
+    openedFarm: number | undefined;
+    setOpenedFarm: Function;
 }
 
-const FarmRow: React.FC<Props> = ({ farm }) => {
+const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const { lightMode } = useApp();
-    const [dropdown, setDropDown] = useState(false);
+    const [dropDown, setDropDown] = useState(false);
     const { userVaultBalance: userVaultBal, priceOfSingleToken, apys } = farm;
     const { compounding, feeApr, rewardsApr, apy } = apys;
     const key = uuid();
 
+    const handleClick = () => {
+        setDropDown((prev) => !prev);
+        setOpenedFarm((id: number | undefined) => (id === farm.id ? undefined : farm.id));
+    };
+
+    useEffect(() => {
+        if (openedFarm !== farm.id && dropDown) setDropDown(false);
+    }, [openedFarm]);
+
     return (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
-            <div className="farm_table_row" key={farm.id} onClick={() => setDropDown(!dropdown)}>
+            <div className="farm_table_row" key={farm.id} onClick={handleClick}>
                 {/* Asset Name and Logo */}
 
                 <div className="title_container">
@@ -147,10 +158,10 @@ const FarmRow: React.FC<Props> = ({ farm }) => {
                 </div>
 
                 <div className={`dropdown ${lightMode && "dropdown--light"}`}>
-                    {!dropdown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
+                    {!dropDown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
                 </div>
             </div>
-            {dropdown && <DropDownView farm={farm} />}
+            {dropDown && <DropDownView farm={farm} />}
         </div>
     );
 };
