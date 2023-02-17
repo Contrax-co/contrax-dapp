@@ -47,10 +47,17 @@
   ],
   "navigation": [
     {
-      "group": "Getting Started",
+      "group": "Info",
       "pages": [
         "introduction",
-        "start/defi",
+        "info/defi",
+        "info/dapp-faq",
+        "info/disclaimers"
+      ]
+    },
+    {
+      "group": "Getting Started",
+      "pages": [
         "start/quickstart",
         "start/wallet-setup",
         {"group": "Wallet Funding",
@@ -83,12 +90,6 @@
         "smart-contracts/strategies",
         "smart-contracts/vaults",
         "smart-contracts/multisig"
-      ]
-    },
-    {
-      "group": "FAQ",
-      "pages": [
-        "FAQ/dapp-faq"
       ]
     }
   ],
