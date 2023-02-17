@@ -32,7 +32,7 @@ export const TokenBalances: FC<IProps> = (props) => {
                         }
                     >
                         <img className={styles.tokenLogo} src={token.logo} alt="logo" />
-                        <div className={styles.tokenDesription}>
+                        <div>
                             <p className={styles.name}>
                                 {token.name}
                                 {token.network ? <span className={styles.networkName}>({token.network})</span> : null}
