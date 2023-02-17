@@ -158,6 +158,7 @@
 @media (max-width: 650px) {
   .farms {
     padding: 10px;
+    padding-bottom: 70px;
   }
 
   /* .farm_table_row {
