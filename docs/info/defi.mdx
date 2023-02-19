@@ -1,6 +1,6 @@
 ---
 title: "DeFi Basics"
-description: "Understand what DeFi actually is, in simple terms"
+description: "Understand what DeFi actually is, and how your yield is earned"
 ---
 
 ## DeFi & Smart Contracts
@@ -13,26 +13,26 @@ Web3 refers to applications built on top of blockchain technology. A dApp (Decen
 
 ## Wallets & Gas
 
-Wallets refer to the applications or browser extentions where you hold your crypto, like MetaMask. These wallets can connect to multiple dApps and ensure that for every one, you bring your own funds and the platform only has access to whatever you allow it to. In order to make any transaction, some of your ETH will be spent to pay for the cost of transfer, so always make sure you have extra ETH in your wallet!
+Wallets refer to the applications or browser extentions where you hold your crypto, like Web3Auth or MetaMask. Your web3 wallet and the funds it holds are only accessible to you. In order to make any transaction, some of your ETH will be spent to pay for the cost of transfer, so never deposit all of your ETH at once. Contrax by default will keep a bit of ETH back so you don't have to worry about gas management.
 
 ## Arbitrum & Layer 2s
 
-Gas costs a few dollars on the Ethereum mainnet, and a few cents on Arbitrum and other layer 2s. For this reason, many DeFi projects are on a layer other than the main Ethereum that most people know. These layer 2s always save their transactions back to the main layer. It basically is a way to many transactions together to save gas cost. To learn how to move your ETH to Arbitrum, see our [Bridging guide](../start/bridge).
+Gas costs a few dollars on the Ethereum mainnet, but only a few cents on Arbitrum and other layer 2s. For this reason, many DeFi projects are on a layer other than the main Ethereum that most people know. These layer 2s always save their transactions back to the main layer. It basically is a way to many transactions together to save gas cost.
 
 ## Liquidity Pools & LP Tokens
 
-A DEX allows the exchange of two tokens, but it needs a pre-existing pool with both tokens to provide liquidity for the exchange. If you provide these tokens for the pool, you get an _LP token_ as a receipt to claim your tokens back at any time. That LP token can earn rewards in fees and other rewards from external projects. Note that on Contrax, you don't have to worry about getting LP tokens as our farms auto-convert your ETH into the tokens, but it is good for you to understand what is actually happening.
+A DEX allows the exchange of two tokens, but it needs a pre-existing pool with both tokens to provide liquidity for the exchange. If you provide these tokens for the pool, you get an _LP token_ as a receipt to claim your tokens back at any time. Note that on Contrax, you don't have to worry about getting LP tokens as our farms auto-converts your ETH into and out of farm LP tokens.
 
 ## Farms & Zaps
 
-The LP token is a receipt to show you provided liquidity, but to earn rewards on it, you need to stake it in a farm. Contrax has zaps to make it easy to swap from ETH (or other tokens) straight into the farming LP token, which can then be deposited into a farm. See the [Exchange page](../contrax-dapp/exchange) for details on how to obtain LP tokens.
+The LP token is a receipt to show you provided liquidity, but to earn rewards on it, you need to stake it in a farm. Contrax uses a technology called Zapping which allows you to deposit your ETH and have it auto-convert into the farm's LP token tokens. You will not have to worry about dealing with any token except your ETH.
 
-## Real Yield
+## Yield and APY
 
-Some farms provide rewards for tokens that have no actual utility or value. Even tokens that do have utlity may inflate their token to provide rewards, therefore diluting everyone and not really providing rewards at all. Contrax will only list farms that pay out real value tokens, and pay rewards from the actual revenue earned by token's project.
+Yield refers to the estimated rewards you recieve from providing liquidity. In a farm, you are earning rewards from trading fees and from the platform rewarding you for using their pool. Contrax uses the numbers the platform provides to calculate your _APY_, or annual percentage yield. So a $1000 deposited in a farm with 20% APY should be around $1,200 by the end of the year if the APY stays consistent.
 
 ## Auto-compounding
 
-Each farms pays rewards in various tokens, leaving you with a hard-to-manage portfolio of reward tokens you know little about. Contrax uses autocompounding vaults to convert all rewards tokens into the same LP token being farmed which then increases your share of the pool, and therefore your rewards. The LPs can easily be swapped in ETH or any other major asset whenever you want.
+Each farms pays rewards in various tokens, leaving you with a hard-to-manage portfolio of reward tokens you know little about. Contrax uses autocompounding vaults to convert all rewards tokens into the same LP token being farmed which then increases your share of the pool, and therefore your rewards. With zaps and auto-compounding working together, Contrax lets you farm and earn with a single token.
 
 _If you think you are ready to start your DeFi journey, learn how to set up MetaMask with [our set-up guide](../start/wallet-setup)._
