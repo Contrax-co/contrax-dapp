@@ -42,10 +42,11 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
     };
 
     const {
-        data: balances,
+        data: balancesUndefined,
         refetch,
         isLoading,
         isFetching,
+        isPlaceholderData,
     } = useQuery(
         // Query will rerun and fetch new data whenever any of the values changes in below function
         TOKEN_BALANCES(
@@ -60,7 +61,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
 
             // Initial data to be returned when no query has ran
             // Returns 0 for all the balances initially
-            initialData: () => {
+            placeholderData: () => {
                 let b: { [key: string]: ethers.BigNumber } = {};
                 data.forEach((item) => {
                     b[item.address] = ethers.BigNumber.from(0);
@@ -69,7 +70,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
             },
         }
     );
-
+    const balances = balancesUndefined!;
     const formattedBalances = useMemo(() => {
         let b: { [key: string]: number } = {};
         Object.entries(balances).map(([key, value]) => {
@@ -103,7 +104,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
         /**
          * Is query loading, (Always returns false, if initialData is given to useQuery)
          */
-        isLoading,
+        isLoading: isLoading || isPlaceholderData,
 
         /**
          * Is query fetching will return true if query is fetching in background

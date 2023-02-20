@@ -39,10 +39,11 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
     };
 
     const {
-        data: supplies,
+        data: suppliesUndefined,
         refetch,
         isLoading,
         isFetching,
+        isPlaceholderData,
     } = useQuery(
         TOKEN_TOTAL_SUPPLIES(
             data.map((_) => _.address),
@@ -51,7 +52,7 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         getAllSupplies,
         {
             enabled: !!provider && data.length > 0 && !!NETWORK_NAME,
-            initialData: () => {
+            placeholderData: () => {
                 let b: { [key: string]: ethers.BigNumber } = {};
                 data.forEach((item) => {
                     b[item.address] = ethers.BigNumber.from(0);
@@ -60,6 +61,7 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
             },
         }
     );
+    const supplies = suppliesUndefined!;
     const formattedSupplies = useMemo(() => {
         let b: { [key: string]: number } = {};
         Object.entries(supplies).map(([key, value]) => {
@@ -92,7 +94,7 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         /**
          * Is query loading, (Always returns false, if initialData is given to useQuery)
          */
-        isLoading,
+        isLoading: isLoading || isPlaceholderData,
 
         /**
          * Is query fetching will return true if query is fetching in background

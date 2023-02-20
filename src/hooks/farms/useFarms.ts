@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import pools from "src/config/constants/pools.json";
 import { Farm, FarmDetails } from "src/types";
 import { FarmType } from "src/types/enums";
@@ -18,22 +18,19 @@ export const useFarmDetails = (): {
     farmDetails: FarmDetails[];
     normalFarms: FarmDetails[];
     advancedFarms: FarmDetails[];
+    isLoading: boolean;
 } => {
-    const { formattedBalances: usersVaultBalances, refetch: usersVaultBalanceRefetch } = useFarmsBalances();
-    const { formattedSupplies: totalVaultSupplies, refetch: totalVaultSuppliesRefetch } = useTotalSupplies(
+    const { formattedBalances: usersVaultBalances, isLoading: isLoadingUsersVaultBalances } = useFarmsBalances();
+    const { formattedSupplies: totalVaultSupplies, isLoading: isLoadingTotalVaultSupplies } = useTotalSupplies(
         farms.map((farm) => ({ address: farm.vault_addr, decimals: farm.decimals }))
     );
-    const { formattedSupplies: totalPlatformSupplies, refetch: totalPlatformSuppliesRefetch } = useTotalSupplies(
+    const { formattedSupplies: totalPlatformSupplies, isLoading: isLoadingTotalPlatformSupplies } = useTotalSupplies(
         farms.map((farm) => ({ address: farm.lp_address, decimals: farm.decimals }))
     );
-    const { prices: priceOfSingleToken } = usePriceOfTokens(farms.map((farm) => farm.lp_address));
-    const { apys } = useFarmApys();
-
-    const refetchBalances = useCallback(() => {
-        usersVaultBalanceRefetch();
-        totalVaultSuppliesRefetch();
-        totalPlatformSuppliesRefetch();
-    }, [totalPlatformSuppliesRefetch, totalVaultSuppliesRefetch, usersVaultBalanceRefetch]);
+    const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens(
+        farms.map((farm) => farm.lp_address)
+    );
+    const { apys, isLoading: isLoadingApys } = useFarmApys();
 
     const farmDetails = useMemo(() => {
         return farms.map((farm) => {
@@ -80,5 +77,15 @@ export const useFarmDetails = (): {
         }, []);
     }, [apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
 
-    return { farmDetails, normalFarms, advancedFarms };
+    return {
+        farmDetails,
+        normalFarms,
+        advancedFarms,
+        isLoading:
+            isLoadingApys ||
+            isLoadingPricesOfSingleToken ||
+            isLoadingTotalPlatformSupplies ||
+            isLoadingTotalVaultSupplies ||
+            isLoadingUsersVaultBalances,
+    };
 };

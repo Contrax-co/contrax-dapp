@@ -1,17 +1,21 @@
 @import "../../../styles/variables.scss";
 @import "../../../styles/_mixins.scss";
 
-.heading{
+.heading {
     display: flex;
     align-items: center;
     gap: 10px;
     color: #ffc800;
-    & h1{
+    & h1 {
         margin: 8px 0px;
     }
 }
-.message{
-    color: #ffc800;
+.caption {
+    font-size: large;
+    font-weight: bold;
+}
+.message {
+    color: $color_grey;
     max-width: 500px;
 }
 .confirm {
@@ -21,7 +25,10 @@
         margin-left: 8px;
     }
 }
-.key{
+.note {
+    margin-bottom: 0px;
+}
+.key {
     color: $color_grey;
     background-color: $background_primary;
     width: 100%;
@@ -31,7 +38,7 @@
     box-sizing: border-box;
     position: relative;
 
-    & input{
+    & input {
         margin: 0px;
         font-size: 13px;
         font-weight: bold;
@@ -52,7 +59,7 @@
         }
     }
 
-    .copyIcon{
+    .copyIcon {
         position: absolute;
         right: 100px;
         top: 50%;

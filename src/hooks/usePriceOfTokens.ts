@@ -19,7 +19,7 @@ const usePriceOfTokens = (addresses: string[]) => {
             // Query key index should be changed in getPrice function as well if changed here
             queryKey: TOKEN_PRICE(address || "", NETWORK_NAME),
             queryFn: fetchPrice,
-            initialData: 0,
+            placeholderData: 0,
         })),
     });
 
@@ -33,9 +33,11 @@ const usePriceOfTokens = (addresses: string[]) => {
 
     const prices = useMemo(() => resultingPrices, [JSON.stringify(resultingPrices)]);
 
+    const isLoading = useMemo(() => results.some((result) => result.isLoading || result.isPlaceholderData), [results]);
+
     const isFetching = useMemo(() => results.some((result) => result.isFetching), [results]);
 
-    return { prices, isFetching };
+    return { prices, isLoading, isFetching };
 };
 
 export default usePriceOfTokens;

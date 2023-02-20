@@ -15,7 +15,7 @@ function Farms() {
     const { lightMode } = useApp();
     const [tab, setTab] = useState(1);
     const { networkId } = useWallet();
-    const { normalFarms, advancedFarms } = useFarmDetails();
+    const { normalFarms, advancedFarms, isLoading } = useFarmDetails();
     const [sortedFarms, setSortedFarms] = useState<FarmDetails[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
@@ -128,7 +128,13 @@ function Farms() {
             </div>
             {networkId === defaultChainId ? (
                 sortedFarms?.map((farm) => (
-                    <FarmRow key={farm.id} farm={farm} openedFarm={openedFarm} setOpenedFarm={setOpenedFarm} />
+                    <FarmRow
+                        key={farm.id}
+                        farm={farm}
+                        openedFarm={openedFarm}
+                        setOpenedFarm={setOpenedFarm}
+                        isLoading={isLoading}
+                    />
                 ))
             ) : (
                 <EmptyComponent>Please change network to Arbitrum to use the farms</EmptyComponent>
