@@ -42,9 +42,13 @@ export const TokenBalances: FC<IProps> = (props) => {
                                             <span className={styles.networkName}>({token.network})</span>
                                         ) : null}
                                     </p>
-                                    <p className={styles.balance}>{ethers.utils.commify(token.balance)}</p>
+                                    <p className={styles.balance}>
+                                        {ethers.utils.commify(Number(token.balance).toString())}
+                                    </p>
                                 </div>
-                                <p className={styles.usdBalance}>${ethers.utils.commify(token.usdBalance)}</p>
+                                <p className={styles.usdBalance}>
+                                    ${ethers.utils.commify(Number(token.usdBalance).toString())}
+                                </p>
                             </div>
                         ) : null
                     )
