@@ -2,24 +2,45 @@ import VaultItem from "./VaultItem";
 import styles from "./Vaults.module.scss";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
-import { useFarmDetails } from "src/hooks/farms/useFarms";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
+import { useVaults } from "src/hooks/useVaults";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface Props {}
+let redirected = false;
 
 const Vaults: React.FC<Props> = () => {
     const { networkId, signer } = useWallet();
-    const { farmDetails: vaults, isLoading } = useFarmDetails();
+    const { vaults, isLoading } = useVaults();
+    const navigate = useNavigate();
+    const [params] = useSearchParams();
+
+    useEffect(() => {
+        if (!isLoading && vaults) {
+            if (params.get("redirect") === "false") redirected = true;
+            if (!redirected) navigate("/farms");
+            redirected = true;
+        }
+    }, [navigate, params, vaults, isLoading]);
+
+    useEffect(() => {
+        console.log(vaults);
+    }, [vaults]);
 
     return signer ? (
         <div
             className={styles.vaults_container}
-            style={networkId === defaultChainId ? undefined : { display: "block" }}
+            style={networkId === defaultChainId && !isLoading && vaults.length > 0 ? undefined : { display: "block" }}
         >
             {!isLoading ? (
                 networkId === defaultChainId ? (
-                    vaults.map((vault) => <VaultItem vault={vault} key={vault.id} />)
+                    vaults.length > 0 ? (
+                        vaults.map((vault) => <VaultItem vault={vault} key={vault.id} />)
+                    ) : (
+                        <EmptyComponent>You haven't deposited in any of the farms.</EmptyComponent>
+                    )
                 ) : (
                     <EmptyComponent>Change network to Arbitrum to view your joined Vaults</EmptyComponent>
                 )
