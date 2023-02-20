@@ -6,24 +6,13 @@ import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import { useVaults } from "src/hooks/useVaults";
 import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface Props {}
-let redirected = false;
 
 const Vaults: React.FC<Props> = () => {
     const { networkId, signer } = useWallet();
     const { vaults, isLoading } = useVaults();
-    const navigate = useNavigate();
-    const [params] = useSearchParams();
-
-    useEffect(() => {
-        if (!isLoading && vaults) {
-            if (params.get("redirect") === "false") redirected = true;
-            if (!redirected) navigate("/farms");
-            redirected = true;
-        }
-    }, [navigate, params, vaults, isLoading]);
 
     useEffect(() => {
         console.log(vaults);
@@ -39,7 +28,12 @@ const Vaults: React.FC<Props> = () => {
                     vaults.length > 0 ? (
                         vaults.map((vault) => <VaultItem vault={vault} key={vault.id} />)
                     ) : (
-                        <EmptyComponent>You haven't deposited in any of the farms.</EmptyComponent>
+                        <EmptyComponent>
+                            You haven't deposited in any of the farms.{" "}
+                            <Link to={"/farms"} style={{ color: "#009aff" }}>
+                                Go to Farms
+                            </Link>
+                        </EmptyComponent>
                     )
                 ) : (
                     <EmptyComponent>Change network to Arbitrum to view your joined Vaults</EmptyComponent>
