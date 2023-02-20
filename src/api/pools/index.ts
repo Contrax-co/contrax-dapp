@@ -12,21 +12,25 @@ import * as frax from "./frax";
 import * as wethWsteth from "./weth-wsteth";
 import * as wethWbtcSwapfish from "./weth-wbtc-swapfish";
 import * as usdcAgeur from "./usdc-ageur";
+import * as usdcTusd from "./usdc-tusd";
+import * as usdcUsx from "./usdc-usx";
 
 const farmFunctions: { [key: number]: typeof wethUsdt } = {
-    3: wethUsdt,
-    10: wethMagic,
     1: wethDai,
     2: wethUsdc,
+    3: wethUsdt,
     4: wethWbtc,
-    8: plsWeth,
     5: gmx,
     6: usdcDodo,
     7: usdtDodo,
+    8: plsWeth,
     9: frax,
-    15: wethWsteth,
-    14: wethWbtcSwapfish,
+    10: wethMagic,
+    11: usdcUsx,
+    12: usdcTusd,
     13: usdcAgeur,
+    14: wethWbtcSwapfish,
+    15: wethWsteth,
 };
 
 export default farmFunctions;
