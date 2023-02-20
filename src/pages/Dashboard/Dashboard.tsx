@@ -14,8 +14,8 @@ import { useSearchParams } from "react-router-dom";
 import useFarms from "src/hooks/farms/useFarms";
 import useFarmsBalances from "src/hooks/farms/useFarmsBalances";
 import { TokenBalances } from "./TokenBalances/TokenBalances";
-import { AiFillSetting } from "react-icons/ai";
-import { SettingsModal } from "src/components/modals/SettingsModal/SettingsModal";
+import { FaKey } from "react-icons/fa";
+import { ExportPrivateKey } from "src/components/modals/ExportPrivateKey/ExportPrivateKey";
 
 let redirected = false;
 
@@ -86,8 +86,8 @@ function Dashboard() {
                     )}
                 </div>
                 <div>
-                    <AiFillSetting color="#ffffff" cursor="pointer" size={30} onClick={() => setOpenModal(true)} />
-                    {openModal ? <SettingsModal setOpenModal={setOpenModal} /> : null}
+                    <FaKey color="#ffffff" cursor="pointer" size={30} onClick={() => setOpenModal(true)} />
+                    {openModal ? <ExportPrivateKey setOpenModal={setOpenModal} /> : null}
                 </div>
             </div>
 
