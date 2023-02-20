@@ -10,6 +10,8 @@ import * as usdcDodo from "./usdcDodo";
 import * as usdtDodo from "./usdtDodo";
 import * as frax from "./frax";
 import * as wethWsteth from "./weth-wsteth";
+import * as wethWbtcSwapfish from "./weth-wbtc-swapfish";
+import * as usdcAgeur from "./usdc-ageur";
 
 const farmFunctions: { [key: number]: typeof wethUsdt } = {
     3: wethUsdt,
@@ -23,6 +25,8 @@ const farmFunctions: { [key: number]: typeof wethUsdt } = {
     7: usdtDodo,
     9: frax,
     15: wethWsteth,
+    14: wethWbtcSwapfish,
+    13: usdcAgeur,
 };
 
 export default farmFunctions;

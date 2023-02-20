@@ -198,7 +198,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                                 className={`${styles.select} ${lightMode && styles.select_light}`}
                             >
                                 <option value={"false"} className="currency_select">
-                                    {shouldUseLp ? farm.name : "ETH"}
+                                    {shouldUseLp ? farm.name : farmData?.Zap_Token_Symbol}
                                 </option>
                                 <option value={"true"} className="currency_select">
                                     USD
