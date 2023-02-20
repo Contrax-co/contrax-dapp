@@ -25,6 +25,8 @@ export interface Farm {
     id: number;
     stableCoin?: boolean;
     originPlatform?: FarmOriginPlatform;
+    master_chef?: string;
+    pool_id?: number;
     token_type: string;
     name: string;
     name1: string;
