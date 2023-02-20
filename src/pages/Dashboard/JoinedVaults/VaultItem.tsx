@@ -12,7 +12,6 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
     const {
         userVaultBalance,
-        totalVaultBalance,
         priceOfSingleToken,
         apys: { apy },
     } = vault;

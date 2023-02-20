@@ -16,18 +16,20 @@ import useFarmsBalances from "src/hooks/farms/useFarmsBalances";
 import { TokenBalances } from "./TokenBalances/TokenBalances";
 import { FaKey } from "react-icons/fa";
 import { ExportPrivateKey } from "src/components/modals/ExportPrivateKey/ExportPrivateKey";
+import { Skeleton } from "src/components/Skeleton/Skeleton";
+import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 
 let redirected = false;
 
 function Dashboard() {
     const { lightMode } = useApp();
-    const { currentWallet, displayAccount } = useWallet();
+    const { currentWallet, displayAccount, signer } = useWallet();
     const [copied, setCopied] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
     const { farms: vaults } = useFarms();
-    const { prices, isFetching } = usePriceOfTokens(vaults.map((vault) => vault.lp_address));
-    const { formattedBalances, isFetching: isFetching2 } = useFarmsBalances();
+    const { prices, isLoading: isLoadingTokenBalances } = usePriceOfTokens(vaults.map((vault) => vault.lp_address));
+    const { formattedBalances, isLoading: isLoadingFarmBalances } = useFarmsBalances();
     const navigate = useNavigate();
     const [params] = useSearchParams();
 
@@ -44,14 +46,14 @@ function Dashboard() {
     };
 
     useEffect(() => {
-        if (!isFetching && !isFetching2) {
+        if (!isLoadingTokenBalances && !isLoadingFarmBalances) {
             if (!hasDeposits) {
                 if (params.get("redirect") === "false") redirected = true;
                 if (!redirected) navigate("/farms");
                 redirected = true;
             }
         }
-    }, [hasDeposits, isFetching, isFetching2, navigate, params]);
+    }, [hasDeposits, isLoadingTokenBalances, isLoadingFarmBalances, navigate, params]);
 
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
@@ -85,10 +87,12 @@ function Dashboard() {
                         <p className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}>No Wallet Connected</p>
                     )}
                 </div>
-                <div>
-                    <FaKey color="#ffffff" cursor="pointer" size={30} onClick={() => setOpenModal(true)} />
-                    {openModal ? <ExportPrivateKey setOpenModal={setOpenModal} /> : null}
-                </div>
+                {signer && (
+                    <div>
+                        <FaKey color="#ffffff" cursor="pointer" size={30} onClick={() => setOpenModal(true)} />
+                        {openModal ? <ExportPrivateKey setOpenModal={setOpenModal} /> : null}
+                    </div>
+                )}
             </div>
 
             <div className={`dashboard_section`}>
@@ -102,7 +106,13 @@ function Dashboard() {
                 <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
                     Joined Vaults
                 </p>
-                <Vaults />
+                {isLoadingFarmBalances ? (
+                    <Skeleton w={"100%"} h={250} bg={"#012243"} bRadius={20} />
+                ) : hasDeposits ? (
+                    <Vaults />
+                ) : (
+                    <EmptyComponent>You haven't Deposited in any of the farms.</EmptyComponent>
+                )}
             </div>
         </div>
     );

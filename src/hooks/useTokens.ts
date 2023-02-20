@@ -44,9 +44,12 @@ export const useTokens = () => {
         return arr;
     }, [farms]);
 
-    const { prices } = usePriceOfTokens([ethAddress, ...tokenAddresses.map((_) => _.address)]);
+    const { prices, isLoading: isLoadingPrices } = usePriceOfTokens([
+        ethAddress,
+        ...tokenAddresses.map((_) => _.address),
+    ]);
 
-    const { formattedBalances, refetch } = useBalances(tokenAddresses);
+    const { formattedBalances, refetch, isLoading: isLoadingBalances } = useBalances(tokenAddresses);
 
     useEffect(() => {
         const tokens: Token[] = tokenAddresses.map(({ address, decimals }) => {
@@ -88,5 +91,5 @@ export const useTokens = () => {
         setTokens(tokens);
     }, [farms, formattedBalances, prices, tokenAddresses, ethBalance, networkId]);
 
-    return { tokens, refetchBalances: refetch };
+    return { tokens, refetchBalances: refetch, isLoading: isLoadingBalances || isLoadingPrices };
 };
