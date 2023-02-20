@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish, utils } from "ethers";
+import { BigNumberish, utils } from "ethers";
 
 export function validateNumberDecimals(value: number, decimals: number = 18) {
     const newVal = noExponents(value);

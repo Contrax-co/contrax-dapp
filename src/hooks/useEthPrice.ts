@@ -5,9 +5,9 @@ const useEthPrice = () => {
     const { CONTRACTS } = useConstants();
     const {
         prices: { [CONTRACTS.wethAddress]: price },
-        isFetching,
+        isLoading,
     } = usePriceOfTokens([CONTRACTS.wethAddress]);
-    return { price, isFetching };
+    return { price, isLoading };
 };
 
 export default useEthPrice;

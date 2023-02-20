@@ -22,7 +22,7 @@ export const useFarmApys = () => {
             // Query key index should be changed in getPrice function as well if changed here
             queryKey: FARM_APY(farm.lp_address, NETWORK_NAME),
             queryFn: () => getApy(farm, CHAIN_ID, provider, currentWallet),
-            initialData: {
+            placeholderData: {
                 feeApr: 0,
                 rewardsApr: 0,
                 apy: 0,
@@ -41,7 +41,9 @@ export const useFarmApys = () => {
     }, [farms, results]);
     const apys = useMemo(() => resulting, [JSON.stringify(resulting)]);
 
+    const isLoading = useMemo(() => results.some((result) => result.isLoading || result.isPlaceholderData), [results]);
+
     const isFetching = useMemo(() => results.some((result) => result.isFetching), [results]);
 
-    return { apys, isFetching };
+    return { apys, isLoading, isFetching };
 };
