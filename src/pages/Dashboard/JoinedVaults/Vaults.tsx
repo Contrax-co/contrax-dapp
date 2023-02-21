@@ -14,10 +14,6 @@ const Vaults: React.FC<Props> = () => {
     const { networkId, signer } = useWallet();
     const { vaults, isLoading } = useVaults();
 
-    useEffect(() => {
-        console.log(vaults);
-    }, [vaults]);
-
     return signer ? (
         <div
             className={styles.vaults_container}

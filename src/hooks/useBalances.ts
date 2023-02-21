@@ -70,6 +70,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
             },
         }
     );
+
     const balances = balancesUndefined!;
     const formattedBalances = useMemo(() => {
         let b: { [key: string]: number } = {};
@@ -83,7 +84,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
             return;
         });
         return b;
-    }, [balances]);
+    }, [balancesUndefined]);
 
     return {
         /**

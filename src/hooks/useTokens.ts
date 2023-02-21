@@ -89,7 +89,7 @@ export const useTokens = () => {
         };
         tokens.unshift(ethToken);
         setTokens(tokens);
-    }, [farms, formattedBalances, prices, tokenAddresses, ethBalance, networkId]);
+    }, [farms, prices, tokenAddresses, ethBalance, networkId]);
 
     return { tokens, refetchBalances: refetch, isLoading: isLoadingBalances || isLoadingPrices };
 };
