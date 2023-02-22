@@ -16,6 +16,7 @@ import {
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import useNotify from "src/hooks/useNotify";
+import { getNetworkName } from "src/utils/common";
 
 interface IWalletContext {
     /**
@@ -104,6 +105,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const { openConnectModal } = useConnectModal();
 
     const getBalance = async () => {
+        console.log("geting balance");
         if (!provider || !currentWallet)
             return { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) };
         const balance = await provider.getBalance(currentWallet);
@@ -130,14 +132,13 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     );
 
     const {
-        data: { balance: balanceBigNumber,mainnetBalance },
+        data: { balance: balanceBigNumber, mainnetBalance },
         refetch: refetchBalance,
-    } = useQuery(ACCOUNT_BALANCE(currentWallet!, currentWallet!, NETWORK_NAME), getBalance, {
-        enabled: !!currentWallet && !!provider && !!NETWORK_NAME,
+    } = useQuery(ACCOUNT_BALANCE(currentWallet!, currentWallet!, networkId.toString()), getBalance, {
+        enabled: !!currentWallet && !!provider && !!getNetworkName(networkId),
         initialData: { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) },
         refetchInterval: 5000,
     });
-
     const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
 
     const getPkey = async () => {

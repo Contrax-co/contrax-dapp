@@ -12,7 +12,6 @@ const useConstants = () => {
     const CONTRACTS = addressesByChainId[CHAIN_ID] || "";
     const BLOCK_EXPLORER_URL = blockExplorersByChainId[CHAIN_ID] || "";
     const COINS_LLAMA_PRICE = coinsLamaPriceByChainId[CHAIN_ID] || "";
-
     return { CHAIN_ID, NETWORK_NAME, CONTRACTS, BLOCK_EXPLORER_URL, COINS_LLAMA_PRICE };
 };
 
