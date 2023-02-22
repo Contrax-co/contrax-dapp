@@ -14,6 +14,7 @@ import styles from "./DetailInput.module.scss";
 import farmFunctions from "src/api/pools";
 import { FARM_DATA } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
+import { Skeleton } from "src/components/Skeleton/Skeleton";
 
 interface Props {
     farm: FarmDetails;
@@ -35,7 +36,11 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const [max, setMax] = React.useState(false);
     const { priceOfSingleToken } = farm;
 
-    const { data: farmData, refetch } = useQuery(
+    const {
+        data: farmData,
+        refetch,
+        isLoading,
+    } = useQuery(
         FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
         () => farmFunctions[farm.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
         {
@@ -168,11 +173,14 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
                 onSubmit={handleSubmit}
             >
-                <div style={{ textAlign: "right" }}>
-                    {shouldUseLp ? ` ${farm.name}` : ` ${farmData?.Zap_Token_Symbol}`} Balance: &nbsp;
-                    {showInUsd && "$ "}
-                    {maxBalance.toFixed(6)}
-                </div>
+                {isLoading && <Skeleton w={100} h={20} style={{ marginLeft: "auto" }} />}
+                {!isLoading && (
+                    <div style={{ textAlign: "right" }}>
+                        {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
+                        {showInUsd && "$ "}
+                        {maxBalance.toFixed(6)}
+                    </div>
+                )}
                 <div></div>
 
                 <div className={`${styles.inputWrapper} ${lightMode && styles.inputWrapper_light}`}>

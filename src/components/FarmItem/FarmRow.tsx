@@ -37,7 +37,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm, isLoading }
     }, [openedFarm]);
 
     return isLoading ? (
-        <FarmRowSkeleton lightMode={lightMode} />
+        <FarmRowSkeleton farm={farm} lightMode={lightMode} />
     ) : (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
             <div className="farm_table_row" key={farm.id} onClick={handleClick}>
@@ -214,13 +214,35 @@ const DropDownView: React.FC<{ farm: FarmDetails }> = ({ farm }) => {
     );
 };
 
-const FarmRowSkeleton = ({ lightMode }: { lightMode: boolean }) => (
+const FarmRowSkeleton = ({ farm, lightMode }: { farm: FarmDetails; lightMode: boolean }) => (
     <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
         <div className="farm_table_row">
             {/* Asset Name and Logo */}
 
             <div className="title_container">
-                <Skeleton w={100} h={60} />
+                <div className="pair">
+                    {farm.logo1 ? (
+                        <img
+                            alt={farm.alt1}
+                            className={`logofirst ${lightMode && "logofirst--light"}`}
+                            src={farm.logo1}
+                        />
+                    ) : null}
+
+                    {farm.logo2 ? (
+                        <img alt={farm.alt2} className={`logo ${lightMode && "logo--light"}`} src={farm.logo2} />
+                    ) : null}
+                </div>
+
+                <div>
+                    <div className="pool_title">
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{farm.name}</p>
+                        <div className="rewards_div">
+                            <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm.platform}</p>
+                            <img alt={farm.platform_alt} className="rewards_image" src={farm.platform_logo} />
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* APY */}

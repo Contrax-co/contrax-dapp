@@ -6,6 +6,7 @@ import { TOKEN_BALANCES } from "src/config/constants/query";
 import * as ethers from "ethers";
 import useConstants from "./useConstants";
 import erc20 from "src/assets/abis/erc20.json";
+import { isValidNetwork } from "src/utils/common";
 
 /**
  * Returns balances for all tokens
@@ -16,7 +17,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
     const { provider, currentWallet } = useWallet();
 
     const getAllBalances = async () => {
-        if (!provider) return {};
+        if (!provider || !isValidNetwork(NETWORK_NAME)) return {};
         const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
         const contractCallContext: ContractCallContext[] = [];
 

@@ -1,4 +1,5 @@
 import { BigNumberish, utils } from "ethers";
+import { defaultChainId } from "src/config/constants";
 
 export function validateNumberDecimals(value: number, decimals: number = 18) {
     const newVal = noExponents(value);
@@ -45,7 +46,7 @@ export function getNetworkName(id: number) {
         case 1:
             return "ethereum";
         default:
-            return "arbitrum";
+            return "";
     }
 }
 
@@ -61,4 +62,14 @@ export const floorToFixed = (value: number, decimalPlaces: number) => {
     //@ts-ignore
     const result = Number(Math.floor(value + "e" + decimalPlaces) + "e-" + decimalPlaces);
     return result;
+};
+
+export const isValidNetwork = (network: string | number) => {
+    console.log("network", network, typeof network);
+    if (typeof network === "string") {
+        if (network === "arbitrum") return true;
+    } else if (typeof network === "number") {
+        if (network === defaultChainId) return true;
+    }
+    return false;
 };
