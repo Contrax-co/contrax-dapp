@@ -70,7 +70,7 @@ const Exchange: React.FC<IProps> = () => {
                 const obj: TokenInfo = {
                     address: farm.token1,
                     chainId: 42161,
-                    decimals: farm.decimals,
+                    decimals: farm.decimals1 || farm.decimals,
                     name: farm.name.split("-")[0],
                     symbol: farm.name.split("-")[0],
                 };
