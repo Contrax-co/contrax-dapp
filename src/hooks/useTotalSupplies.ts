@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Multicall, ContractCallResults, ContractCallContext } from "ethereum-multicall";
 import useWallet from "src/hooks/useWallet";
 import { useQuery } from "@tanstack/react-query";
@@ -38,6 +38,14 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         return ans;
     };
 
+    const placeholderData = useMemo(() => {
+        let b: { [key: string]: ethers.BigNumber } = {};
+        data.forEach((item) => {
+            b[item.address] = ethers.BigNumber.from(0);
+        });
+        return b;
+    }, [data]);
+
     const {
         data: suppliesUndefined,
         refetch,
@@ -52,13 +60,7 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         getAllSupplies,
         {
             enabled: !!provider && data.length > 0 && !!NETWORK_NAME,
-            placeholderData: () => {
-                let b: { [key: string]: ethers.BigNumber } = {};
-                data.forEach((item) => {
-                    b[item.address] = ethers.BigNumber.from(0);
-                });
-                return b;
-            },
+            placeholderData,
         }
     );
     const supplies = suppliesUndefined!;
