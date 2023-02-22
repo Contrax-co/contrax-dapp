@@ -66,16 +66,34 @@ const Exchange: React.FC<IProps> = () => {
     const { farms } = useFarms();
     const tokenList: TokenInfo[] = React.useMemo(
         () =>
-            farms.map((farm) => {
-                const obj: TokenInfo = {
-                    address: farm.token1,
-                    chainId: 42161,
-                    decimals: farm.decimals1 || farm.decimals,
-                    name: farm.name.split("-")[0],
-                    symbol: farm.name.split("-")[0],
-                };
-                return obj;
-            }),
+            farms
+                .map((farm) => {
+                    const obj: TokenInfo = {
+                        address: farm.token1,
+                        chainId: 42161,
+                        decimals: farm.decimals1 || farm.decimals,
+                        name: farm.name.split("-")[0],
+                        symbol: farm.name.split("-")[0],
+                    };
+                    return obj;
+                })
+                .concat(
+                    // @ts-ignore
+                    farms
+                        .map((farm) => {
+                            if (farm.token2) {
+                                const obj: TokenInfo = {
+                                    address: farm.token2,
+                                    chainId: 42161,
+                                    decimals: farm.decimals2 || farm.decimals,
+                                    name: farm.name.split("-")[1],
+                                    symbol: farm.name.split("-")[1],
+                                };
+                                return obj;
+                            }
+                        })
+                        .filter((_) => !!_)
+                ),
         [farms]
     );
 
