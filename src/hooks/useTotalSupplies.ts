@@ -6,6 +6,7 @@ import { TOKEN_TOTAL_SUPPLIES } from "src/config/constants/query";
 import * as ethers from "ethers";
 import useConstants from "src/hooks/useConstants";
 import erc20 from "src/assets/abis/erc20.json";
+import { isValidNetwork } from "src/utils/common";
 
 /**
  * Returns total supply for all tokens
@@ -15,7 +16,8 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
     const { provider } = useWallet();
 
     const getAllSupplies = async () => {
-        if (!provider) return {};
+        if (!provider || !isValidNetwork(NETWORK_NAME)) return {};
+
         const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
         const contractCallContext: ContractCallContext[] = [];
 
