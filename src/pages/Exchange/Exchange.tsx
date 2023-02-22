@@ -143,10 +143,9 @@ const Exchange: React.FC<IProps> = () => {
     return (
         <div
             style={{
-                paddingTop: 20,
+                padding: "20px 8px 70px 8px",
                 overflow: "auto",
                 gridTemplateRows: "553px",
-                paddingBottom: 20,
                 height: "100%",
             }}
         >

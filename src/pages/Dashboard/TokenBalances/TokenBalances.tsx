@@ -8,44 +8,57 @@ import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { TransferToken } from "src/components/modals/TransferToken/TransferToken";
 import { Token } from "src/types";
 import { useNavigate } from "react-router-dom";
+import { Skeleton } from "src/components/Skeleton/Skeleton";
 
 interface IProps {}
 
 export const TokenBalances: FC<IProps> = (props) => {
     const { lightMode } = useApp();
-    const { tokens, refetchBalances } = useTokens();
+    const { tokens, refetchBalances, isLoading } = useTokens();
     const { signer } = useWallet();
     const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
 
     return signer ? (
         <div className={styles.container}>
-            {tokens.map((token) =>
-                Number(token.balance) > 0 ? (
-                    <div
-                        key={token.address + token.network}
-                        className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                        onClick={() =>
-                            token.name === "ETH" && token.network === "Mainnet"
-                                ? navigate("/exchange/?tab=bridge")
-                                : setSelectedToken(token)
-                        }
-                    >
-                        <img className={styles.tokenLogo} src={token.logo} alt="logo" />
-                        <div>
-                            <p className={styles.name}>
-                                {token.name}
-                                {token.network ? <span className={styles.networkName}>({token.network})</span> : null}
-                            </p>
-                            <p className={styles.balance}>
-                                {Number(token.balance) > 1 ? ethers.utils.commify(token.balance) : token.balance}
-                            </p>
-                        </div>
-                        <p className={styles.usdBalance}>
-                            ${Number(token.usdBalance) > 1 ? ethers.utils.commify(token.usdBalance) : token.usdBalance}
-                        </p>
-                    </div>
-                ) : null
+            {!isLoading ? (
+                tokens ? (
+                    tokens.map((token) =>
+                        Number(token.balance) > 0 ? (
+                            <div
+                                key={token.address + token.network}
+                                className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
+                                onClick={() =>
+                                    token.name === "ETH" && token.network === "Mainnet"
+                                        ? navigate("/exchange/?tab=bridge")
+                                        : setSelectedToken(token)
+                                }
+                            >
+                                <img className={styles.tokenLogo} src={token.logo} alt="logo" />
+                                <div>
+                                    <p className={styles.name}>
+                                        {token.name}
+                                        {token.network ? (
+                                            <span className={styles.networkName}>({token.network})</span>
+                                        ) : null}
+                                    </p>
+                                    <p className={styles.balance}>
+                                        {ethers.utils.commify(Number(token.balance).toString())}
+                                    </p>
+                                </div>
+                                <p className={styles.usdBalance}>
+                                    ${ethers.utils.commify(Number(token.usdBalance).toString())}
+                                </p>
+                            </div>
+                        ) : null
+                    )
+                ) : (
+                    <EmptyComponent style={{ width: "100%", padding: "40px 24px" }}>
+                        You wallet is empty.
+                    </EmptyComponent>
+                )
+            ) : (
+                <Skeleton w={"100%"} h={150} bg={"#012243"} bRadius={20} />
             )}
             {selectedToken ? (
                 <TransferToken

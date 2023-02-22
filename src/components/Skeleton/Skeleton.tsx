@@ -3,8 +3,8 @@ import useApp from "src/hooks/useApp";
 import styles from "./Skeleton.module.scss";
 
 interface IProps {
-    w: number;
-    h: number;
+    w: number | string;
+    h: number | string;
     bRadius?: number;
     bg?: string;
 }
@@ -17,7 +17,7 @@ export const Skeleton: FC<IProps> = ({ w, h, bg, bRadius = 5 }) => {
             style={{
                 width: w,
                 height: h,
-                background: bg || lightMode ? "#f5f6f9" : "#001428",
+                background: bg || (lightMode ? "#f5f6f9" : "#001428"),
                 borderRadius: bRadius,
             }}
         ></div>
