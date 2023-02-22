@@ -169,7 +169,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 onSubmit={handleSubmit}
             >
                 <div style={{ textAlign: "right" }}>
-                    {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
+                    {shouldUseLp ? ` ${farm.name}` : ` ${farmData?.Zap_Token_Symbol}`} Balance: &nbsp;
                     {showInUsd && "$ "}
                     {maxBalance.toFixed(6)}
                 </div>
