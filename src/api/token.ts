@@ -10,7 +10,8 @@ export const getPrice = async (tokenAddress: string, chainId: number) => {
         const prices = JSON.stringify(res.data);
         const parse = JSON.parse(prices);
 
-        const price = parse[`coins`][`${getNetworkName(chainId)}:${tokenAddress}`][`price`] as number;
+        const token = parse[`coins`][`${getNetworkName(chainId)}:${tokenAddress}`];
+        const price = token ? (token[`price`] as number) : 0;
         return price;
     } catch (error) {
         console.error(error);
@@ -46,6 +47,6 @@ export const approveErc20 = async (
     // if allowance is lower than amount, approve
     if (amount.gt(allowance)) {
         // approve
-        await(await contract.approve(spender, constants.MaxUint256)).wait();
+        await (await contract.approve(spender, constants.MaxUint256)).wait();
     }
 };
