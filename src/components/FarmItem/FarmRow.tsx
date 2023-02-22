@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import "./FarmRow.css";
 import PoolButton from "src/components/PoolButton/PoolButton";
@@ -27,14 +27,14 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm, isLoading }
     const { compounding, feeApr, rewardsApr, apy } = apys;
     const key = uuid();
 
-    const handleClick = useCallback(() => {
+    const handleClick = () => {
         setDropDown((prev) => !prev);
         setOpenedFarm((id: number | undefined) => (id === farm.id ? undefined : farm.id));
-    }, []);
+    };
 
     useEffect(() => {
         if (openedFarm !== farm.id && dropDown) setDropDown(false);
-    }, [openedFarm]);
+    }, [openedFarm, dropDown, farm.id]);
 
     return isLoading ? (
         <FarmRowSkeleton farm={farm} lightMode={lightMode} />

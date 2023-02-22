@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Multicall, ContractCallResults, ContractCallContext } from "ethereum-multicall";
 import useWallet from "src/hooks/useWallet";
 import { useQuery } from "@tanstack/react-query";
@@ -87,7 +87,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
             return;
         });
         return b;
-    }, [balances]);
+    }, [balances, data]);
 
     return {
         /**

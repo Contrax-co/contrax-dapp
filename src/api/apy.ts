@@ -148,7 +148,6 @@ const getDodoApy = async (pairAddress: string, provider: providers.Provider, cha
         ...pairData,
         staked: Number(res.data.data.pools[0].staked),
     };
-    const feeApr = Number(data.feeUSD) / (Number(data.quoteReserve) + Number(data.baseReserve));
 
     const latestBlock = await provider.getBlockNumber();
     const blocksAmount = 200000;

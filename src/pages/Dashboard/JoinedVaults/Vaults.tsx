@@ -5,7 +5,6 @@ import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import { useVaults } from "src/hooks/useVaults";
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 interface Props {}

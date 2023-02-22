@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import pools from "src/config/constants/pools.json";
 import { Farm, FarmDetails } from "src/types";
 import { FarmType } from "src/types/enums";
@@ -22,12 +22,9 @@ export const useFarmDetails = (): {
 } => {
     const vaultAddresses = useMemo(
         () => farms.map((farm) => ({ address: farm.vault_addr, decimals: farm.decimals })),
-        [farms]
+        []
     );
-    const lpAddresses = useMemo(
-        () => farms.map((farm) => ({ address: farm.lp_address, decimals: farm.decimals })),
-        [farms]
-    );
+    const lpAddresses = useMemo(() => farms.map((farm) => ({ address: farm.lp_address, decimals: farm.decimals })), []);
     const { formattedBalances: usersVaultBalances } = useFarmsBalances();
     const { formattedSupplies: totalVaultSupplies, isLoading: isLoadingTotalVaultSupplies } =
         useTotalSupplies(vaultAddresses);

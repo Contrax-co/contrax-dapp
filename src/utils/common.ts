@@ -65,7 +65,6 @@ export const floorToFixed = (value: number, decimalPlaces: number) => {
 };
 
 export const isValidNetwork = (network: string | number) => {
-    console.log("network", network, typeof network);
     if (typeof network === "string") {
         if (network === "arbitrum") return true;
     } else if (typeof network === "number") {
