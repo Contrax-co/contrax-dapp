@@ -3,6 +3,7 @@ import {
     SHUSHISWAP_CHEF_GRAPH_URL,
     DODO_GRAPH_URL,
     FRAX_APR_API_URL,
+    defaultChainId,
 } from "src/config/constants/index";
 import { FarmOriginPlatform } from "src/types/enums";
 import { Apys, Farm } from "src/types";
@@ -43,34 +44,34 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     const priceOfSushi = await getPrice(addressesByChainId[chainId].sushiAddress, chainId);
 
     let query = `{
-    pair(id: "${pairAddress}") {
-      name
-      liquidityUSD
-      apr
-      feesUSD
-      id
-    }
-  }`;
+        pair(id: "${pairAddress}") {
+          name
+          liquidityUSD
+          apr
+          feesUSD
+          id
+        }
+      }`;
     let res = await axios.post(SUSHUISWAP_GRAPH_URL, { query });
     let pairData: GraphResponse = res.data.data.pair;
     query = ` {
-          miniChefs {
-            id
-            sushi
-            sushiPerSecond
-            totalAllocPoint
-            pools(where: {pair: "${pairAddress}"}){
-              allocPoint
-              pair
-              rewarder{
+              miniChefs {
                 id
-                rewardToken
-                rewardPerSecond
+                sushi
+                sushiPerSecond
                 totalAllocPoint
+                pools(where: {pair: "${pairAddress}"}){
+                  allocPoint
+                  pair
+                  rewarder{
+                    id
+                    rewardToken
+                    rewardPerSecond
+                    totalAllocPoint
+                  }
+                }
               }
-            }
-          }
-        }`;
+            }`;
     res = await axios.post(SHUSHISWAP_CHEF_GRAPH_URL, { query });
     const chefData: ChefResponse = res.data.data.miniChefs[0];
 
@@ -204,6 +205,14 @@ export const getApy = async (
     provider: providers.Provider,
     currentWallet?: string
 ): Promise<Apys> => {
+    if (chainId !== defaultChainId) {
+        return {
+            feeApr: 0,
+            rewardsApr: Number(farm.rewards_apy || 0),
+            apy: Number(farm.total_apy || 0),
+            compounding: 0,
+        };
+    }
     switch (farm.originPlatform) {
         case FarmOriginPlatform.Shushiswap:
             return getSushiswapApy(farm.lp_address.toLowerCase(), chainId, provider);
