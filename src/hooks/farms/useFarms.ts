@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import pools from "src/config/constants/pools.json";
 import { Farm, FarmDetails } from "src/types";
 import { FarmType } from "src/types/enums";
@@ -20,13 +20,19 @@ export const useFarmDetails = (): {
     advancedFarms: FarmDetails[];
     isLoading: boolean;
 } => {
-    const { formattedBalances: usersVaultBalances, isLoading: isLoadingUsersVaultBalances } = useFarmsBalances();
-    const { formattedSupplies: totalVaultSupplies, isLoading: isLoadingTotalVaultSupplies } = useTotalSupplies(
-        farms.map((farm) => ({ address: farm.vault_addr, decimals: farm.decimals }))
+    const vaultAddresses = useMemo(
+        () => farms.map((farm) => ({ address: farm.vault_addr, decimals: farm.decimals })),
+        [farms]
     );
-    const { formattedSupplies: totalPlatformSupplies, isLoading: isLoadingTotalPlatformSupplies } = useTotalSupplies(
-        farms.map((farm) => ({ address: farm.lp_address, decimals: farm.decimals }))
+    const lpAddresses = useMemo(
+        () => farms.map((farm) => ({ address: farm.lp_address, decimals: farm.decimals })),
+        [farms]
     );
+    const { formattedBalances: usersVaultBalances } = useFarmsBalances();
+    const { formattedSupplies: totalVaultSupplies, isLoading: isLoadingTotalVaultSupplies } =
+        useTotalSupplies(vaultAddresses);
+    const { formattedSupplies: totalPlatformSupplies, isLoading: isLoadingTotalPlatformSupplies } =
+        useTotalSupplies(lpAddresses);
     const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens(
         farms.map((farm) => farm.lp_address)
     );
@@ -85,7 +91,6 @@ export const useFarmDetails = (): {
             isLoadingApys ||
             isLoadingPricesOfSingleToken ||
             isLoadingTotalPlatformSupplies ||
-            isLoadingTotalVaultSupplies ||
-            isLoadingUsersVaultBalances,
+            isLoadingTotalVaultSupplies,
     };
 };

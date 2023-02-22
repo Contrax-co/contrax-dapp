@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Multicall, ContractCallResults, ContractCallContext } from "ethereum-multicall";
 import useWallet from "src/hooks/useWallet";
 import { useQuery } from "@tanstack/react-query";
@@ -41,6 +41,14 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
         return ans;
     };
 
+    const placeholderData = useMemo(() => {
+        let b: { [key: string]: ethers.BigNumber } = {};
+        data.forEach((item) => {
+            b[item.address] = ethers.BigNumber.from(0);
+        });
+        return b;
+    }, [data]);
+
     const {
         data: balancesUndefined,
         refetch,
@@ -61,15 +69,10 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
 
             // Initial data to be returned when no query has ran
             // Returns 0 for all the balances initially
-            placeholderData: () => {
-                let b: { [key: string]: ethers.BigNumber } = {};
-                data.forEach((item) => {
-                    b[item.address] = ethers.BigNumber.from(0);
-                });
-                return b;
-            },
+            placeholderData,
         }
     );
+
     const balances = balancesUndefined!;
     const formattedBalances = useMemo(() => {
         let b: { [key: string]: number } = {};
