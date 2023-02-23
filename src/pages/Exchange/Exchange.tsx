@@ -221,6 +221,7 @@ const Exchange: React.FC<IProps> = () => {
                         provider={websocketProvider || wagmiSigner?.provider}
                         onConnectWalletClick={connectWallet}
                         tokenList={tokenList}
+                        permit2={true}
                     />
                 )}
             </div>
