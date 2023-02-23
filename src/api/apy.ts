@@ -3,6 +3,7 @@ import {
     SHUSHISWAP_CHEF_GRAPH_URL,
     DODO_GRAPH_URL,
     FRAX_APR_API_URL,
+    SWAPFISH_GRAPH_URL,
     defaultChainId,
 } from "src/config/constants/index";
 import { FarmOriginPlatform } from "src/types/enums";
@@ -15,7 +16,7 @@ import { erc20ABI } from "wagmi";
 import { calcCompoundingApy, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
 import dodoMineAbi from "src/assets/abis/dodoMine.json";
-
+import swapFishMaterchef from "src/assets/abis/swapfishMasterchef.json";
 interface GraphResponse {
     apr: string;
     feesUSD: string;
@@ -118,6 +119,43 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     };
 };
 
+const getSwapFishApy = async (pairAddress: string, chainId: number, provider: providers.Provider, poolId: number) => {
+    let query = `{
+        pair(id: "${pairAddress.toLowerCase()}") {
+          name
+          liquidityUSD
+          apr
+          feesUSD
+          id
+        }
+      }`;
+    let res = await axios.post(SWAPFISH_GRAPH_URL, { query });
+    let pairData: GraphResponse = res.data.data.pair;
+    const masterChefAddress = addressesByChainId[chainId].swapfishMasterChef!;
+    const masterChefContract = new Contract(masterChefAddress, swapFishMaterchef, provider);
+    const totalAllocPoint = await masterChefContract.totalAllocPoint();
+    const { allocPoint } = await masterChefContract.poolInfo(poolId);
+    const cakeAddress = await masterChefContract.cake();
+    const cakePrice = await getPrice(cakeAddress, chainId);
+    const cakePerSecond = await masterChefContract.cakePerSecond();
+    const cakePerYear = cakePerSecond.mul(60).mul(60).mul(25).mul(365);
+    const cakePerYearUsd =
+        (Number(toEth(cakePerYear)) * cakePrice * allocPoint.toNumber()) / totalAllocPoint.toNumber();
+    let rewardsApr = (cakePerYearUsd / Number(pairData.liquidityUSD)) * 100;
+    // const cakePerYearUsd = cakePerYear.mul(cakePrice).mul(allocPoint).div(totalAllocPoint);
+    // let rewardsApr = Number(toEth(cakePerYearUsd.div(pairData.liquidityUSD).mul(100)));
+    // const apr = Number(pairData.apr) * 100 + rewardsApr;
+    const compounding = calcCompoundingApy(rewardsApr);
+
+    const apy = Number(pairData.apr) * 100 + compounding + rewardsApr; // RewardsApr is included in compounding
+    return {
+        feeApr: Number(pairData.apr) * 100,
+        rewardsApr,
+        apy,
+        compounding,
+    };
+};
+
 const getDodoApy = async (pairAddress: string, provider: providers.Provider, chainId: number) => {
     const res = await axios.post(DODO_GRAPH_URL, {
         query: `
@@ -199,7 +237,7 @@ const getFraxApy = async () => {
 };
 
 export const getApy = async (
-    farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy">,
+    farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy" | "pool_id">,
     chainId: number,
     provider: providers.Provider,
     currentWallet?: string
@@ -221,6 +259,8 @@ export const getApy = async (
             return getDodoApy(farm.lp_address, provider, chainId);
         case FarmOriginPlatform.Frax:
             return getFraxApy();
+        case FarmOriginPlatform.SwapFish:
+            return getSwapFishApy(farm.lp_address, chainId, provider, farm.pool_id!);
 
         default:
             return {
