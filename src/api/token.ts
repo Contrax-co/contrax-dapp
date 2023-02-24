@@ -55,6 +55,7 @@ export const getLpPrice = async (lpAddress: string, provider: providers.Provider
     try {
         let price = await getPrice(lpAddress, chainId);
         if (price !== 0) return price;
+
         const lpContract = new Contract(
             lpAddress,
             [
@@ -69,6 +70,7 @@ export const getLpPrice = async (lpAddress: string, provider: providers.Provider
         const totalSupply = await lpContract.totalSupply();
         const reserves = await lpContract.getReserves();
         price = await getPrice(token0, chainId);
+
         if (price !== 0) {
             price =
                 Number(
