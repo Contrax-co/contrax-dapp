@@ -2,14 +2,16 @@ import { useMemo } from "react";
 import { useQueries, QueryFunction } from "@tanstack/react-query";
 import { TOKEN_PRICE } from "src/config/constants/query";
 import useConstants from "./useConstants";
-import { getPrice } from "src/api/token";
+import { getLpPrice, getPrice } from "src/api/token";
+import useWallet from "./useWallet";
 
 const usePriceOfTokens = (addresses: string[]) => {
     const { NETWORK_NAME, CHAIN_ID } = useConstants();
+    const { provider } = useWallet();
 
     const fetchPrice: QueryFunction<number> = async ({ queryKey }) => {
         const tokenAddress = queryKey[3] as string;
-        const price = await getPrice(tokenAddress, CHAIN_ID);
+        const price = await getLpPrice(tokenAddress, provider, CHAIN_ID);
 
         return price;
     };
