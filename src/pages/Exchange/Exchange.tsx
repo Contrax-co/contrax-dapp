@@ -223,7 +223,6 @@ const Exchange: React.FC<IProps> = () => {
                         onConnectWalletClick={connectWallet}
                         tokenList={tokenList}
                         permit2={true}
-                        width={360}
                     />
                 )}
             </div>
