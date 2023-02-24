@@ -229,7 +229,7 @@ const getFraxApy = async () => {
         ).apr * 100;
 
     return {
-        feeApr: 0,
+        feeApr: apr,
         rewardsApr: 0,
         apy: apr,
         compounding: 0,

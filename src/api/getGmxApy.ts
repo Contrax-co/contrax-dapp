@@ -265,10 +265,10 @@ export const getGmxApyArbitrum = async (provider?: providers.Provider, currentWa
     const esGMX_APR = Number(processedData?.gmxAprForEsGmx?.toString()) / 100;
     const compounding = calcCompoundingApy(APR);
     const res = {
-        apy: APR,
+        apy: APR + compounding,
         compounding,
         feeApr: 0,
-        rewardsApr: 0,
+        rewardsApr: APR,
     };
     return res;
 };
