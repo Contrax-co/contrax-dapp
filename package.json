@@ -65,6 +65,11 @@
       "react-app/jest"
     ]
   },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "browserslist": {
     "production": [
       "chrome >= 67",
