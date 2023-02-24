@@ -228,11 +228,13 @@ const getFraxApy = async () => {
             (item: any) => item.pid === 3 && item.token === "FRAX" && item.chainId === 110
         ).apr * 100;
 
+    const compounding = calcCompoundingApy(apr);
+    const apy = compounding + apr;
     return {
-        feeApr: apr,
-        rewardsApr: 0,
-        apy: apr,
-        compounding: 0,
+        feeApr: 0,
+        rewardsApr: apr,
+        apy,
+        compounding: compounding,
     };
 };
 
