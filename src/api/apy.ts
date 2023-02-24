@@ -231,8 +231,8 @@ const getFraxApy = async () => {
     const compounding = calcCompoundingApy(apr);
     const apy = compounding + apr;
     return {
-        feeApr: 0,
-        rewardsApr: apr,
+        feeApr: apr,
+        rewardsApr: 0,
         apy,
         compounding: compounding,
     };
