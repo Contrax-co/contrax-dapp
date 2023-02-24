@@ -279,7 +279,12 @@ export const zapOut = async ({
         dismissNotify(notiId);
         notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
 
-        let withdrawTxn = await zapperContract.zapOutAndSwapEth(farm.vault_addr, max ? vaultBalance : formattedBal, 0);
+        let withdrawTxn = await zapperContract.zapOutAndSwapEth(
+            farm.vault_addr,
+            max ? vaultBalance : formattedBal,
+            farm.token1,
+            0
+        );
 
         dismissNotify(notiId);
         notifyLoading("Withdrawing...", `Txn hash: ${withdrawTxn.hash}`, {
@@ -307,3 +312,4 @@ export const zapOut = async ({
     }
     cb && cb();
 };
+
