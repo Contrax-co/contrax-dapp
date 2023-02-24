@@ -56,6 +56,7 @@ export const useTokens = () => {
             const farm = farms.find(
                 (farm) => farm.token1.toLowerCase() === address || farm.token2?.toLowerCase() === address
             );
+            const isToken1 = farm?.token1.toLowerCase() === address;
             let obj: Token = {
                 address: address,
                 decimals: decimals,
@@ -67,8 +68,8 @@ export const useTokens = () => {
                     prices[address] * formattedBalances[address] < 1 / 10 ** usdBalDecimalPlaces
                         ? (prices[address] * formattedBalances[address]).toPrecision(2).slice(0, -1)
                         : floorToFixed(prices[address] * formattedBalances[address], usdBalDecimalPlaces).toString(),
-                logo: farm?.logo1 || "",
-                name: farm?.name1 || "",
+                logo: isToken1 ? farm?.logo1 : farm?.logo2 || "",
+                name: isToken1 ? farm?.name1 : farm?.name2 || "",
             };
             return obj;
         });
