@@ -6,10 +6,12 @@ import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import { useVaults } from "src/hooks/useVaults";
 import { Link } from "react-router-dom";
+import useApp from "src/hooks/useApp";
 
 interface Props {}
 
 const Vaults: React.FC<Props> = () => {
+    const { lightMode } = useApp();
     const { networkId, signer } = useWallet();
     const { vaults, isLoading } = useVaults();
 
@@ -34,7 +36,7 @@ const Vaults: React.FC<Props> = () => {
                     <EmptyComponent>Change network to Arbitrum to view your joined Vaults</EmptyComponent>
                 )
             ) : (
-                <Skeleton w={"100%"} h={250} bg={"#012243"} bRadius={20} />
+                <Skeleton w={"100%"} h={250} bg={lightMode ? "#ffffff" : undefined} bRadius={20} />
             )}
         </div>
     ) : (
