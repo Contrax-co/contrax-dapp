@@ -27,7 +27,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { balance: ethUserBal, balanceBigNumber, provider, currentWallet } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { price: ethPrice } = useEthPrice();
-    const [amount, setAmount] = React.useState(0.0);
+    const [amount, setAmount] = React.useState("");
     const [showInUsd, setShowInUsd] = React.useState(true);
     const { isLoading: isZapping, zapInAsync } = useZapIn(farm);
     const { isLoading: isDepositing, depositAsync } = useDeposit(farm);
@@ -84,15 +84,15 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
         let amt = 0;
         if (farmData)
             if (shouldUseLp) {
-                if (showInUsd) amt = amount / farmData.TOKEN_PRICE;
-                else amt = amount;
+                if (showInUsd) amt = parseFloat(amount) / farmData.TOKEN_PRICE;
+                else amt = parseFloat(amount);
             } else {
                 if (type === FarmTransactionType.Deposit) {
-                    if (showInUsd) amt = amount / farmData.ZAP_TOKEN_PRICE;
-                    else amt = amount;
+                    if (showInUsd) amt = parseFloat(amount) / farmData.ZAP_TOKEN_PRICE;
+                    else amt = parseFloat(amount);
                 } else {
-                    if (showInUsd) amt = amount / farmData.TOKEN_PRICE;
-                    else amt = (amount * farmData.ZAP_TOKEN_PRICE) / farmData.TOKEN_PRICE;
+                    if (showInUsd) amt = parseFloat(amount) / farmData.TOKEN_PRICE;
+                    else amt = (parseFloat(amount) * farmData.ZAP_TOKEN_PRICE) / farmData.TOKEN_PRICE;
                 }
             }
         return Number(validateNumberDecimals(amt, farm.decimals));
@@ -103,15 +103,15 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
 
         if (e.target.value === "true") {
             if (!shouldUseLp) {
-                setAmount((prev) => prev * ethPrice);
+                setAmount((prev) => (parseFloat(prev) * ethPrice).toString());
             } else {
-                setAmount((prev) => prev * priceOfSingleToken);
+                setAmount((prev) => (parseFloat(prev) * priceOfSingleToken).toString());
             }
         } else {
             if (!shouldUseLp) {
-                setAmount((prev) => prev / ethPrice);
+                setAmount((prev) => (parseFloat(prev) / ethPrice).toString());
             } else {
-                setAmount((prev) => prev / priceOfSingleToken);
+                setAmount((prev) => (parseFloat(prev) / priceOfSingleToken).toString());
             }
         }
     };
@@ -131,12 +131,12 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 await zapOutAsync({ withdrawAmt: getTokenAmount(), max });
             }
         }
-        setAmount(0);
+        setAmount("");
         setMax(false);
     };
 
     const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        setAmount(Number(e.target.value));
+        setAmount(e.target.value);
         setMax(false);
     };
 
@@ -152,7 +152,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     }, [farm]);
 
     React.useEffect(() => {
-        if (max) setAmount(maxBalance);
+        if (max) setAmount(maxBalance.toString());
     }, [max, maxBalance]);
 
     // Use to reload farm balances data on eth balance change
@@ -188,9 +188,9 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                         <span style={{ marginBottom: 2, opacity: showInUsd ? 1 : 0 }}>$</span>
                         <input
                             type="number"
-                            placeholder="0.0"
+                            placeholder="0"
                             required
-                            value={amount.toString()}
+                            value={amount}
                             max={maxBalance}
                             onChange={handleInput}
                         />
@@ -219,14 +219,15 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                     className={`custom-button ${lightMode && "custom-button-light"}`}
                     type="submit"
                     disabled={
-                        amount <= 0 ||
+                        parseFloat(amount) <= 0 ||
+                        isNaN(parseFloat(amount)) ||
                         (type === FarmTransactionType.Deposit
                             ? isZapping || isDepositing
                             : isWithdrawing || isZappingOut)
                     }
                 >
-                    {amount > 0
-                        ? amount > maxBalance
+                    {parseFloat(amount) > 0
+                        ? parseFloat(amount) > maxBalance
                             ? "Insufficent Balance"
                             : type === FarmTransactionType.Deposit
                             ? "Deposit"
