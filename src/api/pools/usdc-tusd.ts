@@ -279,7 +279,13 @@ export const zapOut = async ({
         dismissNotify(notiId);
         notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
 
-        let withdrawTxn = await zapperContract.zapOutAndSwapEth(farm.vault_addr, max ? vaultBalance : formattedBal, 0);
+        // token1 is always USDC in case of USDC base LP
+        let withdrawTxn = await zapperContract.zapOutAndSwapEth(
+            farm.vault_addr,
+            max ? vaultBalance : formattedBal,
+            farm.token1,
+            0
+        );
 
         dismissNotify(notiId);
         notifyLoading("Withdrawing...", `Txn hash: ${withdrawTxn.hash}`, {
