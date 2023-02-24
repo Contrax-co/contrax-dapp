@@ -9,6 +9,7 @@ import PoolButton from "src/components/PoolButton/PoolButton";
 import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
 import "@uniswap/widgets/fonts.css";
 import styles from "./Exchange.module.scss";
+import "./Exchange.css";
 import { useSigner, useWebSocketProvider } from "wagmi";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
 import useFarms from "src/hooks/farms/useFarms";
