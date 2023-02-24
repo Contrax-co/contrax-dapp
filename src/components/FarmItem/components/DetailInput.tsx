@@ -53,28 +53,28 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
             if (shouldUseLp) {
                 return (
                     (showInUsd
-                        ? Number(farmData?.Max_Token_Deposit_Balance_Dollar)
-                        : Number(farmData?.Max_Token_Deposit_Balance)) || 0
+                        ? Number(Number(farmData?.Max_Token_Deposit_Balance_Dollar).toFixed(2))
+                        : Number(Number(farmData?.Max_Token_Deposit_Balance).toFixed(6))) || 0
                 );
             } else {
                 return (
                     (showInUsd
-                        ? Number(farmData?.Max_Zap_Deposit_Balance_Dollar)
-                        : Number(farmData?.Max_Zap_Deposit_Balance)) || 0
+                        ? Number(Number(farmData?.Max_Zap_Deposit_Balance_Dollar).toFixed(2))
+                        : Number(Number(farmData?.Max_Zap_Deposit_Balance).toFixed(6))) || 0
                 );
             }
         } else {
             if (shouldUseLp) {
                 return (
                     (showInUsd
-                        ? Number(farmData?.Max_Token_Withdraw_Balance_Dollar)
-                        : Number(farmData?.Max_Token_Withdraw_Balance)) || 0
+                        ? Number(Number(farmData?.Max_Token_Withdraw_Balance_Dollar).toFixed(2))
+                        : Number(Number(farmData?.Max_Token_Withdraw_Balance).toFixed(6))) || 0
                 );
             } else {
                 return (
                     (showInUsd
-                        ? Number(farmData?.Max_Zap_Withdraw_Balance_Dollar)
-                        : Number(farmData?.Max_Zap_Withdraw_Balance)) || 0
+                        ? Number(Number(farmData?.Max_Zap_Withdraw_Balance_Dollar).toFixed(2))
+                        : Number(Number(farmData?.Max_Zap_Withdraw_Balance).toFixed(6))) || 0
                 );
             }
         }
@@ -178,7 +178,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                     <div style={{ textAlign: "right" }}>
                         {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
                         {showInUsd && "$ "}
-                        {maxBalance.toFixed(6)}
+                        {maxBalance}
                     </div>
                 )}
                 <div></div>
