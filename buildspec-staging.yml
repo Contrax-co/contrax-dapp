@@ -10,6 +10,7 @@ phases:
       - echo yarn install started.
       - yarn install
       - echo Finished installing packages.
+      - yarn set version stable
   build:
     commands:
       - echo Generating build directory for react.
