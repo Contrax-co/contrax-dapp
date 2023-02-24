@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useContext } from "react";
 import { AppContext } from "src/context/AppProvider";
 
 const useApp = () => {
