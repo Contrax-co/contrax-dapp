@@ -5,14 +5,34 @@
   --background_secondary-hover: #032a51;
   --background_dark: #000c18;
   --background_light: #8798ad46;
-  
+
   /* ///// Colors ///// */
   --color_primary: #009aff;
-  --color_grey: #979797;
+  --color_grey: #8798ad;
   --color_white: #ffffff;
   --color_black: #000000;
-  
+
   /* ///// Border Colors ///// */
-  --border_color: #043b71;
+  --border_color: #022b55;
+  --border_color-secondary: #043b71;
+  --border_color_light: #d2e8ef;
+}
+
+[data-lightMode="true"] {
+  /* ///// Background Colors ///// */
+  --background_primary: #f5f6f9;
+  --background_secondary: #ffffff;
+  --background_secondary-hover: #fbfbfb;
+  --background_dark: #68b4c9;
+  --background_light: #8798ad46;
+
+  /* ///// Colors ///// */
+  --color_primary: #61cddf;
+  --color_grey: #8798ad;
+  --color_white: #ffffff;
+  --color_black: #000000;
+
+  /* ///// Border Colors ///// */
+  --border_color: #d9d9d9;
   --border_color_light: #d2e8ef;
 }

@@ -14,6 +14,7 @@ import styles from "./DetailInput.module.scss";
 import farmFunctions from "src/api/pools";
 import { FARM_DATA } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
+import { Skeleton } from "src/components/Skeleton/Skeleton";
 
 interface Props {
     farm: FarmDetails;
@@ -26,7 +27,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { balance: ethUserBal, balanceBigNumber, provider, currentWallet } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { price: ethPrice } = useEthPrice();
-    const [amount, setAmount] = React.useState(0.0);
+    const [amount, setAmount] = React.useState("");
     const [showInUsd, setShowInUsd] = React.useState(true);
     const { isLoading: isZapping, zapInAsync } = useZapIn(farm);
     const { isLoading: isDepositing, depositAsync } = useDeposit(farm);
@@ -35,7 +36,11 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const [max, setMax] = React.useState(false);
     const { priceOfSingleToken } = farm;
 
-    const { data: farmData, refetch } = useQuery(
+    const {
+        data: farmData,
+        refetch,
+        isLoading,
+    } = useQuery(
         FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
         () => farmFunctions[farm.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
         {
@@ -48,28 +53,28 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
             if (shouldUseLp) {
                 return (
                     (showInUsd
-                        ? Number(farmData?.Max_Token_Deposit_Balance_Dollar)
-                        : Number(farmData?.Max_Token_Deposit_Balance)) || 0
+                        ? Number(Number(farmData?.Max_Token_Deposit_Balance_Dollar).toFixed(2))
+                        : Number(Number(farmData?.Max_Token_Deposit_Balance).toFixed(6))) || 0
                 );
             } else {
                 return (
                     (showInUsd
-                        ? Number(farmData?.Max_Zap_Deposit_Balance_Dollar)
-                        : Number(farmData?.Max_Zap_Deposit_Balance)) || 0
+                        ? Number(Number(farmData?.Max_Zap_Deposit_Balance_Dollar).toFixed(2))
+                        : Number(Number(farmData?.Max_Zap_Deposit_Balance).toFixed(6))) || 0
                 );
             }
         } else {
             if (shouldUseLp) {
                 return (
                     (showInUsd
-                        ? Number(farmData?.Max_Token_Withdraw_Balance_Dollar)
-                        : Number(farmData?.Max_Token_Withdraw_Balance)) || 0
+                        ? Number(Number(farmData?.Max_Token_Withdraw_Balance_Dollar).toFixed(2))
+                        : Number(Number(farmData?.Max_Token_Withdraw_Balance).toFixed(6))) || 0
                 );
             } else {
                 return (
                     (showInUsd
-                        ? Number(farmData?.Max_Zap_Withdraw_Balance_Dollar)
-                        : Number(farmData?.Max_Zap_Withdraw_Balance)) || 0
+                        ? Number(Number(farmData?.Max_Zap_Withdraw_Balance_Dollar).toFixed(2))
+                        : Number(Number(farmData?.Max_Zap_Withdraw_Balance).toFixed(6))) || 0
                 );
             }
         }
@@ -79,15 +84,15 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
         let amt = 0;
         if (farmData)
             if (shouldUseLp) {
-                if (showInUsd) amt = amount / farmData.TOKEN_PRICE;
-                else amt = amount;
+                if (showInUsd) amt = parseFloat(amount) / farmData.TOKEN_PRICE;
+                else amt = parseFloat(amount);
             } else {
                 if (type === FarmTransactionType.Deposit) {
-                    if (showInUsd) amt = amount / farmData.ZAP_TOKEN_PRICE;
-                    else amt = amount;
+                    if (showInUsd) amt = parseFloat(amount) / farmData.ZAP_TOKEN_PRICE;
+                    else amt = parseFloat(amount);
                 } else {
-                    if (showInUsd) amt = amount / farmData.TOKEN_PRICE;
-                    else amt = (amount * farmData.ZAP_TOKEN_PRICE) / farmData.TOKEN_PRICE;
+                    if (showInUsd) amt = parseFloat(amount) / farmData.TOKEN_PRICE;
+                    else amt = (parseFloat(amount) * farmData.ZAP_TOKEN_PRICE) / farmData.TOKEN_PRICE;
                 }
             }
         return Number(validateNumberDecimals(amt, farm.decimals));
@@ -98,15 +103,15 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
 
         if (e.target.value === "true") {
             if (!shouldUseLp) {
-                setAmount((prev) => prev * ethPrice);
+                setAmount((prev) => (parseFloat(prev) * ethPrice).toString());
             } else {
-                setAmount((prev) => prev * priceOfSingleToken);
+                setAmount((prev) => (parseFloat(prev) * priceOfSingleToken).toString());
             }
         } else {
             if (!shouldUseLp) {
-                setAmount((prev) => prev / ethPrice);
+                setAmount((prev) => (parseFloat(prev) / ethPrice).toString());
             } else {
-                setAmount((prev) => prev / priceOfSingleToken);
+                setAmount((prev) => (parseFloat(prev) / priceOfSingleToken).toString());
             }
         }
     };
@@ -126,12 +131,12 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 await zapOutAsync({ withdrawAmt: getTokenAmount(), max });
             }
         }
-        setAmount(0);
+        setAmount("");
         setMax(false);
     };
 
     const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        setAmount(Number(e.target.value));
+        setAmount(e.target.value);
         setMax(false);
     };
 
@@ -147,7 +152,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     }, [farm]);
 
     React.useEffect(() => {
-        if (max) setAmount(maxBalance);
+        if (max) setAmount(maxBalance.toString());
     }, [max, maxBalance]);
 
     // Use to reload farm balances data on eth balance change
@@ -168,11 +173,14 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
                 onSubmit={handleSubmit}
             >
-                <div style={{ textAlign: "right" }}>
-                    {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
-                    {showInUsd && "$ "}
-                    {maxBalance.toFixed(6)}
-                </div>
+                {isLoading && <Skeleton w={100} h={20} style={{ marginLeft: "auto" }} />}
+                {!isLoading && (
+                    <div style={{ textAlign: "right" }}>
+                        {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
+                        {showInUsd && "$ "}
+                        {maxBalance}
+                    </div>
+                )}
                 <div></div>
 
                 <div className={`${styles.inputWrapper} ${lightMode && styles.inputWrapper_light}`}>
@@ -180,9 +188,9 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                         <span style={{ marginBottom: 2, opacity: showInUsd ? 1 : 0 }}>$</span>
                         <input
                             type="number"
-                            placeholder="0.0"
+                            placeholder="0"
                             required
-                            value={amount.toString()}
+                            value={amount}
                             max={maxBalance}
                             onChange={handleInput}
                         />
@@ -198,7 +206,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                                 className={`${styles.select} ${lightMode && styles.select_light}`}
                             >
                                 <option value={"false"} className="currency_select">
-                                    {shouldUseLp ? farm.name : "ETH"}
+                                    {shouldUseLp ? farm.name : farmData?.Zap_Token_Symbol}
                                 </option>
                                 <option value={"true"} className="currency_select">
                                     USD
@@ -211,14 +219,15 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                     className={`custom-button ${lightMode && "custom-button-light"}`}
                     type="submit"
                     disabled={
-                        amount <= 0 ||
+                        parseFloat(amount) <= 0 ||
+                        isNaN(parseFloat(amount)) ||
                         (type === FarmTransactionType.Deposit
                             ? isZapping || isDepositing
                             : isWithdrawing || isZappingOut)
                     }
                 >
-                    {amount > 0
-                        ? amount > maxBalance
+                    {parseFloat(amount) > 0
+                        ? parseFloat(amount) > maxBalance
                             ? "Insufficent Balance"
                             : type === FarmTransactionType.Deposit
                             ? "Deposit"

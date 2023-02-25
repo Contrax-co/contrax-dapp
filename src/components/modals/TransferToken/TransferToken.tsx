@@ -17,7 +17,7 @@ interface IProps {
 export const TransferToken: FC<IProps> = ({ token, setSelectedToken, refetchBalances }) => {
     const { lightMode } = useApp();
     const [reciverAddress, setReciverAddress] = useState<string>("");
-    const [amount, setAmount] = useState<number>(0);
+    const [amount, setAmount] = useState("0");
     const { transferEth, transferToken, isLoading } = useTransfer();
     const { notifyLoading, notifyError, notifySuccess, dismissNotify } = useNotify();
     const [max, setMax] = useState(false);
@@ -48,7 +48,7 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken, refetchBala
 
     const handleMaxClick = () => {
         setMax(true);
-        setAmount(Number(token.balance));
+        setAmount(token.balance);
     };
 
     return (
@@ -77,9 +77,9 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken, refetchBala
                         type="number"
                         id="amount"
                         placeholder="e.g. 250"
-                        value={amount}
+                        value={amount ? Number(amount) : undefined}
                         onChange={(e) => {
-                            setAmount(Number(e.target.value));
+                            setAmount(e.target.value);
                             setMax(false);
                         }}
                     />
@@ -89,7 +89,7 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken, refetchBala
                 </div>
                 <button
                     type="submit"
-                    disabled={isLoading || amount <= 0 || !reciverAddress}
+                    disabled={isLoading || Number(amount) <= 0 || !reciverAddress}
                     className={`${styles.button} ${lightMode && styles.button_light}`}
                 >
                     Transfer

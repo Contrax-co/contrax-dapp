@@ -2,14 +2,16 @@ import { useMemo } from "react";
 import { useQueries, QueryFunction } from "@tanstack/react-query";
 import { TOKEN_PRICE } from "src/config/constants/query";
 import useConstants from "./useConstants";
-import { getPrice } from "src/api/token";
+import { getLpPrice, getPrice } from "src/api/token";
+import useWallet from "./useWallet";
 
 const usePriceOfTokens = (addresses: string[]) => {
     const { NETWORK_NAME, CHAIN_ID } = useConstants();
+    const { provider } = useWallet();
 
     const fetchPrice: QueryFunction<number> = async ({ queryKey }) => {
         const tokenAddress = queryKey[3] as string;
-        const price = await getPrice(tokenAddress, CHAIN_ID);
+        const price = await getLpPrice(tokenAddress, provider, CHAIN_ID);
 
         return price;
     };
@@ -19,7 +21,7 @@ const usePriceOfTokens = (addresses: string[]) => {
             // Query key index should be changed in getPrice function as well if changed here
             queryKey: TOKEN_PRICE(address || "", NETWORK_NAME),
             queryFn: fetchPrice,
-            initialData: 0,
+            placeholderData: 0,
         })),
     });
 
@@ -33,9 +35,11 @@ const usePriceOfTokens = (addresses: string[]) => {
 
     const prices = useMemo(() => resultingPrices, [JSON.stringify(resultingPrices)]);
 
+    const isLoading = useMemo(() => results.some((result) => result.isLoading || result.isPlaceholderData), [results]);
+
     const isFetching = useMemo(() => results.some((result) => result.isFetching), [results]);
 
-    return { prices, isFetching };
+    return { prices, isLoading, isFetching };
 };
 
 export default usePriceOfTokens;

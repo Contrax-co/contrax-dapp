@@ -4,7 +4,7 @@ import { ModalLayout } from "../ModalLayout/ModalLayout";
 import { TiWarningOutline } from "react-icons/ti";
 import { BiCopy } from "react-icons/bi";
 import { BsCheckCircle } from "react-icons/bs";
-import styles from "./SettingsModal.module.scss";
+import styles from "./ExportPrivateKey.module.scss";
 import useWallet from "src/hooks/useWallet";
 import { copyToClipboard } from "src/utils";
 
@@ -12,7 +12,7 @@ interface IProps {
     setOpenModal: Function;
 }
 
-export const SettingsModal: FC<IProps> = ({ setOpenModal }) => {
+export const ExportPrivateKey: FC<IProps> = ({ setOpenModal }) => {
     const { lightMode } = useApp();
     const [confirm, setConfirm] = useState(false);
     const [show, setShow] = useState(false);
@@ -40,6 +40,7 @@ export const SettingsModal: FC<IProps> = ({ setOpenModal }) => {
                 <TiWarningOutline size={40} />
                 <h1>Disclaimer</h1>
             </div>
+            <p className={styles.caption}>Exporting Private Key</p>
             <p className={styles.message}>
                 This is for advanced users and can put their funds at risk if they export without knowing how to handle
                 it
@@ -51,7 +52,6 @@ export const SettingsModal: FC<IProps> = ({ setOpenModal }) => {
             <div className={`${styles.key} ${lightMode && styles.key_light}`}>
                 {show ? (
                     <>
-                        {/* <p>{privateKey}</p> */}
                         <input type="text" readOnly value={privateKey} />
                         {copied ? (
                             <BsCheckCircle className={styles.copyIcon} size={22} />
@@ -71,6 +71,7 @@ export const SettingsModal: FC<IProps> = ({ setOpenModal }) => {
                     {show ? "HIDE" : "SHOW"}
                 </button>
             </div>
+            <p className={styles.note}>Note: This feature is only for social wallets</p>
         </ModalLayout>
     );
 };

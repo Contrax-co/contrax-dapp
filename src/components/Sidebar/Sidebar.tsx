@@ -27,7 +27,7 @@ function Sidebar() {
                     title="Dashboard"
                     icon={<MdSpaceDashboard />}
                     onClick={() => navigate(RoutesPaths.Home)}
-                    active={pathname === RoutesPaths.Home.split("?")[0]}
+                    active={pathname === RoutesPaths.Home}
                 />
 
                 <SidebarItem

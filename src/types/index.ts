@@ -25,6 +25,8 @@ export interface Farm {
     id: number;
     stableCoin?: boolean;
     originPlatform?: FarmOriginPlatform;
+    master_chef?: string;
+    pool_id?: number;
     token_type: string;
     name: string;
     name1: string;
@@ -50,6 +52,8 @@ export interface Farm {
     rewards2_alt?: string;
     lp_address: string;
     decimals: number;
+    decimals1?: number;
+    decimals2?: number;
     vault_addr: string;
     vault_abi: any;
     lp_abi: any;

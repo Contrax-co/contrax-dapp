@@ -9,6 +9,7 @@ import PoolButton from "src/components/PoolButton/PoolButton";
 import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
 import "@uniswap/widgets/fonts.css";
 import styles from "./Exchange.module.scss";
+import "./Exchange.css";
 import { useSigner, useWebSocketProvider } from "wagmi";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
 import useFarms from "src/hooks/farms/useFarms";
@@ -66,16 +67,34 @@ const Exchange: React.FC<IProps> = () => {
     const { farms } = useFarms();
     const tokenList: TokenInfo[] = React.useMemo(
         () =>
-            farms.map((farm) => {
-                const obj: TokenInfo = {
-                    address: farm.token1,
-                    chainId: 42161,
-                    decimals: farm.decimals,
-                    name: farm.name.split("-")[0],
-                    symbol: farm.name.split("-")[0],
-                };
-                return obj;
-            }),
+            farms
+                .map((farm) => {
+                    const obj: TokenInfo = {
+                        address: farm.token1,
+                        chainId: 42161,
+                        decimals: farm.decimals1 || farm.decimals,
+                        name: farm.name.split("-")[0],
+                        symbol: farm.name.split("-")[0],
+                    };
+                    return obj;
+                })
+                .concat(
+                    // @ts-ignore
+                    farms
+                        .map((farm) => {
+                            if (farm.token2) {
+                                const obj: TokenInfo = {
+                                    address: farm.token2,
+                                    chainId: 42161,
+                                    decimals: farm.decimals2 || farm.decimals,
+                                    name: farm.name.split("-")[1],
+                                    symbol: farm.name.split("-")[1],
+                                };
+                                return obj;
+                            }
+                        })
+                        .filter((_) => !!_)
+                ),
         [farms]
     );
 
@@ -143,10 +162,9 @@ const Exchange: React.FC<IProps> = () => {
     return (
         <div
             style={{
-                paddingTop: 20,
+                padding: "20px 8px 70px 8px",
                 overflow: "auto",
                 gridTemplateRows: "553px",
-                paddingBottom: 20,
                 height: "100%",
             }}
         >
@@ -204,6 +222,7 @@ const Exchange: React.FC<IProps> = () => {
                         provider={websocketProvider || wagmiSigner?.provider}
                         onConnectWalletClick={connectWallet}
                         tokenList={tokenList}
+                        permit2={true}
                     />
                 )}
             </div>

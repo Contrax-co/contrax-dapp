@@ -1,7 +1,8 @@
 .dashboard_top_bg {
   width: 100%;
-  margin-top: 5px;
   height: 100vh;
+  margin-top: 5px;
+  padding-bottom: 70px;
   overflow-y: scroll;
   overflow-x: hidden;
 }
