@@ -6,6 +6,7 @@ import { TOKEN_BALANCES } from "src/config/constants/query";
 import * as ethers from "ethers";
 import useConstants from "./useConstants";
 import erc20 from "src/assets/abis/erc20.json";
+import { isValidNetwork } from "src/utils/common";
 
 /**
  * Returns balances for all tokens
@@ -16,7 +17,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
     const { provider, currentWallet } = useWallet();
 
     const getAllBalances = async () => {
-        if (!provider) return {};
+        if (!provider || !isValidNetwork(NETWORK_NAME)) return {};
         const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
         const contractCallContext: ContractCallContext[] = [];
 
@@ -41,11 +42,20 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
         return ans;
     };
 
+    const placeholderData = useMemo(() => {
+        let b: { [key: string]: ethers.BigNumber } = {};
+        data.forEach((item) => {
+            b[item.address] = ethers.BigNumber.from(0);
+        });
+        return b;
+    }, [data]);
+
     const {
-        data: balances,
+        data: balancesUndefined,
         refetch,
         isLoading,
         isFetching,
+        isPlaceholderData,
     } = useQuery(
         // Query will rerun and fetch new data whenever any of the values changes in below function
         TOKEN_BALANCES(
@@ -60,16 +70,11 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
 
             // Initial data to be returned when no query has ran
             // Returns 0 for all the balances initially
-            initialData: () => {
-                let b: { [key: string]: ethers.BigNumber } = {};
-                data.forEach((item) => {
-                    b[item.address] = ethers.BigNumber.from(0);
-                });
-                return b;
-            },
+            placeholderData,
         }
     );
 
+    const balances = balancesUndefined!;
     const formattedBalances = useMemo(() => {
         let b: { [key: string]: number } = {};
         Object.entries(balances).map(([key, value]) => {
@@ -82,7 +87,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
             return;
         });
         return b;
-    }, [balances]);
+    }, [balances, data]);
 
     return {
         /**
@@ -103,7 +108,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
         /**
          * Is query loading, (Always returns false, if initialData is given to useQuery)
          */
-        isLoading,
+        isLoading: isLoading || isPlaceholderData,
 
         /**
          * Is query fetching will return true if query is fetching in background

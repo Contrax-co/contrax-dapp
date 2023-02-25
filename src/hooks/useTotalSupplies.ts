@@ -6,6 +6,7 @@ import { TOKEN_TOTAL_SUPPLIES } from "src/config/constants/query";
 import * as ethers from "ethers";
 import useConstants from "src/hooks/useConstants";
 import erc20 from "src/assets/abis/erc20.json";
+import { isValidNetwork } from "src/utils/common";
 
 /**
  * Returns total supply for all tokens
@@ -15,7 +16,8 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
     const { provider } = useWallet();
 
     const getAllSupplies = async () => {
-        if (!provider) return {};
+        if (!provider || !isValidNetwork(NETWORK_NAME)) return {};
+
         const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
         const contractCallContext: ContractCallContext[] = [];
 
@@ -38,11 +40,20 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         return ans;
     };
 
+    const placeholderData = useMemo(() => {
+        let b: { [key: string]: ethers.BigNumber } = {};
+        data.forEach((item) => {
+            b[item.address] = ethers.BigNumber.from(0);
+        });
+        return b;
+    }, [data]);
+
     const {
-        data: supplies,
+        data: suppliesUndefined,
         refetch,
         isLoading,
         isFetching,
+        isPlaceholderData,
     } = useQuery(
         TOKEN_TOTAL_SUPPLIES(
             data.map((_) => _.address),
@@ -51,15 +62,10 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         getAllSupplies,
         {
             enabled: !!provider && data.length > 0 && !!NETWORK_NAME,
-            initialData: () => {
-                let b: { [key: string]: ethers.BigNumber } = {};
-                data.forEach((item) => {
-                    b[item.address] = ethers.BigNumber.from(0);
-                });
-                return b;
-            },
+            placeholderData,
         }
     );
+    const supplies = suppliesUndefined!;
     const formattedSupplies = useMemo(() => {
         let b: { [key: string]: number } = {};
         Object.entries(supplies).map(([key, value]) => {
@@ -71,7 +77,7 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
             b[key] = formattedBal;
         });
         return b;
-    }, [supplies]);
+    }, [supplies, data]);
 
     return {
         /**
@@ -92,7 +98,7 @@ const useTotalSupplies = (data: { address: string; decimals: number }[]) => {
         /**
          * Is query loading, (Always returns false, if initialData is given to useQuery)
          */
-        isLoading,
+        isLoading: isLoading || isPlaceholderData,
 
         /**
          * Is query fetching will return true if query is fetching in background

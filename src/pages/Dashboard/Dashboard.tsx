@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import { BsCheckCircle } from "react-icons/bs";
 import { FiExternalLink, FiCopy } from "react-icons/fi";
@@ -8,50 +8,21 @@ import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import { copyToClipboard } from "src/utils";
 import useConstants from "src/hooks/useConstants";
-import usePriceOfTokens from "src/hooks/usePriceOfTokens";
-import { useNavigate } from "react-router";
-import { useSearchParams } from "react-router-dom";
-import useFarms from "src/hooks/farms/useFarms";
-import useFarmsBalances from "src/hooks/farms/useFarmsBalances";
 import { TokenBalances } from "./TokenBalances/TokenBalances";
-import { AiFillSetting } from "react-icons/ai";
-import { SettingsModal } from "src/components/modals/SettingsModal/SettingsModal";
-
-let redirected = false;
+import { FaKey } from "react-icons/fa";
+import { ExportPrivateKey } from "src/components/modals/ExportPrivateKey/ExportPrivateKey";
 
 function Dashboard() {
     const { lightMode } = useApp();
-    const { currentWallet, displayAccount } = useWallet();
+    const { currentWallet, displayAccount, signer } = useWallet();
     const [copied, setCopied] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
-    const { farms: vaults } = useFarms();
-    const { prices, isFetching } = usePriceOfTokens(vaults.map((vault) => vault.lp_address));
-    const { formattedBalances, isFetching: isFetching2 } = useFarmsBalances();
-    const navigate = useNavigate();
-    const [params] = useSearchParams();
-
-    const hasDeposits = useMemo(() => {
-        return Object.entries(formattedBalances).some(([key, value]) => {
-            const lp_addr = vaults.find((item) => item.vault_addr === key)!.lp_address;
-            return prices[lp_addr] * value > 0.01;
-        });
-    }, [formattedBalances, prices, vaults]);
 
     const copy = () => {
         setCopied(true);
         copyToClipboard(currentWallet, () => setCopied(false));
     };
-
-    useEffect(() => {
-        if (!isFetching && !isFetching2) {
-            if (!hasDeposits) {
-                if (params.get("redirect") === "false") redirected = true;
-                if (!redirected) navigate("/farms");
-                redirected = true;
-            }
-        }
-    }, [hasDeposits, isFetching, isFetching2, navigate, params]);
 
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
@@ -85,10 +56,12 @@ function Dashboard() {
                         <p className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}>No Wallet Connected</p>
                     )}
                 </div>
-                <div>
-                    <AiFillSetting color="#ffffff" cursor="pointer" size={30} onClick={() => setOpenModal(true)} />
-                    {openModal ? <SettingsModal setOpenModal={setOpenModal} /> : null}
-                </div>
+                {signer && (
+                    <div>
+                        <FaKey color="#ffffff" cursor="pointer" size={30} onClick={() => setOpenModal(true)} />
+                        {openModal ? <ExportPrivateKey setOpenModal={setOpenModal} /> : null}
+                    </div>
+                )}
             </div>
 
             <div className={`dashboard_section`}>

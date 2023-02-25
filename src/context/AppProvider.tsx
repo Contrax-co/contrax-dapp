@@ -13,18 +13,19 @@ const AppProvider: React.FC<Props> = ({ children }) => {
     const [lightMode, setLightMode] = React.useState(() => {
         const data = window.sessionStorage.getItem("lightMode");
         if (data != null) {
-            return JSON.parse(data);
+            return JSON.parse(data) as boolean;
         } else {
             return true;
         }
     });
 
     const toggleLight = () => {
-        setLightMode(!lightMode);
+        setLightMode((prev) => !prev);
     };
 
     React.useEffect(() => {
         window.sessionStorage.setItem("lightMode", JSON.stringify(lightMode));
+        document.documentElement.setAttribute("data-lightMode", `${lightMode}`);
     }, [lightMode]);
 
     return (

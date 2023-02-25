@@ -3,6 +3,8 @@ import {
     SHUSHISWAP_CHEF_GRAPH_URL,
     DODO_GRAPH_URL,
     FRAX_APR_API_URL,
+    SWAPFISH_GRAPH_URL,
+    defaultChainId,
 } from "src/config/constants/index";
 import { FarmOriginPlatform } from "src/types/enums";
 import { Apys, Farm } from "src/types";
@@ -14,7 +16,7 @@ import { erc20ABI } from "wagmi";
 import { calcCompoundingApy, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
 import dodoMineAbi from "src/assets/abis/dodoMine.json";
-
+import swapFishMaterchef from "src/assets/abis/swapfishMasterchef.json";
 interface GraphResponse {
     apr: string;
     feesUSD: string;
@@ -43,34 +45,34 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     const priceOfSushi = await getPrice(addressesByChainId[chainId].sushiAddress, chainId);
 
     let query = `{
-    pair(id: "${pairAddress}") {
-      name
-      liquidityUSD
-      apr
-      feesUSD
-      id
-    }
-  }`;
+        pair(id: "${pairAddress}") {
+          name
+          liquidityUSD
+          apr
+          feesUSD
+          id
+        }
+      }`;
     let res = await axios.post(SUSHUISWAP_GRAPH_URL, { query });
     let pairData: GraphResponse = res.data.data.pair;
     query = ` {
-          miniChefs {
-            id
-            sushi
-            sushiPerSecond
-            totalAllocPoint
-            pools(where: {pair: "${pairAddress}"}){
-              allocPoint
-              pair
-              rewarder{
+              miniChefs {
                 id
-                rewardToken
-                rewardPerSecond
+                sushi
+                sushiPerSecond
                 totalAllocPoint
+                pools(where: {pair: "${pairAddress}"}){
+                  allocPoint
+                  pair
+                  rewarder{
+                    id
+                    rewardToken
+                    rewardPerSecond
+                    totalAllocPoint
+                  }
+                }
               }
-            }
-          }
-        }`;
+            }`;
     res = await axios.post(SHUSHISWAP_CHEF_GRAPH_URL, { query });
     const chefData: ChefResponse = res.data.data.miniChefs[0];
 
@@ -117,6 +119,43 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     };
 };
 
+const getSwapFishApy = async (pairAddress: string, chainId: number, provider: providers.Provider, poolId: number) => {
+    let query = `{
+        pair(id: "${pairAddress.toLowerCase()}") {
+          name
+          liquidityUSD
+          apr
+          feesUSD
+          id
+        }
+      }`;
+    let res = await axios.post(SWAPFISH_GRAPH_URL, { query });
+    let pairData: GraphResponse = res.data.data.pair;
+    const masterChefAddress = addressesByChainId[chainId].swapfishMasterChef!;
+    const masterChefContract = new Contract(masterChefAddress, swapFishMaterchef, provider);
+    const totalAllocPoint = await masterChefContract.totalAllocPoint();
+    const { allocPoint } = await masterChefContract.poolInfo(poolId);
+    const cakeAddress = await masterChefContract.cake();
+    const cakePrice = await getPrice(cakeAddress, chainId);
+    const cakePerSecond = await masterChefContract.cakePerSecond();
+    const cakePerYear = cakePerSecond.mul(60).mul(60).mul(25).mul(365);
+    const cakePerYearUsd =
+        (Number(toEth(cakePerYear)) * cakePrice * allocPoint.toNumber()) / totalAllocPoint.toNumber();
+    let rewardsApr = (cakePerYearUsd / Number(pairData.liquidityUSD)) * 100;
+    // const cakePerYearUsd = cakePerYear.mul(cakePrice).mul(allocPoint).div(totalAllocPoint);
+    // let rewardsApr = Number(toEth(cakePerYearUsd.div(pairData.liquidityUSD).mul(100)));
+    // const apr = Number(pairData.apr) * 100 + rewardsApr;
+    const compounding = calcCompoundingApy(rewardsApr);
+
+    const apy = Number(pairData.apr) * 100 + compounding + rewardsApr; // RewardsApr is included in compounding
+    return {
+        feeApr: Number(pairData.apr) * 100,
+        rewardsApr,
+        apy,
+        compounding,
+    };
+};
+
 const getDodoApy = async (pairAddress: string, provider: providers.Provider, chainId: number) => {
     const res = await axios.post(DODO_GRAPH_URL, {
         query: `
@@ -147,7 +186,6 @@ const getDodoApy = async (pairAddress: string, provider: providers.Provider, cha
         ...pairData,
         staked: Number(res.data.data.pools[0].staked),
     };
-    const feeApr = Number(data.feeUSD) / (Number(data.quoteReserve) + Number(data.baseReserve));
 
     const latestBlock = await provider.getBlockNumber();
     const blocksAmount = 200000;
@@ -190,20 +228,30 @@ const getFraxApy = async () => {
             (item: any) => item.pid === 3 && item.token === "FRAX" && item.chainId === 110
         ).apr * 100;
 
+    const compounding = calcCompoundingApy(apr);
+    const apy = compounding + apr;
     return {
-        feeApr: 0,
+        feeApr: apr,
         rewardsApr: 0,
-        apy: apr,
-        compounding: 0,
+        apy,
+        compounding: compounding,
     };
 };
 
 export const getApy = async (
-    farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy">,
+    farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy" | "pool_id">,
     chainId: number,
     provider: providers.Provider,
     currentWallet?: string
 ): Promise<Apys> => {
+    if (chainId !== defaultChainId) {
+        return {
+            feeApr: 0,
+            rewardsApr: Number(farm.rewards_apy || 0),
+            apy: Number(farm.total_apy || 0),
+            compounding: 0,
+        };
+    }
     switch (farm.originPlatform) {
         case FarmOriginPlatform.Shushiswap:
             return getSushiswapApy(farm.lp_address.toLowerCase(), chainId, provider);
@@ -213,6 +261,8 @@ export const getApy = async (
             return getDodoApy(farm.lp_address, provider, chainId);
         case FarmOriginPlatform.Frax:
             return getFraxApy();
+        case FarmOriginPlatform.SwapFish:
+            return getSwapFishApy(farm.lp_address, chainId, provider, farm.pool_id!);
 
         default:
             return {

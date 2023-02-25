@@ -26,20 +26,20 @@
   border: 1px solid #d9d9d9;
 }
 
-.sideitems--selected > div {
+.sideitems--selected>div {
   color: #009aff;
 }
 
-.sideitems--selected--light > div {
+.sideitems--selected--light>div {
   color: #61cddf;
 }
 
-.sideitems:hover > div {
+.sideitems:hover>div {
   color: #009aff;
   cursor: pointer;
 }
 
-.sideitems--light:hover > div {
+.sideitems--light:hover {
   color: black;
   cursor: pointer;
 }

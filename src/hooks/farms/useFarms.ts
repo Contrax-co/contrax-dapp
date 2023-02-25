@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import pools from "src/config/constants/pools.json";
 import { Farm, FarmDetails } from "src/types";
 import { FarmType } from "src/types/enums";
@@ -18,22 +18,25 @@ export const useFarmDetails = (): {
     farmDetails: FarmDetails[];
     normalFarms: FarmDetails[];
     advancedFarms: FarmDetails[];
+    isLoading: boolean;
 } => {
-    const { formattedBalances: usersVaultBalances, refetch: usersVaultBalanceRefetch } = useFarmsBalances();
-    const { formattedSupplies: totalVaultSupplies, refetch: totalVaultSuppliesRefetch } = useTotalSupplies(
-        farms.map((farm) => ({ address: farm.vault_addr, decimals: farm.decimals }))
+    const vaultAddresses = useMemo(
+        () => farms.map((farm) => ({ address: farm.vault_addr, decimals: farm.decimals })),
+        []
     );
-    const { formattedSupplies: totalPlatformSupplies, refetch: totalPlatformSuppliesRefetch } = useTotalSupplies(
-        farms.map((farm) => ({ address: farm.lp_address, decimals: farm.decimals }))
+    const lpAddresses = useMemo(() => farms.map((farm) => ({ address: farm.lp_address, decimals: farm.decimals })), []);
+    const { formattedBalances: usersVaultBalances } = useFarmsBalances();
+    const { formattedSupplies: totalVaultSupplies, isLoading: isLoadingTotalVaultSupplies } =
+        useTotalSupplies(vaultAddresses);
+    const { formattedSupplies: totalPlatformSupplies, isLoading: isLoadingTotalPlatformSupplies } =
+        useTotalSupplies(lpAddresses);
+    const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens(
+        // temp fix for dodo and stargate wrapped token prices
+        // the underlyging tokens are named lp, but they are actaully just wrapped versions of platform tokens, so we
+        // cannot calculate their price like normal LP, so instead we just use the base token for price
+        farms.map((farm) => (farm.platform === "Dodo" || farm.platform === "Stargate" ? farm.token1 : farm.lp_address))
     );
-    const { prices: priceOfSingleToken } = usePriceOfTokens(farms.map((farm) => farm.lp_address));
-    const { apys } = useFarmApys();
-
-    const refetchBalances = useCallback(() => {
-        usersVaultBalanceRefetch();
-        totalVaultSuppliesRefetch();
-        totalPlatformSuppliesRefetch();
-    }, [totalPlatformSuppliesRefetch, totalVaultSuppliesRefetch, usersVaultBalanceRefetch]);
+    const { apys, isLoading: isLoadingApys } = useFarmApys();
 
     const farmDetails = useMemo(() => {
         return farms.map((farm) => {
@@ -80,5 +83,14 @@ export const useFarmDetails = (): {
         }, []);
     }, [apys, usersVaultBalances, totalVaultSupplies, totalPlatformSupplies, priceOfSingleToken]);
 
-    return { farmDetails, normalFarms, advancedFarms };
+    return {
+        farmDetails,
+        normalFarms,
+        advancedFarms,
+        isLoading:
+            isLoadingApys ||
+            isLoadingPricesOfSingleToken ||
+            isLoadingTotalPlatformSupplies ||
+            isLoadingTotalVaultSupplies,
+    };
 };
