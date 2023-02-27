@@ -60,4 +60,8 @@
   .sidebar {
     display: none;
   }
+
+  .topbar {
+    margin-bottom: 50px;
+  }
 }
