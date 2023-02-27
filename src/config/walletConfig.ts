@@ -17,8 +17,12 @@ import githubIcon from "./../assets/images/github-icon.svg";
 import { providers } from "ethers";
 
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
+// export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
 
 const clientId = WEB3AUTH_CLIENT_ID as string;
+arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
+arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
+
 
 // Configure chains & providers with the Alchemy provider.
 // Popular providers are Alchemy (alchemy.com), Infura (infura.io), Quicknode (quicknode.com) etc.
@@ -48,7 +52,7 @@ const web3AuthInstance = new Web3AuthCore({
     chainConfig: {
         chainNamespace: CHAIN_NAMESPACES.EIP155,
         chainId: "0x" + arbitrum.id.toString(16),
-        rpcTarget: "https://arb1.arbitrum.io/rpc",
+        rpcTarget: ARBITRUM_MAINNET,
         displayName: arbitrum.name,
         tickerName: arbitrum.nativeCurrency.name,
         ticker: arbitrum.nativeCurrency.symbol,

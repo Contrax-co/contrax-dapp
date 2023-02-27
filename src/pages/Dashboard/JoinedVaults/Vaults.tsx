@@ -12,10 +12,10 @@ interface Props {}
 
 const Vaults: React.FC<Props> = () => {
     const { lightMode } = useApp();
-    const { networkId, signer } = useWallet();
+    const { networkId, currentWallet } = useWallet();
     const { vaults, isLoading } = useVaults();
 
-    return signer ? (
+    return currentWallet ? (
         <div
             className={styles.vaults_container}
             style={networkId === defaultChainId && !isLoading && vaults.length > 0 ? undefined : { display: "block" }}
@@ -36,7 +36,7 @@ const Vaults: React.FC<Props> = () => {
                     <EmptyComponent>Change network to Arbitrum to view your joined Vaults</EmptyComponent>
                 )
             ) : (
-                <Skeleton w={"100%"} h={250} bg={lightMode ? "#ffffff" : undefined} bRadius={20} />
+                <Skeleton w={"100%"} h={250} bg={lightMode ? "#ffffff" : undefined} bRadius={20} inverted={true} />
             )}
         </div>
     ) : (
