@@ -405,7 +405,7 @@
     "id": 15,
     "originPlatform": "SwapFish",
     "token_type": "Token",
-    "name": "WETH-WstETH",
+    "name": "ETH",
     "pool_id": 2,
     "name1": "WETH",    
     "name2": "WstETH",
