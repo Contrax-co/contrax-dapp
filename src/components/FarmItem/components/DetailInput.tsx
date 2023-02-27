@@ -177,8 +177,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 {!isLoading && (
                     <div style={{ textAlign: "right" }}>
                         {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
-                        {showInUsd && "$ "}
-                        {maxBalance}
+                        {showInUsd ? `$ ${maxBalance.toFixed(2)}` : maxBalance}
                     </div>
                 )}
                 <div></div>
