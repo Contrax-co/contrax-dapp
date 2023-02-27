@@ -76,7 +76,7 @@ export const getLpPrice = async (lpAddress: string, provider: providers.Provider
                 Number(
                     reserves[0]
                         .mul(2)
-                        .mul(price * 1000)
+                        .mul(parseInt(String(price * 1000)))
                         .mul(1000)
                         .div(totalSupply)
                 ) / 1000000;
