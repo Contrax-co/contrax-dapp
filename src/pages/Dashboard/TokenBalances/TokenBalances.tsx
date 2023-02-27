@@ -15,11 +15,11 @@ interface IProps {}
 export const TokenBalances: FC<IProps> = (props) => {
     const { lightMode } = useApp();
     const { tokens, refetchBalances, isLoading } = useTokens();
-    const { signer } = useWallet();
+    const { currentWallet } = useWallet();
     const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
 
-    return signer ? (
+    return currentWallet ? (
         <div className={styles.container}>
             {!isLoading ? (
                 tokens ? (
