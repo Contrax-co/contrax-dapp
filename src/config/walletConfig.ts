@@ -16,10 +16,13 @@ import discordIcon from "./../assets/images/discordapp-icon.svg";
 import githubIcon from "./../assets/images/github-icon.svg";
 import { providers } from "ethers";
 
-// export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
-export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
+export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
+// export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
 
 const clientId = WEB3AUTH_CLIENT_ID as string;
+arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
+arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
+
 
 // Configure chains & providers with the Alchemy provider.
 // Popular providers are Alchemy (alchemy.com), Infura (infura.io), Quicknode (quicknode.com) etc.
