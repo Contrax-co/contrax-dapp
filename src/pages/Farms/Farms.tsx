@@ -23,7 +23,7 @@ function Farms() {
 
     useEffect(() => {
         setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
-    }, [tab]);
+    }, [tab, isLoading]);
 
     useEffect(() => {
         setSortedBuy(undefined);
