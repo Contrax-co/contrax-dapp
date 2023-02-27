@@ -1,7 +1,7 @@
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { getNetworkName, toEth } from "src/utils/common";
-import { Contract, providers, BigNumber, Signer, constants } from "ethers";
+import { Contract, providers, BigNumber, Signer, constants, ethers } from "ethers";
 import { erc20ABI } from "wagmi";
 
 export const getPrice = async (tokenAddress: string, chainId: number) => {
@@ -53,6 +53,8 @@ export const approveErc20 = async (
 
 export const getLpPrice = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
     try {
+        if (ethers.constants.AddressZero === lpAddress) return 0;
+
         let price = await getPrice(lpAddress, chainId);
         if (price !== 0) return price;
 
