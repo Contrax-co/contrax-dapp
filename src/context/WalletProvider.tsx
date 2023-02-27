@@ -105,7 +105,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const { openConnectModal } = useConnectModal();
 
     const getBalance = async () => {
-        console.log("geting balance");
         if (!provider || !currentWallet)
             return { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) };
         const balance = await provider.getBalance(currentWallet);

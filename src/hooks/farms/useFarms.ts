@@ -31,7 +31,10 @@ export const useFarmDetails = (): {
     const { formattedSupplies: totalPlatformSupplies, isLoading: isLoadingTotalPlatformSupplies } =
         useTotalSupplies(lpAddresses);
     const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens(
-        farms.map((farm) => farm.lp_address)
+        // temp fix for dodo and stargate wrapped token prices
+        // the underlyging tokens are named lp, but they are actaully just wrapped versions of platform tokens, so we
+        // cannot calculate their price like normal LP, so instead we just use the base token for price
+        farms.map((farm) => (farm.platform === "Dodo" || farm.platform === "Stargate" ? farm.token1 : farm.lp_address))
     );
     const { apys, isLoading: isLoadingApys } = useFarmApys();
 
