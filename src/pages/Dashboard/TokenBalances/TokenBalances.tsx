@@ -58,7 +58,7 @@ export const TokenBalances: FC<IProps> = (props) => {
                     </EmptyComponent>
                 )
             ) : (
-                <Skeleton w={"100%"} h={150} bg={lightMode ? "#ffffff" : undefined} bRadius={20} />
+                <Skeleton w={"100%"} h={150} bg={lightMode ? "#ffffff" : undefined} bRadius={20} inverted={true} />
             )}
             {selectedToken ? (
                 <TransferToken

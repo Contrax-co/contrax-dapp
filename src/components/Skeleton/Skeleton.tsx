@@ -9,9 +9,10 @@ interface IProps {
     bg?: string;
     style?: CSSProperties;
     className?: string;
+    inverted?: boolean;
 }
 
-export const Skeleton: FC<IProps> = ({ w, h, bg, bRadius = 5, style, className }) => {
+export const Skeleton: FC<IProps> = ({ w, h, bg, bRadius = 5, style, className, inverted }) => {
     const { lightMode } = useApp();
     return (
         <div
@@ -19,7 +20,7 @@ export const Skeleton: FC<IProps> = ({ w, h, bg, bRadius = 5, style, className }
             style={{
                 width: w,
                 height: h,
-                background: bg || (lightMode ? "#f5f6f9" : "#001428"),
+                background: bg || (lightMode ? (inverted ? "#ffffff" : "#f5f6f9") : inverted ? "#012243" : "#001428"),
                 borderRadius: bRadius,
                 ...style,
             }}

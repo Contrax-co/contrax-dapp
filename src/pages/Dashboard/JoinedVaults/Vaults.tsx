@@ -36,7 +36,7 @@ const Vaults: React.FC<Props> = () => {
                     <EmptyComponent>Change network to Arbitrum to view your joined Vaults</EmptyComponent>
                 )
             ) : (
-                <Skeleton w={"100%"} h={250} bg={lightMode ? "#ffffff" : undefined} bRadius={20} />
+                <Skeleton w={"100%"} h={250} bg={lightMode ? "#ffffff" : undefined} bRadius={20} inverted={true} />
             )}
         </div>
     ) : (
