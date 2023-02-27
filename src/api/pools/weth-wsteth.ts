@@ -190,15 +190,16 @@ export const getFarmData = async (
 // };
 
 // Zapin
-export const deposit = async ({
-    depositAmount,
+
+export const zapIn = async ({
+    zapAmount,
     currentWallet,
     signer,
     chainId,
     max,
     cb,
 }: {
-    depositAmount: number;
+    zapAmount: number;
     currentWallet: string;
     signer?: Signer;
     chainId: number;
@@ -211,7 +212,7 @@ export const deposit = async ({
     const wethAddress = addressesByChainId[chainId].wethAddress;
     let notiId = notifyLoading("Approving zapping!", "Please wait...");
     try {
-        let formattedBal = utils.parseUnits(depositAmount.toString(), 18);
+        let formattedBal = utils.parseUnits(zapAmount.toString(), 18);
         // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
         if (max) {
             const balance = await signer.getBalance();
@@ -223,7 +224,6 @@ export const deposit = async ({
             const gasToRemove = gasLimit.mul(gasPrice).mul(8);
             formattedBal = balance.sub(gasToRemove);
         }
-        console.log(formattedBal);
         let zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
             value: formattedBal,
         });
@@ -255,15 +255,15 @@ export const deposit = async ({
     cb && cb();
 };
 
-export const withdraw = async ({
-    withdrawAmount,
+export const zapOut = async ({
+    zapAmount,
     currentWallet,
     signer,
     chainId,
     max,
     cb,
 }: {
-    withdrawAmount: number;
+    zapAmount: number;
     currentWallet: string;
     signer?: Signer;
     chainId: number;
@@ -279,7 +279,7 @@ export const withdraw = async ({
          * Execute the actual withdraw functionality from smart contract
          */
         let formattedBal;
-        formattedBal = utils.parseUnits(validateNumberDecimals(withdrawAmount), farm.decimals || 18);
+        formattedBal = utils.parseUnits(validateNumberDecimals(zapAmount), farm.decimals || 18);
         const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer);
 
         await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer);
