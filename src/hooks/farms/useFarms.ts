@@ -38,12 +38,13 @@ export const useFarmDetails = (): {
 
     const farmDetails = useMemo(() => {
         return farms.map((farm) => {
+            const lpAddress = getLpAddressForFarmsPrice([farm])[0];
             return {
                 ...farm,
                 userVaultBalance: usersVaultBalances[farm.vault_addr],
                 totalVaultBalance: totalVaultSupplies[farm.vault_addr],
                 totalPlatformBalance: totalPlatformSupplies[farm.lp_address],
-                priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
+                priceOfSingleToken: priceOfSingleToken[lpAddress] || (farm.stableCoin ? 1 : 0),
                 apys: apys[farm.lp_address],
             };
         });
@@ -51,13 +52,14 @@ export const useFarmDetails = (): {
 
     const normalFarms = useMemo(() => {
         return farms.reduce((farms: FarmDetails[], farm: Farm) => {
+            const lpAddress = getLpAddressForFarmsPrice([farm])[0];
             if (farm.token_type === FarmType.normal) {
                 farms.push({
                     ...farm,
                     userVaultBalance: usersVaultBalances[farm.vault_addr],
                     totalVaultBalance: totalVaultSupplies[farm.vault_addr],
                     totalPlatformBalance: totalPlatformSupplies[farm.lp_address],
-                    priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
+                    priceOfSingleToken: priceOfSingleToken[lpAddress] || (farm.stableCoin ? 1 : 0),
                     apys: apys[farm.lp_address],
                 });
             }
@@ -67,13 +69,14 @@ export const useFarmDetails = (): {
 
     const advancedFarms = useMemo(() => {
         return farms.reduce((farms: FarmDetails[], farm: Farm) => {
+            const lpAddress = getLpAddressForFarmsPrice([farm])[0];
             if (farm.token_type === FarmType.advanced) {
                 farms.push({
                     ...farm,
                     userVaultBalance: usersVaultBalances[farm.vault_addr],
                     totalVaultBalance: totalVaultSupplies[farm.vault_addr],
                     totalPlatformBalance: totalPlatformSupplies[farm.lp_address],
-                    priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
+                    priceOfSingleToken: priceOfSingleToken[lpAddress] || (farm.stableCoin ? 1 : 0),
                     apys: apys[farm.lp_address],
                 });
             }
