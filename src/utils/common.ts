@@ -1,5 +1,15 @@
 import { BigNumberish, utils } from "ethers";
 import { defaultChainId } from "src/config/constants";
+import { Farm } from "src/types";
+
+export const getLpAddressForFarmsPrice = (farms: Farm[]) => {
+    // temp fix for dodo and stargate wrapped token prices
+    // the underlyging tokens are named lp, but they are actaully just wrapped versions of platform tokens, so we
+    // cannot calculate their price like normal LP, so instead we just use the base token for price
+    return farms.map((farm) =>
+        farm.platform === "Dodo" || farm.platform === "Stargate" ? farm.token1 : farm.lp_address
+    );
+};
 
 export function validateNumberDecimals(value: number, decimals: number = 18) {
     const newVal = noExponents(value);

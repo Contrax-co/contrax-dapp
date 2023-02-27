@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import pools from "src/config/constants/pools.json";
 import { Farm, FarmDetails } from "src/types";
 import { FarmType } from "src/types/enums";
+import { getLpAddressForFarmsPrice } from "src/utils/common";
 import usePriceOfTokens from "../usePriceOfTokens";
 import useTotalSupplies from "../useTotalSupplies";
 import { useFarmApys } from "./useFarmApy";
@@ -31,21 +32,19 @@ export const useFarmDetails = (): {
     const { formattedSupplies: totalPlatformSupplies, isLoading: isLoadingTotalPlatformSupplies } =
         useTotalSupplies(lpAddresses);
     const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens(
-        // temp fix for dodo and stargate wrapped token prices
-        // the underlyging tokens are named lp, but they are actaully just wrapped versions of platform tokens, so we
-        // cannot calculate their price like normal LP, so instead we just use the base token for price
-        farms.map((farm) => (farm.platform === "Dodo" || farm.platform === "Stargate" ? farm.token1 : farm.lp_address))
+        getLpAddressForFarmsPrice(farms)
     );
     const { apys, isLoading: isLoadingApys } = useFarmApys();
 
     const farmDetails = useMemo(() => {
         return farms.map((farm) => {
+            const lpAddress = getLpAddressForFarmsPrice([farm])[0];
             return {
                 ...farm,
                 userVaultBalance: usersVaultBalances[farm.vault_addr],
                 totalVaultBalance: totalVaultSupplies[farm.vault_addr],
                 totalPlatformBalance: totalPlatformSupplies[farm.lp_address],
-                priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
+                priceOfSingleToken: priceOfSingleToken[lpAddress] || (farm.stableCoin ? 1 : 0),
                 apys: apys[farm.lp_address],
             };
         });
@@ -53,13 +52,14 @@ export const useFarmDetails = (): {
 
     const normalFarms = useMemo(() => {
         return farms.reduce((farms: FarmDetails[], farm: Farm) => {
+            const lpAddress = getLpAddressForFarmsPrice([farm])[0];
             if (farm.token_type === FarmType.normal) {
                 farms.push({
                     ...farm,
                     userVaultBalance: usersVaultBalances[farm.vault_addr],
                     totalVaultBalance: totalVaultSupplies[farm.vault_addr],
                     totalPlatformBalance: totalPlatformSupplies[farm.lp_address],
-                    priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
+                    priceOfSingleToken: priceOfSingleToken[lpAddress] || (farm.stableCoin ? 1 : 0),
                     apys: apys[farm.lp_address],
                 });
             }
@@ -69,13 +69,14 @@ export const useFarmDetails = (): {
 
     const advancedFarms = useMemo(() => {
         return farms.reduce((farms: FarmDetails[], farm: Farm) => {
+            const lpAddress = getLpAddressForFarmsPrice([farm])[0];
             if (farm.token_type === FarmType.advanced) {
                 farms.push({
                     ...farm,
                     userVaultBalance: usersVaultBalances[farm.vault_addr],
                     totalVaultBalance: totalVaultSupplies[farm.vault_addr],
                     totalPlatformBalance: totalPlatformSupplies[farm.lp_address],
-                    priceOfSingleToken: priceOfSingleToken[farm.lp_address] || (farm.stableCoin ? 1 : 0),
+                    priceOfSingleToken: priceOfSingleToken[lpAddress] || (farm.stableCoin ? 1 : 0),
                     apys: apys[farm.lp_address],
                 });
             }

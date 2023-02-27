@@ -6,6 +6,8 @@ import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { FarmDetails } from "src/types";
 import "./Details.css";
 import Toggle from "src/components/FarmItem/Toggle";
+import { getLpAddressForFarmsPrice } from "src/utils/common";
+import { ethers } from "ethers";
 
 interface Props {
     farm: FarmDetails;
@@ -16,14 +18,15 @@ interface Props {
 
 const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props }) => {
     const { lightMode } = useApp();
+    const lpAddress = getLpAddressForFarmsPrice([farm])[0];
     const {
-        prices: { [farm.token1]: price1, [farm.token2!]: price2, [farm.lp_address]: lpPrice },
-    } = usePriceOfTokens([farm.token1, farm.token2 || "", farm.lp_address]);
+        prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
+    } = usePriceOfTokens([farm.token1, farm.token2 || ethers.constants.AddressZero, lpAddress]);
     const { formattedBalances } = useBalances([
-        { address: farm.lp_address, decimals: farm.decimals },
+        { address: lpAddress, decimals: farm.decimals },
         { address: farm.vault_addr, decimals: farm.decimals },
     ]);
-    const unstakedTokenValue = useMemo(() => formattedBalances[farm.lp_address], [formattedBalances]);
+    const unstakedTokenValue = useMemo(() => formattedBalances[lpAddress], [formattedBalances]);
     const stakedTokenValue = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances]);
 
     return (

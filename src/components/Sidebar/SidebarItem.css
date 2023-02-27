@@ -35,7 +35,7 @@
 }
 
 .sideitems:hover>div {
-  color: #009aff;
+  color: var(--color_primary);
   cursor: pointer;
 }
 

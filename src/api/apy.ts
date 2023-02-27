@@ -252,24 +252,34 @@ export const getApy = async (
             compounding: 0,
         };
     }
-    switch (farm.originPlatform) {
-        case FarmOriginPlatform.Shushiswap:
-            return getSushiswapApy(farm.lp_address.toLowerCase(), chainId, provider);
-        case FarmOriginPlatform.GMX:
-            return getGmxApyArbitrum(provider, currentWallet);
-        case FarmOriginPlatform.Dodo:
-            return getDodoApy(farm.lp_address, provider, chainId);
-        case FarmOriginPlatform.Frax:
-            return getFraxApy();
-        case FarmOriginPlatform.SwapFish:
-            return getSwapFishApy(farm.lp_address, chainId, provider, farm.pool_id!);
+    try {
+        switch (farm.originPlatform) {
+            case FarmOriginPlatform.Shushiswap:
+                return getSushiswapApy(farm.lp_address.toLowerCase(), chainId, provider);
+            case FarmOriginPlatform.GMX:
+                return getGmxApyArbitrum(provider, currentWallet);
+            case FarmOriginPlatform.Dodo:
+                return getDodoApy(farm.lp_address, provider, chainId);
+            case FarmOriginPlatform.Frax:
+                return getFraxApy();
+            case FarmOriginPlatform.SwapFish:
+                return getSwapFishApy(farm.lp_address, chainId, provider, farm.pool_id!);
 
-        default:
-            return {
-                feeApr: 0,
-                rewardsApr: Number(farm.rewards_apy || 0),
-                apy: Number(farm.total_apy || 0),
-                compounding: 0,
-            };
+            default:
+                return {
+                    feeApr: 0,
+                    rewardsApr: Number(farm.rewards_apy || 0),
+                    apy: Number(farm.total_apy || 0),
+                    compounding: 0,
+                };
+        }
+    } catch (err: any) {
+        console.error("Error in getting apy => ", err);
+        return {
+            feeApr: 0,
+            rewardsApr: Number(farm.rewards_apy || 0),
+            apy: Number(farm.total_apy || 0),
+            compounding: 0,
+        };
     }
 };

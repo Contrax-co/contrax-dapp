@@ -1,7 +1,7 @@
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { getNetworkName, toEth } from "src/utils/common";
-import { Contract, providers, BigNumber, Signer, constants } from "ethers";
+import { Contract, providers, BigNumber, Signer, constants, ethers } from "ethers";
 import { erc20ABI } from "wagmi";
 
 export const getPrice = async (tokenAddress: string, chainId: number) => {
@@ -67,6 +67,10 @@ export const getLpPrice = async (lpAddress: string, provider: providers.Provider
             provider
         );
         const token0 = await lpContract.token0();
+        const token0Contract = new Contract(token0, erc20ABI, provider);
+        // TODO: don't fetch deciamls here, try to find a way to pass from pools.json
+        const token0Decimals = await token0Contract.decimals();
+
         const totalSupply = await lpContract.totalSupply();
         const reserves = await lpContract.getReserves();
         price = await getPrice(token0, chainId);
@@ -76,21 +80,25 @@ export const getLpPrice = async (lpAddress: string, provider: providers.Provider
                 Number(
                     reserves[0]
                         .mul(2)
-                        .mul(price * 1000)
+                        .mul(parseInt(String(price * 1000)))
                         .mul(1000)
                         .div(totalSupply)
+                        .mul(Math.pow(10, 18 - token0Decimals))
                 ) / 1000000;
         } else {
             const token1 = await lpContract.token1();
+            const token1Contract = new Contract(token1, erc20ABI, provider);
+            const token1Decimals = await token1Contract.decimals();
 
             price = await getPrice(token1, chainId);
             price =
                 Number(
                     reserves[1]
                         .mul(2)
-                        .mul(price * 1000)
+                        .mul(parseInt(String(price * 1000)))
                         .mul(1000)
                         .div(totalSupply)
+                        .mul(Math.pow(10, 18 - token1Decimals))
                 ) / 1000000;
         }
 
