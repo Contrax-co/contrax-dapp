@@ -6,6 +6,7 @@ import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { FarmDetails } from "src/types";
 import "./Details.css";
 import Toggle from "src/components/FarmItem/Toggle";
+import { getLpAddressForFarmsPrice } from "src/utils/common";
 
 interface Props {
     farm: FarmDetails;
@@ -18,7 +19,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
     const { lightMode } = useApp();
     const {
         prices: { [farm.token1]: price1, [farm.token2!]: price2, [farm.lp_address]: lpPrice },
-    } = usePriceOfTokens([farm.token1, farm.token2 || "", farm.lp_address]);
+    } = usePriceOfTokens([farm.token1, farm.token2 || "", getLpAddressForFarmsPrice([farm])[0]]);
     const { formattedBalances } = useBalances([
         { address: farm.lp_address, decimals: farm.decimals },
         { address: farm.vault_addr, decimals: farm.decimals },

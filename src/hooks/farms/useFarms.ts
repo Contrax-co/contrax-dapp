@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import pools from "src/config/constants/pools.json";
 import { Farm, FarmDetails } from "src/types";
 import { FarmType } from "src/types/enums";
+import { getLpAddressForFarmsPrice } from "src/utils/common";
 import usePriceOfTokens from "../usePriceOfTokens";
 import useTotalSupplies from "../useTotalSupplies";
 import { useFarmApys } from "./useFarmApy";
@@ -31,10 +32,7 @@ export const useFarmDetails = (): {
     const { formattedSupplies: totalPlatformSupplies, isLoading: isLoadingTotalPlatformSupplies } =
         useTotalSupplies(lpAddresses);
     const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens(
-        // temp fix for dodo and stargate wrapped token prices
-        // the underlyging tokens are named lp, but they are actaully just wrapped versions of platform tokens, so we
-        // cannot calculate their price like normal LP, so instead we just use the base token for price
-        farms.map((farm) => (farm.platform === "Dodo" || farm.platform === "Stargate" ? farm.token1 : farm.lp_address))
+        getLpAddressForFarmsPrice(farms)
     );
     const { apys, isLoading: isLoadingApys } = useFarmApys();
 
