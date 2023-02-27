@@ -53,8 +53,6 @@ export const approveErc20 = async (
 
 export const getLpPrice = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
     try {
-        if (ethers.constants.AddressZero === lpAddress) return 0;
-
         let price = await getPrice(lpAddress, chainId);
         if (price !== 0) return price;
 

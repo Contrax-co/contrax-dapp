@@ -51,6 +51,7 @@ export const useTokens = () => {
 
     const { formattedBalances, refetch, isLoading: isLoadingBalances } = useBalances(tokenAddresses);
 
+    console.log("prices", prices);
     useEffect(() => {
         const tokens: Token[] = tokenAddresses.map(({ address, decimals }) => {
             const farm = farms.find(
