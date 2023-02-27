@@ -10,7 +10,6 @@ import useUserTokens from "src/hooks/useUserTokens";
 function Home() {
     const { lightMode } = useApp();
     const [open, setOpen] = useState(false);
-    useUserTokens();
     return (
         <div className={`page ${lightMode && "page--light"}`}>
             <div className="ac_page">
