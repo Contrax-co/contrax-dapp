@@ -12,7 +12,7 @@ import useFarms from "./useFarms";
  * @param farm[]
  * @returns apy
  */
-export const useFarmApys = () => {
+export const useFarmApys = (farmIdOrLpAddress?: number | string) => {
     const { farms } = useFarms();
     const { NETWORK_NAME, CHAIN_ID } = useConstants();
     const { provider, currentWallet } = useWallet();
@@ -35,16 +35,43 @@ export const useFarmApys = () => {
     const resulting = useMemo(() => {
         const obj: { [key: string]: Apys } = {};
         farms.forEach((farm, index) => {
-            obj[farm.lp_address] = results[index].data!;
-            obj[farm.id] = results[index].data!;
+            // if we get error while fetching any apy, assign 0 values
+            if (results[index].status === "success") {
+                obj[farm.lp_address] = results[index].data!;
+                obj[farm.id] = results[index].data!;
+            } else {
+                obj[farm.lp_address] = {
+                    apy: 0,
+                    compounding: 0,
+                    feeApr: 0,
+                    rewardsApr: 0,
+                };
+                obj[farm.id] = {
+                    apy: 0,
+                    compounding: 0,
+                    feeApr: 0,
+                    rewardsApr: 0,
+                };
+            }
         });
         return obj;
     }, [farms, results]);
-    const apys = useMemo(() => resulting, [JSON.stringify(resulting)]);
+
+    const allFarmApys = useMemo(() => resulting, [JSON.stringify(resulting)]);
 
     const isLoading = useMemo(() => results.some((result) => result.isLoading || result.isPlaceholderData), [results]);
 
     const isFetching = useMemo(() => results.some((result) => result.isFetching), [results]);
 
-    return { apys, isLoading, isFetching };
+    const farmApys = useMemo((): Apys => {
+        let _apys = {
+            apy: farmIdOrLpAddress ? allFarmApys?.[farmIdOrLpAddress]?.apy ?? 0 : 0,
+            compounding: farmIdOrLpAddress ? allFarmApys?.[farmIdOrLpAddress]?.compounding ?? 0 : 0,
+            feeApr: farmIdOrLpAddress ? allFarmApys?.[farmIdOrLpAddress]?.feeApr ?? 0 : 0,
+            rewardsApr: farmIdOrLpAddress ? allFarmApys?.[farmIdOrLpAddress]?.rewardsApr ?? 0 : 0,
+        };
+        return _apys;
+    }, [farmIdOrLpAddress, allFarmApys]);
+
+    return { farmApys, allFarmApys, isLoading, isFetching };
 };

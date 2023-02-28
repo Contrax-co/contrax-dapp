@@ -12,7 +12,7 @@ export const useVaults = (): { vaults: Vault[]; isLoading: boolean } => {
     const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens(
         getLpAddressForFarmsPrice(farms)
     );
-    const { apys, isLoading: isLoadingApys } = useFarmApys();
+    const { allFarmApys, isLoading: isLoadingApys } = useFarmApys();
     const vaults = useMemo(() => {
         return farms
             .map((farm) => {
@@ -21,11 +21,11 @@ export const useVaults = (): { vaults: Vault[]; isLoading: boolean } => {
                     ...farm,
                     userVaultBalance: usersVaultBalances[farm.vault_addr],
                     priceOfSingleToken: priceOfSingleToken[lpAddress] || (farm.stableCoin ? 1 : 0),
-                    apys: apys[farm.lp_address],
+                    apys: allFarmApys[farm.lp_address],
                 };
             })
             .filter((farm) => farm.userVaultBalance * farm.priceOfSingleToken >= 0.01);
-    }, [apys, usersVaultBalances, priceOfSingleToken]);
+    }, [allFarmApys, usersVaultBalances, priceOfSingleToken]);
 
     return {
         vaults,

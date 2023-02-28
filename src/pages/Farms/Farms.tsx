@@ -23,18 +23,18 @@ function Farms() {
     const [tab, setTab] = useState(1);
     const { networkId, currentWallet, provider, balanceBigNumber, balance } = useWallet();
     const { NETWORK_NAME } = useConstants();
-    const { apys } = useFarmApys();
-    const queriesData = useMemo(
-        () =>
-            farms
-                .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
-                .map((item) => ({
-                    queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
-                    queryFn: () => farmFunctions[item.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
-                    enabled: !!currentWallet && !!provider && !!item && !!balance,
-                })),
-        [farms, tab]
-    );
+    const { allFarmApys } = useFarmApys();
+    // const queriesData = useMemo(
+    //     () =>
+    //         farms
+    //             .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
+    //             .map((item) => ({
+    //                 queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
+    //                 queryFn: () => farmFunctions[item.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
+    //                 enabled: !!currentWallet && !!provider && !!item && !!balance,
+    //             })),
+    //     [farms, tab]
+    // );
     const queries = useQueries({
         queries: farms
             .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
@@ -44,7 +44,6 @@ function Farms() {
                 enabled: !!currentWallet && !!provider && !!item && !!balance,
             })),
     });
-    console.log(queries);
 
     const normalFarmIds = useMemo(
         () => farms.filter((item) => item.token_type === "Token").map((item) => item.id),
@@ -71,12 +70,11 @@ function Farms() {
 
     useEffect(() => {
         if (sortedBuy) {
-            console.log("handling", sortedBuy);
             handleSort(sortedBuy);
         } else {
             setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
         }
-    }, [tab, sortedBuy, apys, normalFarms, advancedFarms, decOrder]);
+    }, [tab, sortedBuy, allFarmApys, normalFarms, advancedFarms, decOrder]);
 
     useEffect(() => {
         setSortedBuy(undefined);
@@ -94,9 +92,9 @@ function Farms() {
                     ? 1
                     : 0
                 : column === FarmTableColumns.APY
-                ? a.data?.ID && b.data?.ID && apys[a.data.ID].apy < apys[b.data.ID].apy
+                ? a.data?.ID && b.data?.ID && allFarmApys[a.data.ID].apy < allFarmApys[b.data.ID].apy
                     ? -1
-                    : a.data?.ID && b.data?.ID && apys[a.data.ID].apy > apys[b.data.ID].apy
+                    : a.data?.ID && b.data?.ID && allFarmApys[a.data.ID].apy > allFarmApys[b.data.ID].apy
                     ? 1
                     : 0
                 : 0);
@@ -121,7 +119,6 @@ function Farms() {
         //     setSortedBuy(column);
         // }
     };
-    console.log(advancedFarms);
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
