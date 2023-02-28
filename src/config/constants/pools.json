@@ -2,6 +2,7 @@
   {
     "id": 15,
     "originPlatform": "SwapFish",
+    "source":"https://swapfish.fi/farms",
     "token_type": "Token",
     "name": "ETH",
     "pool_id": 2,
@@ -30,6 +31,7 @@
   {
     "id": 14,
     "originPlatform": "SwapFish",
+    "source":"https://swapfish.fi/farms",
     "token_type": "LP Token",
     "name": "WETH-WBTC",
     "pool_id": 3,
@@ -60,6 +62,7 @@
   {
     "id": 13,
     "originPlatform": "SwapFish",
+    "source":"https://swapfish.fi/farms",
     "token_type": "LP Token",
     "pool_id": 23,
     "name": "USDC-AgEur",
@@ -90,6 +93,7 @@
   {
     "id": 12,
     "originPlatform": "SwapFish",
+    "source":"https://swapfish.fi/farms",
     "token_type": "LP Token",
     "name": "USDC-TUSD",
     "pool_id": 35,
@@ -120,6 +124,7 @@
   {
     "id": 11,
     "originPlatform": "SwapFish",
+    "source":"https://swapfish.fi/farms",
     "token_type": "LP Token",
     "name": "USDC-USX",
     "name1": "USDC",
@@ -151,6 +156,7 @@
   {
     "id": 10,
     "originPlatform": "Sushiswap",
+    "source":"https://app.sushi.com/farm?chainId=42161",
     "token_type": "LP Token",
     "name": "WETH-MAGIC",
     "name1": "WETH",
@@ -183,6 +189,7 @@
     "name1": "WETH",
     "name2": "PLS",
     "originPlatform": "Sushiswap",
+    "source":"https://app.sushi.com/farm?chainId=42161",
     "platform": "Plutus",
     "platform_alt": "Plutus logo",
     "total_apy": 33.2,
@@ -210,6 +217,7 @@
     "id": 7,
     "token_type": "Token",
     "originPlatform": "Dodo",
+    "source":"https://app.dodoex.io/earn/add-liquidity?network=arbitrum",
     "stableCoin": true,
     "name": "USDT",
     "name1": "USDT",
@@ -238,6 +246,7 @@
     "token_type": "Token",
     "stableCoin": true,
     "originPlatform": "Dodo",
+    "source":"https://app.dodoex.io/earn/add-liquidity?network=arbitrum",
     "name": "USDC",
     "name1": "USDC",
     "platform": "Dodo",
@@ -263,6 +272,7 @@
     "id": 5,
     "token_type": "Token",
     "originPlatform": "GMX",
+    "source": "https://app.gmx.io/#/earn",
     "name": "GMX",
     "name1": "GMX",
     "platform": "Gmx",
@@ -289,6 +299,7 @@
   {
     "id": 1,
     "originPlatform": "Sushiswap",
+    "source":"https://app.sushi.com/farm?chainId=42161",
     "token_type": "LP Token",
     "name": "WETH-DAI",
     "name1": "WETH",
@@ -317,6 +328,7 @@
   {
     "id": 2,
     "originPlatform": "Sushiswap",
+    "source":"https://app.sushi.com/farm?chainId=42161",
     "token_type": "LP Token",
     "name": "WETH-USDC",
     "name1": "WETH",
@@ -346,6 +358,7 @@
   {
     "id": 3,
     "originPlatform": "Sushiswap",
+    "source":"https://app.sushi.com/farm?chainId=42161",
     "token_type": "LP Token",
     "name": "WETH-USDT",
     "name1": "WETH",
@@ -375,6 +388,7 @@
   {
     "id": 4,
     "originPlatform": "Sushiswap",
+    "source":"https://app.sushi.com/farm?chainId=42161",
     "token_type": "LP Token",
     "name": "WETH-WBTC",
     "name1": "WETH",
@@ -405,6 +419,7 @@
     "token_type": "Token",
     "name": "FRAX",
     "originPlatform": "Frax",
+    "source":"https://app.frax.finance/staking/fraxswap-v1-frax-iq-v3",
     "name1": "FRAX",
     "stableCoin": true,
     "platform": "Stargate",
