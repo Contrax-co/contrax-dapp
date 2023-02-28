@@ -187,7 +187,9 @@ const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [transactionType, setTransactionType] = useState<FarmTransactionType>(FarmTransactionType.Deposit);
     const [showMoreDetail, setShowMoreDetail] = useState(false);
-    const [shouldUseLp, setShouldUseLp] = useState(farm.token_type === "LP Token" ? false : true);
+    const [shouldUseLp, setShouldUseLp] = useState(
+        farm.token_type === "LP Token" || farm.name === "ETH" ? false : true
+    );
 
     return (
         <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>

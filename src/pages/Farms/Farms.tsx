@@ -44,7 +44,6 @@ function Farms() {
                 enabled: !!currentWallet && !!provider && !!item && !!balance,
             })),
     });
-    console.log(queries);
 
     const normalFarmIds = useMemo(
         () => farms.filter((item) => item.token_type === "Token").map((item) => item.id),
@@ -71,7 +70,6 @@ function Farms() {
 
     useEffect(() => {
         if (sortedBuy) {
-            console.log("handling", sortedBuy);
             handleSort(sortedBuy);
         } else {
             setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
@@ -121,7 +119,6 @@ function Farms() {
         //     setSortedBuy(column);
         // }
     };
-    console.log(advancedFarms);
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
