@@ -14,6 +14,7 @@ import { useSigner, useWebSocketProvider } from "wagmi";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
 import useFarms from "src/hooks/farms/useFarms";
 import { useSearchParams } from "react-router-dom";
+import { getTokenListForUniswap } from "src/utils";
 
 interface IProps {}
 
@@ -65,38 +66,7 @@ const Exchange: React.FC<IProps> = () => {
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
 
     const { farms } = useFarms();
-    const tokenList: TokenInfo[] = React.useMemo(
-        () =>
-            farms
-                .map((farm) => {
-                    const obj: TokenInfo = {
-                        address: farm.token1,
-                        chainId: 42161,
-                        decimals: farm.decimals1 || farm.decimals,
-                        name: farm.name.split("-")[0],
-                        symbol: farm.name.split("-")[0],
-                    };
-                    return obj;
-                })
-                .concat(
-                    // @ts-ignore
-                    farms
-                        .map((farm) => {
-                            if (farm.token2) {
-                                const obj: TokenInfo = {
-                                    address: farm.token2,
-                                    chainId: 42161,
-                                    decimals: farm.decimals2 || farm.decimals,
-                                    name: farm.name.split("-")[1],
-                                    symbol: farm.name.split("-")[1],
-                                };
-                                return obj;
-                            }
-                        })
-                        .filter((_) => !!_)
-                ),
-        [farms]
-    );
+    const tokenList: TokenInfo[] = React.useMemo(() => getTokenListForUniswap(farms), [farms]);
 
     React.useEffect(() => {
         if (params.get("tab") === "bridge") setTab(Tab.Bridge);
