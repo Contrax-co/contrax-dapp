@@ -23,7 +23,11 @@ interface Props {
 const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm, isLoading }) => {
     const { lightMode } = useApp();
     const [dropDown, setDropDown] = useState(false);
-    const { userVaultBalance: userVaultBal, priceOfSingleToken, apys } = farm;
+    const {
+        userVaultBalance: userVaultBal,
+        priceOfSingleToken,
+        apys = { compounding: 0, feeApr: 0, rewardsApr: 0, apy: 0 },
+    } = farm;
     const { compounding, feeApr, rewardsApr, apy } = apys;
     const key = uuid();
 
@@ -173,10 +177,7 @@ const DropDownView: React.FC<{ farm: FarmDetails }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [transactionType, setTransactionType] = useState<FarmTransactionType>(FarmTransactionType.Deposit);
     const [showMoreDetail, setShowMoreDetail] = useState(false);
-    // temp fix for eth-wsteth
-    const [shouldUseLp, setShouldUseLp] = useState(
-        farm.token_type === "LP Token" || farm.name === "ETH" ? false : true
-    );
+    const [shouldUseLp, setShouldUseLp] = useState(farm.token_type === "LP Token" ? false : true);
 
     return (
         <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>
