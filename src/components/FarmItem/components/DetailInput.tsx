@@ -15,17 +15,17 @@ import farmFunctions from "src/api/pools";
 import { FARM_DATA } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
+import useFarmDetails from "src/hooks/farms/useFarmDetails";
 
 interface Props {
-    farm: FarmDetails;
+    farm: Farm;
     shouldUseLp: boolean;
     type: FarmTransactionType;
 }
 
 const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { lightMode } = useApp();
-    const { balance: ethUserBal, balanceBigNumber, provider, currentWallet } = useWallet();
-    const { NETWORK_NAME } = useConstants();
+    const { balance: ethUserBal } = useWallet();
     const { price: ethPrice } = useEthPrice();
     const [amount, setAmount] = React.useState("");
     const [showInUsd, setShowInUsd] = React.useState(true);
@@ -34,19 +34,8 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { isLoading: isZappingOut, zapOutAsync } = useZapOut(farm);
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
     const [max, setMax] = React.useState(false);
-    const { priceOfSingleToken } = farm;
-
-    const {
-        data: farmData,
-        refetch,
-        isLoading,
-    } = useQuery(
-        FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
-        () => farmFunctions[farm.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
-        {
-            enabled: !!currentWallet && !!provider && !!farm,
-        }
-    );
+    const { farmData, isLoading } = useFarmDetails(farm);
+    const priceOfSingleToken = farmData?.TOKEN_PRICE || 0;
 
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
@@ -154,11 +143,6 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     React.useEffect(() => {
         if (max) setAmount(maxBalance.toString());
     }, [max, maxBalance]);
-
-    // Use to reload farm balances data on eth balance change
-    React.useEffect(() => {
-        refetch();
-    }, [ethUserBal]);
 
     return (
         <div className={`${styles.container} ${lightMode && styles.container_light}`}>

@@ -7,6 +7,7 @@ import { toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
+import { getApy } from "../apy";
 
 const farm = pools.find((farm) => farm.id === 2) as Farm;
 let farmData: FarmData | undefined = undefined;
@@ -21,6 +22,7 @@ export const getFarmData = async (
     const lpPrice = await getPrice(farm.lp_address, defaultChainId);
     const lpBalance = await getBalance(farm.lp_address, currentWallet, provider);
     const vaultBalance = await getBalance(farm.vault_addr, currentWallet, provider);
+
     farmData = {
         Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
         Max_Zap_Withdraw_Balance: ((Number(toEth(vaultBalance)) * lpPrice) / ethPrice).toString(),
@@ -39,6 +41,7 @@ export const getFarmData = async (
         TOKEN_PRICE: lpPrice,
         ZAP_TOKEN_PRICE: ethPrice,
         Zap_Enabled: true,
+        ID: farm.id,
     };
     return farmData;
 };

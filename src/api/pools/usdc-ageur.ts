@@ -40,6 +40,7 @@ export const getFarmData = async (
         TOKEN_PRICE: lpPrice,
         ZAP_TOKEN_PRICE: ethPrice,
         Zap_Enabled: true,
+        ID: farm.id,
     };
     return farmData;
 };
@@ -312,4 +313,3 @@ export const zapOut = async ({
     }
     cb && cb();
 };
-

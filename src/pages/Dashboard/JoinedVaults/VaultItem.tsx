@@ -1,10 +1,10 @@
 import useApp from "src/hooks/useApp";
-import { FarmDetails } from "src/types";
+import { Vault } from "src/types";
 import { floorToFixed } from "src/utils/common";
 import "./VaultItem.css";
 
 interface Props {
-    vault: FarmDetails;
+    vault: Vault;
 }
 
 const VaultItem: React.FC<Props> = ({ vault }) => {

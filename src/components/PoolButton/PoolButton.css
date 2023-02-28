@@ -10,17 +10,18 @@
   align-items: center;
   justify-content: center;
 }
+
 .pool-button-2 {
-    width: 150px;
-    padding: 10px;
+  width: 150px;
+  padding: 10px;
   color: white;
   background-color: #000c18;
-    font-weight: bold;
-    margin-bottom: 7px;
-    font-size: 16px;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
+  font-weight: bold;
+  margin-bottom: 7px;
+  font-size: 16px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .button--light {
@@ -32,9 +33,10 @@
   color: white;
   background-color: #000c18;
 }
+
 .button--selected-2 {
-  color: #009aff;
-    background-color: #012243;
+  color: var(--color_primary);
+  background-color: #012243;
 }
 
 .button--selected--light {
@@ -42,16 +44,19 @@
   background-color: #7cc4eb;
 }
 
-.pool-button-1:first-child, .pool-button-2:first-child {
+.pool-button-1:first-child,
+.pool-button-2:first-child {
   border-top-left-radius: 20px;
   border-bottom-left-radius: 20px;
 }
 
-.pool-button-1:last-child, .pool-button-2:last-child {
+.pool-button-1:last-child,
+.pool-button-2:last-child {
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
 }
 
-.pool-button-1:hover, .pool-button-2:hover {
+.pool-button-1:hover,
+.pool-button-2:hover {
   cursor: pointer;
 }

@@ -4,7 +4,7 @@ import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import * as ethers from "ethers";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
-import { FARM_ZAP_OUT } from "src/config/constants/query";
+import { FARM_DATA, FARM_ZAP_OUT } from "src/config/constants/query";
 import useNotify from "src/hooks/useNotify";
 import useBalances from "../useBalances";
 import useFarmsBalances from "./useFarmsBalances";
@@ -15,21 +15,16 @@ import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
 
 const useZapOut = (farm: Farm) => {
-    const { signer, currentWallet, networkId: chainId } = useWallet();
+    const { signer, currentWallet, networkId: chainId, balance } = useWallet();
     const { NETWORK_NAME } = useConstants();
-    const { refetch: refetchVaultBalance } = useBalances([{ address: farm.vault_addr, decimals: farm.decimals }]);
-
-    const { refetch: refetchVaultBalances } = useFarmsBalances();
-
-    const { refetch: refetchVaultSupplies } = useFarmsTotalSupply();
 
     const _zapOut = async ({ withdrawAmt, max }: { withdrawAmt: number; max?: boolean }) => {
         const cb = async () => {
-            refetchVaultBalance();
-            refetchVaultBalances();
-            refetchVaultSupplies();
             // @ts-ignore
-            await queryClient.refetchQueries(["farm", "data"], { active: true });
+            await queryClient.refetchQueries({
+                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
+                type: "active",
+            });
         };
         await farmFunctions[farm.id].zapOut({ zapAmount: withdrawAmt, currentWallet, signer, chainId, max, cb });
     };
