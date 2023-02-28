@@ -74,7 +74,7 @@
 }
 
 .dashboard_copy {
-  height: 20px;
+  height: 5px;
   vertical-align: top;
   display: flex;
   align-items: center;
@@ -115,7 +115,7 @@
 
 .dashboard_section {
   padding: 30px;
-  padding-top: 0px;
+  padding-top: 20px;
 }
 
 @media (max-height: 600px) {
