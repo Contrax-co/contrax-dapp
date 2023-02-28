@@ -3,14 +3,17 @@ import { RiArrowUpSLine } from "react-icons/ri";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
-import { FarmDetails } from "src/types";
+import { Farm, FarmDetails } from "src/types";
 import "./Details.css";
 import Toggle from "src/components/FarmItem/Toggle";
 import { getLpAddressForFarmsPrice } from "src/utils/common";
 import { ethers } from "ethers";
+import useTotalSupplies from "src/hooks/useTotalSupplies";
+import useFarmsTotalSupply from "src/hooks/farms/useFarmsTotalSupply";
+import useFarmDetails from "src/hooks/farms/useFarmDetails";
 
 interface Props {
-    farm: FarmDetails;
+    farm: Farm;
     onClick: () => void;
     shouldUseLp: boolean;
     setShouldUseLp: (shouldUseLp: boolean | ((prev: boolean) => boolean)) => void;
@@ -19,6 +22,18 @@ interface Props {
 const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props }) => {
     const { lightMode } = useApp();
     const lpAddress = getLpAddressForFarmsPrice([farm])[0];
+    const { farmData } = useFarmDetails(farm);
+    const { formattedSupplies } = useTotalSupplies([
+        {
+            address: farm.vault_addr,
+            decimals: farm.vault_decimals || 18,
+        },
+        {
+            address: farm.lp_address,
+            decimals: farm.decimals,
+        },
+    ]);
+
     const {
         prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
     } = usePriceOfTokens([farm.token1, farm.token2 || ethers.constants.AddressZero, lpAddress]);
@@ -143,7 +158,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                         Total Value Locked
                     </p>
 
-                    {farm.totalPlatformBalance * farm.priceOfSingleToken ? (
+                    {formattedSupplies[farm.lp_address] * lpPrice ? (
                         <div className={`detailed_header`}>
                             <p>Pool Liquidity</p>
                             <div className={`unstaked_details`}>
@@ -157,12 +172,12 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                                     ) : null}
 
                                     <p className={`detailed_unstaked_pairs`}>
-                                        {farm.totalPlatformBalance.toFixed(3)} {farm.name}
+                                        {formattedSupplies[farm.lp_address].toFixed(3)} {farm.name}
                                     </p>
                                 </div>
 
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {(farm.totalPlatformBalance * farm.priceOfSingleToken).toLocaleString("en-US", {
+                                    {(formattedSupplies[farm.lp_address] * lpPrice).toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
                                         maximumFractionDigits: 0,
@@ -172,7 +187,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                         </div>
                     ) : null}
 
-                    {farm.totalVaultBalance * farm.priceOfSingleToken ? (
+                    {formattedSupplies[farm.vault_addr] * lpPrice ? (
                         <div className={`detailed_header`}>
                             <p>Vault Liquidity</p>
                             <div className={`unstaked_details`}>
@@ -186,11 +201,11 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                                     ) : null}
 
                                     <p className={`detailed_unstaked_pairs`}>
-                                        {farm.totalVaultBalance.toFixed(3)} {farm.name}
+                                        {formattedSupplies[farm.vault_addr].toFixed(3)} {farm.name}
                                     </p>
                                 </div>
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {(farm.totalVaultBalance * farm.priceOfSingleToken).toLocaleString("en-US", {
+                                    {(formattedSupplies[farm.vault_addr] * lpPrice).toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
                                         maximumFractionDigits: 0,
@@ -200,12 +215,17 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                         </div>
                     ) : null}
 
-                    {farm.userVaultBalance / farm.totalVaultBalance ? (
+                    {Number(farmData?.Max_Token_Withdraw_Balance) / formattedSupplies[farm.vault_addr] ? (
                         <div className={`detailed_header`}>
                             <p>Share</p>
                             <div className={`unstaked_details`}>
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {((farm.userVaultBalance / farm.totalVaultBalance) * 100 || 0).toFixed(2)}%
+                                    {(
+                                        (Number(farmData?.Max_Token_Withdraw_Balance) /
+                                            formattedSupplies[farm.vault_addr]) *
+                                            100 || 0
+                                    ).toFixed(2)}
+                                    %
                                 </p>
                                 {/* <div className={`unstaked_details_header`}>
                                     {farm.alt1 ? (

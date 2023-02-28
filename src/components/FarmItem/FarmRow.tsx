@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import "./FarmRow.css";
 import PoolButton from "src/components/PoolButton/PoolButton";
@@ -7,63 +7,76 @@ import { Tooltip } from "react-tooltip";
 import Details from "src/components/FarmItem/Details";
 import useApp from "src/hooks/useApp";
 import uuid from "react-uuid";
-import { FarmDetails } from "src/types";
+import { Apys, Farm, FarmData, FarmDetails } from "src/types";
 import DetailInput from "./components/DetailInput";
 import { FarmTransactionType } from "src/types/enums";
 import { floorToFixed } from "src/utils/common";
 import { Skeleton } from "../Skeleton/Skeleton";
+import useFarmDetails from "src/hooks/farms/useFarmDetails";
+import { useFarmApys } from "src/hooks/farms/useFarmApy";
 
 interface Props {
-    farm: FarmDetails;
+    farm: Farm;
+    farmData?: FarmData;
     openedFarm: number | undefined;
     setOpenedFarm: Function;
-    isLoading: boolean;
+    hideData?: boolean;
+    isFarmLoading: boolean;
 }
 
-const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm, isLoading }) => {
+const FarmRow: React.FC<Props> = ({ farm, farmData, openedFarm, setOpenedFarm, isFarmLoading, hideData }) => {
     const { lightMode } = useApp();
     const [dropDown, setDropDown] = useState(false);
-    const { userVaultBalance: userVaultBal, priceOfSingleToken, apys } = farm;
-    const { compounding, feeApr, rewardsApr, apy } = apys;
+    const { apys: allApys, isLoading: isApyLoading } = useFarmApys();
+    const isLoading = isFarmLoading || isApyLoading;
     const key = uuid();
+    const { apy, compounding, feeApr, rewardsApr } = useMemo(
+        (): Apys => ({
+            apy: farm?.id ? allApys?.[farm.id]?.apy : 0,
+            compounding: farm?.id ? allApys?.[farm.id]?.compounding : 0,
+            feeApr: farm?.id ? allApys?.[farm.id]?.feeApr : 0,
+            rewardsApr: farm?.id ? allApys?.[farm.id]?.rewardsApr : 0,
+        }),
+        [farm?.id, allApys]
+    );
 
     const handleClick = () => {
         setDropDown((prev) => !prev);
-        setOpenedFarm((id: number | undefined) => (id === farm.id ? undefined : farm.id));
+        if (farm) setOpenedFarm((id: number | undefined) => (id === farm.id ? undefined : farm.id));
     };
 
     useEffect(() => {
-        if (openedFarm !== farm.id && dropDown) setDropDown(false);
-    }, [openedFarm, dropDown, farm.id]);
+        if (openedFarm !== farm?.id && dropDown) setDropDown(false);
+    }, [openedFarm, dropDown, farm?.id]);
 
-    return isLoading ? (
-        <FarmRowSkeleton farm={farm} lightMode={lightMode} />
+    return isLoading || hideData ? (
+        <FarmRowSkeleton farm={farm} lightMode={lightMode} isFarmLoading={isFarmLoading} hideData={hideData} />
     ) : (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
-            <div className="farm_table_row" key={farm.id} onClick={handleClick}>
+            <div className="farm_table_row" key={farm?.id} onClick={handleClick}>
                 {/* Asset Name and Logo */}
 
                 <div className="title_container">
                     <div className="pair">
-                        {farm.logo1 ? (
+                        {farm?.logo1 ? (
                             <img
-                                alt={farm.alt1}
+                                alt={farm?.alt1}
                                 className={`logofirst ${lightMode && "logofirst--light"}`}
-                                src={farm.logo1}
+                                src={farm?.logo1}
                             />
                         ) : null}
 
-                        {farm.logo2 ? (
-                            <img alt={farm.alt2} className={`logo ${lightMode && "logo--light"}`} src={farm.logo2} />
+                        {farm?.logo2 ? (
+                            <img alt={farm?.alt2} className={`logo ${lightMode && "logo--light"}`} src={farm?.logo2} />
                         ) : null}
                     </div>
 
                     <div>
                         <div className="pool_title">
-                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>{farm.name}</p>
+                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>{farm?.name}</p>
                             <div className="rewards_div">
-                                <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm.platform}</p>
-                                <img alt={farm.platform_alt} className="rewards_image" src={farm.platform_logo} />
+                                <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm?.platform}</p>
+                                <img alt={farm?.platform_alt} className="rewards_image" src={farm?.platform_logo} />
                             </div>
                         </div>
                     </div>
@@ -102,17 +115,17 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm, isLoading }
                 {/* How much the user has deposited */}
 
                 <div className={`container ${lightMode && "container--light"} desktop`}>
-                    {userVaultBal * priceOfSingleToken < 0.01 ? null : (
+                    {farmData && Number(farmData.Max_Token_Withdraw_Balance_Dollar) < 0.01 ? null : (
                         <>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {(userVaultBal * priceOfSingleToken).toLocaleString("en-US", {
+                                {Number(farmData?.Max_Token_Withdraw_Balance_Dollar).toLocaleString("en-US", {
                                     style: "currency",
                                     currency: "USD",
                                 })}
                             </p>
                             <p className={`deposited ${lightMode && "deposited--light"}`}>
-                                {userVaultBal.toFixed(10)}
-                                &nbsp;{farm.name}
+                                {Number(farmData?.Max_Token_Withdraw_Balance).toFixed(10)}
+                                &nbsp;{farm?.name}
                             </p>
                         </>
                     )}
@@ -138,11 +151,11 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm, isLoading }
 
                     {/* How much the user has deposited */}
 
-                    {userVaultBal * priceOfSingleToken < 0.01 ? null : (
+                    {farmData && Number(farmData.Max_Token_Withdraw_Balance_Dollar) < 0.01 ? null : (
                         <div className={`container ${lightMode && "container--light"} deposite`}>
                             <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>Deposited</p>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {(userVaultBal * priceOfSingleToken).toLocaleString("en-US", {
+                                {Number(farmData?.Max_Token_Withdraw_Balance_Dollar).toLocaleString("en-US", {
                                     style: "currency",
                                     currency: "USD",
                                 })}
@@ -162,14 +175,14 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm, isLoading }
                     {!dropDown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
                 </div>
             </div>
-            {dropDown && <DropDownView farm={farm} />}
+            {dropDown && farm && <DropDownView farm={farm} />}
         </div>
     );
 };
 
 export default FarmRow;
 
-const DropDownView: React.FC<{ farm: FarmDetails }> = ({ farm }) => {
+const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [transactionType, setTransactionType] = useState<FarmTransactionType>(FarmTransactionType.Deposit);
     const [showMoreDetail, setShowMoreDetail] = useState(false);
@@ -217,79 +230,140 @@ const DropDownView: React.FC<{ farm: FarmDetails }> = ({ farm }) => {
     );
 };
 
-const FarmRowSkeleton = ({ farm, lightMode }: { farm: FarmDetails; lightMode: boolean }) => (
-    <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
-        <div className="farm_table_row">
-            {/* Asset Name and Logo */}
+const FarmRowSkeleton = ({
+    farm,
+    lightMode,
+    isFarmLoading,
+    hideData,
+}: {
+    farm: Farm;
+    lightMode: boolean;
+    isFarmLoading: boolean;
+    hideData?: boolean;
+}) => {
+    const { apys: allApys, isLoading: isApyLoading } = useFarmApys();
+    const key = uuid();
+    const { apy, compounding, feeApr, rewardsApr } = useMemo(
+        (): Apys => ({
+            apy: farm?.id ? allApys?.[farm.id]?.apy : 0,
+            compounding: farm?.id ? allApys?.[farm.id]?.compounding : 0,
+            feeApr: farm?.id ? allApys?.[farm.id]?.feeApr : 0,
+            rewardsApr: farm?.id ? allApys?.[farm.id]?.rewardsApr : 0,
+        }),
+        [farm?.id, allApys]
+    );
+    return (
+        <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
+            <div className="farm_table_row">
+                {/* Asset Name and Logo */}
 
-            <div className="title_container">
-                <div className="pair">
-                    {farm.logo1 ? (
-                        <img
-                            alt={farm.alt1}
-                            className={`logofirst ${lightMode && "logofirst--light"}`}
-                            src={farm.logo1}
-                        />
-                    ) : null}
+                <div className="title_container">
+                    <div className="pair">
+                        {farm.logo1 ? (
+                            <img
+                                alt={farm.alt1}
+                                className={`logofirst ${lightMode && "logofirst--light"}`}
+                                src={farm.logo1}
+                            />
+                        ) : null}
 
-                    {farm.logo2 ? (
-                        <img alt={farm.alt2} className={`logo ${lightMode && "logo--light"}`} src={farm.logo2} />
-                    ) : null}
-                </div>
+                        {farm.logo2 ? (
+                            <img alt={farm.alt2} className={`logo ${lightMode && "logo--light"}`} src={farm.logo2} />
+                        ) : null}
+                    </div>
 
-                <div>
-                    <div className="pool_title">
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>{farm.name}</p>
-                        <div className="rewards_div">
-                            <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm.platform}</p>
-                            <img alt={farm.platform_alt} className="rewards_image" src={farm.platform_logo} />
+                    <div>
+                        <div className="pool_title">
+                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>{farm.name}</p>
+                            <div className="rewards_div">
+                                <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm.platform}</p>
+                                <img alt={farm.platform_alt} className="rewards_image" src={farm.platform_logo} />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* APY */}
-
-            <div className={`container1 ${lightMode && "container1--light"} desktop`}>
-                <Skeleton w={50} h={30} />
-            </div>
-
-            {/* How much the user has deposited */}
-            <div className={`container ${lightMode && "container--light"} desktop`}>
-                <Skeleton w={50} h={30} />
-            </div>
-
-            {/* How much the user has Earned */}
-
-            <div className={`container1 ${lightMode && "container1--light"} desktop`}>
-                <Skeleton w={50} h={30} />
-            </div>
-
-            {/* Mobile View */}
-
-            <div className={`mobile-view ${lightMode && "mobile-view--light"}`}>
                 {/* APY */}
-
-                <div className={`container1 ${lightMode && "container1--light"} apy`}>
-                    <Skeleton w={50} h={30} />
-                </div>
+                {isApyLoading ? (
+                    <div className={`container ${lightMode && "container--light"} desktop`}>
+                        <Skeleton w={50} h={30} />
+                    </div>
+                ) : (
+                    <div className={`container1 ${lightMode && "container1--light"} desktop`}>
+                        <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
+                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                {apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : floorToFixed(apy, 2).toString()}%
+                            </p>
+                            <a
+                                id={key}
+                                data-tooltip-html={`<p>
+                                            <b>Base APRs</b>
+                                        </p>
+                                        ${
+                                            Number(rewardsApr.toFixed(3))
+                                                ? `<p>LP Rewards: ${rewardsApr.toFixed(3)}%</p>`
+                                                : ``
+                                        }
+                                        ${Number(feeApr.toFixed(2)) ? `<p>Trading Fees: ${feeApr.toFixed(3)}%</p>` : ``}
+                                        ${
+                                            Number(compounding.toFixed(3))
+                                                ? `<p>Compounding: ${compounding.toFixed(3)}%</p>`
+                                                : ``
+                                        }`}
+                            >
+                                <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                            </a>
+                            <Tooltip anchorId={key} className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`} />
+                        </div>
+                    </div>
+                )}
 
                 {/* How much the user has deposited */}
-
-                <div className={`container ${lightMode && "container--light"} deposite`}>
-                    <Skeleton w={50} h={30} />
+                <div className={`container ${lightMode && "container--light"} desktop`}>
+                    {isFarmLoading && <Skeleton w={50} h={30} />}
                 </div>
 
                 {/* How much the user has Earned */}
 
-                <div className={`container1 ${lightMode && "container1--light"} earned`}>
-                    <Skeleton w={50} h={30} />
+                <div className={`container1 ${lightMode && "container1--light"} desktop`}>
+                    {isFarmLoading && <Skeleton w={50} h={30} />}
+                </div>
+
+                {/* Mobile View */}
+
+                <div className={`mobile-view ${lightMode && "mobile-view--light"}`}>
+                    {/* APY */}
+
+                    <div className={`container1 ${lightMode && "container1--light"} apy`}>
+                        {isApyLoading ? (
+                            <Skeleton w={50} h={30} />
+                        ) : (
+                            <div className={`container1 ${lightMode && "container1--light"} apy`}>
+                                <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>APY</p>
+                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                    {apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : floorToFixed(apy, 2).toString()}%
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* How much the user has deposited */}
+
+                    <div className={`container ${lightMode && "container--light"} deposite`}>
+                        {isFarmLoading && <Skeleton w={50} h={30} />}
+                    </div>
+
+                    {/* How much the user has Earned */}
+
+                    <div className={`container1 ${lightMode && "container1--light"} earned`}>
+                        {isFarmLoading && <Skeleton w={50} h={30} />}
+                    </div>
+                </div>
+
+                <div className={`dropdown ${lightMode && "dropdown--light"}`}>
+                    {isFarmLoading && <Skeleton w={20} h={20} />}
                 </div>
             </div>
-
-            <div className={`dropdown ${lightMode && "dropdown--light"}`}>
-                <Skeleton w={20} h={20} />
-            </div>
         </div>
-    </div>
-);
+    );
+};

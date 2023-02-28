@@ -58,6 +58,7 @@ export interface Farm {
     vault_abi: any;
     lp_abi: any;
     withdraw_decimals?: number;
+    vault_decimals?: number;
 }
 export interface FarmDetails extends Farm {
     userVaultBalance: number;
@@ -116,6 +117,10 @@ export interface CreateToken {
 }
 
 export interface FarmData {
+    /**
+     * Farm Id
+     */
+    ID: number;
     /**
      * When Zapping in deposit column the max amount in token
      */

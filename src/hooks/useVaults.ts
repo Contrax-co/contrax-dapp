@@ -1,11 +1,12 @@
 import { useMemo } from "react";
-import { useFarmDetails } from "./farms/useFarms";
+import { FarmDetails } from "src/types";
+import useFarmDetails from "./farms/useFarmDetails";
 
 export const useVaults = () => {
-    const { farmDetails, isLoading } = useFarmDetails();
-    const vaults = useMemo(
-        () => farmDetails.filter((farm) => farm.userVaultBalance * farm.priceOfSingleToken >= 0.01),
-        [farmDetails]
-    );
-    return { vaults, isLoading };
+    // const { farmData, isLoading } = useFarmDetails();
+    // const vaults = useMemo(
+    //     () => farmDetails.filter((farm) => farm.userVaultBalance * farm.priceOfSingleToken >= 0.01),
+    //     [farmDetails]
+    // );
+    return { vaults: [] as FarmDetails[], isLoading: false };
 };
