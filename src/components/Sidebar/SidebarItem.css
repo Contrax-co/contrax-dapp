@@ -27,7 +27,7 @@
 }
 
 .sideitems--selected>div {
-  color: #009aff;
+  color: var(--color_primary);
 }
 
 .sideitems--selected--light>div {

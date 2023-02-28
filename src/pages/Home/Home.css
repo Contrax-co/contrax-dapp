@@ -43,7 +43,7 @@
 }
 
 .rightside--light>p {
-  color: #009aff;
+  color: var(--color_primary);
 }
 
 .topbar {
