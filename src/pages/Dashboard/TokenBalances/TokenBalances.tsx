@@ -24,7 +24,7 @@ export const TokenBalances: FC<IProps> = (props) => {
             {!isLoading ? (
                 tokens ? (
                     tokens.map((token) =>
-                        Number(token.balance) > 0 ? (
+                        Number(token.usdBalance) > 0.01 ? (
                             <div
                                 key={token.address + token.network}
                                 className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}

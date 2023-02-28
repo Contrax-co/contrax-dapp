@@ -42,11 +42,12 @@ const FarmRow: React.FC<Props> = ({ farm, farmData, openedFarm, setOpenedFarm, i
 
     const handleClick = () => {
         setDropDown((prev) => !prev);
-        if (farm) setOpenedFarm((id: number | undefined) => (id === farm.id ? undefined : farm.id));
+        if (farm) setOpenedFarm(openedFarm === farm.id ? undefined : farm.id);
     };
 
     useEffect(() => {
         if (openedFarm !== farm?.id && dropDown) setDropDown(false);
+        // if(!dropDown && openedFarm === farm?.id) setOpenedFarm(undefined)
     }, [openedFarm, dropDown, farm?.id]);
 
     return isLoading || hideData ? (
@@ -186,10 +187,7 @@ const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [transactionType, setTransactionType] = useState<FarmTransactionType>(FarmTransactionType.Deposit);
     const [showMoreDetail, setShowMoreDetail] = useState(false);
-    // temp fix for eth-wsteth
-    const [shouldUseLp, setShouldUseLp] = useState(
-        farm.token_type === "LP Token" || farm.name === "ETH" ? false : true
-    );
+    const [shouldUseLp, setShouldUseLp] = useState(farm.token_type === "LP Token" ? false : true);
 
     return (
         <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>

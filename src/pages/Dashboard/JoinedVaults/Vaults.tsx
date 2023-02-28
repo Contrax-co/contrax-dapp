@@ -27,7 +27,7 @@ const Vaults: React.FC<Props> = () => {
                     ) : (
                         <EmptyComponent>
                             You haven't deposited in any of the farms.{" "}
-                            <Link to={"/farms"} style={{ color: "#009aff" }}>
+                            <Link to={"/farms"} style={{ color: lightMode ? "#61cddf" : "#009aff" }}>
                                 Go to Farms
                             </Link>
                         </EmptyComponent>
@@ -36,7 +36,7 @@ const Vaults: React.FC<Props> = () => {
                     <EmptyComponent>Change network to Arbitrum to view your joined Vaults</EmptyComponent>
                 )
             ) : (
-                <Skeleton w={"100%"} h={250} bg={lightMode ? "#ffffff" : undefined} bRadius={20} inverted={true} />
+                <Skeleton w={"100%"} h={250} bRadius={20} inverted={true} />
             )}
         </div>
     ) : (
