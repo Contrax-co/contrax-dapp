@@ -2,7 +2,7 @@ import "./Farms.css";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
 import FarmRow from "src/components/FarmItem/FarmRow";
-import { FarmData, FarmDetails } from "src/types";
+import { FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import { useEffect, useMemo, useState } from "react";
 import PoolButton from "src/components/PoolButton/PoolButton";
@@ -10,7 +10,7 @@ import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
-import { useQueries, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { FARM_DATA } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
 import farmFunctions from "src/api/pools";
@@ -64,7 +64,7 @@ function Farms() {
         } else {
             setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
         }
-    }, [tab, sortedBuy, apys, normalFarms, advancedFarms]);
+    }, [tab, sortedBuy, apys, normalFarms, advancedFarms, decOrder]);
 
     useEffect(() => {
         setSortedBuy(undefined);
@@ -82,31 +82,32 @@ function Farms() {
                     ? 1
                     : 0
                 : column === FarmTableColumns.APY
-                ? a.data?.ID && b.data?.ID && apys[a.data.ID] < apys[b.data.ID]
+                ? a.data?.ID && b.data?.ID && apys[a.data.ID].apy < apys[b.data.ID].apy
                     ? -1
-                    : a.data?.ID && b.data?.ID && apys[a.data.ID] > apys[b.data.ID]
+                    : a.data?.ID && b.data?.ID && apys[a.data.ID].apy > apys[b.data.ID].apy
                     ? 1
                     : 0
-                : farms.find((ele) => ele.id === a.data?.ID)!.name < farms.find((ele) => ele.id === b.data?.ID)!.name
-                ? -1
-                : farms.find((ele) => ele.id === a.data?.ID)!.name > farms.find((ele) => ele.id === b.data?.ID)!.name
-                ? 1
                 : 0);
+    // : farms.find((ele) => ele.id === a.data?.ID)!.name < farms.find((ele) => ele.id === b.data?.ID)!.name
+    // ? -1
+    // : farms.find((ele) => ele.id === a.data?.ID)!.name > farms.find((ele) => ele.id === b.data?.ID)!.name
+    // ? 1
 
     const handleSort = (column: FarmTableColumns) => {
-        if (sortedBuy === undefined) {
-            setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
-            setSortedBuy(column);
-            setDecOrder((prev) => !prev);
-            return;
-        }
-        if (column === sortedBuy) {
-            setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
-            setDecOrder((prev) => !prev);
-        } else {
-            setSortedFarms((prev) => prev?.sort(dynamicSort(column, !decOrder)));
-            setSortedBuy(column);
-        }
+        setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
+        // if (sortedBuy === undefined) {
+        //     setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
+        //     setSortedBuy(column);
+        //     setDecOrder((prev) => !prev);
+        //     return;
+        // }
+        // if (column === sortedBuy) {
+        //     setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
+        //     setDecOrder((prev) => !prev);
+        // } else {
+        //     setSortedFarms((prev) => prev?.sort(dynamicSort(column, !decOrder)));
+        //     setSortedBuy(column);
+        // }
     };
 
     return (
@@ -138,7 +139,12 @@ function Farms() {
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     {FarmTableColumns.Token}
                 </p>
-                <p onClick={() => setSortedBuy(FarmTableColumns.APY)}>
+                <p
+                    onClick={() => {
+                        setSortedBuy(FarmTableColumns.APY);
+                        setDecOrder((prev) => !prev);
+                    }}
+                >
                     <span>{FarmTableColumns.APY}</span>
                     {sortedBuy === FarmTableColumns.APY ? (
                         decOrder ? (
@@ -148,7 +154,13 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                <p onClick={() => setSortedBuy(FarmTableColumns.Deposited)} className={`header_deposite`}>
+                <p
+                    onClick={() => {
+                        setSortedBuy(FarmTableColumns.Deposited);
+                        setDecOrder((prev) => !prev);
+                    }}
+                    className={`header_deposite`}
+                >
                     <span>{FarmTableColumns.Deposited}</span>
                     {sortedBuy === FarmTableColumns.Deposited ? (
                         decOrder ? (
@@ -158,7 +170,13 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                <p onClick={() => setSortedBuy(FarmTableColumns.EARNED)} className={`header_earned`}>
+                <p
+                    onClick={() => {
+                        setSortedBuy(FarmTableColumns.EARNED);
+                        setDecOrder((prev) => !prev);
+                    }}
+                    className={`header_earned`}
+                >
                     <span>{FarmTableColumns.EARNED}</span>
                     {sortedBuy === FarmTableColumns.EARNED ? (
                         decOrder ? (
