@@ -25,13 +25,11 @@ function Farms() {
     const { NETWORK_NAME } = useConstants();
     const { apys } = useFarmApys();
     const queries = useQueries({
-        queries: farms
-            .filter((ele) => ele.token_type === "Token")
-            .map((item) => ({
-                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
-                queryFn: () => farmFunctions[item.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
-                enabled: !!currentWallet && !!provider && !!item && !!balance,
-            })),
+        queries: farms.map((item) => ({
+            queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
+            queryFn: () => farmFunctions[item.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
+            enabled: !!currentWallet && !!provider && !!item && !!balance,
+        })),
     });
 
     const normalFarmIds = useMemo(
@@ -56,10 +54,10 @@ function Farms() {
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
     const [openedFarm, setOpenedFarm] = useState<number | undefined>();
-    console.log(normalFarmIds, normalFarms, sortedFarms);
 
     useEffect(() => {
         if (sortedBuy) {
+            console.log("handling", sortedBuy);
             handleSort(sortedBuy);
         } else {
             setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
@@ -95,20 +93,23 @@ function Farms() {
 
     const handleSort = (column: FarmTableColumns) => {
         if (sortedBuy === undefined) {
-            setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
+            setSortedFarms((prev) => [...prev?.sort(dynamicSort(column, decOrder))!]);
             setSortedBuy(column);
             setDecOrder((prev) => !prev);
             return;
         }
         if (column === sortedBuy) {
-            setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
+            setSortedFarms((prev) => [...prev?.sort(dynamicSort(column, decOrder))!]);
             setDecOrder((prev) => !prev);
         } else {
-            setSortedFarms((prev) => prev?.sort(dynamicSort(column, !decOrder)));
+            setSortedFarms((prev) => [...prev?.sort(dynamicSort(column, !decOrder))!]);
             setSortedBuy(column);
         }
     };
-
+    console.log(
+        sortedFarms,
+        queries.some((ele) => ele.isFetching)
+    );
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
@@ -171,10 +172,10 @@ function Farms() {
                 <p></p>
             </div>
             {networkId === defaultChainId ? (
-                sortedFarms?.length! > 0 ? (
+                sortedFarms?.length! > 0 && !queries.some((ele) => ele.isLoading) ? (
                     sortedFarms!.map((farm, index) => (
                         <FarmRow
-                            key={uuid()}
+                            key={index}
                             farmData={farm.data}
                             farm={farms.find((ele) => ele.id === farm.data?.ID)!}
                             openedFarm={openedFarm}
@@ -187,12 +188,12 @@ function Farms() {
                         .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
                         .map((farm, index) => (
                             <FarmRow
-                                key={uuid()}
+                                key={index + "nowallet"}
                                 farmData={undefined}
                                 farm={farm}
                                 openedFarm={openedFarm}
                                 setOpenedFarm={setOpenedFarm}
-                                isFarmLoading={false}
+                                isFarmLoading={queries.some((ele) => ele.isFetching)}
                                 hideData={true}
                             />
                         ))

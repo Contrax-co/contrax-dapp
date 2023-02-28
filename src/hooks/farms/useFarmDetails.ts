@@ -6,7 +6,7 @@ import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 
 const useFarmDetails = (farm?: Farm | number) => {
-    const { currentWallet, provider, balanceBigNumber } = useWallet();
+    const { currentWallet, provider, balanceBigNumber, balance } = useWallet();
     const { NETWORK_NAME } = useConstants();
 
     const {
@@ -15,7 +15,7 @@ const useFarmDetails = (farm?: Farm | number) => {
         isLoading,
     } = useQuery(
         // @ts-ignore
-        FARM_DATA(currentWallet, NETWORK_NAME, farm.id ? farm.id : farm),
+        FARM_DATA(currentWallet, NETWORK_NAME, farm.id ? farm.id : farm, balance),
         // @ts-ignore
         () => farmFunctions[farm.id ? farm.id : farm]?.getFarmData(provider, currentWallet, balanceBigNumber),
         {
