@@ -20,7 +20,7 @@
 
 .connect_wallet:hover {
   cursor: pointer;
-  background-color: #009aff;
+  background-color: var(--color_primary);
 }
 
 .connect_wallet2 {
@@ -62,7 +62,7 @@
   padding-left: 10px;
   padding-right: 10px;
   font-weight: 400;
-  color: #009aff;
+  color: var(--color_primary);
   background-color: #032a51;
   border-radius: 20px;
 }
@@ -78,7 +78,7 @@
 }
 
 .ethBal--light {
-  color: #009aff;
+  color: var(--color_primary);
   background-color: #dcf2ff;
 }
 

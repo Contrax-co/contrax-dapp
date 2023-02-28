@@ -30,7 +30,7 @@
 }
 
 .farms--light>p {
-  color: #009aff;
+  color: var(--color_primary);
 }
 
 .farm__title {

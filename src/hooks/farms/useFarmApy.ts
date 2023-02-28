@@ -36,6 +36,7 @@ export const useFarmApys = () => {
         const obj: { [key: string]: Apys } = {};
         farms.forEach((farm, index) => {
             obj[farm.lp_address] = results[index].data!;
+            obj[farm.id] = results[index].data!;
         });
         return obj;
     }, [farms, results]);

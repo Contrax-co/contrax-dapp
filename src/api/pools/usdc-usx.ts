@@ -7,6 +7,7 @@ import { toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, dismissNotifyAll, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
+import { getApy } from "../apy";
 
 const farm = pools.find((farm) => farm.id === 11) as Farm;
 let farmData: FarmData | undefined = undefined;
@@ -40,6 +41,7 @@ export const getFarmData = async (
         TOKEN_PRICE: lpPrice,
         ZAP_TOKEN_PRICE: ethPrice,
         Zap_Enabled: true,
+        ID: farm.id,
     };
     return farmData;
 };
@@ -312,4 +314,3 @@ export const zapOut = async ({
     }
     cb && cb();
 };
-
