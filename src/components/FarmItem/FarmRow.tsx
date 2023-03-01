@@ -114,7 +114,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                 <div className={`container ${lightMode && "container--light"} desktop`}>
                     {farmData &&
                     farmData.Max_Token_Withdraw_Balance_Dollar &&
-                    parseFloat(farmData.Max_Token_Withdraw_Balance_Dollar) <= 0.01 ? null : (
+                    parseFloat(farmData.Max_Token_Withdraw_Balance_Dollar) >= 0.01 ? (
                         <>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                 {parseFloat(farmData?.Max_Token_Withdraw_Balance_Dollar || "0")
@@ -130,7 +130,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                 &nbsp;{farm?.name}
                             </p>
                         </>
-                    )}
+                    ) : null}
                 </div>
 
                 {/* How much the user has Earned */}
