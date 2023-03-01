@@ -225,8 +225,8 @@ const Description: React.FC<{ type: FarmTransactionType; farm: Farm; shouldUseLp
         return (
             <div>
                 Deposit your tokens for {farm.platform}'s{" "}
-                <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                    {farm.name}
+                <a href={farm.source} className="span">
+                    {farm.url_name}
                 </a>{" "}
                 pool. Your tokens wil be staked on {farm.platform} for fees and rewards. All rewards are sold to
                 auto-compound your position. <br />
@@ -238,8 +238,8 @@ const Description: React.FC<{ type: FarmTransactionType; farm: Farm; shouldUseLp
         return (
             <div>
                 Deposit with ETH directly into the {farm.platform} liquidity pool for{" "}
-                <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                    {farm.name}
+                <a href={farm.source} className="span">
+                    {farm.url_name}
                 </a>
                 . Your ETH will be swapped for LP tokens to earn fees and rewards, which are sold to auto-compound your
                 LP position. Note that "Max" leaves a small amount of ETH for gas. You'll need it to exit the farm
@@ -253,8 +253,8 @@ const Description: React.FC<{ type: FarmTransactionType; farm: Farm; shouldUseLp
         return (
             <div>
                 Withdraw into tokens for the {farm.platform} liquidity pool for{" "}
-                <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                    {farm.name}
+                <a href={farm.source} className="span">
+                    {farm.url_name}
                 </a>
                 . You can re-stake it when you wish, or swap it for ETH or other tokens, including LP tokens, on our
                 exchange page.
@@ -266,8 +266,8 @@ const Description: React.FC<{ type: FarmTransactionType; farm: Farm; shouldUseLp
         return (
             <div>
                 Withdraw into ETH directly from {farm.platform} liquidity pool for{" "}
-                <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                    {farm.name}
+                <a href={farm.source} className="span">
+                    {farm.url_name}
                 </a>
                 . Note that the balance is shown in terms of LP tokens, but once withdrawn, you will receive ETH in your
                 wallet.

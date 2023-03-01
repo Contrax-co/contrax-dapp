@@ -118,6 +118,11 @@
   padding-top: 20px;
 }
 
+.dashboard-key-icons {
+  display: flex;
+  gap: 16px;
+}
+
 @media (max-height: 600px) {
   .dashboard_wallet_title {
     font-size: 20px;
