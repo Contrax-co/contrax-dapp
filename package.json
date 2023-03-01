@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@0xsequence/multicall": "^0.43.19",
     "@rainbow-me/rainbowkit": "^0.8.1",
     "@ramp-network/ramp-instant-sdk": "^4.0.1",
     "@socket.tech/plugin": "^1.0.3",

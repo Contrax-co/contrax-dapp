@@ -17,12 +17,14 @@ export const useFarmApys = (farmIdOrLpAddress?: number | string) => {
     const { NETWORK_NAME, CHAIN_ID } = useConstants();
     const queryClient = useQueryClient();
     const [results, setResults] = useState<any>([]);
+    const { provider, currentWallet } = useWallet();
 
     useEffect(() => {
         const observer = new QueriesObserver(
             queryClient,
             farms.map((farm) => ({
                 queryKey: FARM_APY(farm.lp_address, NETWORK_NAME),
+                queryFn: () => getApy(farm, CHAIN_ID, provider, currentWallet),
             }))
         );
         const unsubscribe = observer.subscribe((results) => {
