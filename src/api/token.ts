@@ -3,6 +3,8 @@ import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { getNetworkName, toEth } from "src/utils/common";
 import { Contract, providers, BigNumber, Signer, constants, ethers } from "ethers";
 import { erc20ABI } from "wagmi";
+import { providers as multicallProviders } from "@0xsequence/multicall";
+import { utils } from "ethers/lib/ethers";
 
 export const getPrice = async (tokenAddress: string, chainId: number) => {
     try {
@@ -51,7 +53,7 @@ export const approveErc20 = async (
     }
 };
 
-export const getLpPrice = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
+export const getLpPriceDepreached = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
     try {
         let price = await getPrice(lpAddress, chainId);
         if (price !== 0) return price;
@@ -105,6 +107,69 @@ export const getLpPrice = async (lpAddress: string, provider: providers.Provider
         return price;
     } catch (error) {
         console.error(error);
+        return 0;
+    }
+};
+
+export const getLpPrice = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
+    try {
+        // if lp price are available on api, use that
+        let price = await getPrice(lpAddress, chainId);
+        if (price !== 0) return price;
+
+        // else calculate price from lp contract
+        const multicallProvider = new multicallProviders.MulticallProvider(provider);
+
+        // get lp info
+        const lpContract = new Contract(
+            lpAddress,
+            [
+                "function token0() view returns (address)",
+                "function token1() view returns (address)",
+                "function totalSupply() view returns (uint256)",
+                "function getReserves() view returns (uint112,uint112,uint32)",
+            ],
+            multicallProvider
+        );
+
+        const [token0, token1, totalSupply, reserves] = await Promise.all([
+            lpContract.token0(),
+            lpContract.token1(),
+            lpContract.totalSupply(),
+            lpContract.getReserves(),
+        ]);
+
+        // get tokens info
+        const [token0Decimals, token1Decimals] = await Promise.all([
+            new Contract(token0, erc20ABI, multicallProvider).decimals(),
+            new Contract(token1, erc20ABI, multicallProvider).decimals(),
+        ]);
+
+        const [token0Price, token1Price] = await Promise.all([getPrice(token0, chainId), getPrice(token1, chainId)]);
+        const token0USDLiquidity = reserves[0]
+            .mul(parseInt(String(token0Price * 1000)))
+            .div(1000)
+            .div(utils.parseUnits("1", token0Decimals));
+        const token1USDLiquidity = reserves[1]
+            .mul(parseInt(String(token1Price * 1000)))
+            .div(1000)
+            .div(utils.parseUnits("1", token1Decimals));
+
+        let totalUSDLiquidity = utils.parseEther("0");
+        if (token0USDLiquidity.gt(0) && token1USDLiquidity.gt(0)) {
+            totalUSDLiquidity = token0USDLiquidity.add(token1USDLiquidity);
+        } else {
+            if (token0USDLiquidity !== 0) {
+                totalUSDLiquidity = token0USDLiquidity.mul(2);
+            } else if (token1USDLiquidity !== 0) {
+                totalUSDLiquidity = token1USDLiquidity.mul(2);
+            }
+        }
+
+        price = Number(totalUSDLiquidity.toNumber() / Number(utils.formatEther(totalSupply)));
+        return price;
+    } catch (e) {
+        console.log(e);
         return 0;
     }
 };
