@@ -10,7 +10,7 @@ import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
-import { useQueries, UseQueryResult } from "@tanstack/react-query";
+import { useQueries, useQueryClient, QueriesObserver } from "@tanstack/react-query";
 import { FARM_DATA } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
 import farmFunctions from "src/api/pools";
@@ -26,6 +26,8 @@ function Farms() {
     const { networkId, currentWallet, provider, balanceBigNumber, balance } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { allFarmApys } = useFarmApys();
+    const [queries, setQueries] = useState([]);
+    const queryClient = useQueryClient();
     // const queriesData = useMemo(
     //     () =>
     //         farms
@@ -37,13 +39,28 @@ function Farms() {
     //             })),
     //     [farms, tab]
     // );
-    const queries = useQueries({
-        queries: farms
-            .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
-            .map((item) => ({
-                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
-            })),
-    });
+    // const queries = useQueries({
+    //     queries: farms
+    //         .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
+    //         .map((item) => ({
+    //             queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
+    //         })),
+    // });
+
+    useEffect(() => {
+        const observer = new QueriesObserver(
+            queryClient,
+            farms
+                .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
+                .map((farm) => ({
+                    queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
+                }))
+        );
+        const unsubscribe = observer.subscribe((results: any) => {
+            setQueries(results);
+        });
+        return () => unsubscribe();
+    }, [NETWORK_NAME, farms, tab, currentWallet, balance]);
 
     const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
