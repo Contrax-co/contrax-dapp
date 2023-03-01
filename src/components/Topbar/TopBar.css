@@ -145,7 +145,7 @@
   padding-left: 15%;
   border: 0.5px solid #8798ad;
   background-color: #012243;
-  z-index: 999 !important;
+  z-index: 1200 !important;
   position: absolute;
   top: 0;
 
@@ -189,7 +189,7 @@
     top: 20px;
     left: 20px;
     position: fixed;
-    z-index: 1000;
+    z-index: 1300;
   }
 
   .topbar_menu--light {
