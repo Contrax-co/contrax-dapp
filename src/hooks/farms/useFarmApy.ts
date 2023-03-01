@@ -1,8 +1,8 @@
-import { useQueries } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { QueriesObserver, QueryObserver, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useEffect, useState } from "react";
 import { getApy } from "src/api/apy";
 import { FARM_APY } from "src/config/constants/query";
-import { Apys } from "src/types";
+import { Apys, Farm } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import useFarms from "./useFarms";
@@ -15,31 +15,45 @@ import useFarms from "./useFarms";
 export const useFarmApys = (farmIdOrLpAddress?: number | string) => {
     const { farms } = useFarms();
     const { NETWORK_NAME, CHAIN_ID } = useConstants();
-    const { provider, currentWallet } = useWallet();
+    const queryClient = useQueryClient();
+    const [results, setResults] = useState<any>([]);
 
-    const results = useQueries({
-        queries: farms.map((farm) => ({
-            // Query key index should be changed in getPrice function as well if changed here
-            queryKey: FARM_APY(farm.lp_address, NETWORK_NAME),
-            queryFn: () => getApy(farm, CHAIN_ID, provider, currentWallet),
-            placeholderData: {
-                feeApr: 0,
-                rewardsApr: 0,
-                apy: 0,
-                compounding: 0,
-            },
-            enabled: !!NETWORK_NAME && !!farm.lp_address && !!CHAIN_ID,
-        })),
-    });
+    useEffect(() => {
+        const observer = new QueriesObserver(
+            queryClient,
+            farms.map((farm) => ({
+                queryKey: FARM_APY(farm.lp_address, NETWORK_NAME),
+            }))
+        );
+        const unsubscribe = observer.subscribe((results) => {
+            setResults(results);
+        });
+        return () => unsubscribe();
+    }, [NETWORK_NAME]);
 
     const resulting = useMemo(() => {
         const obj: { [key: string]: Apys } = {};
         farms.forEach((farm, index) => {
-            // if we get error while fetching any apy, assign 0 values
-            if (results[index].status === "success") {
-                obj[farm.lp_address] = results[index].data!;
-                obj[farm.id] = results[index].data!;
-            } else {
+            try {
+                // if we get error while fetching any apy, assign 0 values
+                if (results[index].status === "success") {
+                    obj[farm.lp_address] = results[index].data as Apys;
+                    obj[farm.id] = results[index].data as Apys;
+                } else {
+                    obj[farm.lp_address] = {
+                        apy: 0,
+                        compounding: 0,
+                        feeApr: 0,
+                        rewardsApr: 0,
+                    };
+                    obj[farm.id] = {
+                        apy: 0,
+                        compounding: 0,
+                        feeApr: 0,
+                        rewardsApr: 0,
+                    };
+                }
+            } catch (error) {
                 obj[farm.lp_address] = {
                     apy: 0,
                     compounding: 0,
@@ -59,9 +73,12 @@ export const useFarmApys = (farmIdOrLpAddress?: number | string) => {
 
     const allFarmApys = useMemo(() => resulting, [JSON.stringify(resulting)]);
 
-    const isLoading = useMemo(() => results.some((result) => result.isLoading || result.isPlaceholderData), [results]);
+    const isLoading = useMemo(
+        () => results.some((result: any) => result.isLoading || result.isPlaceholderData),
+        [results]
+    );
 
-    const isFetching = useMemo(() => results.some((result) => result.isFetching), [results]);
+    const isFetching = useMemo(() => results.some((result: any) => result.isFetching), [results]);
 
     const farmApys = useMemo((): Apys => {
         let _apys = {
@@ -75,3 +92,25 @@ export const useFarmApys = (farmIdOrLpAddress?: number | string) => {
 
     return { farmApys, allFarmApys, isLoading, isFetching };
 };
+
+const useFarmApy = (farm: Farm) => {
+    const { NETWORK_NAME, CHAIN_ID } = useConstants();
+    const { provider, currentWallet } = useWallet();
+
+    const fetchApy = () => {
+        return getApy(farm, CHAIN_ID, provider, currentWallet);
+    };
+
+    const { data, isInitialLoading, refetch, isFetching } = useQuery(
+        FARM_APY(farm.lp_address, NETWORK_NAME),
+        fetchApy,
+        {
+            enabled: !!NETWORK_NAME && !!farm.lp_address && !!CHAIN_ID && !!provider,
+            staleTime: 1000 * 60 * 5,
+        }
+    );
+
+    return { apys: data, isLoading: isInitialLoading, refetch, isFetching };
+};
+
+export default useFarmApy;

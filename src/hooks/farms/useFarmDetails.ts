@@ -12,17 +12,21 @@ const useFarmDetails = (farm?: Farm | number) => {
     const {
         data: farmData,
         refetch,
-        isLoading,
+        isInitialLoading,
     } = useQuery(
         // @ts-ignore
         FARM_DATA(currentWallet, NETWORK_NAME, farm.id ? farm.id : farm, balance),
-        // @ts-ignore
-        () => farmFunctions[farm.id ? farm.id : farm]?.getFarmData(provider, currentWallet, balanceBigNumber),
+        () =>
+            currentWallet && farm && provider
+                ? // @ts-ignore
+                  farmFunctions[farm.id ? farm.id : farm]?.getFarmData(provider, currentWallet, balanceBigNumber)
+                : undefined,
         {
             enabled: !!currentWallet && !!provider && !!farm,
         }
     );
-    return { farmData, isLoading, refetch };
+
+    return { farmData, isLoading: isInitialLoading, refetch };
 };
 
 export default useFarmDetails;
