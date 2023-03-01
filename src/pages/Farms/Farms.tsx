@@ -2,7 +2,7 @@ import "./Farms.css";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
 import FarmRow from "src/components/FarmItem/FarmRow";
-import { FarmData } from "src/types";
+import { Farm, FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import { useEffect, useMemo, useState } from "react";
 import PoolButton from "src/components/PoolButton/PoolButton";
@@ -16,7 +16,9 @@ import useConstants from "src/hooks/useConstants";
 import farmFunctions from "src/api/pools";
 import { v4 as uuid } from "uuid";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
-
+interface FarmDataExtended extends Partial<FarmData>, Farm {
+    apy: number;
+}
 function Farms() {
     const { lightMode } = useApp();
     const { farms } = useFarms();
@@ -40,30 +42,10 @@ function Farms() {
             .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
             .map((item) => ({
                 queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
-                queryFn: () => farmFunctions[item.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
-                enabled: !!currentWallet && !!provider && !!item && !!balance,
             })),
     });
 
-    const normalFarmIds = useMemo(
-        () => farms.filter((item) => item.token_type === "Token").map((item) => item.id),
-        [farms]
-    );
-    const advancedFarmIds = useMemo(
-        () => farms.filter((item) => item.token_type === "LP Token").map((item) => item.id),
-        [farms]
-    );
-
-    const normalFarms = useMemo(
-        () => queries.filter((item) => normalFarmIds.some((ele) => ele === item?.data?.ID)),
-        [JSON.stringify(queries.map((item) => item.isFetching)), normalFarmIds]
-    );
-    const advancedFarms = useMemo(
-        () => queries.filter((item) => advancedFarmIds.some((ele) => ele === item?.data?.ID)),
-        [JSON.stringify(queries.map((item) => item.isFetching)), advancedFarmIds]
-    );
-
-    const [sortedFarms, setSortedFarms] = useState<UseQueryResult<FarmData, unknown>[]>();
+    const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
     const [openedFarm, setOpenedFarm] = useState<number | undefined>();
@@ -71,54 +53,43 @@ function Farms() {
     useEffect(() => {
         if (sortedBuy) {
             handleSort(sortedBuy);
-        } else {
-            setSortedFarms(tab === 1 ? normalFarms : advancedFarms);
         }
-    }, [tab, sortedBuy, allFarmApys, normalFarms, advancedFarms, decOrder]);
+    }, [tab, sortedBuy, allFarmApys, decOrder]);
 
     useEffect(() => {
         setSortedBuy(undefined);
     }, [networkId]);
 
-    const dynamicSort =
-        (column: FarmTableColumns, decOrder: boolean) =>
-        (a: UseQueryResult<FarmData, unknown>, b: UseQueryResult<FarmData, unknown>) =>
-            (decOrder ? 1 : -1) *
-            (column === FarmTableColumns.Deposited
-                ? Number(a.data?.Max_Token_Withdraw_Balance_Dollar) < Number(b.data?.Max_Token_Withdraw_Balance_Dollar)
-                    ? -1
-                    : Number(a.data?.Max_Token_Withdraw_Balance_Dollar) >
-                      Number(b.data?.Max_Token_Withdraw_Balance_Dollar)
-                    ? 1
-                    : 0
-                : column === FarmTableColumns.APY
-                ? a.data?.ID && b.data?.ID && allFarmApys[a.data.ID].apy < allFarmApys[b.data.ID].apy
-                    ? -1
-                    : a.data?.ID && b.data?.ID && allFarmApys[a.data.ID].apy > allFarmApys[b.data.ID].apy
-                    ? 1
-                    : 0
-                : 0);
-    // : farms.find((ele) => ele.id === a.data?.ID)!.name < farms.find((ele) => ele.id === b.data?.ID)!.name
-    // ? -1
-    // : farms.find((ele) => ele.id === a.data?.ID)!.name > farms.find((ele) => ele.id === b.data?.ID)!.name
-    // ? 1
+    const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDataExtended, b: FarmDataExtended) =>
+        (decOrder ? 1 : -1) *
+        (column === FarmTableColumns.Deposited
+            ? Number(a.Max_Token_Withdraw_Balance_Dollar) < Number(b.Max_Token_Withdraw_Balance_Dollar)
+                ? -1
+                : Number(a.Max_Token_Withdraw_Balance_Dollar) > Number(b.Max_Token_Withdraw_Balance_Dollar)
+                ? 1
+                : 0
+            : column === FarmTableColumns.APY
+            ? a.apy < b.apy
+                ? -1
+                : a.apy > b.apy
+                ? 1
+                : 0
+            : 0);
 
     const handleSort = (column: FarmTableColumns) => {
-        setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
-        // if (sortedBuy === undefined) {
-        //     setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
-        //     setSortedBuy(column);
-        //     setDecOrder((prev) => !prev);
-        //     return;
-        // }
-        // if (column === sortedBuy) {
-        //     setSortedFarms((prev) => prev?.sort(dynamicSort(column, decOrder)));
-        //     setDecOrder((prev) => !prev);
-        // } else {
-        //     setSortedFarms((prev) => prev?.sort(dynamicSort(column, !decOrder)));
-        //     setSortedBuy(column);
-        // }
+        const data: FarmDataExtended[] = farms.map((ele) => {
+            // @ts-ignore
+            const queryData = queries.find((item) => item.data?.ID === ele.id)?.data as FarmData | undefined;
+            return {
+                ...ele,
+                ...queryData,
+                apy: allFarmApys[ele.id].apy,
+            };
+        });
+
+        setSortedFarms(data.sort(dynamicSort(column, decOrder)));
     };
+
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
@@ -198,29 +169,26 @@ function Farms() {
                 <p></p>
             </div>
             {networkId === defaultChainId ? (
-                sortedFarms?.length! > 0 && !queries.some((ele) => ele.isLoading) ? (
-                    sortedFarms!.map((farm, index) => (
-                        <FarmRow
-                            key={index}
-                            farmData={farm.data}
-                            farm={farms.find((ele) => ele.id === farm.data?.ID)!}
-                            openedFarm={openedFarm}
-                            setOpenedFarm={setOpenedFarm}
-                            isFarmLoading={false}
-                        />
-                    ))
+                sortedFarms ? (
+                    sortedFarms
+                        .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
+                        .map((farm, index) => (
+                            <FarmRow
+                                key={index + "nowallet"}
+                                farm={farm}
+                                openedFarm={openedFarm}
+                                setOpenedFarm={setOpenedFarm}
+                            />
+                        ))
                 ) : (
                     farms
                         .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
                         .map((farm, index) => (
                             <FarmRow
                                 key={index + "nowallet"}
-                                farmData={undefined}
                                 farm={farm}
                                 openedFarm={openedFarm}
                                 setOpenedFarm={setOpenedFarm}
-                                isFarmLoading={queries.some((ele) => ele.isFetching) || !!currentWallet}
-                                hideData={true}
                             />
                         ))
                 )
