@@ -10,7 +10,7 @@ import uuid from "react-uuid";
 import { Apys, Farm, FarmData, FarmDetails } from "src/types";
 import DetailInput from "./components/DetailInput";
 import { FarmTransactionType } from "src/types/enums";
-import { floorToFixed } from "src/utils/common";
+import { toFixedFloor } from "src/utils/common";
 import { Skeleton } from "../Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
@@ -81,7 +81,7 @@ const FarmRow: React.FC<Props> = ({ farm, farmData, openedFarm, setOpenedFarm, i
                         <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                             {farmApys.apy < 0.01
                                 ? farmApys.apy.toPrecision(2).slice(0, -1)
-                                : floorToFixed(farmApys.apy, 2).toString()}
+                                : toFixedFloor(farmApys.apy, 2).toString()}
                             %
                         </p>
                         <a
@@ -114,16 +114,19 @@ const FarmRow: React.FC<Props> = ({ farm, farmData, openedFarm, setOpenedFarm, i
                 {/* How much the user has deposited */}
 
                 <div className={`container ${lightMode && "container--light"} desktop`}>
-                    {farmData && Number(farmData.Max_Token_Withdraw_Balance_Dollar) < 0.01 ? null : (
+                    {farmData && parseFloat(farmData.Max_Token_Withdraw_Balance_Dollar) <= 0.01 ? null : (
                         <>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {Number(farmData?.Max_Token_Withdraw_Balance_Dollar).toLocaleString("en-US", {
-                                    style: "currency",
-                                    currency: "USD",
-                                })}
+                                {parseFloat(farmData?.Max_Token_Withdraw_Balance_Dollar || "0")
+                                    .toLocaleString("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                        minimumFractionDigits: 3,
+                                    })
+                                    .slice(0, -1)}
                             </p>
                             <p className={`deposited ${lightMode && "deposited--light"}`}>
-                                {Number(farmData?.Max_Token_Withdraw_Balance).toFixed(10)}
+                                {toFixedFloor(parseFloat(farmData?.Max_Token_Withdraw_Balance || "0"), 10).toString()}
                                 &nbsp;{farm?.name}
                             </p>
                         </>
@@ -146,7 +149,7 @@ const FarmRow: React.FC<Props> = ({ farm, farmData, openedFarm, setOpenedFarm, i
                         <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                             {farmApys.apy < 0.01
                                 ? farmApys.apy.toPrecision(2).slice(0, -1)
-                                : floorToFixed(farmApys.apy, 2).toString()}
+                                : toFixedFloor(farmApys.apy, 2).toString()}
                             %
                         </p>
                     </div>
@@ -287,7 +290,7 @@ const FarmRowSkeleton = ({
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                 {farmApys.apy < 0.01
                                     ? farmApys.apy.toPrecision(2).slice(0, -1)
-                                    : floorToFixed(farmApys.apy, 2).toString()}
+                                    : toFixedFloor(farmApys.apy, 2).toString()}
                                 %
                             </p>
                             <a
@@ -343,7 +346,7 @@ const FarmRowSkeleton = ({
                                 <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                     {farmApys.apy < 0.01
                                         ? farmApys.apy.toPrecision(2).slice(0, -1)
-                                        : floorToFixed(farmApys.apy, 2).toString()}
+                                        : toFixedFloor(farmApys.apy, 2).toString()}
                                     %
                                 </p>
                             </div>
