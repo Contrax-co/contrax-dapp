@@ -21,7 +21,7 @@ const useFarmDetails = (farm?: Farm | number) => {
             currentWallet && farm && provider
                 ? // @ts-ignore
                   farmFunctions[farm.id ? farm.id : farm]?.getFarmData(provider, currentWallet, balanceBigNumber)
-                : undefined,
+                : null,
         {
             enabled: !!currentWallet && !!provider && !!farm,
         }
