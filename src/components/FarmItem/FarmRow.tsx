@@ -141,19 +141,19 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                 {/* Mobile View */}
 
+                {/* APY */}
+
+                <div className={`container1 ${lightMode && "container1--light"} apy mobile-view`}>
+                    <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>APY</p>
+                    <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                        {farmApys && farmApys.apy < 0.01
+                            ? farmApys.apy.toPrecision(2).slice(0, -1)
+                            : toFixedFloor(farmApys?.apy || 0, 2).toString()}
+                        %
+                    </p>
+                </div>
+
                 <div className={`mobile-view ${lightMode && "mobile-view--light"}`}>
-                    {/* APY */}
-
-                    <div className={`container1 ${lightMode && "container1--light"} apy`}>
-                        <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>APY</p>
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                            {farmApys && farmApys.apy < 0.01
-                                ? farmApys.apy.toPrecision(2).slice(0, -1)
-                                : toFixedFloor(farmApys?.apy || 0, 2).toString()}
-                            %
-                        </p>
-                    </div>
-
                     {/* How much the user has deposited */}
 
                     {farmData &&
