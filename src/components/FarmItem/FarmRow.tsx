@@ -156,17 +156,22 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                     {/* How much the user has deposited */}
 
-                    {farmData && Number(farmData.Max_Token_Withdraw_Balance_Dollar) < 0.01 ? null : (
+                    {farmData &&
+                    farmData.Max_Token_Withdraw_Balance_Dollar &&
+                    parseFloat(farmData.Max_Token_Withdraw_Balance_Dollar) >= 0.01 ? (
                         <div className={`container ${lightMode && "container--light"} deposite`}>
                             <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>Deposited</p>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {Number(farmData?.Max_Token_Withdraw_Balance_Dollar).toLocaleString("en-US", {
-                                    style: "currency",
-                                    currency: "USD",
-                                })}
+                                {parseFloat(farmData?.Max_Token_Withdraw_Balance_Dollar || "0")
+                                    .toLocaleString("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                        minimumFractionDigits: 3,
+                                    })
+                                    .slice(0, -1)}
                             </p>
                         </div>
-                    )}
+                    ) : null}
 
                     {/* How much the user has Earned */}
 
