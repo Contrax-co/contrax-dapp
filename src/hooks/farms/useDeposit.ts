@@ -16,9 +16,10 @@ const useDeposit = (farm: Farm) => {
 
     const _deposit = async ({ depositAmount, max }: { depositAmount: number; max?: boolean }) => {
         const cb = async () => {
-            // @ts-ignore
-            await queryClient.refetchQueries(FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance), {
-                active: true,
+            await queryClient.refetchQueries({
+                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
+                type: "active",
+                exact: true,
             });
         };
         await farmFunctions[farm.id].deposit({ depositAmount, currentWallet, signer, chainId, max, cb });

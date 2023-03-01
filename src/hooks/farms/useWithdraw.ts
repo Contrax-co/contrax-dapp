@@ -17,9 +17,10 @@ const useWithdraw = (farm: Farm) => {
 
     const _withdraw = async ({ withdrawAmount, max }: { withdrawAmount: number; max?: boolean }) => {
         const cb = async () => {
-            // @ts-ignore
-            await queryClient.refetchQueries(FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance), {
-                active: true,
+            await queryClient.refetchQueries({
+                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
+                type: "active",
+                exact: true,
             });
         };
         await farmFunctions[farm.id].withdraw({ withdrawAmount, currentWallet, signer, chainId, max, cb });
