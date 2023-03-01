@@ -27,7 +27,7 @@ export const ExportPublicKey: FC<IProps> = ({ setOpenModal }) => {
             <div className={styles.heading}>
                 <h1>Scan Me</h1>
             </div>
-            <p className={styles.caption}>Exporting Public Key</p>
+            <p className={styles.caption}>Wallet Address</p>
             <div className={styles.key}>
                 <p>{currentWallet}</p>
                 {copied ? (
