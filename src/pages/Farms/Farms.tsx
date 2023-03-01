@@ -90,7 +90,6 @@ function Farms() {
         setSortedFarms(data.sort(dynamicSort(column, decOrder)));
     };
 
-    console.log(sortedFarms);
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
