@@ -9,7 +9,7 @@ import useEthPrice from "src/hooks/useEthPrice";
 import useWallet from "src/hooks/useWallet";
 import { Farm, FarmDetails } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
-import { validateNumberDecimals } from "src/utils/common";
+import { toFixedFloor, validateNumberDecimals } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
 import farmFunctions from "src/api/pools";
 import { FARM_DATA } from "src/config/constants/query";
@@ -40,31 +40,23 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
             if (shouldUseLp) {
-                return (
-                    (showInUsd
-                        ? Number(Number(farmData?.Max_Token_Deposit_Balance_Dollar).toFixed(2))
-                        : Number(Number(farmData?.Max_Token_Deposit_Balance).toFixed(6))) || 0
-                );
+                return showInUsd
+                    ? parseFloat(farmData?.Max_Token_Deposit_Balance_Dollar || "0")
+                    : parseFloat(farmData?.Max_Token_Deposit_Balance || "0");
             } else {
-                return (
-                    (showInUsd
-                        ? Number(Number(farmData?.Max_Zap_Deposit_Balance_Dollar).toFixed(2))
-                        : Number(Number(farmData?.Max_Zap_Deposit_Balance).toFixed(6))) || 0
-                );
+                return showInUsd
+                    ? parseFloat(farmData?.Max_Zap_Deposit_Balance_Dollar || "0")
+                    : parseFloat(farmData?.Max_Zap_Deposit_Balance || "0");
             }
         } else {
             if (shouldUseLp) {
-                return (
-                    (showInUsd
-                        ? Number(Number(farmData?.Max_Token_Withdraw_Balance_Dollar).toFixed(2))
-                        : Number(Number(farmData?.Max_Token_Withdraw_Balance).toFixed(6))) || 0
-                );
+                return showInUsd
+                    ? parseFloat(farmData?.Max_Token_Withdraw_Balance_Dollar || "0")
+                    : parseFloat(farmData?.Max_Token_Withdraw_Balance || "0");
             } else {
-                return (
-                    (showInUsd
-                        ? Number(Number(farmData?.Max_Zap_Withdraw_Balance_Dollar).toFixed(2))
-                        : Number(Number(farmData?.Max_Zap_Withdraw_Balance).toFixed(6))) || 0
-                );
+                return showInUsd
+                    ? parseFloat(farmData?.Max_Zap_Withdraw_Balance_Dollar || "0")
+                    : parseFloat(farmData?.Max_Zap_Withdraw_Balance || "0");
             }
         }
     }, [shouldUseLp, showInUsd, type, farmData]);
@@ -161,7 +153,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 {!isLoading && (
                     <div style={{ textAlign: "right" }}>
                         {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
-                        {showInUsd ? `$ ${maxBalance.toFixed(2)}` : maxBalance}
+                        {showInUsd ? `$ ${toFixedFloor(maxBalance, 2)}` : toFixedFloor(maxBalance, 6)}
                     </div>
                 )}
                 <div></div>
