@@ -135,9 +135,9 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                 {/* How much the user has Earned */}
 
-                <div className={`container1 ${lightMode && "container1--light"} desktop`}>
+                {/* <div className={`container1 ${lightMode && "container1--light"} desktop`}>
                     <p className={`pool_name ${lightMode && "pool_name--light"}`}>--</p>
-                </div>
+                </div> */}
 
                 {/* Mobile View */}
 
@@ -175,10 +175,10 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                     {/* How much the user has Earned */}
 
-                    <div className={`container1 ${lightMode && "container1--light"} earned`}>
+                    {/* <div className={`container1 ${lightMode && "container1--light"} earned`}>
                         <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>Earned</p>
                         <p className={`pool_name ${lightMode && "pool_name--light"}`}>--</p>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className={`dropdown ${lightMode && "dropdown--light"}`}>

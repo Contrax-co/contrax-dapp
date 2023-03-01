@@ -45,7 +45,8 @@
 
 .farm_table_row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 24px;
+  /* grid-template-columns: 1fr 1fr 1fr 1fr 24px; for earning */
+  grid-template-columns: 1fr 1fr 1fr 24px;
   gap: 20px;
   padding: 20px 26px;
   text-align: center;
@@ -54,7 +55,8 @@
 
 .farm_table_header {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 24px;
+  /* grid-template-columns: 1fr 1fr 1fr 1fr 24px; for earning */
+  grid-template-columns: 1fr 1fr 1fr 24px;
   gap: 20px;
   padding: 20px 26px;
   text-align: center;
@@ -122,11 +124,13 @@
 
 @media (max-width: 1280px) {
   .farm_table_row {
-    grid-template-columns: 1.5fr 1fr 1fr 1fr 24px;
+    /* grid-template-columns: 1.5fr 1fr 1fr 1fr 24px; for earning */
+    grid-template-columns: 1fr 1fr 1fr 24px;
   }
 
   .farm_table_header {
-    grid-template-columns: 1.5fr 1fr 1fr 1fr 24px;
+    /* grid-template-columns: 1.5fr 1fr 1fr 1fr 24px; for earning */
+    grid-template-columns: 1fr 1fr 1fr 24px;
   }
 }
 
