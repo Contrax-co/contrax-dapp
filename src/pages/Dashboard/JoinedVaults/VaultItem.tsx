@@ -1,6 +1,6 @@
 import useApp from "src/hooks/useApp";
 import { Vault } from "src/types";
-import { floorToFixed } from "src/utils/common";
+import { toFixedFloor } from "src/utils/common";
 import "./VaultItem.css";
 
 interface Props {
@@ -44,7 +44,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
                             <div className={`vault_items_bottom_categories`}>
                                 <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>APY</p>
-                                <p>{apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : floorToFixed(apy, 2).toString()}%</p>
+                                <p>{apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : toFixedFloor(apy, 2).toString()}%</p>
                             </div>
                         </div>
                     </div>

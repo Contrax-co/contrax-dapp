@@ -8,6 +8,8 @@ export interface Farm {
     pool_id?: number;
     token_type: string;
     name: string;
+    source: string;
+    url_name: string;
     name1: string;
     name2?: string;
     platform: string;

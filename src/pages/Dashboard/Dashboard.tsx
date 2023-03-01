@@ -10,13 +10,16 @@ import { copyToClipboard } from "src/utils";
 import useConstants from "src/hooks/useConstants";
 import { TokenBalances } from "./TokenBalances/TokenBalances";
 import { FaKey } from "react-icons/fa";
+import { MdOutlineQrCode2 } from "react-icons/md";
 import { ExportPrivateKey } from "src/components/modals/ExportPrivateKey/ExportPrivateKey";
+import { ExportPublicKey } from "src/components/modals/ExportPublicKey/ExportPublicKey";
 
 function Dashboard() {
     const { lightMode } = useApp();
     const { currentWallet, displayAccount, signer } = useWallet();
     const [copied, setCopied] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
+    const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
+    const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
 
     const copy = () => {
@@ -57,9 +60,21 @@ function Dashboard() {
                     )}
                 </div>
                 {signer && (
-                    <div>
-                        <FaKey color="#ffffff" cursor="pointer" size={30} onClick={() => setOpenModal(true)} />
-                        {openModal ? <ExportPrivateKey setOpenModal={setOpenModal} /> : null}
+                    <div className="dashboard-key-icons">
+                        <FaKey
+                            color="#ffffff"
+                            cursor="pointer"
+                            size={30}
+                            onClick={() => setOpenPrivateKeyModal(true)}
+                        />
+                        <MdOutlineQrCode2
+                            color="#ffffff"
+                            cursor="pointer"
+                            size={34}
+                            onClick={() => setOpenQrCodeModal(true)}
+                        />
+                        {openPrivateKeyModal ? <ExportPrivateKey setOpenModal={setOpenPrivateKeyModal} /> : null}
+                        {openQrCodeModal ? <ExportPublicKey setOpenModal={setOpenQrCodeModal} /> : null}
                     </div>
                 )}
             </div>
