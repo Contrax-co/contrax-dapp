@@ -185,7 +185,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                     {!dropDown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
                 </div>
             </div>
-            {dropDown && farm && <DropDownView farm={farm} />}
+            {dropDown && <DropDownView farm={farm} />}
         </div>
     );
 };
@@ -324,31 +324,31 @@ const FarmRowSkeleton = ({ farm, lightMode }: { farm: Farm; lightMode: boolean }
 
                 {/* How much the user has Earned */}
 
-                <div className={`container1 ${lightMode && "container1--light"} desktop`}>
+                {/* <div className={`container1 ${lightMode && "container1--light"} desktop`}>
                     {isFarmLoading && <Skeleton w={50} h={30} />}
-                </div>
+                </div> */}
 
                 {/* Mobile View */}
 
+                {/* APY */}
+
+                <div className={`container1 ${lightMode && "container1--light"} apy mobile-view`}>
+                    {isApyLoading ? (
+                        <Skeleton w={50} h={30} />
+                    ) : (
+                        <div className={`container1 ${lightMode && "container1--light"} apy`}>
+                            <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>APY</p>
+                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                {farmApys && farmApys.apy < 0.01
+                                    ? farmApys.apy.toPrecision(2).slice(0, -1)
+                                    : toFixedFloor(farmApys?.apy || 0, 2).toString()}
+                                %
+                            </p>
+                        </div>
+                    )}
+                </div>
+
                 <div className={`mobile-view ${lightMode && "mobile-view--light"}`}>
-                    {/* APY */}
-
-                    <div className={`container1 ${lightMode && "container1--light"} apy`}>
-                        {isApyLoading ? (
-                            <Skeleton w={50} h={30} />
-                        ) : (
-                            <div className={`container1 ${lightMode && "container1--light"} apy`}>
-                                <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>APY</p>
-                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                    {farmApys && farmApys.apy < 0.01
-                                        ? farmApys.apy.toPrecision(2).slice(0, -1)
-                                        : toFixedFloor(farmApys?.apy || 0, 2).toString()}
-                                    %
-                                </p>
-                            </div>
-                        )}
-                    </div>
-
                     {/* How much the user has deposited */}
 
                     <div className={`container ${lightMode && "container--light"} deposite`}>
@@ -357,9 +357,9 @@ const FarmRowSkeleton = ({ farm, lightMode }: { farm: Farm; lightMode: boolean }
 
                     {/* How much the user has Earned */}
 
-                    <div className={`container1 ${lightMode && "container1--light"} earned`}>
+                    {/* <div className={`container1 ${lightMode && "container1--light"} earned`}>
                         {isFarmLoading && <Skeleton w={50} h={30} />}
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className={`dropdown ${lightMode && "dropdown--light"}`}>
