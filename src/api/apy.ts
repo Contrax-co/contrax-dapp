@@ -222,20 +222,29 @@ const getDodoApy = async (pairAddress: string, provider: providers.Provider, cha
 };
 
 const getFraxApy = async () => {
-    const res = await axios.get(`https://api.allorigins.win/get?url=${FRAX_APR_API_URL}`);
-    const apr =
-        JSON.parse(res.data.contents).find(
-            (item: any) => item.pid === 3 && item.token === "FRAX" && item.chainId === 110
-        ).apr * 100;
+    try {
+        const res = await axios.get(`https://api.allorigins.win/get?url=${FRAX_APR_API_URL}`);
+        const apr =
+            JSON.parse(res.data.contents).find(
+                (item: any) => item.pid === 3 && item.token === "FRAX" && item.chainId === 110
+            ).apr * 100;
 
-    const compounding = calcCompoundingApy(apr);
-    const apy = compounding + apr;
-    return {
-        feeApr: apr,
-        rewardsApr: 0,
-        apy,
-        compounding: compounding,
-    };
+        const compounding = calcCompoundingApy(apr);
+        const apy = compounding + apr;
+        return {
+            feeApr: apr,
+            rewardsApr: 0,
+            apy,
+            compounding: compounding,
+        };
+    } catch (error) {
+        return {
+            feeApr: 0,
+            rewardsApr: 0,
+            apy: 0,
+            compounding: 0,
+        };
+    }
 };
 
 export const getApy = async (
