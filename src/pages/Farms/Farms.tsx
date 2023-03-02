@@ -167,7 +167,7 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                {/* <p
+                <p
                     onClick={() => {
                         setSortedBuy(FarmTableColumns.EARNED);
                         setDecOrder((prev) => !prev);
@@ -182,7 +182,7 @@ function Farms() {
                             <RiArrowUpSLine fontSize={21} />
                         )
                     ) : null}
-                </p> */}
+                </p>
                 <p></p>
             </div>
             {networkId === defaultChainId ? (
