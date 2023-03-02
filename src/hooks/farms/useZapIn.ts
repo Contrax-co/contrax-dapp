@@ -15,14 +15,14 @@ export interface ZapIn {
 }
 
 const useZapIn = (farm: Farm) => {
-    const { signer, currentWallet, refetchBalance, networkId: chainId, balance } = useWallet();
+    const { signer, currentWallet, refetchBalance, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
 
     const _zapIn = async ({ ethZapAmount, max }: ZapIn) => {
         const cb = async () => {
             refetchBalance();
             await queryClient.refetchQueries({
-                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
+                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
                 type: "active",
                 exact: true,
             });

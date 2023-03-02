@@ -1,22 +1,30 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import farmFunctions from "src/api/pools";
 import { FARM_DATA } from "src/config/constants/query";
 import { Farm } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 
-const useFarmDetails = (farm?: Farm | number) => {
+const useFarmDetails = (farm?: Farm) => {
     const { currentWallet, provider, balanceBigNumber, balance } = useWallet();
     const { NETWORK_NAME } = useConstants();
-         
+    const queryClient = useQueryClient();
+
+    const refetchAllFarms = async () => {
+        await queryClient.refetchQueries({
+            queryKey: ["farm", "data"],
+            type: "active",
+        });
+    };
+
     const {
         data: farmData,
         refetch,
         isInitialLoading,
+        isRefetching,
         ...query
     } = useQuery(
-        // @ts-ignore
-        FARM_DATA(currentWallet, NETWORK_NAME, farm.id ? farm.id : farm, balance),
+        FARM_DATA(currentWallet, NETWORK_NAME, farm?.id!),
         () =>
             currentWallet && farm && provider
                 ? // @ts-ignore
@@ -26,8 +34,8 @@ const useFarmDetails = (farm?: Farm | number) => {
             enabled: !!currentWallet && !!provider && !!farm,
         }
     );
-    // console.log(JSON.parse(JSON.stringify(query)), isInitialLoading, farmData);
-    return { farmData, isLoading: isInitialLoading && !farmData, refetch };
+
+    return { farmData, isLoading: isInitialLoading && !farmData, refetch, refetchAllFarms, isRefetching };
 };
 
 export default useFarmDetails;

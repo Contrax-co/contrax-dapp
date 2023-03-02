@@ -8,6 +8,7 @@ import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/ap
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { getApy } from "../apy";
+import { multicallProvider } from "src/context/WalletProvider";
 
 const farm = pools.find((farm) => farm.id === 14) as Farm;
 let farmData: FarmData | undefined = undefined;
@@ -18,10 +19,11 @@ export const getFarmData = async (
     _ethBalance?: BigNumber
 ): Promise<FarmData> => {
     const ethPrice = await getPrice(constants.AddressZero, defaultChainId);
-    const ethBalance = !!_ethBalance ? _ethBalance : await provider.getBalance(currentWallet);
     const lpPrice = await getLpPrice(farm.lp_address, provider, defaultChainId);
     const lpBalance = await getBalance(farm.lp_address, currentWallet, provider);
     const vaultBalance = await getBalance(farm.vault_addr, currentWallet, provider);
+    const ethBalancePromise = multicallProvider.getBalance(currentWallet);
+    const ethBalance = await ethBalancePromise;
 
     farmData = {
         Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),

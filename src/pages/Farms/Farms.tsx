@@ -23,7 +23,7 @@ function Farms() {
     const { lightMode } = useApp();
     const { farms } = useFarms();
     const [tab, setTab] = useState(1);
-    const { networkId, currentWallet, provider, balanceBigNumber, balance } = useWallet();
+    const { networkId, currentWallet } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { allFarmApys } = useFarmApys();
     const [queries, setQueries] = useState([]);
@@ -53,14 +53,14 @@ function Farms() {
             farms
                 .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
                 .map((farm) => ({
-                    queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
+                    queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
                 }))
         );
         const unsubscribe = observer.subscribe((results: any) => {
             setQueries(results);
         });
         return () => unsubscribe();
-    }, [NETWORK_NAME, farms, tab, currentWallet, balance]);
+    }, [NETWORK_NAME, farms, tab, currentWallet]);
 
     const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
