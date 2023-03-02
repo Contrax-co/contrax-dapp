@@ -282,7 +282,9 @@ export const zapOut = async ({
          */
         let formattedBal;
         formattedBal = utils.parseUnits(validateNumberDecimals(zapAmount), farm.decimals || 18);
-        const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer);
+        const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
+        
+        
 
         await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer);
         await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, signer);

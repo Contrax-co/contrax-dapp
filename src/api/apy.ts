@@ -17,6 +17,8 @@ import { calcCompoundingApy, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
 import dodoMineAbi from "src/assets/abis/dodoMine.json";
 import swapFishMaterchef from "src/assets/abis/swapfishMasterchef.json";
+import { getMulticallProvider } from "src/config/multicall";
+import { multicallProvider } from "src/context/WalletProvider";
 interface GraphResponse {
     apr: string;
     feesUSD: string;
@@ -92,11 +94,13 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     let rewardsApr = (sushiRewardPerYearUSD / obj.liquidityUSD) * 100;
     if (chefData.pools[0] && Number(chefData.pools[0].rewarder.id) !== 0) {
         const rewarder = chefData.pools[0].rewarder;
-        const rewardTokenContract = new Contract(pairAddress, erc20ABI, provider);
+        const rewardTokenContract = new Contract(pairAddress, erc20ABI, multicallProvider);
         const rewardTokenPrice = await getPrice(rewarder.rewardToken, chainId);
-        const balance = await rewardTokenContract.balanceOf(chefData.id);
-        const decimals = await rewardTokenContract.decimals();
-        const totalSupply = await rewardTokenContract.totalSupply();
+        const [balance, decimals, totalSupply] = await Promise.all([
+            rewardTokenContract.balanceOf(chefData.id),
+            rewardTokenContract.decimals(),
+            rewardTokenContract.totalSupply(),
+        ]);
         const stakedLiquidityUSD =
             (Number(toEth(balance, decimals)) * obj.liquidityUSD) / Number(toEth(totalSupply, decimals));
         const rewardPerSecond = BigNumber.from(rewarder.rewardPerSecond);
@@ -132,12 +136,16 @@ const getSwapFishApy = async (pairAddress: string, chainId: number, provider: pr
     let res = await axios.post(SWAPFISH_GRAPH_URL, { query });
     let pairData: GraphResponse = res.data.data.pair;
     const masterChefAddress = addressesByChainId[chainId].swapfishMasterChef!;
-    const masterChefContract = new Contract(masterChefAddress, swapFishMaterchef, provider);
-    const totalAllocPoint = await masterChefContract.totalAllocPoint();
-    const { allocPoint } = await masterChefContract.poolInfo(poolId);
-    const cakeAddress = await masterChefContract.cake();
+    const masterChefContract = new Contract(masterChefAddress, swapFishMaterchef, multicallProvider);
+
+    const [totalAllocPoint, { allocPoint }, cakeAddress, cakePerSecond] = await Promise.all([
+        masterChefContract.totalAllocPoint(),
+        masterChefContract.poolInfo(poolId),
+        masterChefContract.cake(),
+        masterChefContract.cakePerSecond(),
+    ]);
+
     const cakePrice = await getPrice(cakeAddress, chainId);
-    const cakePerSecond = await masterChefContract.cakePerSecond();
     const cakePerYear = cakePerSecond.mul(60).mul(60).mul(25).mul(365);
     const cakePerYearUsd =
         (Number(toEth(cakePerYear)) * cakePrice * allocPoint.toNumber()) / totalAllocPoint.toNumber();
@@ -192,21 +200,30 @@ const getDodoApy = async (pairAddress: string, provider: providers.Provider, cha
         staked: Number(res.data.data.pools[0].staked),
     };
 
-    const latestBlock = await provider.getBlockNumber();
-    const blocksAmount = 200000;
-    const latestBlockTimestamp = (await provider.getBlock(latestBlock)).timestamp;
-    const oldBlockTimestamp = (await provider.getBlock(latestBlock - blocksAmount)).timestamp;
-    const mineContract = new Contract(addressesByChainId[chainId].dodoMineAddress, dodoMineAbi, provider);
     const price = await getPrice(addressesByChainId[chainId].dodoTokenAddress, chainId);
-    const rewardPerBlock = Number(toEth(await mineContract.dodoPerBlock()));
+    const mineContract = new Contract(addressesByChainId[chainId].dodoMineAddress, dodoMineAbi, multicallProvider);
+    const latestBlock = await multicallProvider.getBlockNumber();
+    const blocksAmount = 200000;
 
+    const [
+        { timestamp: latestBlockTimestamp },
+        { timestamp: oldBlockTimestamp },
+        dodoPerBlock,
+        { allocPoint },
+        totalAlloc,
+    ] = await Promise.all([
+        provider.getBlock(latestBlock),
+        provider.getBlock(latestBlock - blocksAmount),
+        mineContract.dodoPerBlock(),
+        mineContract.poolInfos(4),
+        mineContract.totalAllocPoint(),
+    ]);
+    const rewardPerBlock = Number(toEth(dodoPerBlock));
     const difference = latestBlockTimestamp - oldBlockTimestamp;
     const blocksPerDay = (difference / blocksAmount) * 86400;
     const numOfBlocksPerDay = blocksPerDay;
     const rewardPerDay = rewardPerBlock * numOfBlocksPerDay;
     const rewardPerYear = rewardPerDay * 365;
-    let { allocPoint } = await mineContract.poolInfos(4);
-    let totalAlloc = await mineContract.totalAllocPoint();
     let alloc = allocPoint.mul(100000).div(totalAlloc);
 
     const rewardPerYearUsd = rewardPerYear * price * (alloc.toNumber() / 100000);

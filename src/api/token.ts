@@ -3,8 +3,9 @@ import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { getNetworkName, toEth } from "src/utils/common";
 import { Contract, providers, BigNumber, Signer, constants, ethers } from "ethers";
 import { erc20ABI } from "wagmi";
-import { providers as multicallProviders } from "@0xsequence/multicall";
 import { utils } from "ethers/lib/ethers";
+import { getMulticallProvider } from "src/config/multicall";
+import { multicallProvider } from "src/context/WalletProvider";
 
 export const getPrice = async (tokenAddress: string, chainId: number) => {
     try {
@@ -24,11 +25,16 @@ export const getPrice = async (tokenAddress: string, chainId: number) => {
 export const getBalance = async (
     tokenAddress: string,
     address: string,
-    provider: providers.Provider | Signer
+    provider: providers.Provider
 ): Promise<BigNumber> => {
     try {
-        const contract = new Contract(tokenAddress, ["function balanceOf(address) view returns (uint)"], provider);
-        const balance = await contract.balanceOf(address);
+        const contract = new Contract(
+            tokenAddress,
+            ["function balanceOf(address) view returns (uint)"],
+            multicallProvider
+        );
+        const balancePromise = contract.balanceOf(address);
+        const balance = await balancePromise;
         return balance;
     } catch (error) {
         console.error(error);
@@ -118,7 +124,6 @@ export const getLpPrice = async (lpAddress: string, provider: providers.Provider
         if (price !== 0) return price;
 
         // else calculate price from lp contract
-        const multicallProvider = new multicallProviders.MulticallProvider(provider);
 
         // get lp info
         const lpContract = new Contract(

@@ -70,7 +70,7 @@ export const deposit = async ({
         const poolId = await lpContract.poolId();
         // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
         if (max) {
-            const balance = await getBalance(farm.token1, currentWallet, signer);
+            const balance = await getBalance(farm.token1, currentWallet, signer.provider!);
             formattedBal = balance;
         }
         await approveErc20(farm.token1, farm.zapper_addr, formattedBal, currentWallet, signer);
@@ -130,7 +130,7 @@ export const withdraw = async ({
             validateNumberDecimals(withdrawAmount, farm.withdraw_decimals || farm.decimals),
             farm.withdraw_decimals || farm.decimals
         );
-        const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer);
+        const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
         const lpContract = new Contract(farm.lp_address, farm.lp_abi, signer);
         const poolId = await lpContract.poolId();
 
