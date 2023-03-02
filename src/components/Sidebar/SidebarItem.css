@@ -9,6 +9,7 @@
   margin-bottom: 10px;
   color: white;
   padding: 5px;
+  cursor: pointer;
 }
 
 .sideitems--light {
@@ -36,12 +37,10 @@
 
 .sideitems:hover>div {
   color: var(--color_primary);
-  cursor: pointer;
 }
 
 .sideitems--light:hover {
   color: black;
-  cursor: pointer;
 }
 
 .icon {
