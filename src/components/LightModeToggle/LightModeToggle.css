@@ -3,7 +3,8 @@
   display: flex;
   align-items: center;
   justify-content: left;
-  align-self: bottom;
+  padding-bottom: 100px;
+  
 }
 
 .lighttoggle:hover {
