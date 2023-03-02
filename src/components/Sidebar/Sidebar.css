@@ -8,7 +8,7 @@
   padding-top: 20px;
   top: 0;
   border-right: 1px solid #022b55;
-  justify-content: space-between;
+  justify-content: flex-start;
   box-sizing: border-box;
 }
 
