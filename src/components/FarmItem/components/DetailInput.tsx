@@ -9,7 +9,7 @@ import useEthPrice from "src/hooks/useEthPrice";
 import useWallet from "src/hooks/useWallet";
 import { Farm, FarmDetails } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
-import { validateNumberDecimals } from "src/utils/common";
+import { toFixedFloor, validateNumberDecimals } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
 import farmFunctions from "src/api/pools";
 import { FARM_DATA } from "src/config/constants/query";
@@ -40,31 +40,23 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
             if (shouldUseLp) {
-                return (
-                    (showInUsd
-                        ? Number(Number(farmData?.Max_Token_Deposit_Balance_Dollar).toFixed(2))
-                        : Number(Number(farmData?.Max_Token_Deposit_Balance).toFixed(6))) || 0
-                );
+                return showInUsd
+                    ? parseFloat(farmData?.Max_Token_Deposit_Balance_Dollar || "0")
+                    : parseFloat(farmData?.Max_Token_Deposit_Balance || "0");
             } else {
-                return (
-                    (showInUsd
-                        ? Number(Number(farmData?.Max_Zap_Deposit_Balance_Dollar).toFixed(2))
-                        : Number(Number(farmData?.Max_Zap_Deposit_Balance).toFixed(6))) || 0
-                );
+                return showInUsd
+                    ? parseFloat(farmData?.Max_Zap_Deposit_Balance_Dollar || "0")
+                    : parseFloat(farmData?.Max_Zap_Deposit_Balance || "0");
             }
         } else {
             if (shouldUseLp) {
-                return (
-                    (showInUsd
-                        ? Number(Number(farmData?.Max_Token_Withdraw_Balance_Dollar).toFixed(2))
-                        : Number(Number(farmData?.Max_Token_Withdraw_Balance).toFixed(6))) || 0
-                );
+                return showInUsd
+                    ? parseFloat(farmData?.Max_Token_Withdraw_Balance_Dollar || "0")
+                    : parseFloat(farmData?.Max_Token_Withdraw_Balance || "0");
             } else {
-                return (
-                    (showInUsd
-                        ? Number(Number(farmData?.Max_Zap_Withdraw_Balance_Dollar).toFixed(2))
-                        : Number(Number(farmData?.Max_Zap_Withdraw_Balance).toFixed(6))) || 0
-                );
+                return showInUsd
+                    ? parseFloat(farmData?.Max_Zap_Withdraw_Balance_Dollar || "0")
+                    : parseFloat(farmData?.Max_Zap_Withdraw_Balance || "0");
             }
         }
     }, [shouldUseLp, showInUsd, type, farmData]);
@@ -161,7 +153,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                 {!isLoading && (
                     <div style={{ textAlign: "right" }}>
                         {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
-                        {showInUsd ? `$ ${maxBalance.toFixed(2)}` : maxBalance}
+                        {showInUsd ? `$ ${toFixedFloor(maxBalance, 2)}` : toFixedFloor(maxBalance, 6)}
                     </div>
                 )}
                 <div></div>
@@ -232,55 +224,41 @@ const Description: React.FC<{ type: FarmTransactionType; farm: Farm; shouldUseLp
     if (type === FarmTransactionType.Deposit && shouldUseLp)
         return (
             <div>
-                Deposit your tokens for {farm.platform}'s{" "}
-                <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                    {farm.name}
+                Deposit into the{" "}
+                <a href={farm.source} className="span">
+                    {farm.url_name}
                 </a>{" "}
-                pool. Your tokens wil be staked on {farm.platform} for fees and rewards. All rewards are sold to
-                auto-compound your position. <br />
-                <br />
-                After depositing, remember to confirm the transaction in your wallet.{" "}
+                auto-compounding liquidity pool. "Max" excludes a little ETH for gas.
             </div>
         );
     else if (type === FarmTransactionType.Deposit && !shouldUseLp)
         return (
             <div>
-                Deposit with ETH directly into the {farm.platform} liquidity pool for{" "}
-                <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                    {farm.name}
-                </a>
-                . Your ETH will be swapped for LP tokens to earn fees and rewards, which are sold to auto-compound your
-                LP position. Note that "Max" leaves a small amount of ETH for gas. You'll need it to exit the farm
-                later.
-                <br />
-                <br />
-                After depositing, remember to confirm the transaction in your wallet.
+                Deposit into the{" "}
+                <a href={farm.source} className="span">
+                    {farm.url_name}
+                </a>{" "}
+                auto-compounding liquidity pool. "Max" excludes a little ETH for gas.
             </div>
         );
     else if (type === FarmTransactionType.Withdraw && shouldUseLp)
         return (
             <div>
-                Withdraw into tokens for the {farm.platform} liquidity pool for{" "}
-                <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                    {farm.name}
-                </a>
-                . You can re-stake it when you wish, or swap it for ETH or other tokens, including LP tokens, on our
-                exchange page.
-                <br /> <br />
-                After withdrawing, remember to confirm the transaction in your wallet.{" "}
+                Withdraw from the{" "}
+                <a href={farm.source} className="span">
+                    {farm.url_name}
+                </a>{" "}
+                liquidity pool.
             </div>
         );
     else if (type === FarmTransactionType.Withdraw && !shouldUseLp)
         return (
             <div>
-                Withdraw into ETH directly from {farm.platform} liquidity pool for{" "}
-                <a href="https://app.sushi.com/legacy/pool?chainId=42161" className="span">
-                    {farm.name}
-                </a>
-                . Note that the balance is shown in terms of LP tokens, but once withdrawn, you will receive ETH in your
-                wallet.
-                <br /> <br />
-                After withdrawing, remember to confirm the transaction(s) in your wallet.{" "}
+                Withdraw from the{" "}
+                <a href={farm.source} className="span">
+                    {farm.url_name}
+                </a>{" "}
+                liquidity pool.
             </div>
         );
     return null;
