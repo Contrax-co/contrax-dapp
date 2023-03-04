@@ -224,55 +224,41 @@ const Description: React.FC<{ type: FarmTransactionType; farm: Farm; shouldUseLp
     if (type === FarmTransactionType.Deposit && shouldUseLp)
         return (
             <div>
-                Deposit your tokens for {farm.platform}'s{" "}
+                Deposit into the{" "}
                 <a href={farm.source} className="span">
                     {farm.url_name}
                 </a>{" "}
-                pool. Your tokens wil be staked on {farm.platform} for fees and rewards. All rewards are sold to
-                auto-compound your position. <br />
-                <br />
-                After depositing, remember to confirm the transaction in your wallet.{" "}
+                auto-compounding liquidity pool. "Max" excludes a little ETH for gas.
             </div>
         );
     else if (type === FarmTransactionType.Deposit && !shouldUseLp)
         return (
             <div>
-                Deposit with ETH directly into the {farm.platform} liquidity pool for{" "}
+                Deposit into the{" "}
                 <a href={farm.source} className="span">
                     {farm.url_name}
-                </a>
-                . Your ETH will be swapped for LP tokens to earn fees and rewards, which are sold to auto-compound your
-                LP position. Note that "Max" leaves a small amount of ETH for gas. You'll need it to exit the farm
-                later.
-                <br />
-                <br />
-                After depositing, remember to confirm the transaction in your wallet.
+                </a>{" "}
+                auto-compounding liquidity pool. "Max" excludes a little ETH for gas.
             </div>
         );
     else if (type === FarmTransactionType.Withdraw && shouldUseLp)
         return (
             <div>
-                Withdraw into tokens for the {farm.platform} liquidity pool for{" "}
+                Withdraw from the{" "}
                 <a href={farm.source} className="span">
                     {farm.url_name}
-                </a>
-                . You can re-stake it when you wish, or swap it for ETH or other tokens, including LP tokens, on our
-                exchange page.
-                <br /> <br />
-                After withdrawing, remember to confirm the transaction in your wallet.{" "}
+                </a>{" "}
+                liquidity pool.
             </div>
         );
     else if (type === FarmTransactionType.Withdraw && !shouldUseLp)
         return (
             <div>
-                Withdraw into ETH directly from {farm.platform} liquidity pool for{" "}
+                Withdraw from the{" "}
                 <a href={farm.source} className="span">
                     {farm.url_name}
-                </a>
-                . Note that the balance is shown in terms of LP tokens, but once withdrawn, you will receive ETH in your
-                wallet.
-                <br /> <br />
-                After withdrawing, remember to confirm the transaction(s) in your wallet.{" "}
+                </a>{" "}
+                liquidity pool.
             </div>
         );
     return null;
