@@ -1,0 +1,31 @@
+.heading {
+    & h1 {
+        margin: 4px 0px;
+        text-align: center;
+    }
+}
+.caption {
+    font-size: large;
+    font-weight: bold;
+    text-align: center;
+}
+.key {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    .copyIcon {
+        cursor: pointer;
+        color: inherit;
+    }
+    & p {
+        max-width: 377px;
+        width: -webkit-fill-available;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+.qrCode {
+    text-align: center;
+}

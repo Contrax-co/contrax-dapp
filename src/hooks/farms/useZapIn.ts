@@ -21,10 +21,10 @@ const useZapIn = (farm: Farm) => {
     const _zapIn = async ({ ethZapAmount, max }: ZapIn) => {
         const cb = async () => {
             refetchBalance();
-            // @ts-ignore
             await queryClient.refetchQueries({
                 queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
                 type: "active",
+                exact: true,
             });
         };
         await farmFunctions[farm.id].zapIn({ zapAmount: ethZapAmount, currentWallet, signer, chainId, max, cb });

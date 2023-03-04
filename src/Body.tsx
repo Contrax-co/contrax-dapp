@@ -43,8 +43,8 @@ function Body() {
                                     <Route path="" element={<Dashboard />} />
                                     <Route path="/farms" element={<Farms />} />
                                     <Route path="/exchange" element={<Exchange />} />
-                                    <Route path="create-token" element={<CreateToken />} />
-                                    <Route path="create-pool" element={<CreatePool />} />
+                                    {/* <Route path="create-token" element={<CreateToken />} />
+                                    <Route path="create-pool" element={<CreatePool />} /> */}
                                     <Route path="test" element={<Test />} />
                                     <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
                                 </Route>

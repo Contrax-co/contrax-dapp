@@ -20,10 +20,10 @@ const useZapOut = (farm: Farm) => {
 
     const _zapOut = async ({ withdrawAmt, max }: { withdrawAmt: number; max?: boolean }) => {
         const cb = async () => {
-            // @ts-ignore
             await queryClient.refetchQueries({
                 queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
                 type: "active",
+                exact: true,
             });
         };
         await farmFunctions[farm.id].zapOut({ zapAmount: withdrawAmt, currentWallet, signer, chainId, max, cb });

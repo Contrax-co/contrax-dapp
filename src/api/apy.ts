@@ -122,7 +122,7 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
 const getSwapFishApy = async (pairAddress: string, chainId: number, provider: providers.Provider, poolId: number) => {
     let query = `{
         pair(id: "${pairAddress.toLowerCase()}") {
-          name
+            name
           liquidityUSD
           apr
           feesUSD
@@ -142,6 +142,11 @@ const getSwapFishApy = async (pairAddress: string, chainId: number, provider: pr
     const cakePerYearUsd =
         (Number(toEth(cakePerYear)) * cakePrice * allocPoint.toNumber()) / totalAllocPoint.toNumber();
     let rewardsApr = (cakePerYearUsd / Number(pairData.liquidityUSD)) * 100;
+
+    if (pairAddress === "0x78d9B037Fb873AfCf4e3E466aDfAfa8A5258CdaD") {
+        // Swapfish USDC-AGEUR liquidity pool liquidity is coming half from theGraph so we have to divide the rewards by 2 to account for half liquidity value coming from theGraph
+        rewardsApr /= 2;
+    }
     // const cakePerYearUsd = cakePerYear.mul(cakePrice).mul(allocPoint).div(totalAllocPoint);
     // let rewardsApr = Number(toEth(cakePerYearUsd.div(pairData.liquidityUSD).mul(100)));
     // const apr = Number(pairData.apr) * 100 + rewardsApr;
@@ -222,20 +227,29 @@ const getDodoApy = async (pairAddress: string, provider: providers.Provider, cha
 };
 
 const getFraxApy = async () => {
-    const res = await axios.get(`https://api.allorigins.win/get?url=${FRAX_APR_API_URL}`);
-    const apr =
-        JSON.parse(res.data.contents).find(
-            (item: any) => item.pid === 3 && item.token === "FRAX" && item.chainId === 110
-        ).apr * 100;
+    try {
+        const res = await axios.get(`https://api.allorigins.win/get?url=${FRAX_APR_API_URL}`);
+        const apr =
+            JSON.parse(res.data.contents).find(
+                (item: any) => item.pid === 3 && item.token === "FRAX" && item.chainId === 110
+            ).apr * 100;
 
-    const compounding = calcCompoundingApy(apr);
-    const apy = compounding + apr;
-    return {
-        feeApr: apr,
-        rewardsApr: 0,
-        apy,
-        compounding: compounding,
-    };
+        const compounding = calcCompoundingApy(apr);
+        const apy = compounding + apr;
+        return {
+            feeApr: apr,
+            rewardsApr: 0,
+            apy,
+            compounding: compounding,
+        };
+    } catch (error) {
+        return {
+            feeApr: 0,
+            rewardsApr: 0,
+            apy: 0,
+            compounding: 0,
+        };
+    }
 };
 
 export const getApy = async (

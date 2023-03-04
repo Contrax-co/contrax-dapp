@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Token } from "src/types";
-import { floorToFixed } from "src/utils/common";
+import { toFixedFloor } from "src/utils/common";
 import useFarms from "./farms/useFarms";
 import useBalances from "./useBalances";
 import usePriceOfTokens from "./usePriceOfTokens";
@@ -63,11 +63,11 @@ export const useTokens = () => {
                 balance:
                     formattedBalances[address] < 1 / 10 ** tokenBalDecimalPlaces
                         ? formattedBalances[address].toPrecision(2).slice(0, -1)
-                        : floorToFixed(formattedBalances[address], tokenBalDecimalPlaces).toString(),
+                        : toFixedFloor(formattedBalances[address], tokenBalDecimalPlaces).toString(),
                 usdBalance:
                     prices[address] * formattedBalances[address] < 1 / 10 ** usdBalDecimalPlaces
                         ? (prices[address] * formattedBalances[address]).toPrecision(2).slice(0, -1)
-                        : floorToFixed(prices[address] * formattedBalances[address], usdBalDecimalPlaces).toString(),
+                        : toFixedFloor(prices[address] * formattedBalances[address], usdBalDecimalPlaces).toString(),
                 logo: isToken1 ? farm?.logo1 : farm?.logo2 || "",
                 name: isToken1 ? farm?.name1 : farm?.name2 || "",
             };
@@ -78,7 +78,7 @@ export const useTokens = () => {
             balance:
                 ethBalance < 1 / 10 ** tokenBalDecimalPlaces
                     ? ethBalance.toPrecision(2).slice(0, -1)
-                    : floorToFixed(ethBalance, tokenBalDecimalPlaces).toString(),
+                    : toFixedFloor(ethBalance, tokenBalDecimalPlaces).toString(),
             decimals: 18,
             logo: ethLogo,
             name: "ETH",
@@ -86,7 +86,7 @@ export const useTokens = () => {
             usdBalance:
                 ethBalance * prices[ethAddress] < 1 / 10 ** usdBalDecimalPlaces
                     ? (ethBalance * prices[ethAddress]).toPrecision(2).slice(0, -1)
-                    : floorToFixed(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
+                    : toFixedFloor(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
         };
         tokens.unshift(ethToken);
         setTokens(tokens);

@@ -8,21 +8,26 @@ import useWallet from "../useWallet";
 const useFarmDetails = (farm?: Farm | number) => {
     const { currentWallet, provider, balanceBigNumber, balance } = useWallet();
     const { NETWORK_NAME } = useConstants();
-
+         
     const {
         data: farmData,
         refetch,
-        isLoading,
+        isInitialLoading,
+        ...query
     } = useQuery(
         // @ts-ignore
         FARM_DATA(currentWallet, NETWORK_NAME, farm.id ? farm.id : farm, balance),
-        // @ts-ignore
-        () => farmFunctions[farm.id ? farm.id : farm]?.getFarmData(provider, currentWallet, balanceBigNumber),
+        () =>
+            currentWallet && farm && provider
+                ? // @ts-ignore
+                  farmFunctions[farm.id ? farm.id : farm]?.getFarmData(provider, currentWallet, balanceBigNumber)
+                : null,
         {
             enabled: !!currentWallet && !!provider && !!farm,
         }
     );
-    return { farmData, isLoading, refetch };
+    // console.log(JSON.parse(JSON.stringify(query)), isInitialLoading, farmData);
+    return { farmData, isLoading: isInitialLoading && !farmData, refetch };
 };
 
 export default useFarmDetails;
