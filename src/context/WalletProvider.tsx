@@ -17,6 +17,8 @@ import {
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import useNotify from "src/hooks/useNotify";
 import { getNetworkName } from "src/utils/common";
+import { getMulticallProvider } from "src/config/multicall";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 interface IWalletContext {
     /**
@@ -71,23 +73,13 @@ interface IWalletContext {
     mainnetBalance: ethers.BigNumber;
 }
 
-export const WalletContext = React.createContext<IWalletContext>({
-    // currentWallet: "",
-    // displayAccount: "",
-    // connectWallet: () => Promise<any>,
-    // networkId: defaultChainId,
-    // logout: () => {},
-    // signer: undefined,
-    // balance: 0,
-    // balanceBigNumber: ethers.BigNumber.from(0),
-    // refetchBalance: () => {},
-    // chains: [],
-    // switchNetworkAsync: undefined,
-} as IWalletContext);
+export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
 
 interface IProps {
     children: React.ReactNode;
 }
+
+export var multicallProvider: MulticallProvider;
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
@@ -159,6 +151,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             setNetworkId(defaultChainId);
         }
     }, [chain]);
+
+    React.useEffect(() => {
+        multicallProvider = getMulticallProvider(provider);
+    }, [provider]);
 
     return (
         <WalletContext.Provider

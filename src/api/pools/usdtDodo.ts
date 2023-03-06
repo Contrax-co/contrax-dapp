@@ -66,7 +66,7 @@ export const deposit = async ({
         let formattedBal = utils.parseUnits(depositAmount.toString(), farm.decimals);
         // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
         if (max) {
-            const balance = await getBalance(farm.token1, currentWallet, signer);
+            const balance = await getBalance(farm.token1, currentWallet, signer.provider!);
             formattedBal = balance;
         }
         await approveErc20(farm.token1, farm.zapper_addr, formattedBal, currentWallet, signer);
@@ -123,7 +123,7 @@ export const withdraw = async ({
          */
         let formattedBal;
         formattedBal = utils.parseUnits(validateNumberDecimals(withdrawAmount), farm.decimals || 18);
-        const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer);
+        const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
 
         await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer);
         await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, signer);

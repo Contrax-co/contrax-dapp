@@ -68,7 +68,7 @@ export const deposit = async ({
          */
         let formattedBal;
 
-        const lpBalance = await getBalance(farm.lp_address, currentWallet, signer);
+        const lpBalance = await getBalance(farm.lp_address, currentWallet, signer.provider!);
         if (max) {
             // Deposit all
             formattedBal = lpBalance;

@@ -8,6 +8,7 @@ import { Token as UniToken } from "@uniswap/sdk-core";
 import { Pool } from "@uniswap/v3-sdk";
 import { Apys } from "src/types";
 import { calcCompoundingApy } from "src/utils/common";
+import { multicallProvider } from "src/context/WalletProvider";
 
 const addresses = {
     bnGmxAddress: "0x35247165119B69A40edD5304969560D0ef486921",
@@ -216,21 +217,19 @@ export const getGmxApyArbitrum = async (provider?: providers.Provider, currentWa
     if (!currentWallet) {
         currentWallet = Wallet.createRandom().address;
     }
-    const reader = new Contract(addresses.readerAddress, ReaderV2, provider);
-    const rewardReader = new Contract(addresses.rewardReaderAddress, RewardReader, provider);
-    const vault = new Contract(addresses.vaultAddress, Vault, provider);
-    const uniPool = new Contract(addresses.UniswapGmxEthPool, UniPool, provider);
-    const walletBalances = await reader.getTokenBalancesWithSupplies(currentWallet, walletTokens);
-    const depositBalances = await rewardReader.getDepositBalances(
-        currentWallet,
-        depositTokens,
-        rewardTrackersForDepositBalances
-    );
-    const stakingInfo = await rewardReader.getStakingInfo(currentWallet, rewardTrackersForStakingInfo);
-    const nativeTokenPrice = await vault.getMinPrice(addresses.nativeTokenAddress);
-    const uniPoolSlot0 = await uniPool.slot0();
     const ethAddress = addresses.WETH;
-    const ethPrice = await vault.getMinPrice(ethAddress);
+    const reader = new Contract(addresses.readerAddress, ReaderV2, multicallProvider);
+    const rewardReader = new Contract(addresses.rewardReaderAddress, RewardReader, multicallProvider);
+    const vault = new Contract(addresses.vaultAddress, Vault, multicallProvider);
+    const uniPool = new Contract(addresses.UniswapGmxEthPool, UniPool, multicallProvider);
+    const [walletBalances, depositBalances, stakingInfo, nativeTokenPrice, uniPoolSlot0, ethPrice] = await Promise.all([
+        reader.getTokenBalancesWithSupplies(currentWallet, walletTokens),
+        rewardReader.getDepositBalances(currentWallet, depositTokens, rewardTrackersForDepositBalances),
+        rewardReader.getStakingInfo(currentWallet, rewardTrackersForStakingInfo),
+        vault.getMinPrice(addresses.nativeTokenAddress),
+        uniPool.slot0(),
+        vault.getMinPrice(ethAddress),
+    ]);
 
     const getGmxPrice = () => {
         if (uniPoolSlot0 && ethPrice) {

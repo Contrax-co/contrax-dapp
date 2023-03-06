@@ -11,13 +11,13 @@ import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
 
 const useDeposit = (farm: Farm) => {
-    const { signer, currentWallet, networkId: chainId, balance } = useWallet();
+    const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
 
     const _deposit = async ({ depositAmount, max }: { depositAmount: number; max?: boolean }) => {
         const cb = async () => {
             await queryClient.refetchQueries({
-                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
+                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
                 type: "active",
                 exact: true,
             });
