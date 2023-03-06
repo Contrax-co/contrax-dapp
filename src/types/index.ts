@@ -176,4 +176,8 @@ export interface FarmData {
      * Price of token which is used in zapping
      */
     ZAP_TOKEN_PRICE: number;
+    /**
+     * Optional Extra data
+     */
+    DATA?: any;
 }

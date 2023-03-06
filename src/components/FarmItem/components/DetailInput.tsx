@@ -16,6 +16,7 @@ import { FARM_DATA } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
+import Loader from "src/components/Loader/Loader";
 
 interface Props {
     farm: Farm;
@@ -138,6 +139,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
 
     return (
         <div className={`${styles.container} ${lightMode && styles.container_light}`}>
+            {(isZapping || isZappingOut || isDepositing || isWithdrawing) && <Loader />}
             {/* Left */}
             <div>
                 <div>Description</div>

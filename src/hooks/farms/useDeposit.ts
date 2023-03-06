@@ -22,7 +22,8 @@ const useDeposit = (farm: Farm) => {
                 exact: true,
             });
         };
-        await farmFunctions[farm.id].deposit({ depositAmount, currentWallet, signer, chainId, max, cb });
+        await farmFunctions[farm.id].deposit({ depositAmount, currentWallet, signer, chainId, max });
+        await cb();
     };
 
     const {

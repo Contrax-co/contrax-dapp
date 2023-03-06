@@ -43,8 +43,47 @@ export const getFarmData = async (
         ZAP_TOKEN_PRICE: ethPrice,
         Zap_Enabled: true,
         ID: farm.id,
+        DATA: {
+            ethPrice,
+            lpPrice,
+            lpBalance,
+            vaultBalance,
+            ethBalance,
+        },
     };
     return farmData;
+};
+export const getModifiedFarmDataByEthBalance = (farmData: FarmData, ethBalance: BigNumber) => {
+    const { ethPrice, lpPrice, lpBalance, vaultBalance } = farmData.DATA;
+
+    const result = {
+        Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+        Max_Zap_Withdraw_Balance: ((Number(toEth(vaultBalance)) * lpPrice) / ethPrice).toString(),
+        Max_Token_Withdraw_Balance: toEth(vaultBalance),
+        Max_Token_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+        Max_Token_Deposit_Balance: toEth(lpBalance),
+        Max_Token_Deposit_Balance_Dollar: (Number(toEth(lpBalance)) * lpPrice).toString(),
+        Max_Zap_Deposit_Balance_Dollar: (Number(toEth(ethBalance)) * ethPrice).toString(),
+        Max_Zap_Deposit_Balance: toEth(ethBalance),
+        Token_Token_Symbol: farm.name,
+        Zap_Token_Symbol: "ETH",
+        Token_Deposit_Token_Address: farm.lp_address,
+        Token_Withdraw_Token_Address: farm.lp_address,
+        Zap_Deposit_Token_Address: constants.AddressZero,
+        Zap_Withdraw_Token_Address: constants.AddressZero,
+        TOKEN_PRICE: lpPrice,
+        ZAP_TOKEN_PRICE: ethPrice,
+        Zap_Enabled: true,
+        ID: farm.id,
+        DATA: {
+            ethPrice,
+            lpPrice,
+            lpBalance,
+            vaultBalance,
+            ethBalance,
+        },
+    };
+    return result;
 };
 
 export const deposit = async ({

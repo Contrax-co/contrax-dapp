@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Farm } from "src/types";
+import { Farm, FarmData } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
@@ -8,6 +8,9 @@ import useFarmsBalances from "./useFarmsBalances";
 import useFarmsTotalSupply from "./useFarmsTotalSupply";
 import { queryClient } from "src/config/reactQuery";
 import farmFunctions from "src/api/pools";
+import { toWei } from "src/utils/common";
+import { multicallProvider } from "src/context/WalletProvider";
+import useFarmDetails from "./useFarmDetails";
 
 export interface ZapIn {
     ethZapAmount: number;
@@ -15,8 +18,9 @@ export interface ZapIn {
 }
 
 const useZapIn = (farm: Farm) => {
-    const { signer, currentWallet, refetchBalance, networkId: chainId } = useWallet();
+    const { signer, currentWallet, refetchBalance, networkId: chainId, balanceBigNumber } = useWallet();
     const { NETWORK_NAME } = useConstants();
+    const { ethBalanceUpdate } = useFarmDetails(farm);
 
     const _zapIn = async ({ ethZapAmount, max }: ZapIn) => {
         const cb = async () => {
@@ -27,7 +31,9 @@ const useZapIn = (farm: Farm) => {
                 exact: true,
             });
         };
-        await farmFunctions[farm.id].zapIn({ zapAmount: ethZapAmount, currentWallet, signer, chainId, max, cb });
+        await farmFunctions[farm.id].zapIn({ zapAmount: ethZapAmount, currentWallet, signer, chainId, max });
+        await ethBalanceUpdate();
+        await cb();
     };
 
     const {

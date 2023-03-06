@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import farmFunctions from "src/api/pools";
 import { FARM_DATA } from "src/config/constants/query";
-import { Farm } from "src/types";
+import { multicallProvider } from "src/context/WalletProvider";
+import { Farm, FarmData } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 
@@ -35,7 +36,22 @@ const useFarmDetails = (farm?: Farm) => {
         }
     );
 
-    return { farmData, isLoading: isInitialLoading && !farmData, refetch, refetchAllFarms, isRefetching };
+    const ethBalanceUpdate = async () => {
+        const updatedBalancePromise = multicallProvider.getBalance(currentWallet);
+        const updatedBalance = await updatedBalancePromise;
+        queryClient.setQueriesData<FarmData>(["farm", "data"], (old) => {
+            return farmFunctions[old!.ID].getModifiedFarmDataByEthBalance(old!, updatedBalance);
+        });
+    };
+
+    return {
+        farmData,
+        isLoading: isInitialLoading && !farmData,
+        refetch,
+        refetchAllFarms,
+        isRefetching,
+        ethBalanceUpdate,
+    };
 };
 
 export default useFarmDetails;
