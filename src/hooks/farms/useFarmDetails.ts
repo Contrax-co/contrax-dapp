@@ -40,7 +40,9 @@ const useFarmDetails = (farm?: Farm) => {
         const updatedBalancePromise = multicallProvider.getBalance(currentWallet);
         const updatedBalance = await updatedBalancePromise;
         queryClient.setQueriesData<FarmData>(["farm", "data"], (old) => {
-            return farmFunctions[old!.ID].getModifiedFarmDataByEthBalance(old!, updatedBalance);
+            if (old) {
+                return farmFunctions[old!.ID].getModifiedFarmDataByEthBalance(old!, updatedBalance);
+            }
         });
     };
 
