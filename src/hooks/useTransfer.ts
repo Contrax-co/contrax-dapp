@@ -1,8 +1,6 @@
-import { useEffect, useState, useMemo } from "react";
-import { usePrepareSendTransaction, erc20ABI } from "wagmi";
+import { erc20ABI } from "wagmi";
 import { prepareSendTransaction, sendTransaction } from "@wagmi/core";
 import useWallet from "./useWallet";
-import { toEth, toWei } from "src/utils/common";
 import { useIsMutating } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { TRANSFER_ETH, TRANSFER_TOKEN } from "src/config/constants/query";

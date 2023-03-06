@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Farm } from "src/types";
+import { Farm, FarmData } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import * as ethers from "ethers";
@@ -13,10 +13,12 @@ import { validateNumberDecimals } from "src/utils/common";
 import { useApprovalErc20 } from "../useApproval";
 import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
+import useFarmDetails from "./useFarmDetails";
 
 const useZapOut = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
+    const { ethBalanceUpdate } = useFarmDetails(farm);
 
     const _zapOut = async ({ withdrawAmt, max }: { withdrawAmt: number; max?: boolean }) => {
         const cb = async () => {
@@ -26,7 +28,10 @@ const useZapOut = (farm: Farm) => {
                 exact: true,
             });
         };
-        await farmFunctions[farm.id].zapOut({ zapAmount: withdrawAmt, currentWallet, signer, chainId, max, cb });
+        await farmFunctions[farm.id].zapOut({ zapAmount: withdrawAmt, currentWallet, signer, chainId, max });
+        await ethBalanceUpdate();
+
+        await cb();
     };
 
     const {

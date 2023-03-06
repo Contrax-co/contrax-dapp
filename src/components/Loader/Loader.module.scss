@@ -1,0 +1,87 @@
+@import "../../styles/variables";
+
+.center-body {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 20px;
+    right: 50px;
+}
+.loader-circle-21 {
+    mix-blend-mode: difference;
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    // background-color: white;
+    border-radius: 360px;
+}
+.loader-circle-21-dark {
+    // background-color: $background-secondary;
+}
+.loader-circle-21:before,
+.loader-circle-21:after {
+    content: "";
+    display: block;
+    height: 30px;
+    width: 30px;
+    border: 2px solid $background-secondary;
+    border-radius: 50%;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    animation: linear anmR-loader-circle-21 1s infinite;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -17px;
+    margin-top: -17px;
+}
+.loader-circle-21:before {
+    height: 20px;
+    width: 20px;
+    margin-left: -12px;
+    margin-top: -12px;
+    border-color: transparent $background-secondary;
+    animation: linear anmL-loader-circle-21 0.5s infinite;
+}
+
+.loader-circle-21 span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 10px;
+    width: 10px;
+    background: $background-secondary;
+    border-radius: 50%;
+    margin-left: -5px;
+    margin-top: -5px;
+    animation: linear loader-circle-21-pulse 1s infinite;
+}
+.loader-circle-21-dark:before,
+.loader-circle-21-dark:after {
+    border-color: transparent white;
+}
+
+.loader-circle-21-dark span {
+    background: white;
+}
+@keyframes loader-circle-21-pulse {
+    0%,
+    100% {
+        transform: scale(0, 0);
+    }
+    50% {
+        transform: scale(1.5, 1.5);
+    }
+}
+@keyframes anmR-loader-circle-21 {
+    to {
+        transform: rotate(180deg);
+    }
+}
+@keyframes anmL-loader-circle-21 {
+    from {
+        transform: rotate(180deg);
+    }
+}

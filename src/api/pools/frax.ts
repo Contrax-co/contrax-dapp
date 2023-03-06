@@ -41,10 +41,47 @@ export const getFarmData = async (
         ZAP_TOKEN_PRICE: 0,
         Zap_Enabled: true,
         ID: farm.id,
+        DATA: {
+            tokenPrice,
+            tokenBalance,
+            vaultBalance,
+        },
     };
     return farmData;
 };
 
+export const getModifiedFarmDataByEthBalance = (farmData: FarmData, ethBalance: BigNumber) => {
+    const { tokenPrice, tokenBalance, vaultBalance } = farmData.DATA;
+
+    const result = {
+        Max_Zap_Withdraw_Balance_Dollar: "0",
+        Max_Zap_Withdraw_Balance: "0",
+        Max_Token_Withdraw_Balance: toEth(vaultBalance, farm.withdraw_decimals || farm.decimals),
+        Max_Token_Withdraw_Balance_Dollar: (
+            Number(toEth(vaultBalance, farm.withdraw_decimals || farm.decimals)) * tokenPrice
+        ).toString(),
+        Max_Token_Deposit_Balance: toEth(tokenBalance, farm.decimals),
+        Max_Token_Deposit_Balance_Dollar: (Number(toEth(tokenBalance, farm.decimals)) * tokenPrice).toString(),
+        Max_Zap_Deposit_Balance_Dollar: "0",
+        Max_Zap_Deposit_Balance: "0",
+        Token_Token_Symbol: farm.name,
+        Zap_Token_Symbol: "",
+        Token_Deposit_Token_Address: farm.lp_address,
+        Token_Withdraw_Token_Address: farm.lp_address,
+        Zap_Deposit_Token_Address: farm.token1,
+        Zap_Withdraw_Token_Address: farm.token1,
+        TOKEN_PRICE: tokenPrice,
+        ZAP_TOKEN_PRICE: 0,
+        Zap_Enabled: true,
+        ID: farm.id,
+        DATA: {
+            tokenPrice,
+            tokenBalance,
+            vaultBalance,
+        },
+    };
+    return result;
+};
 export const deposit = async ({
     depositAmount,
     currentWallet,

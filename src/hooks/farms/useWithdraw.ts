@@ -11,7 +11,6 @@ import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
 
 const useWithdraw = (farm: Farm) => {
-    const { refetch: refetchVaultBalance } = useBalances([{ address: farm.vault_addr, decimals: farm.decimals }]);
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
 
@@ -23,7 +22,8 @@ const useWithdraw = (farm: Farm) => {
                 exact: true,
             });
         };
-        await farmFunctions[farm.id].withdraw({ withdrawAmount, currentWallet, signer, chainId, max, cb });
+        await farmFunctions[farm.id].withdraw({ withdrawAmount, currentWallet, signer, chainId, max });
+        await cb();
     };
 
     const {
