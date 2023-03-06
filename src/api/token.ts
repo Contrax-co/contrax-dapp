@@ -1,15 +1,17 @@
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
-import { getNetworkName, toEth } from "src/utils/common";
-import { Contract, providers, BigNumber, Signer, constants, ethers } from "ethers";
+import { getNetworkName } from "src/utils/common";
+import { Contract, providers, BigNumber, Signer, constants } from "ethers";
 import { erc20ABI } from "wagmi";
 import { utils } from "ethers/lib/ethers";
-import { getMulticallProvider } from "src/config/multicall";
 import { multicallProvider } from "src/context/WalletProvider";
 
 export const getPrice = async (tokenAddress: string, chainId: number) => {
     try {
-        const res = await axios.get(coinsLamaPriceByChainId[chainId] + tokenAddress);
+        const res = await axios.get(coinsLamaPriceByChainId[chainId] + tokenAddress, {
+            cache: true,
+        });
+        
         const prices = JSON.stringify(res.data);
         const parse = JSON.parse(prices);
 
