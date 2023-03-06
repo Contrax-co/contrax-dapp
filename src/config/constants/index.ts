@@ -12,6 +12,7 @@ export const defaultNetworkName = "arbitrum";
 export const APY_TOKEN = process.env.REACT_APP_APY_TOKEN;
 export const SOCKET_API_KEY = process.env.REACT_APP_SOCKET_API_KEY;
 export const COVALENT_API_TOKEN = process.env.REACT_APP_COVALENT_API_KEY;
+export const RAMP_SDK_HOST_API_KEY = process.env.REACT_APP_RAMP_SDK_HOST_API_KEY;
 export const COVALENT_HQ_URL = "https://api.covalenthq.com/v1";
 export const DODO_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum";
 export const FRAX_APR_API_URL = "https://stargate.finance/.netlify/functions/farms";

@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import { Bridge } from "@socket.tech/plugin";
-import { defaultChainId, SOCKET_API_KEY } from "src/config/constants";
+import { defaultChainId, RAMP_SDK_HOST_API_KEY, SOCKET_API_KEY } from "src/config/constants";
 import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
 
 import PoolButton from "src/components/PoolButton/PoolButton";
@@ -81,7 +81,7 @@ const Exchange: React.FC<IProps> = () => {
                 fiatCurrency: "USD",
                 hostAppName: "Contrax",
                 hostLogoUrl: `https://${window.location.host}/logo.svg`,
-                hostApiKey: "brs8apap5mdgrb5mfdk8pgmhnqxjugpr4nfpzg7f",
+                hostApiKey: RAMP_SDK_HOST_API_KEY,
                 variant: "embedded-mobile",
                 containerNode: containerRef.current || undefined,
             }).show();
