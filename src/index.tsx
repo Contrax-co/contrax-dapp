@@ -6,6 +6,11 @@ import reportWebVitals from "./reportWebVitals";
 import "src/config/walletConfig";
 import { setUpNotifications, NotificationsProvider } from "reapop";
 import Notifications from "./components/Notifications/Notifications";
+import { Provider } from "react-redux";
+import store, { persistor } from "./state";
+import { PersistGate } from "redux-persist/integration/react";
+import AppProvider from "./context/AppProvider";
+import "src/api/interceptor";
 
 // Configuration for toast notifications
 setUpNotifications({
@@ -21,10 +26,16 @@ const root = ReactDOM.createRoot(document.getElementById("root")!);
 
 root.render(
     <React.StrictMode>
-        <NotificationsProvider>
-            <App />
-            <Notifications />
-        </NotificationsProvider>
+        <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+                <NotificationsProvider>
+                    <AppProvider>
+                        <App />
+                    </AppProvider>
+                    <Notifications />
+                </NotificationsProvider>
+            </PersistGate>
+        </Provider>
     </React.StrictMode>
 );
 
