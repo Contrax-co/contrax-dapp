@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { useDispatch, useSelector } from "react-redux";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import pricesReducer from "./prices/pricesReducer";
@@ -38,4 +38,4 @@ export type RootState = ReturnType<typeof store.getState>;
 export const persistor = persistStore(store);
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => useDispatch<AppDispatch>(); // Export a hook that can be reused to resolve types
-export const useAppSelector = (selector: (state: RootState) => any) => useSelector(selector);
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

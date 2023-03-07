@@ -1,10 +1,17 @@
+import { Farm } from "src/types";
+
 export interface StateInterface {
-  [key: string]: number;
+    prices: {
+        [key: string]: number;
+    };
+    isLoading: boolean;
+    isFetched: boolean;
 }
 
 export interface AddPrice {
-  [key: string]: number;
+    [key: string]: number;
 }
 export interface UpdatePricesActionPayload {
-  chainId:number
+    chainId: number;
+    farms: Farm[];
 }
