@@ -1,45 +1,20 @@
-import { useMemo } from "react";
-import { useQueries, QueryFunction } from "@tanstack/react-query";
-import { TOKEN_PRICE } from "src/config/constants/query";
-import useConstants from "./useConstants";
-import { getLpPrice, getPrice } from "src/api/token";
+import { useCallback } from "react";
 import useWallet from "./useWallet";
+import { useAppDispatch, useAppSelector } from "src/state";
+import { updatePrices } from "src/state/prices/pricesReducer";
+import useFarms from "./farms/useFarms";
 
-const usePriceOfTokens = (addresses: string[]) => {
-    const { NETWORK_NAME, CHAIN_ID } = useConstants();
-    const { provider } = useWallet();
+const usePriceOfTokens = () => {
+    const { farms } = useFarms();
+    const { isLoading, prices, isFetched } = useAppSelector((state) => state.prices);
+    const { networkId } = useWallet();
+    const dispatch = useAppDispatch();
 
-    const fetchPrice: QueryFunction<number> = async ({ queryKey }) => {
-        const tokenAddress = queryKey[3] as string;
-        const price = await getLpPrice(tokenAddress, provider, CHAIN_ID);
+    const reloadPrices = useCallback(() => {
+        dispatch(updatePrices({ farms, chainId: networkId }));
+    }, [farms, networkId]);
 
-        return price;
-    };
-
-    const results = useQueries({
-        queries: addresses.map((address) => ({
-            // Query key index should be changed in getPrice function as well if changed here
-            queryKey: TOKEN_PRICE(address || "", NETWORK_NAME),
-            queryFn: fetchPrice,
-            placeholderData: 0,
-        })),
-    });
-
-    const resultingPrices = useMemo(() => {
-        const obj: { [key: string]: number } = {};
-        addresses.forEach((address, index) => {
-            obj[address] = results[index].data || 0;
-        });
-        return obj;
-    }, [addresses, results]);
-
-    const prices = useMemo(() => resultingPrices, [JSON.stringify(resultingPrices)]);
-
-    const isLoading = useMemo(() => results.some((result) => result.isLoading || result.isPlaceholderData), [results]);
-
-    const isFetching = useMemo(() => results.some((result) => result.isFetching), [results]);
-
-    return { prices, isLoading, isFetching };
+    return { prices, isLoading: isLoading, isFetched, reloadPrices };
 };
 
 export default usePriceOfTokens;

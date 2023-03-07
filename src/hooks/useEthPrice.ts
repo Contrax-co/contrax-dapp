@@ -6,7 +6,7 @@ const useEthPrice = () => {
     const {
         prices: { [CONTRACTS.wethAddress]: price },
         isLoading,
-    } = usePriceOfTokens([CONTRACTS.wethAddress]);
+    } = usePriceOfTokens();
     return { price, isLoading };
 };
 

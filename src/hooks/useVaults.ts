@@ -9,9 +9,7 @@ import usePriceOfTokens from "./usePriceOfTokens";
 export const useVaults = (): { vaults: Vault[]; isLoading: boolean } => {
     const { farms } = useFarms();
     const { formattedBalances: usersVaultBalances, isLoading: isLoadingUserBalances } = useFarmsBalances();
-    const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens(
-        getLpAddressForFarmsPrice(farms)
-    );
+    const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens();
     const { allFarmApys, isLoading: isLoadingApys } = useFarmApys();
     const vaults = useMemo(() => {
         return farms

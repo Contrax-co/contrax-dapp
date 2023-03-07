@@ -9,18 +9,19 @@ import { useAppDispatch, useAppSelector } from "./state";
 import { updatePrices } from "./state/prices/pricesReducer";
 import useFarms from "./hooks/farms/useFarms";
 import useWallet from "./hooks/useWallet";
+import usePriceOfTokens from "./hooks/usePriceOfTokens";
 
 function Body() {
-    const { farms } = useFarms();
-    const dispatch = useAppDispatch();
-    const prices = useAppSelector((state) => state.prices.prices);
-    const { networkId } = useWallet();
-
-    console.log("prices", prices);
+    const { reloadPrices } = usePriceOfTokens();
 
     useEffect(() => {
-        dispatch(updatePrices({ farms, chainId: networkId }));
-    }, [farms, networkId]);
+        reloadPrices();
+        const interval = setInterval(() => {
+            reloadPrices();
+        }, 1000 * 60 * 5);
+        return () => clearInterval(interval);
+    }, [reloadPrices]);
+
     return (
         <Router>
             <Routes>

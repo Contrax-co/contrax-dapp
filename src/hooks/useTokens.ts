@@ -44,10 +44,7 @@ export const useTokens = () => {
         return arr;
     }, [farms]);
 
-    const { prices, isLoading: isLoadingPrices } = usePriceOfTokens([
-        ethAddress,
-        ...tokenAddresses.map((_) => _.address),
-    ]);
+    const { prices, isLoading: isLoadingPrices } = usePriceOfTokens();
 
     const { formattedBalances, refetch, isLoading: isLoadingBalances } = useBalances(tokenAddresses);
 

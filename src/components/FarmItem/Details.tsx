@@ -3,13 +3,11 @@ import { RiArrowUpSLine } from "react-icons/ri";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
-import { Farm, FarmDetails } from "src/types";
+import { Farm } from "src/types";
 import "./Details.css";
 import Toggle from "src/components/FarmItem/Toggle";
 import { getLpAddressForFarmsPrice } from "src/utils/common";
-import { ethers } from "ethers";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
-import useFarmsTotalSupply from "src/hooks/farms/useFarmsTotalSupply";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 
 interface Props {
@@ -36,7 +34,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
 
     const {
         prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
-    } = usePriceOfTokens([farm.token1, farm.token2 || ethers.constants.AddressZero, lpAddress]);
+    } = usePriceOfTokens();
     const { formattedBalances } = useBalances([
         { address: lpAddress, decimals: farm.decimals },
         { address: farm.vault_addr, decimals: farm.decimals },
