@@ -18,7 +18,6 @@ const initialState: StateInterface = { apys: apyObj, isLoading: false, isFetched
 export const fetchApys = createAsyncThunk(
     "apys/fetchApys",
     async ({ farms, chainId, multicallProvider }: FetchApysThunk, thunkApi) => {
-        console.log("fetcgubg");
         try {
             const promises = farms.map((farm) => getApy(farm, chainId, multicallProvider));
             const res = await Promise.all(promises);

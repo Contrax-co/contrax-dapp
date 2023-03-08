@@ -14,7 +14,7 @@ const usePriceOfTokens = () => {
         dispatch(updatePrices({ farms, chainId: networkId, multicallProvider }));
     }, [farms, networkId, dispatch]);
 
-    return { prices, isLoading: isLoading, isFetched, reloadPrices };
+    return { prices, isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading, reloadPrices };
 };
 
 export default usePriceOfTokens;

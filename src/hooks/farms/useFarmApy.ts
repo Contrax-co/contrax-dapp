@@ -22,11 +22,11 @@ export const useFarmApys = () => {
     const dispatch = useAppDispatch();
 
     const reloadApys = useCallback(() => {
-        console.log("reloadApys")
+        console.log("reloadApys");
         dispatch(fetchApys({ farms, chainId: networkId, multicallProvider }));
     }, [farms, networkId, dispatch, multicallProvider]);
 
-    return { isFetched, apys, isLoading, reloadApys };
+    return { isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading, apys, reloadApys };
 };
 
 const useFarmApy = (farm: Farm) => {
@@ -34,7 +34,7 @@ const useFarmApy = (farm: Farm) => {
 
     const apy = useMemo(() => apys[farm.id], [apys, farm.id]);
 
-    return { apy, isLoading, isFetched };
+    return { apy, isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading };
 };
 
 export default useFarmApy;
