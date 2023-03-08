@@ -89,32 +89,7 @@ const useBalances = (data: { address: string; decimals: number }[]) => {
         return b;
     }, [balances, data]);
 
-    return {
-        /**
-         * Object with address as key and balance as value in bignumber
-         */
-        balances,
-
-        /**
-         * Object with address as key and balance as value in number readable format
-         */
-        formattedBalances,
-
-        /**
-         * Refetch balances, update state
-         */
-        refetch,
-
-        /**
-         * Is query loading, (Always returns false, if initialData is given to useQuery)
-         */
-        isLoading: isLoading || isPlaceholderData,
-
-        /**
-         * Is query fetching will return true if query is fetching in background
-         */
-        isFetching,
-    };
+    return {};
 };
 
 export default useBalances;

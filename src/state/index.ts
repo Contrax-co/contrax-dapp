@@ -3,6 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import apysReducer from "./apys/apysReducer";
+import balancesReducer from "./balances/balancesReducer";
 import pricesReducer from "./prices/pricesReducer";
 import settingsReducer from "./settings/settingsReducer";
 
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     settings: settingsReducer,
     prices: persistedPricesReducer,
     apys: apysReducer,
+    balances: balancesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
