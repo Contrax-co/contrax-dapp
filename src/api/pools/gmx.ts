@@ -6,13 +6,13 @@ import { defaultChainId } from "src/config/constants";
 import { toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, dismissNotifyAll, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
-import { addressesByChainId } from "src/config/constants/contracts";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 const farm = pools.find((farm) => farm.id === 5) as Farm;
 let farmData: FarmData | undefined = undefined;
 
 export const getFarmData = async (
-    provider: providers.Provider,
+    provider: MulticallProvider,
     currentWallet: string,
     _ethBalance?: BigNumber
 ): Promise<FarmData> => {

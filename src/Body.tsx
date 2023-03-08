@@ -5,22 +5,30 @@ import Farms from "src/pages/Farms/Farms";
 import Dashboard from "src/pages/Dashboard/Dashboard";
 import Exchange from "./pages/Exchange/Exchange";
 import Test from "./pages/Test/Test";
-import { useAppDispatch, useAppSelector } from "./state";
-import { updatePrices } from "./state/prices/pricesReducer";
-import useFarms from "./hooks/farms/useFarms";
-import useWallet from "./hooks/useWallet";
 import usePriceOfTokens from "./hooks/usePriceOfTokens";
+import { useFarmApys } from "./hooks/farms/useFarmApy";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
+    const { reloadApys } = useFarmApys();
 
     useEffect(() => {
         reloadPrices();
+        // after 5 min reload prices
         const interval = setInterval(() => {
             reloadPrices();
         }, 1000 * 60 * 5);
         return () => clearInterval(interval);
     }, [reloadPrices]);
+
+    useEffect(() => {
+        reloadApys();
+        // after 5 min reload prices
+        const interval = setInterval(() => {
+            reloadApys();
+        }, 1000 * 60 * 5);
+        return () => clearInterval(interval);
+    }, [reloadApys]);
 
     return (
         <Router>

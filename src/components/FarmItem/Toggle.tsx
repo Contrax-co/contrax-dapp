@@ -15,12 +15,12 @@ interface Props {
 
 const Toggle: React.FC<Props> = ({ active, farm, ...props }) => {
     const { lightMode } = useApp();
-    const { currentWallet, provider, balanceBigNumber } = useWallet();
+    const { currentWallet, provider, balanceBigNumber, multicallProvider } = useWallet();
     const { NETWORK_NAME } = useConstants();
 
     const { data: farmData, refetch } = useQuery(
         FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
-        () => farmFunctions[farm.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
+        () => farmFunctions[farm.id]?.getFarmData(multicallProvider, currentWallet, balanceBigNumber),
         {
             enabled: !!currentWallet && !!provider && !!farm,
         }

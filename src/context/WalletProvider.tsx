@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import * as ethers from "ethers";
 import { defaultChainId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
@@ -18,7 +18,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import useNotify from "src/hooks/useNotify";
 import { getNetworkName } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
+import { providers } from "@0xsequence/multicall/";
 
 interface IWalletContext {
     /**
@@ -71,6 +71,7 @@ interface IWalletContext {
     chains: Chain[];
     getPkey: () => Promise<string>;
     mainnetBalance: ethers.BigNumber;
+    multicallProvider: providers.MulticallProvider;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
@@ -79,11 +80,10 @@ interface IProps {
     children: React.ReactNode;
 }
 
-export var multicallProvider: MulticallProvider;
-
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
     const { notifyError } = useNotify();
+    const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
 
     const { switchNetworkAsync, chains } = useSwitchNetwork();
     const { data: signer } = useSigner();
@@ -153,7 +153,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     }, [chain]);
 
     React.useEffect(() => {
-        multicallProvider = getMulticallProvider(provider);
+        setMulticallProvider(getMulticallProvider(provider));
     }, [provider]);
 
     return (
@@ -174,6 +174,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 chains,
                 mainnetBalance,
                 getPkey,
+                multicallProvider,
             }}
         >
             {children}

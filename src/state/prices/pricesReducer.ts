@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
-import { multicallProvider } from "src/context/WalletProvider";
 import { AddPrice, StateInterface, UpdatePricesActionPayload } from "./types";
 import { Contract, utils, constants } from "ethers";
 
@@ -26,7 +25,7 @@ const additionalTokens = [
 
 export const updatePrices = createAsyncThunk(
     "prices/updatePrices",
-    async ({ chainId, farms }: UpdatePricesActionPayload, thunkApi) => {
+    async ({ chainId, farms, multicallProvider }: UpdatePricesActionPayload, thunkApi) => {
         try {
             //----------------- Get Addresses -----------------
             let prices: { [key: string]: number } = {};

@@ -9,7 +9,6 @@ import useFarmsTotalSupply from "./useFarmsTotalSupply";
 import { queryClient } from "src/config/reactQuery";
 import farmFunctions from "src/api/pools";
 import { toWei } from "src/utils/common";
-import { multicallProvider } from "src/context/WalletProvider";
 import useFarmDetails from "./useFarmDetails";
 
 export interface ZapIn {

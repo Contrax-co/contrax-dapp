@@ -7,7 +7,7 @@ import {
     defaultChainId,
 } from "src/config/constants/index";
 import { FarmOriginPlatform } from "src/types/enums";
-import { Apys, Farm } from "src/types";
+import { Farm } from "src/types";
 import axios from "axios";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { getPrice } from "./token";
@@ -17,8 +17,8 @@ import { calcCompoundingApy, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
 import dodoMineAbi from "src/assets/abis/dodoMine.json";
 import swapFishMaterchef from "src/assets/abis/swapfishMasterchef.json";
-import { getMulticallProvider } from "src/config/multicall";
-import { multicallProvider } from "src/context/WalletProvider";
+import { Apys } from "src/state/apys/types";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 interface GraphResponse {
     apr: string;
     feesUSD: string;
@@ -94,7 +94,7 @@ export const getSushiswapApy = async (pairAddress: string, chainId: number, prov
     let rewardsApr = (sushiRewardPerYearUSD / obj.liquidityUSD) * 100;
     if (chefData.pools[0] && Number(chefData.pools[0].rewarder.id) !== 0) {
         const rewarder = chefData.pools[0].rewarder;
-        const rewardTokenContract = new Contract(pairAddress, erc20ABI, multicallProvider);
+        const rewardTokenContract = new Contract(pairAddress, erc20ABI, provider);
         const rewardTokenPrice = await getPrice(rewarder.rewardToken, chainId);
         const [balance, decimals, totalSupply] = await Promise.all([
             rewardTokenContract.balanceOf(chefData.id),
@@ -136,7 +136,7 @@ const getSwapFishApy = async (pairAddress: string, chainId: number, provider: pr
     let res = await axios.post(SWAPFISH_GRAPH_URL, { query });
     let pairData: GraphResponse = res.data.data.pair;
     const masterChefAddress = addressesByChainId[chainId].swapfishMasterChef!;
-    const masterChefContract = new Contract(masterChefAddress, swapFishMaterchef, multicallProvider);
+    const masterChefContract = new Contract(masterChefAddress, swapFishMaterchef, provider);
 
     const [totalAllocPoint, { allocPoint }, cakeAddress, cakePerSecond] = await Promise.all([
         masterChefContract.totalAllocPoint(),
@@ -201,8 +201,8 @@ const getDodoApy = async (pairAddress: string, provider: providers.Provider, cha
     };
 
     const price = await getPrice(addressesByChainId[chainId].dodoTokenAddress, chainId);
-    const mineContract = new Contract(addressesByChainId[chainId].dodoMineAddress, dodoMineAbi, multicallProvider);
-    const latestBlock = await multicallProvider.getBlockNumber();
+    const mineContract = new Contract(addressesByChainId[chainId].dodoMineAddress, dodoMineAbi, provider);
+    const latestBlock = await provider.getBlockNumber();
     const blocksAmount = 200000;
 
     const [
@@ -272,7 +272,7 @@ const getFraxApy = async () => {
 export const getApy = async (
     farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy" | "pool_id">,
     chainId: number,
-    provider: providers.Provider,
+    provider: MulticallProvider,
     currentWallet?: string
 ): Promise<Apys> => {
     if (chainId !== defaultChainId) {

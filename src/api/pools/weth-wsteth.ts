@@ -8,20 +8,20 @@ import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/ap
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { getApy } from "../apy";
-import { multicallProvider } from "src/context/WalletProvider";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 const farm = pools.find((farm) => farm.id === 15) as Farm;
 let farmData: FarmData | undefined = undefined;
 
 export const getFarmData = async (
-    provider: providers.Provider,
+    provider: MulticallProvider,
     currentWallet: string,
     _ethBalance?: BigNumber
 ): Promise<FarmData> => {
     const ethPrice = await getPrice(constants.AddressZero, defaultChainId);
     const lpPrice = await getLpPrice(farm.lp_address, provider, defaultChainId);
     const vaultBalance = await getBalance(farm.vault_addr, currentWallet, provider);
-    const ethBalancePromise = multicallProvider.getBalance(currentWallet);
+    const ethBalancePromise = provider.getBalance(currentWallet);
     const ethBalance = await ethBalancePromise;
 
     farmData = {

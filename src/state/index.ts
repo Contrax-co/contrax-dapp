@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import apysReducer from "./apys/apysReducer";
 import pricesReducer from "./prices/pricesReducer";
 import settingsReducer from "./settings/settingsReducer";
 
@@ -9,12 +10,18 @@ const persistConfig = {
     key: "root",
     version: 1,
     storage,
-    whitelist: ["settings", "prices"],
+    whitelist: ["settings"],
 };
+
+const persistedPricesReducer = persistReducer(
+    { key: "root", version: 1, storage, blacklist: ["isFetched"] },
+    pricesReducer
+);
 
 const rootReducer = combineReducers({
     settings: settingsReducer,
-    prices: pricesReducer,
+    prices: persistedPricesReducer,
+    apys: apysReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

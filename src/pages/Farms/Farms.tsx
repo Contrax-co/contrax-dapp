@@ -25,7 +25,7 @@ function Farms() {
     const [tab, setTab] = useState(1);
     const { networkId, currentWallet } = useWallet();
     const { NETWORK_NAME } = useConstants();
-    const { allFarmApys } = useFarmApys();
+    const { apys } = useFarmApys();
     const [queries, setQueries] = useState([]);
     const queryClient = useQueryClient();
     // const queriesData = useMemo(
@@ -71,7 +71,7 @@ function Farms() {
         if (sortedBuy) {
             handleSort(sortedBuy);
         }
-    }, [tab, sortedBuy, allFarmApys, decOrder]);
+    }, [tab, sortedBuy, apys, decOrder]);
 
     useEffect(() => {
         setSortedBuy(undefined);
@@ -100,7 +100,7 @@ function Farms() {
             return {
                 ...ele,
                 ...queryData,
-                apy: allFarmApys[ele.id].apy,
+                apy: apys[ele.id].apy,
             };
         });
 

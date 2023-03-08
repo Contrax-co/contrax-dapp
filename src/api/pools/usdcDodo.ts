@@ -1,19 +1,18 @@
 import pools from "src/config/constants/pools.json";
 import { Farm, FarmData } from "src/types";
-import { constants, providers, BigNumber, Signer, Contract, utils } from "ethers";
+import { BigNumber, Signer, Contract, utils } from "ethers";
 import { approveErc20, getBalance, getPrice } from "src/api/token";
 import { defaultChainId } from "src/config/constants";
 import { toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
-import { addressesByChainId } from "src/config/constants/contracts";
-import { getApy } from "../apy";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 const farm = pools.find((farm) => farm.id === 6) as Farm;
 let farmData: FarmData | undefined = undefined;
 
 export const getFarmData = async (
-    provider: providers.Provider,
+    provider: MulticallProvider,
     currentWallet: string,
     _ethBalance?: BigNumber
 ): Promise<FarmData> => {

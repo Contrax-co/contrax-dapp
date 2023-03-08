@@ -1,4 +1,5 @@
 import { Farm } from "src/types";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 export interface StateInterface {
     prices: {
@@ -14,4 +15,5 @@ export interface AddPrice {
 export interface UpdatePricesActionPayload {
     chainId: number;
     farms: Farm[];
+    multicallProvider: MulticallProvider;
 }

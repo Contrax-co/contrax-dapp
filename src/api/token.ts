@@ -4,14 +4,14 @@ import { getNetworkName } from "src/utils/common";
 import { Contract, providers, BigNumber, Signer, constants } from "ethers";
 import { erc20ABI } from "wagmi";
 import { utils } from "ethers/lib/ethers";
-import { multicallProvider } from "src/context/WalletProvider";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 export const getPrice = async (tokenAddress: string, chainId: number) => {
     try {
         const res = await axios.get(coinsLamaPriceByChainId[chainId] + tokenAddress, {
             cache: true,
         });
-        
+
         const prices = JSON.stringify(res.data);
         const parse = JSON.parse(prices);
 
@@ -27,7 +27,7 @@ export const getPrice = async (tokenAddress: string, chainId: number) => {
 export const getBalance = async (
     tokenAddress: string,
     address: string,
-    provider: providers.Provider
+    multicallProvider: MulticallProvider | providers.Provider
 ): Promise<BigNumber> => {
     try {
         const contract = new Contract(
@@ -119,7 +119,7 @@ export const getLpPriceDepreached = async (lpAddress: string, provider: provider
     }
 };
 
-export const getLpPrice = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
+export const getLpPrice = async (lpAddress: string, multicallProvider: MulticallProvider, chainId: number) => {
     try {
         // if lp price are available on api, use that
         let price = await getPrice(lpAddress, chainId);

@@ -1,3 +1,4 @@
+import { Apys } from "src/state/apys/types";
 import { FarmOriginPlatform } from "./enums";
 
 export interface Farm {
@@ -55,12 +56,6 @@ export interface Vault extends Farm {
     apys: Apys;
 }
 
-export interface Apys {
-    feeApr: number;
-    rewardsApr: number;
-    apy: number;
-    compounding: number;
-}
 
 export interface Token {
     address: string;

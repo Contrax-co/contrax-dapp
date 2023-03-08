@@ -1,13 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import farmFunctions from "src/api/pools";
 import { FARM_DATA } from "src/config/constants/query";
-import { multicallProvider } from "src/context/WalletProvider";
 import { Farm, FarmData } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 
 const useFarmDetails = (farm?: Farm) => {
-    const { currentWallet, provider, balanceBigNumber, balance } = useWallet();
+    const { currentWallet, provider, balanceBigNumber, multicallProvider } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const queryClient = useQueryClient();
 

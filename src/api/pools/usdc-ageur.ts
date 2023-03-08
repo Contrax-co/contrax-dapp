@@ -7,13 +7,13 @@ import { toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, dismissNotifyAll, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
-import { multicallProvider } from "src/context/WalletProvider";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 const farm = pools.find((farm) => farm.id === 13) as Farm;
 let farmData: FarmData | undefined = undefined;
 
 export const getFarmData = async (
-    provider: providers.Provider,
+    provider: MulticallProvider,
     currentWallet: string,
     _ethBalance?: BigNumber
 ): Promise<FarmData> => {
@@ -21,7 +21,7 @@ export const getFarmData = async (
     const lpPrice = await getLpPrice(farm.lp_address, provider, defaultChainId);
     const lpBalance = await getBalance(farm.lp_address, currentWallet, provider);
     const vaultBalance = await getBalance(farm.vault_addr, currentWallet, provider);
-    const ethBalancePromise = multicallProvider.getBalance(currentWallet);
+    const ethBalancePromise = provider.getBalance(currentWallet);
     const ethBalance = await ethBalancePromise;
     farmData = {
         Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),

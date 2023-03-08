@@ -8,7 +8,7 @@ import { Token as UniToken } from "@uniswap/sdk-core";
 import { Pool } from "@uniswap/v3-sdk";
 import { Apys } from "src/types";
 import { calcCompoundingApy } from "src/utils/common";
-import { multicallProvider } from "src/context/WalletProvider";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 const addresses = {
     bnGmxAddress: "0x35247165119B69A40edD5304969560D0ef486921",
@@ -212,16 +212,16 @@ function getProcessedData(
 
     return data;
 }
-export const getGmxApyArbitrum = async (provider?: providers.Provider, currentWallet?: string): Promise<Apys> => {
+export const getGmxApyArbitrum = async (provider?: MulticallProvider, currentWallet?: string): Promise<Apys> => {
     if (!provider) return;
     if (!currentWallet) {
         currentWallet = Wallet.createRandom().address;
     }
     const ethAddress = addresses.WETH;
-    const reader = new Contract(addresses.readerAddress, ReaderV2, multicallProvider);
-    const rewardReader = new Contract(addresses.rewardReaderAddress, RewardReader, multicallProvider);
-    const vault = new Contract(addresses.vaultAddress, Vault, multicallProvider);
-    const uniPool = new Contract(addresses.UniswapGmxEthPool, UniPool, multicallProvider);
+    const reader = new Contract(addresses.readerAddress, ReaderV2, provider);
+    const rewardReader = new Contract(addresses.rewardReaderAddress, RewardReader, provider);
+    const vault = new Contract(addresses.vaultAddress, Vault, provider);
+    const uniPool = new Contract(addresses.UniswapGmxEthPool, UniPool, provider);
     const [walletBalances, depositBalances, stakingInfo, nativeTokenPrice, uniPoolSlot0, ethPrice] = await Promise.all([
         reader.getTokenBalancesWithSupplies(currentWallet, walletTokens),
         rewardReader.getDepositBalances(currentWallet, depositTokens, rewardTrackersForDepositBalances),
