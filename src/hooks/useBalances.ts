@@ -3,7 +3,7 @@ import useWallet from "src/hooks/useWallet";
 import * as ethers from "ethers";
 import useFarms from "./farms/useFarms";
 import { useAppDispatch, useAppSelector } from "src/state";
-import { fetchBalances } from "src/state/balances/balancesReducer";
+import { fetchBalances, setIsFetched } from "src/state/balances/balancesReducer";
 
 /**
  * Returns balances for all tokens
@@ -11,11 +11,12 @@ import { fetchBalances } from "src/state/balances/balancesReducer";
  */
 const useBalances = () => {
     const { farms } = useFarms();
-    const { isLoading, balances, isFetched } = useAppSelector((state) => state.balances);
+    const { isLoading, balances, isFetched, account: oldAccount } = useAppSelector((state) => state.balances);
     const { networkId, multicallProvider, currentWallet } = useWallet();
     const dispatch = useAppDispatch();
 
     const reloadBalances = useCallback(() => {
+        if (oldAccount !== currentWallet) dispatch(setIsFetched(false));
         if (currentWallet) dispatch(fetchBalances({ farms, multicallProvider, account: currentWallet }));
     }, [farms, currentWallet, networkId, dispatch]);
 

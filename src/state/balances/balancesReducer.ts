@@ -1,9 +1,9 @@
-import { createSlice,  createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { constants, Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
 import { Balance, Balances, StateInterface, UpdateBalancesActionPayload } from "./types";
 
-const initialState: StateInterface = { balances: {}, isLoading: false, isFetched: false };
+const initialState: StateInterface = { balances: {}, isLoading: false, isFetched: false, account: "" };
 
 export const fetchBalances = createAsyncThunk(
     "balances/fetchBalances",
@@ -44,6 +44,7 @@ export const fetchBalances = createAsyncThunk(
             Object.entries(balances).forEach(([key, value]) => {
                 checksummed[utils.getAddress(key)] = value;
             });
+            thunkApi.dispatch(setAccount(account));
 
             return checksummed;
         } catch (error) {
@@ -55,7 +56,14 @@ export const fetchBalances = createAsyncThunk(
 const balancesSlice = createSlice({
     name: "balances",
     initialState: initialState,
-    reducers: {},
+    reducers: {
+        setAccount(state, action: { payload: string }) {
+            state.account = action.payload;
+        },
+        setIsFetched(state, action: { payload: boolean }) {
+            state.isFetched = action.payload;
+        }
+    },
     extraReducers(builder) {
         builder.addCase(fetchBalances.pending, (state) => {
             state.isLoading = true;
@@ -68,6 +76,6 @@ const balancesSlice = createSlice({
     },
 });
 
-export const {} = balancesSlice.actions;
+export const { setAccount ,setIsFetched} = balancesSlice.actions;
 
 export default balancesSlice.reducer;
