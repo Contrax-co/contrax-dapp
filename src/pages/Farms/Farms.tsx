@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Farms.css";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
@@ -10,7 +10,6 @@ import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
-import useConstants from "src/hooks/useConstants";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 interface FarmDataExtended extends Partial<FarmData>, Farm {
@@ -20,8 +19,7 @@ function Farms() {
     const { lightMode } = useApp();
     const { farms } = useFarms();
     const [tab, setTab] = useState(1);
-    const { networkId, currentWallet } = useWallet();
-    const { NETWORK_NAME } = useConstants();
+    const { networkId } = useWallet();
     const { apys } = useFarmApys();
     const { farmDetails } = useFarmDetails();
 

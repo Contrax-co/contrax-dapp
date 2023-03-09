@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice,  createAsyncThunk } from "@reduxjs/toolkit";
 import { constants, Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
 import { Balance, Balances, StateInterface, UpdateBalancesActionPayload } from "./types";
