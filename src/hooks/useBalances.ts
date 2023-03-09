@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { Multicall, ContractCallResults, ContractCallContext } from "ethereum-multicall";
 import useWallet from "src/hooks/useWallet";
 import { useQuery } from "@tanstack/react-query";
@@ -7,89 +7,43 @@ import * as ethers from "ethers";
 import useConstants from "./useConstants";
 import erc20 from "src/assets/abis/erc20.json";
 import { isValidNetwork } from "src/utils/common";
+import useFarms from "./farms/useFarms";
+import { useAppDispatch, useAppSelector } from "src/state";
+import { fetchBalances } from "src/state/balances/balancesReducer";
 
 /**
  * Returns balances for all tokens
  * @param data Array of objects with address and decimals
  */
-const useBalances = (data: { address: string; decimals: number }[]) => {
-    const { NETWORK_NAME } = useConstants();
-    const { provider, currentWallet } = useWallet();
+const useBalances = () => {
+    const { farms } = useFarms();
+    const { isLoading, balances, isFetched } = useAppSelector((state) => state.balances);
+    const { networkId, multicallProvider, currentWallet } = useWallet();
+    const dispatch = useAppDispatch();
 
-    const getAllBalances = async () => {
-        if (!provider || !isValidNetwork(NETWORK_NAME)) return {};
-        const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
-        const contractCallContext: ContractCallContext[] = [];
+    const reloadBalances = useCallback(() => {
+        if (currentWallet) dispatch(fetchBalances({ farms, multicallProvider, account: currentWallet }));
+    }, [farms, currentWallet, networkId, dispatch]);
 
-        // Create Call context with addresses of all vaults with balanceOf method
-        data.forEach((item) => {
-            const callContext: ContractCallContext = {
-                reference: item.address,
-                contractAddress: item.address,
-                abi: erc20.abi,
-                calls: [{ reference: "balance", methodName: "balanceOf", methodParameters: [currentWallet] }],
-            };
-            contractCallContext.push(callContext);
-        });
-
-        const results: ContractCallResults = await multicall.call(contractCallContext);
-        let ans: { [key: string]: ethers.BigNumber } = {};
-
-        // Organize/format data in object form with addresses as keys and balances as values
-        Object.entries(results.results).forEach(([key, value]) => {
-            ans[key] = ethers.BigNumber.from(value.callsReturnContext[0].returnValues[0].hex);
-        });
-        return ans;
-    };
-
-    const placeholderData = useMemo(() => {
-        let b: { [key: string]: ethers.BigNumber } = {};
-        data.forEach((item) => {
-            b[item.address] = ethers.BigNumber.from(0);
-        });
-        return b;
-    }, [data]);
-
-    const {
-        data: balancesUndefined,
-        refetch,
-        isLoading,
-        isFetching,
-        isPlaceholderData,
-    } = useQuery(
-        // Query will rerun and fetch new data whenever any of the values changes in below function
-        TOKEN_BALANCES(
-            currentWallet,
-            data.map((_) => _.address),
-            NETWORK_NAME
-        ),
-        getAllBalances,
-        {
-            // Will only run if all these are true:
-            enabled: !!provider && !!currentWallet && data.length > 0 && !!NETWORK_NAME,
-
-            // Initial data to be returned when no query has ran
-            // Returns 0 for all the balances initially
-            placeholderData,
-        }
-    );
-
-    const balances = balancesUndefined!;
     const formattedBalances = useMemo(() => {
         let b: { [key: string]: number } = {};
         Object.entries(balances).map(([key, value]) => {
-            // Find decimals for each vault
-            const decimals = data.find((_) => _.address.toLowerCase() === key.toLowerCase())?.decimals;
-
             // Formalize the balance
-            const formattedBal = Number(ethers.utils.formatUnits(value, decimals));
+            const formattedBal = Number(ethers.utils.formatUnits(value.balance, value.decimals));
             b[key] = formattedBal;
             return;
         });
         return b;
-    }, [balances, data]);
+    }, [balances]);
 
-    return {};
+    return {
+        balances,
+        reloadBalances,
+        formattedBalances,
+        isLoading: isLoading && !isFetched,
+        isFetched,
+        isFetching: isLoading,
+    };
 };
 
 export default useBalances;

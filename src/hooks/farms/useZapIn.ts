@@ -1,14 +1,11 @@
 import { useMemo } from "react";
-import { Farm, FarmData } from "src/types";
+import { Farm } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_DATA, FARM_ZAP_IN } from "src/config/constants/query";
-import useFarmsBalances from "./useFarmsBalances";
-import useFarmsTotalSupply from "./useFarmsTotalSupply";
 import { queryClient } from "src/config/reactQuery";
 import farmFunctions from "src/api/pools";
-import { toWei } from "src/utils/common";
 import useFarmDetails from "./useFarmDetails";
 
 export interface ZapIn {

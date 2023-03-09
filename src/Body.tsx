@@ -7,10 +7,12 @@ import Exchange from "./pages/Exchange/Exchange";
 import Test from "./pages/Test/Test";
 import usePriceOfTokens from "./hooks/usePriceOfTokens";
 import { useFarmApys } from "./hooks/farms/useFarmApy";
+import useBalances from "./hooks/useBalances";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
     const { reloadApys } = useFarmApys();
+    const { reloadBalances } = useBalances();
 
     useEffect(() => {
         reloadPrices();
@@ -29,6 +31,15 @@ function Body() {
         }, 1000 * 60 * 5);
         return () => clearInterval(interval);
     }, [reloadApys]);
+
+    useEffect(() => {
+        reloadBalances();
+        // after 5 min reload prices
+        const interval = setInterval(() => {
+            reloadBalances();
+        }, 1000 * 60 * 2);
+        return () => clearInterval(interval);
+    }, [reloadBalances]);
 
     return (
         <Router>

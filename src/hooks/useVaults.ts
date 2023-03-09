@@ -3,12 +3,12 @@ import { Vault } from "src/types";
 import { getLpAddressForFarmsPrice } from "src/utils/common";
 import { useFarmApys } from "./farms/useFarmApy";
 import useFarms from "./farms/useFarms";
-import useFarmsBalances from "./farms/useFarmsBalances";
+import useBalances from "./useBalances";
 import usePriceOfTokens from "./usePriceOfTokens";
 
 export const useVaults = (): { vaults: Vault[]; isLoading: boolean } => {
     const { farms } = useFarms();
-    const { formattedBalances: usersVaultBalances, isLoading: isLoadingUserBalances } = useFarmsBalances();
+    const { formattedBalances: usersVaultBalances, isLoading: isLoadingUserBalances } = useBalances();
     const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens();
     const { apys, isLoading: isLoadingApys } = useFarmApys();
 

@@ -7,14 +7,15 @@ import { constants } from "ethers";
 import useNotify from "src/hooks/useNotify";
 import { toWei } from "src/utils/common";
 import { ModalLayout } from "../ModalLayout/ModalLayout";
+import useBalances from "src/hooks/useBalances";
 
 interface IProps {
     token: Token;
     setSelectedToken: Function;
-    refetchBalances: Function;
 }
 
-export const TransferToken: FC<IProps> = ({ token, setSelectedToken, refetchBalances }) => {
+export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
+    const { reloadBalances } = useBalances();
     const { lightMode } = useApp();
     const [reciverAddress, setReciverAddress] = useState<string>("");
     const [amount, setAmount] = useState("0");
@@ -43,7 +44,7 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken, refetchBala
         }
         dismissNotify(id);
         setSelectedToken(undefined);
-        refetchBalances();
+        reloadBalances();
     };
 
     const handleMaxClick = () => {

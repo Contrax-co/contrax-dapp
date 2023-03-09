@@ -17,18 +17,27 @@ export const fetchBalances = createAsyncThunk(
                 farm.vault_addr && addresses.add(farm.vault_addr.toLowerCase());
             });
             const addressesArray = Array.from(addresses);
-            const promises = addressesArray.map((address) =>
+            let promises = addressesArray.map((address) =>
                 new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
             );
+            promises = [
+                ...promises,
+                ...addressesArray.map((address) => new Contract(address, erc20ABI, multicallProvider).decimals()),
+            ];
             const [ethBalance, ...balancesResponse] = await Promise.all([
                 multicallProvider.getBalance(account),
                 ...promises,
             ]);
-            const balances = balancesResponse.reduce((accum, balance, index) => {
-                accum[addressesArray[index]] = balance.toString();
-                return accum;
-            }, {});
-            balances[constants.AddressZero] = ethBalance.toString();
+            const balances = balancesResponse
+                .slice(0, balancesResponse.length / 2 + 1)
+                .reduce((accum, balance, index) => {
+                    accum[addressesArray[index]] = {
+                        balance: balance.toString(),
+                        decimals: balancesResponse[index + balancesResponse.length / 2],
+                    };
+                    return accum;
+                }, {});
+            balances[constants.AddressZero] = { balance: ethBalance.toString(), decimals: 18 };
             return balances;
         } catch (error) {
             console.error(error);

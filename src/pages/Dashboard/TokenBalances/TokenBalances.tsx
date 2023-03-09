@@ -14,7 +14,7 @@ interface IProps {}
 
 export const TokenBalances: FC<IProps> = (props) => {
     const { lightMode } = useApp();
-    const { tokens, refetchBalances, isLoading } = useTokens();
+    const { tokens, isLoading } = useTokens();
     const { currentWallet } = useWallet();
     const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
@@ -60,13 +60,7 @@ export const TokenBalances: FC<IProps> = (props) => {
             ) : (
                 <Skeleton w={"100%"} h={150} bg={lightMode ? "#ffffff" : undefined} bRadius={20} inverted={true} />
             )}
-            {selectedToken ? (
-                <TransferToken
-                    token={selectedToken}
-                    setSelectedToken={setSelectedToken}
-                    refetchBalances={refetchBalances}
-                />
-            ) : null}
+            {selectedToken ? <TransferToken token={selectedToken} setSelectedToken={setSelectedToken} /> : null}
         </div>
     ) : (
         <EmptyComponent style={{ paddingTop: 50, paddingBottom: 50 }}>

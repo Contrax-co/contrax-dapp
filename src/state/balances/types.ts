@@ -3,7 +3,7 @@ import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/p
 
 export interface StateInterface {
     balances: {
-        [key: string]: string;
+        [key: string]: Balance;
     };
     isLoading: boolean;
     isFetched: boolean;
@@ -13,4 +13,9 @@ export interface UpdateBalancesActionPayload {
     account: string;
     farms: Farm[];
     multicallProvider: MulticallProvider;
+}
+
+export interface Balance {
+    decimals: number;
+    balance: string;
 }

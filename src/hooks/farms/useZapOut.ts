@@ -1,16 +1,9 @@
 import { useMemo } from "react";
-import { Farm, FarmData } from "src/types";
+import { Farm } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
-import * as ethers from "ethers";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_DATA, FARM_ZAP_OUT } from "src/config/constants/query";
-import useNotify from "src/hooks/useNotify";
-import useBalances from "../useBalances";
-import useFarmsBalances from "./useFarmsBalances";
-import useFarmsTotalSupply from "./useFarmsTotalSupply";
-import { validateNumberDecimals } from "src/utils/common";
-import { useApprovalErc20 } from "../useApproval";
 import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
 import useFarmDetails from "./useFarmDetails";

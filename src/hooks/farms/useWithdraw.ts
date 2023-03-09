@@ -2,11 +2,8 @@ import { Farm } from "src/types";
 import { useMemo } from "react";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
-import useBalances from "../useBalances";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_DATA, FARM_WITHDRAW } from "src/config/constants/query";
-import useFarmsBalances from "./useFarmsBalances";
-import useFarmsTotalSupply from "./useFarmsTotalSupply";
 import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
 
