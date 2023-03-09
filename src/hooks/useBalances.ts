@@ -1,9 +1,9 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useEffect } from "react";
 import useWallet from "src/hooks/useWallet";
 import * as ethers from "ethers";
 import useFarms from "./farms/useFarms";
 import { useAppDispatch, useAppSelector } from "src/state";
-import { fetchBalances, setIsFetched } from "src/state/balances/balancesReducer";
+import { fetchBalances, reset, setIsFetched } from "src/state/balances/balancesReducer";
 
 /**
  * Returns balances for all tokens
@@ -16,7 +16,6 @@ const useBalances = () => {
     const dispatch = useAppDispatch();
 
     const reloadBalances = useCallback(() => {
-        if (oldAccount !== currentWallet) dispatch(setIsFetched(false));
         if (currentWallet) dispatch(fetchBalances({ farms, multicallProvider, account: currentWallet }));
     }, [farms, currentWallet, networkId, dispatch]);
 
@@ -30,6 +29,12 @@ const useBalances = () => {
         });
         return b;
     }, [balances]);
+
+    useEffect(() => {
+        if (oldAccount !== currentWallet) {
+            dispatch(reset());
+        }
+    }, [oldAccount, currentWallet]);
 
     return {
         balances,

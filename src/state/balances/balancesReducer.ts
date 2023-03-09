@@ -62,7 +62,13 @@ const balancesSlice = createSlice({
         },
         setIsFetched(state, action: { payload: boolean }) {
             state.isFetched = action.payload;
-        }
+        },
+        reset(state) {
+            state.balances = {};
+            state.isLoading = false;
+            state.isFetched = false;
+            state.account = "";
+        },
     },
     extraReducers(builder) {
         builder.addCase(fetchBalances.pending, (state) => {
@@ -76,6 +82,6 @@ const balancesSlice = createSlice({
     },
 });
 
-export const { setAccount ,setIsFetched} = balancesSlice.actions;
+export const { setAccount, setIsFetched, reset } = balancesSlice.actions;
 
 export default balancesSlice.reducer;
