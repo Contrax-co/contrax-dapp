@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import useDeposit from "src/hooks/farms/useDeposit";
 import useWithdraw from "src/hooks/farms/useWithdraw";
@@ -7,13 +6,10 @@ import useZapOut from "src/hooks/farms/useZapOut";
 import useApp from "src/hooks/useApp";
 import useEthPrice from "src/hooks/useEthPrice";
 import useWallet from "src/hooks/useWallet";
-import { Farm, FarmDetails } from "src/types";
+import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
 import { toFixedFloor, validateNumberDecimals } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
-import farmFunctions from "src/api/pools";
-import { FARM_DATA } from "src/config/constants/query";
-import useConstants from "src/hooks/useConstants";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import Loader from "src/components/Loader/Loader";
@@ -42,7 +38,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
         if (type === FarmTransactionType.Deposit) {
             if (shouldUseLp) {
                 return showInUsd
-                ? parseFloat(farmData?.Max_Token_Deposit_Balance_Dollar || "0")
+                    ? parseFloat(farmData?.Max_Token_Deposit_Balance_Dollar || "0")
                     : parseFloat(farmData?.Max_Token_Deposit_Balance || "0");
             } else {
                 return showInUsd

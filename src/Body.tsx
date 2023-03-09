@@ -9,11 +9,13 @@ import usePriceOfTokens from "./hooks/usePriceOfTokens";
 import { useFarmApys } from "./hooks/farms/useFarmApy";
 import useBalances from "./hooks/useBalances";
 import useFarmDetails from "./hooks/farms/useFarmDetails";
+import useTotalSupplies from "./hooks/useTotalSupplies";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
     const { reloadApys } = useFarmApys();
     const { reloadBalances } = useBalances();
+    const { reloadSupplies } = useTotalSupplies();
     const { reloadFarmData } = useFarmDetails();
 
     useEffect(() => {
@@ -42,6 +44,15 @@ function Body() {
         }, 1000 * 60 * 2);
         return () => clearInterval(interval);
     }, [reloadBalances]);
+
+    useEffect(() => {
+        reloadSupplies();
+        // after 5 min reload prices
+        const interval = setInterval(() => {
+            reloadSupplies();
+        }, 1000 * 60 * 2);
+        return () => clearInterval(interval);
+    }, [reloadSupplies]);
 
     useEffect(() => {
         reloadFarmData();

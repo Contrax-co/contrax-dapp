@@ -7,15 +7,18 @@ import { FARM_DATA, FARM_DEPOSIT } from "src/config/constants/query";
 import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
 import useBalances from "../useBalances";
+import useTotalSupplies from "../useTotalSupplies";
 
 const useDeposit = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances } = useBalances();
+    const { reloadSupplies } = useTotalSupplies();
 
     const _deposit = async ({ depositAmount, max }: { depositAmount: number; max?: boolean }) => {
         await farmFunctions[farm.id].deposit({ depositAmount, currentWallet, signer, chainId, max });
         reloadBalances();
+        reloadSupplies();
     };
 
     const {

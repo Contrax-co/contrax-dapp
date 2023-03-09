@@ -8,6 +8,7 @@ import { queryClient } from "src/config/reactQuery";
 import farmFunctions from "src/api/pools";
 import useFarmDetails from "./useFarmDetails";
 import useBalances from "../useBalances";
+import useTotalSupplies from "../useTotalSupplies";
 
 export interface ZapIn {
     ethZapAmount: number;
@@ -18,10 +19,12 @@ const useZapIn = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances } = useBalances();
+    const { reloadSupplies } = useTotalSupplies();
 
     const _zapIn = async ({ ethZapAmount, max }: ZapIn) => {
         await farmFunctions[farm.id].zapIn({ zapAmount: ethZapAmount, currentWallet, signer, chainId, max });
         reloadBalances();
+        reloadSupplies();
     };
 
     const {

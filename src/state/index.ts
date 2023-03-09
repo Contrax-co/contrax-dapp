@@ -7,6 +7,7 @@ import balancesReducer from "./balances/balancesReducer";
 import pricesReducer from "./prices/pricesReducer";
 import settingsReducer from "./settings/settingsReducer";
 import farmsReducer from "./farms/farmsReducer";
+import supplyReducer from "./supply/supplyReducer";
 
 const persistConfig = {
     key: "root",
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
     apys: apysReducer,
     farms: farmsReducer,
     balances: balancesReducer,
+    supply: supplyReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -8,15 +8,18 @@ import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
 import useFarmDetails from "./useFarmDetails";
 import useBalances from "../useBalances";
+import useTotalSupplies from "../useTotalSupplies";
 
 const useZapOut = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances } = useBalances();
+    const { reloadSupplies } = useTotalSupplies();
 
     const _zapOut = async ({ withdrawAmt, max }: { withdrawAmt: number; max?: boolean }) => {
         await farmFunctions[farm.id].zapOut({ zapAmount: withdrawAmt, currentWallet, signer, chainId, max });
         reloadBalances();
+        reloadSupplies();
     };
 
     const {

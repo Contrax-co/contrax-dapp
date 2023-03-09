@@ -1,11 +1,6 @@
-import { useMemo, useEffect, useState, useCallback } from "react";
-import { QueriesObserver, QueryObserver, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getApy } from "src/api/apy";
-import { FARM_APY } from "src/config/constants/query";
+import { useMemo, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "src/state";
-import { Apys } from "src/state/apys/types";
 import { Farm } from "src/types";
-import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import useFarms from "./useFarms";
 import { fetchApys } from "src/state/apys/apysReducer";

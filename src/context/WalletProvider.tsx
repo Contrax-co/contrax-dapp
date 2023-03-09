@@ -93,7 +93,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const mainnetProvider = useProvider({ chainId: 1 });
     const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
-    const { NETWORK_NAME } = useConstants();
     const { openConnectModal } = useConnectModal();
 
     const getBalance = async () => {

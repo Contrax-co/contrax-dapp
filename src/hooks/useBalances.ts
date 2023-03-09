@@ -1,12 +1,6 @@
 import { useMemo, useCallback } from "react";
-import { Multicall, ContractCallResults, ContractCallContext } from "ethereum-multicall";
 import useWallet from "src/hooks/useWallet";
-import { useQuery } from "@tanstack/react-query";
-import { TOKEN_BALANCES } from "src/config/constants/query";
 import * as ethers from "ethers";
-import useConstants from "./useConstants";
-import erc20 from "src/assets/abis/erc20.json";
-import { isValidNetwork } from "src/utils/common";
 import useFarms from "./farms/useFarms";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { fetchBalances } from "src/state/balances/balancesReducer";

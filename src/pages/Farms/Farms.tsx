@@ -1,21 +1,18 @@
+import { useEffect, useMemo, useState } from "react";
 import "./Farms.css";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
 import FarmRow from "src/components/FarmItem/FarmRow";
 import { Farm, FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
-import { useEffect, useMemo, useState } from "react";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
-import { useQueries, useQueryClient, QueriesObserver } from "@tanstack/react-query";
-import { FARM_DATA } from "src/config/constants/query";
 import useConstants from "src/hooks/useConstants";
-import farmFunctions from "src/api/pools";
-import { v4 as uuid } from "uuid";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
+import useFarmDetails from "src/hooks/farms/useFarmDetails";
 interface FarmDataExtended extends Partial<FarmData>, Farm {
     apy: number;
 }
@@ -26,41 +23,7 @@ function Farms() {
     const { networkId, currentWallet } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { apys } = useFarmApys();
-    const [queries, setQueries] = useState([]);
-    const queryClient = useQueryClient();
-    // const queriesData = useMemo(
-    //     () =>
-    //         farms
-    //             .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
-    //             .map((item) => ({
-    //                 queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
-    //                 queryFn: () => farmFunctions[item.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
-    //                 enabled: !!currentWallet && !!provider && !!item && !!balance,
-    //             })),
-    //     [farms, tab]
-    // );
-    // const queries = useQueries({
-    //     queries: farms
-    //         .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
-    //         .map((item) => ({
-    //             queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
-    //         })),
-    // });
-
-    useEffect(() => {
-        const observer = new QueriesObserver(
-            queryClient,
-            farms
-                .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
-                .map((farm) => ({
-                    queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
-                }))
-        );
-        const unsubscribe = observer.subscribe((results: any) => {
-            setQueries(results);
-        });
-        return () => unsubscribe();
-    }, [NETWORK_NAME, farms, tab, currentWallet]);
+    const { farmDetails } = useFarmDetails();
 
     const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
@@ -95,8 +58,7 @@ function Farms() {
 
     const handleSort = (column: FarmTableColumns) => {
         const data: FarmDataExtended[] = farms.map((ele) => {
-            // @ts-ignore
-            const queryData = queries.find((item) => item.data?.ID === ele.id)?.data as FarmData | undefined;
+            const queryData = Object.values(farmDetails).find((item) => item?.ID === ele.id);
             return {
                 ...ele,
                 ...queryData,
@@ -167,22 +129,6 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                {/* <p
-                    onClick={() => {
-                        setSortedBuy(FarmTableColumns.EARNED);
-                        setDecOrder((prev) => !prev);
-                    }}
-                    className={`header_earned`}
-                >
-                    <span>{FarmTableColumns.EARNED}</span>
-                    {sortedBuy === FarmTableColumns.EARNED ? (
-                        decOrder ? (
-                            <RiArrowDownSLine fontSize={21} />
-                        ) : (
-                            <RiArrowUpSLine fontSize={21} />
-                        )
-                    ) : null}
-                </p> */}
                 <p></p>
             </div>
             {networkId === defaultChainId ? (

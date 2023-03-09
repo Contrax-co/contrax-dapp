@@ -1,9 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import farmFunctions from "src/api/pools";
-import { FARM_DATA } from "src/config/constants/query";
+import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import useApp from "src/hooks/useApp";
-import useConstants from "src/hooks/useConstants";
-import useWallet from "src/hooks/useWallet";
 import { Farm } from "src/types";
 import "./Toggle.css";
 
@@ -15,16 +11,8 @@ interface Props {
 
 const Toggle: React.FC<Props> = ({ active, farm, ...props }) => {
     const { lightMode } = useApp();
-    const { currentWallet, provider, balanceBigNumber, multicallProvider } = useWallet();
-    const { NETWORK_NAME } = useConstants();
-
-    const { data: farmData, refetch } = useQuery(
-        FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
-        () => farmFunctions[farm.id]?.getFarmData(multicallProvider, currentWallet, balanceBigNumber),
-        {
-            enabled: !!currentWallet && !!provider && !!farm,
-        }
-    );
+    const { farmDetails } = useFarmDetails();
+    const farmData = farmDetails[farm.id];
 
     return (
         <div className="switch">

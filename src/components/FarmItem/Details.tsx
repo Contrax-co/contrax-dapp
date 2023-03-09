@@ -23,16 +23,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
     const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
 
-    const { formattedSupplies } = useTotalSupplies([
-        {
-            address: farm.vault_addr,
-            decimals: farm.vault_decimals || 18,
-        },
-        {
-            address: farm.lp_address,
-            decimals: farm.decimals,
-        },
-    ]);
+    const { formattedSupplies } = useTotalSupplies();
 
     const {
         prices: {
