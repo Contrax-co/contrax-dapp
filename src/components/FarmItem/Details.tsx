@@ -33,7 +33,11 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
     ]);
 
     const {
-        prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
+        prices: {
+            [farm.token1.toLowerCase()]: price1,
+            [farm.token2?.toLowerCase()!]: price2,
+            [lpAddress.toLowerCase()]: lpPrice,
+        },
     } = usePriceOfTokens();
     const { formattedBalances } = useBalances();
     const unstakedTokenValue = useMemo(() => formattedBalances[lpAddress], [formattedBalances]);

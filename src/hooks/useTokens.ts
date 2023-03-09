@@ -62,9 +62,12 @@ export const useTokens = () => {
                         ? formattedBalances[address].toPrecision(2).slice(0, -1)
                         : toFixedFloor(formattedBalances[address], tokenBalDecimalPlaces).toString(),
                 usdBalance:
-                    prices[address] * formattedBalances[address] < 1 / 10 ** usdBalDecimalPlaces
-                        ? (prices[address] * formattedBalances[address]).toPrecision(2).slice(0, -1)
-                        : toFixedFloor(prices[address] * formattedBalances[address], usdBalDecimalPlaces).toString(),
+                    prices[address.toLowerCase()] * formattedBalances[address] < 1 / 10 ** usdBalDecimalPlaces
+                        ? (prices[address.toLowerCase()] * formattedBalances[address]).toPrecision(2).slice(0, -1)
+                        : toFixedFloor(
+                              prices[address.toLowerCase()] * formattedBalances[address],
+                              usdBalDecimalPlaces
+                          ).toString(),
                 logo: isToken1 ? farm?.logo1 : farm?.logo2 || "",
                 name: isToken1 ? farm?.name1 : farm?.name2 || "",
             };
@@ -81,9 +84,9 @@ export const useTokens = () => {
             name: "ETH",
             network: networkId === 1 ? "Mainnet" : "Arbitrum",
             usdBalance:
-                ethBalance * prices[ethAddress] < 1 / 10 ** usdBalDecimalPlaces
-                    ? (ethBalance * prices[ethAddress]).toPrecision(2).slice(0, -1)
-                    : toFixedFloor(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
+                ethBalance * prices[ethAddress.toLowerCase()] < 1 / 10 ** usdBalDecimalPlaces
+                    ? (ethBalance * prices[ethAddress.toLowerCase()]).toPrecision(2).slice(0, -1)
+                    : toFixedFloor(ethBalance * prices[ethAddress.toLowerCase()], usdBalDecimalPlaces).toString(),
         };
         tokens.unshift(ethToken);
         setTokens(tokens);

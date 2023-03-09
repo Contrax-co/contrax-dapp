@@ -7,6 +7,8 @@ import { toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
+import { Balances } from "src/state/balances/types";
+import { Prices } from "src/state/prices/types";
 
 const farm = pools.find((farm) => farm.id === 9) as Farm;
 let farmData: FarmData | undefined = undefined;
@@ -50,8 +52,10 @@ export const getFarmData = async (
     return farmData;
 };
 
-export const getModifiedFarmDataByEthBalance = (farmData: FarmData, ethBalance: BigNumber) => {
-    const { tokenPrice, tokenBalance, vaultBalance } = farmData.DATA;
+export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices) => {
+    const tokenPrice = prices[farm.token1.toLowerCase()];
+    const vaultBalance = BigNumber.from(balances[farm.vault_addr.toLowerCase()].balance);
+    const tokenBalance = BigNumber.from(balances[farm.token1.toLowerCase()].balance);
 
     const result = {
         Max_Zap_Withdraw_Balance_Dollar: "0",

@@ -47,7 +47,7 @@ export const updatePrices = createAsyncThunk(
 
             Object.entries(coins).forEach(([key, value]) => {
                 // @ts-ignore
-                prices[key.split(":")[1]] = value.price;
+                prices[key.split(":")[1].toLowerCase()] = value.price;
             });
 
             //------------------->> 2. Get prices from blockchain
@@ -126,17 +126,17 @@ export const updatePrices = createAsyncThunk(
                     totalUSDLiquidity,
                     price,
                 };
-                prices[key] = price;
+                prices[key.toLowerCase()] = price;
             });
 
             //------------------->> 4. Set prices for tokens in state
 
             // create address checksum
-            const checksummed: { [key: string]: number } = {};
-            Object.entries(prices).forEach(([key, value]) => {
-                checksummed[utils.getAddress(key)] = value;
-            });
-            return checksummed;
+            // const checksummed: { [key: string]: number } = {};
+            // Object.entries(prices).forEach(([key, value]) => {
+            //     checksummed[utils.getAddress(key)] = value;
+            // });
+            return prices;
         } catch (error) {
             console.error(error);
         }

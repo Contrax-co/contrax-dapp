@@ -8,6 +8,8 @@ import { dismissNotify, dismissNotifyAll, notifyLoading, notifyError, notifySucc
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
+import { Balances } from "src/state/balances/types";
+import { Prices } from "src/state/prices/types";
 
 const farm = pools.find((farm) => farm.id === 11) as Farm;
 let farmData: FarmData | undefined = undefined;
@@ -53,8 +55,13 @@ export const getFarmData = async (
     return farmData;
 };
 
-export const getModifiedFarmDataByEthBalance = (farmData: FarmData, ethBalance: BigNumber) => {
-    const { ethPrice, lpPrice, lpBalance, vaultBalance } = farmData.DATA;
+
+export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices) => {
+    const ethPrice = prices[constants.AddressZero];
+    const lpPrice = prices[farm.lp_address.toLowerCase()];
+    const vaultBalance = BigNumber.from(balances[farm.vault_addr.toLowerCase()].balance);
+    const ethBalance = BigNumber.from(balances[constants.AddressZero].balance);
+    const lpBalance = BigNumber.from(balances[farm.lp_address.toLowerCase()].balance);
 
     const result = {
         Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),

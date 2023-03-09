@@ -2,9 +2,7 @@ import { Farm } from "src/types";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 export interface StateInterface {
-    balances: {
-        [key: string]: Balance;
-    };
+    balances: Balances;
     isLoading: boolean;
     isFetched: boolean;
 }
@@ -18,4 +16,8 @@ export interface UpdateBalancesActionPayload {
 export interface Balance {
     decimals: number;
     balance: string;
+}
+
+export interface Balances {
+    [key: string]: Balance;
 }
