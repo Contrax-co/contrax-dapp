@@ -38,12 +38,11 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { farmDetails, isLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
     const priceOfSingleToken = farmData?.TOKEN_PRICE || 0;
-
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
             if (shouldUseLp) {
                 return showInUsd
-                    ? parseFloat(farmData?.Max_Token_Deposit_Balance_Dollar || "0")
+                ? parseFloat(farmData?.Max_Token_Deposit_Balance_Dollar || "0")
                     : parseFloat(farmData?.Max_Token_Deposit_Balance || "0");
             } else {
                 return showInUsd

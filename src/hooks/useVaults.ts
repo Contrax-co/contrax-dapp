@@ -19,7 +19,7 @@ export const useVaults = (): { vaults: Vault[]; isLoading: boolean } => {
                 return {
                     ...farm,
                     userVaultBalance: usersVaultBalances[farm.vault_addr],
-                    priceOfSingleToken: priceOfSingleToken[lpAddress.toLowerCase()] || (farm.stableCoin ? 1 : 0),
+                    priceOfSingleToken: priceOfSingleToken[lpAddress] || (farm.stableCoin ? 1 : 0),
                     apys: apys[farm.id],
                 };
             })

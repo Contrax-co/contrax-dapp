@@ -132,11 +132,11 @@ export const updatePrices = createAsyncThunk(
             //------------------->> 4. Set prices for tokens in state
 
             // create address checksum
-            // const checksummed: { [key: string]: number } = {};
-            // Object.entries(prices).forEach(([key, value]) => {
-            //     checksummed[utils.getAddress(key)] = value;
-            // });
-            return prices;
+            const checksummed: { [key: string]: number } = {};
+            Object.entries(prices).forEach(([key, value]) => {
+                checksummed[utils.getAddress(key)] = value;
+            });
+            return checksummed;
         } catch (error) {
             console.error(error);
         }

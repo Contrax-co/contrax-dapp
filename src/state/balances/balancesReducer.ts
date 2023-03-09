@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { constants, Contract } from "ethers";
+import { constants, Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
-import { StateInterface, UpdateBalancesActionPayload } from "./types";
+import { Balance, Balances, StateInterface, UpdateBalancesActionPayload } from "./types";
 
 const initialState: StateInterface = { balances: {}, isLoading: false, isFetched: false };
 
@@ -28,8 +28,8 @@ export const fetchBalances = createAsyncThunk(
                 multicallProvider.getBalance(account),
                 ...promises,
             ]);
-            const balances = balancesResponse
-                .slice(0, balancesResponse.length / 2 + 1)
+            const balances: Balances = balancesResponse
+                .slice(0, balancesResponse.length / 2)
                 .reduce((accum, balance, index) => {
                     accum[addressesArray[index]] = {
                         balance: balance.toString(),
@@ -38,7 +38,14 @@ export const fetchBalances = createAsyncThunk(
                     return accum;
                 }, {});
             balances[constants.AddressZero] = { balance: ethBalance.toString(), decimals: 18 };
-            return balances;
+
+            // create address checksum
+            const checksummed: { [key: string]: Balance } = {};
+            Object.entries(balances).forEach(([key, value]) => {
+                checksummed[utils.getAddress(key)] = value;
+            });
+
+            return checksummed;
         } catch (error) {
             console.error(error);
         }

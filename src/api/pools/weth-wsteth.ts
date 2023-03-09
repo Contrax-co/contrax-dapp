@@ -51,8 +51,8 @@ export const getFarmData = async (
 
 export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices) => {
     const ethPrice = prices[constants.AddressZero];
-    const lpPrice = prices[farm.lp_address.toLowerCase()];
-    const vaultBalance = BigNumber.from(balances[farm.vault_addr.toLowerCase()].balance);
+    const lpPrice = prices[farm.lp_address];
+    const vaultBalance = BigNumber.from(balances[farm.vault_addr].balance);
     const ethBalance = BigNumber.from(balances[constants.AddressZero].balance);
 
     const result = {

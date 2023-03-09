@@ -21,15 +21,15 @@ export const useTokens = () => {
         const set = new Set<string>();
         const arr: { address: string; decimals: number }[] = [];
         for (const farm of farms) {
-            set.add(farm.token1.toLowerCase());
-            if (farm.token2) set.add(farm.token2.toLowerCase());
+            set.add(farm.token1);
+            if (farm.token2) set.add(farm.token2);
         }
         set.forEach((address) => {
             const farm = farms.find(
-                (farm) => farm.token1.toLowerCase() === address || farm.token2?.toLowerCase() === address
+                (farm) => farm.token1 === address || farm.token2 === address
             );
             const decimals =
-                (farm?.token1.toLowerCase() === address
+                (farm?.token1 === address
                     ? // @ts-ignore
                       farm.decimals1
                     : // @ts-ignore
@@ -51,9 +51,9 @@ export const useTokens = () => {
     useEffect(() => {
         const tokens: Token[] = tokenAddresses.map(({ address, decimals }) => {
             const farm = farms.find(
-                (farm) => farm.token1.toLowerCase() === address || farm.token2?.toLowerCase() === address
+                (farm) => farm.token1 === address || farm.token2 === address
             );
-            const isToken1 = farm?.token1.toLowerCase() === address;
+            const isToken1 = farm?.token1 === address;
             let obj: Token = {
                 address: address,
                 decimals: decimals,
@@ -62,10 +62,10 @@ export const useTokens = () => {
                         ? formattedBalances[address].toPrecision(2).slice(0, -1)
                         : toFixedFloor(formattedBalances[address], tokenBalDecimalPlaces).toString(),
                 usdBalance:
-                    prices[address.toLowerCase()] * formattedBalances[address] < 1 / 10 ** usdBalDecimalPlaces
-                        ? (prices[address.toLowerCase()] * formattedBalances[address]).toPrecision(2).slice(0, -1)
+                    prices[address] * formattedBalances[address] < 1 / 10 ** usdBalDecimalPlaces
+                        ? (prices[address] * formattedBalances[address]).toPrecision(2).slice(0, -1)
                         : toFixedFloor(
-                              prices[address.toLowerCase()] * formattedBalances[address],
+                              prices[address] * formattedBalances[address],
                               usdBalDecimalPlaces
                           ).toString(),
                 logo: isToken1 ? farm?.logo1 : farm?.logo2 || "",
@@ -84,9 +84,9 @@ export const useTokens = () => {
             name: "ETH",
             network: networkId === 1 ? "Mainnet" : "Arbitrum",
             usdBalance:
-                ethBalance * prices[ethAddress.toLowerCase()] < 1 / 10 ** usdBalDecimalPlaces
-                    ? (ethBalance * prices[ethAddress.toLowerCase()]).toPrecision(2).slice(0, -1)
-                    : toFixedFloor(ethBalance * prices[ethAddress.toLowerCase()], usdBalDecimalPlaces).toString(),
+                ethBalance * prices[ethAddress] < 1 / 10 ** usdBalDecimalPlaces
+                    ? (ethBalance * prices[ethAddress]).toPrecision(2).slice(0, -1)
+                    : toFixedFloor(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
         };
         tokens.unshift(ethToken);
         setTokens(tokens);
