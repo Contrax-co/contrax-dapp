@@ -20,7 +20,9 @@ interface Props {
 const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props }) => {
     const { lightMode } = useApp();
     const lpAddress = getLpAddressForFarmsPrice([farm])[0];
-    const { farmData } = useFarmDetails(farm);
+    const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();
+    const farmData = farmDetails[farm.id];
+
     const { formattedSupplies } = useTotalSupplies([
         {
             address: farm.vault_addr,
@@ -40,8 +42,8 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
         },
     } = usePriceOfTokens();
     const { formattedBalances } = useBalances();
-    const unstakedTokenValue = useMemo(() => formattedBalances[lpAddress], [formattedBalances]);
-    const stakedTokenValue = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances]);
+    const unstakedTokenValue = useMemo(() => formattedBalances[lpAddress.toLowerCase()], [formattedBalances]);
+    const stakedTokenValue = useMemo(() => formattedBalances[farm.vault_addr.toLowerCase()], [formattedBalances]);
 
     return (
         <div className="details">

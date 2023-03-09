@@ -6,21 +6,16 @@ import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_DATA, FARM_WITHDRAW } from "src/config/constants/query";
 import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
+import useBalances from "../useBalances";
 
 const useWithdraw = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
+    const { reloadBalances } = useBalances();
 
     const _withdraw = async ({ withdrawAmount, max }: { withdrawAmount: number; max?: boolean }) => {
-        const cb = async () => {
-            await queryClient.refetchQueries({
-                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id),
-                type: "active",
-                exact: true,
-            });
-        };
         await farmFunctions[farm.id].withdraw({ withdrawAmount, currentWallet, signer, chainId, max });
-        await cb();
+        reloadBalances();
     };
 
     const {

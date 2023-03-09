@@ -8,11 +8,13 @@ import Test from "./pages/Test/Test";
 import usePriceOfTokens from "./hooks/usePriceOfTokens";
 import { useFarmApys } from "./hooks/farms/useFarmApy";
 import useBalances from "./hooks/useBalances";
+import useFarmDetails from "./hooks/farms/useFarmDetails";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
     const { reloadApys } = useFarmApys();
     const { reloadBalances } = useBalances();
+    const { reloadFarmData } = useFarmDetails();
 
     useEffect(() => {
         reloadPrices();
@@ -40,6 +42,10 @@ function Body() {
         }, 1000 * 60 * 2);
         return () => clearInterval(interval);
     }, [reloadBalances]);
+
+    useEffect(() => {
+        reloadFarmData();
+    }, [reloadFarmData]);
 
     return (
         <Router>

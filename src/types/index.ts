@@ -56,7 +56,6 @@ export interface Vault extends Farm {
     apys: Apys;
 }
 
-
 export interface Token {
     address: string;
     name: string;
@@ -171,8 +170,4 @@ export interface FarmData {
      * Price of token which is used in zapping
      */
     ZAP_TOKEN_PRICE: number;
-    /**
-     * Optional Extra data
-     */
-    DATA?: any;
 }

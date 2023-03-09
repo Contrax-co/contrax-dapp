@@ -25,7 +25,8 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const { lightMode } = useApp();
     const [dropDown, setDropDown] = useState(false);
     const { apy: farmApys, isLoading: isApyLoading } = useFarmApy(farm);
-    const { farmData, isLoading: isFarmLoading } = useFarmDetails(farm);
+    const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();
+    const farmData = farmDetails[farm.id];
     const isLoading = isFarmLoading || isApyLoading;
     const key = uuid();
 
@@ -252,7 +253,8 @@ const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
 const FarmRowSkeleton = ({ farm, lightMode }: { farm: Farm; lightMode: boolean }) => {
     const { apy: farmApys, isLoading: isApyLoading } = useFarmApy(farm);
     const key = uuid();
-    const { farmData, isLoading: isFarmLoading } = useFarmDetails(farm);
+    const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();
+    const farmData = farmDetails[farm.id];
 
     return (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>

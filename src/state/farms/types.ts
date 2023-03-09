@@ -1,4 +1,6 @@
 import { Farm, FarmData } from "src/types";
+import { Balances } from "../balances/types";
+import { Prices } from "../prices/types";
 
 export interface StateInterface {
     farmDetails: FarmDetails;
@@ -13,4 +15,6 @@ export interface FarmDetails {
 export interface FetchFarmDetailsAction {
     farms: Farm[];
     currentWallet: string;
+    balances:Balances;
+    prices:Prices;
 }

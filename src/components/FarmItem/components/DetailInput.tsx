@@ -35,7 +35,8 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { isLoading: isZappingOut, zapOutAsync } = useZapOut(farm);
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
     const [max, setMax] = React.useState(false);
-    const { farmData, isLoading } = useFarmDetails(farm);
+    const { farmDetails, isLoading } = useFarmDetails();
+    const farmData = farmDetails[farm.id];
     const priceOfSingleToken = farmData?.TOKEN_PRICE || 0;
 
     const maxBalance = React.useMemo(() => {

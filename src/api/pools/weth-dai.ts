@@ -45,13 +45,7 @@ export const getFarmData = async (
         ZAP_TOKEN_PRICE: ethPrice,
         Zap_Enabled: true,
         ID: farm.id,
-        DATA: {
-            ethPrice,
-            lpPrice,
-            lpBalance,
-            vaultBalance,
-            ethBalance,
-        },
+       
     };
     return farmData;
 };
@@ -61,7 +55,7 @@ export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Pric
     const lpPrice = prices[farm.lp_address.toLowerCase()];
     const lpBalance = BigNumber.from(balances[farm.lp_address.toLowerCase()].balance);
     const vaultBalance = BigNumber.from(balances[farm.vault_addr.toLowerCase()].balance);
-    const ethBalance = BigNumber.from(balances[constants.AddressZero]);
+    const ethBalance = BigNumber.from(balances[constants.AddressZero].balance);
 
     const result = {
         Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
@@ -82,13 +76,7 @@ export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Pric
         ZAP_TOKEN_PRICE: ethPrice,
         Zap_Enabled: true,
         ID: farm.id,
-        DATA: {
-            ethPrice,
-            lpPrice,
-            lpBalance,
-            vaultBalance,
-            ethBalance,
-        },
+       
     };
     return result;
 };

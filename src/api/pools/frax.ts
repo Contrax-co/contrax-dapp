@@ -43,11 +43,7 @@ export const getFarmData = async (
         ZAP_TOKEN_PRICE: 0,
         Zap_Enabled: true,
         ID: farm.id,
-        DATA: {
-            tokenPrice,
-            tokenBalance,
-            vaultBalance,
-        },
+       
     };
     return farmData;
 };
@@ -78,11 +74,7 @@ export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Pric
         ZAP_TOKEN_PRICE: 0,
         Zap_Enabled: true,
         ID: farm.id,
-        DATA: {
-            tokenPrice,
-            tokenBalance,
-            vaultBalance,
-        },
+       
     };
     return result;
 };
