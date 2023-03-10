@@ -2,7 +2,7 @@ import { Farm } from "src/types";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 export interface StateInterface {
-    totalSupplies: TotalSupplies;
+    totalSupplies: Partial<TotalSupplies>;
     isLoading: boolean;
     isFetched: boolean;
 }
@@ -12,11 +12,6 @@ export interface UpdateBalancesActionPayload {
     multicallProvider: MulticallProvider;
 }
 
-export interface Supply {
-    decimals: number;
-    balance: string;
-}
-
 export interface TotalSupplies {
-    [key: string]: Supply;
+    [key: string]: string;
 }

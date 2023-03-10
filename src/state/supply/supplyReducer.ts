@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
-import { StateInterface, UpdateBalancesActionPayload, Supply, TotalSupplies } from "./types";
+import { StateInterface, UpdateBalancesActionPayload, TotalSupplies } from "./types";
 
 const initialState: StateInterface = { totalSupplies: {}, isLoading: false, isFetched: false };
 
@@ -18,23 +18,15 @@ export const fetchTotalSupplies = createAsyncThunk(
             let promises = addressesArray.map((address) =>
                 new Contract(address, erc20ABI, multicallProvider).totalSupply()
             );
-            promises = [
-                ...promises,
-                ...addressesArray.map((address) => new Contract(address, erc20ABI, multicallProvider).decimals()),
-            ];
+            promises = [...promises];
             const balancesResponse = await Promise.all([...promises]);
-            const balances: TotalSupplies = balancesResponse
-                .slice(0, balancesResponse.length / 2)
-                .reduce((accum, balance, index) => {
-                    accum[addressesArray[index]] = {
-                        balance: balance.toString(),
-                        decimals: balancesResponse[index + balancesResponse.length / 2],
-                    };
-                    return accum;
-                }, {});
+            const balances: TotalSupplies = balancesResponse.reduce((accum, balance, index) => {
+                accum[addressesArray[index]] = balance.toString();
+                return accum;
+            }, {});
 
             // create address checksum
-            const checksummed: { [key: string]: Supply } = {};
+            const checksummed: { [key: string]: string } = {};
             Object.entries(balances).forEach(([key, value]) => {
                 checksummed[utils.getAddress(key)] = value;
             });

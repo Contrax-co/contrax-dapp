@@ -2,7 +2,7 @@ import { Farm } from "src/types";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 export interface StateInterface {
-    decimals: Decimals;
+    decimals: Partial<Decimals>;
     isLoading: boolean;
     isFetched: boolean;
 }
