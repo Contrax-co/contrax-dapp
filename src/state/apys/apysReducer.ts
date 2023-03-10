@@ -18,17 +18,13 @@ const initialState: StateInterface = { apys: apyObj, isLoading: false, isFetched
 export const fetchApys = createAsyncThunk(
     "apys/fetchApys",
     async ({ farms, chainId, multicallProvider }: FetchApysThunk, thunkApi) => {
-        try {
-            const promises = farms.map((farm) => getApy(farm, chainId, multicallProvider));
-            const res = await Promise.all(promises);
-            const obj: { [farmId: number]: Apys } = {};
-            res.map((apy, index) => {
-                obj[farms[index].id] = apy;
-            });
-            return obj;
-        } catch (error) {
-            console.error(error);
-        }
+        const promises = farms.map((farm) => getApy(farm, chainId, multicallProvider));
+        const res = await Promise.all(promises);
+        const obj: { [farmId: number]: Apys } = {};
+        res.map((apy, index) => {
+            obj[farms[index].id] = apy;
+        });
+        return obj;
     }
 );
 
@@ -51,6 +47,11 @@ const apysSlice = createSlice({
             state.isLoading = false;
             state.isFetched = true;
             state.apys = { ...action.payload };
+        });
+        builder.addCase(fetchApys.rejected, (state) => {
+            state.isLoading = false;
+            state.isFetched = false;
+            state.apys = apyObj;
         });
     },
 });

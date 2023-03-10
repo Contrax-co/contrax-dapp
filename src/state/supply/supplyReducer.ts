@@ -33,7 +33,8 @@ export const fetchTotalSupplies = createAsyncThunk(
 
             return checksummed;
         } catch (error) {
-            console.error(error);
+            // console.error(error);
+            return {};
         }
     }
 );
