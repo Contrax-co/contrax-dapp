@@ -6,6 +6,7 @@ export interface StateInterface {
     farmDetails: FarmDetails;
     isLoading: boolean;
     isFetched: boolean;
+    account: string;
 }
 
 export interface FarmDetails {
@@ -15,6 +16,6 @@ export interface FarmDetails {
 export interface FetchFarmDetailsAction {
     farms: Farm[];
     currentWallet: string;
-    balances:Balances;
-    prices:Prices;
+    balances: Balances;
+    prices: Prices;
 }
