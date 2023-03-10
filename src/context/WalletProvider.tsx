@@ -19,6 +19,7 @@ import useNotify from "src/hooks/useNotify";
 import { getNetworkName } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
+import useBalances from "src/hooks/useBalances";
 
 interface IWalletContext {
     /**
@@ -84,6 +85,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
     const { notifyError } = useNotify();
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
+    const { balances } = useBalances();
 
     const { switchNetworkAsync, chains } = useSwitchNetwork();
     const { data: signer } = useSigner();
@@ -100,7 +102,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             return { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) };
         const balance = await provider.getBalance(currentWallet);
         const mainnetBalance = await mainnetProvider.getBalance(currentWallet);
-        return { balance, mainnetBalance };
+        return { balance: ethers.BigNumber.from(balances[ethers.constants.AddressZero]), mainnetBalance };
     };
 
     const connectWallet = async () => {

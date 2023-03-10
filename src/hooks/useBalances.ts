@@ -4,6 +4,7 @@ import * as ethers from "ethers";
 import useFarms from "./farms/useFarms";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { fetchBalances, reset, setIsFetched } from "src/state/balances/balancesReducer";
+import { useDecimals } from "./useDecimals";
 
 /**
  * Returns balances for all tokens
@@ -13,17 +14,27 @@ const useBalances = () => {
     const { farms } = useFarms();
     const { isLoading, balances, isFetched, account: oldAccount } = useAppSelector((state) => state.balances);
     const { networkId, multicallProvider, currentWallet } = useWallet();
+    const {
+        decimals,
+        isFetched: isDecimalsFetched,
+        isLoading: isDecimalsLoading,
+        isFetching: isDecimalsFetching,
+    } = useDecimals();
     const dispatch = useAppDispatch();
 
     const reloadBalances = useCallback(() => {
         if (currentWallet) dispatch(fetchBalances({ farms, multicallProvider, account: currentWallet }));
-    }, [farms, currentWallet, networkId, dispatch]);
+    }, [farms, currentWallet, networkId, dispatch, decimals]);
 
     const formattedBalances = useMemo(() => {
-        let b: { [key: string]: number } = {};
+        let b: { [key: string]: number | undefined } = {};
         Object.entries(balances).map(([key, value]) => {
             // Formalize the balance
-            const formattedBal = Number(ethers.utils.formatUnits(value.balance, value.decimals));
+            if (!value) {
+                b[key] = undefined;
+                return;
+            }
+            const formattedBal = Number(ethers.utils.formatUnits(value, decimals[key]));
             b[key] = formattedBal;
             return;
         });
@@ -40,9 +51,9 @@ const useBalances = () => {
         balances,
         reloadBalances,
         formattedBalances,
-        isLoading: isLoading && !isFetched,
-        isFetched,
-        isFetching: isLoading,
+        isLoading: (isLoading || isDecimalsLoading) && !isFetched && !isDecimalsFetched,
+        isFetched: isFetched && isDecimalsFetched,
+        isFetching: isLoading || isDecimalsFetching,
     };
 };
 

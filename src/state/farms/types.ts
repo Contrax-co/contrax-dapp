@@ -10,7 +10,7 @@ export interface StateInterface {
 }
 
 export interface FarmDetails {
-    [farmid: number]: FarmData;
+    [farmid: number]: FarmData | undefined;
 }
 
 export interface FetchFarmDetailsAction {

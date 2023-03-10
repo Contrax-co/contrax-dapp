@@ -14,11 +14,6 @@ export interface UpdateBalancesActionPayload {
     multicallProvider: MulticallProvider;
 }
 
-export interface Balance {
-    decimals: number;
-    balance: string;
-}
-
 export interface Balances {
-    [key: string]: Balance;
+    [key: string]: string | undefined;
 }
