@@ -82,3 +82,15 @@ export const isValidNetwork = (network: string | number) => {
     }
     return false;
 };
+
+
+export const toPreciseNumber = (x: number | string, decimals = 3, precision = 2) => {
+    if (typeof x === "string") {
+        x = parseFloat(x);
+    }
+    if (x < 1) {
+        return x.toPrecision(precision);
+    } else {
+        return x.toFixed(decimals);
+    }
+};

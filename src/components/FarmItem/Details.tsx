@@ -6,7 +6,7 @@ import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { Farm } from "src/types";
 import "./Details.css";
 import Toggle from "src/components/FarmItem/Toggle";
-import { getLpAddressForFarmsPrice } from "src/utils/common";
+import { getLpAddressForFarmsPrice, toPreciseNumber } from "src/utils/common";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 
@@ -163,7 +163,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
 
                                     <p className={`detailed_unstaked_pairs`}>
                                         {formattedSupplies[farm.lp_address] &&
-                                            formattedSupplies[farm.lp_address]!.toFixed(3)}{" "}
+                                            toPreciseNumber(formattedSupplies[farm.lp_address]!)}{" "}
                                         {farm.name}
                                     </p>
                                 </div>
@@ -195,7 +195,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
 
                                     <p className={`detailed_unstaked_pairs`}>
                                         {formattedSupplies[farm.vault_addr] &&
-                                            formattedSupplies[farm.vault_addr]!.toFixed(3)}{" "}
+                                            toPreciseNumber(formattedSupplies[farm.vault_addr]!)}{" "}
                                         {farm.name}
                                     </p>
                                 </div>
