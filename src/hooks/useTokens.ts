@@ -25,9 +25,7 @@ export const useTokens = () => {
             if (farm.token2) set.add(farm.token2);
         }
         set.forEach((address) => {
-            const farm = farms.find(
-                (farm) => farm.token1 === address || farm.token2 === address
-            );
+            const farm = farms.find((farm) => farm.token1 === address || farm.token2 === address);
             const decimals =
                 (farm?.token1 === address
                     ? // @ts-ignore
@@ -50,24 +48,21 @@ export const useTokens = () => {
 
     useEffect(() => {
         const tokens: Token[] = tokenAddresses.map(({ address, decimals }) => {
-            const farm = farms.find(
-                (farm) => farm.token1 === address || farm.token2 === address
-            );
+            const farm = farms.find((farm) => farm.token1 === address || farm.token2 === address);
             const isToken1 = farm?.token1 === address;
             let obj: Token = {
                 address: address,
                 decimals: decimals,
-                balance:
-                    formattedBalances[address] < 1 / 10 ** tokenBalDecimalPlaces
-                        ? formattedBalances[address].toPrecision(2).slice(0, -1)
-                        : toFixedFloor(formattedBalances[address], tokenBalDecimalPlaces).toString(),
-                usdBalance:
-                    prices[address] * formattedBalances[address] < 1 / 10 ** usdBalDecimalPlaces
-                        ? (prices[address] * formattedBalances[address]).toPrecision(2).slice(0, -1)
-                        : toFixedFloor(
-                              prices[address] * formattedBalances[address],
-                              usdBalDecimalPlaces
-                          ).toString(),
+                balance: formattedBalances[address]
+                    ? formattedBalances[address]! < 1 / 10 ** tokenBalDecimalPlaces
+                        ? formattedBalances[address]!.toPrecision(2).slice(0, -1)
+                        : toFixedFloor(formattedBalances[address]!, tokenBalDecimalPlaces).toString()
+                    : "0",
+                usdBalance: formattedBalances[address]
+                    ? prices[address] * formattedBalances[address]! < 1 / 10 ** usdBalDecimalPlaces
+                        ? (prices[address] * formattedBalances[address]!).toPrecision(2).slice(0, -1)
+                        : toFixedFloor(prices[address] * formattedBalances[address]!, usdBalDecimalPlaces).toString()
+                    : "0",
                 logo: isToken1 ? farm?.logo1 : farm?.logo2 || "",
                 name: isToken1 ? farm?.name1 : farm?.name2 || "",
             };

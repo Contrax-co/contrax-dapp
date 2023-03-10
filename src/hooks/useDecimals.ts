@@ -11,7 +11,6 @@ export const useDecimals = () => {
     const dispatch = useAppDispatch();
 
     const reloadDecimals = useCallback(() => {
-        console.log("reloadDecimals");
         dispatch(fetchDecimals({ farms, multicallProvider }));
     }, [farms, dispatch, multicallProvider]);
 

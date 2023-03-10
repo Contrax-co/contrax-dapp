@@ -53,9 +53,9 @@ export const getFarmData = async (
 export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices) => {
     const ethPrice = prices[constants.AddressZero];
     const lpPrice = prices[farm.lp_address];
-    const lpBalance = BigNumber.from(balances[farm.lp_address].balance);
-    const vaultBalance = BigNumber.from(balances[farm.vault_addr].balance);
-    const ethBalance = BigNumber.from(balances[constants.AddressZero].balance);
+    const lpBalance = BigNumber.from(balances[farm.lp_address]);
+    const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
+    const ethBalance = BigNumber.from(balances[constants.AddressZero]);
 
     const result = {
         Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),

@@ -26,11 +26,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
     const { formattedSupplies } = useTotalSupplies();
 
     const {
-        prices: {
-            [farm.token1]: price1,
-            [farm.token2!]: price2,
-            [lpAddress]: lpPrice,
-        },
+        prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
     } = usePriceOfTokens();
     const { formattedBalances } = useBalances();
     const unstakedTokenValue = useMemo(() => formattedBalances[lpAddress], [formattedBalances]);
@@ -106,15 +102,16 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                                 ) : null}
 
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {unstakedTokenValue.toFixed(3)} {farm.name}
+                                    {unstakedTokenValue?.toFixed(3)} {farm.name}
                                 </p>
                             </div>
 
                             <p className={`detailed_unstaked_pairs`}>
-                                {(lpPrice * unstakedTokenValue).toLocaleString("en-US", {
-                                    style: "currency",
-                                    currency: "USD",
-                                })}
+                                {unstakedTokenValue &&
+                                    (lpPrice * unstakedTokenValue).toLocaleString("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                    })}
                             </p>
                         </div>
                     </div>
@@ -132,14 +129,15 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                                 ) : null}
 
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {stakedTokenValue.toFixed(3)} {farm.name}
+                                    {stakedTokenValue?.toFixed(3)} {farm.name}
                                 </p>
                             </div>
                             <p className={`detailed_unstaked_pairs`}>
-                                {(lpPrice * stakedTokenValue).toLocaleString("en-US", {
-                                    style: "currency",
-                                    currency: "USD",
-                                })}
+                                {stakedTokenValue &&
+                                    (lpPrice * stakedTokenValue).toLocaleString("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                    })}
                             </p>
                         </div>
                     </div>
@@ -150,7 +148,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                         Total Value Locked
                     </p>
 
-                    {formattedSupplies[farm.lp_address] * lpPrice ? (
+                    {formattedSupplies[farm.lp_address] && formattedSupplies[farm.lp_address]! * lpPrice ? (
                         <div className={`detailed_header`}>
                             <p>Pool Liquidity</p>
                             <div className={`unstaked_details`}>
@@ -164,22 +162,25 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                                     ) : null}
 
                                     <p className={`detailed_unstaked_pairs`}>
-                                        {formattedSupplies[farm.lp_address].toFixed(3)} {farm.name}
+                                        {formattedSupplies[farm.lp_address] &&
+                                            formattedSupplies[farm.lp_address]!.toFixed(3)}{" "}
+                                        {farm.name}
                                     </p>
                                 </div>
 
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {(formattedSupplies[farm.lp_address] * lpPrice).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                        maximumFractionDigits: 0,
-                                    })}
+                                    {formattedSupplies[farm.lp_address] &&
+                                        (formattedSupplies[farm.lp_address]! * lpPrice).toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            maximumFractionDigits: 0,
+                                        })}
                                 </p>
                             </div>
                         </div>
                     ) : null}
 
-                    {formattedSupplies[farm.vault_addr] * lpPrice ? (
+                    {formattedSupplies[farm.vault_addr] && formattedSupplies[farm.vault_addr]! * lpPrice ? (
                         <div className={`detailed_header`}>
                             <p>Vault Liquidity</p>
                             <div className={`unstaked_details`}>
@@ -193,28 +194,33 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                                     ) : null}
 
                                     <p className={`detailed_unstaked_pairs`}>
-                                        {formattedSupplies[farm.vault_addr].toFixed(3)} {farm.name}
+                                        {formattedSupplies[farm.vault_addr] &&
+                                            formattedSupplies[farm.vault_addr]!.toFixed(3)}{" "}
+                                        {farm.name}
                                     </p>
                                 </div>
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {(formattedSupplies[farm.vault_addr] * lpPrice).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                        maximumFractionDigits: 0,
-                                    })}
+                                    {formattedSupplies[farm.vault_addr] &&
+                                        (formattedSupplies[farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            maximumFractionDigits: 0,
+                                        })}
                                 </p>
                             </div>
                         </div>
                     ) : null}
 
-                    {Number(farmData?.Max_Token_Withdraw_Balance) / formattedSupplies[farm.vault_addr] ? (
+                    {farmData?.Max_Token_Withdraw_Balance &&
+                    formattedSupplies[farm.vault_addr] &&
+                    Number(farmData.Max_Token_Withdraw_Balance) / formattedSupplies[farm.vault_addr]! ? (
                         <div className={`detailed_header`}>
                             <p>Share</p>
                             <div className={`unstaked_details`}>
                                 <p className={`detailed_unstaked_pairs`}>
                                     {(
                                         (Number(farmData?.Max_Token_Withdraw_Balance) /
-                                            formattedSupplies[farm.vault_addr]) *
+                                            formattedSupplies[farm.vault_addr]!) *
                                             100 || 0
                                     ).toFixed(2)}
                                     %

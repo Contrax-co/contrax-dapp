@@ -18,12 +18,17 @@ export const useVaults = (): { vaults: Vault[]; isLoading: boolean } => {
                 const lpAddress = getLpAddressForFarmsPrice([farm])[0];
                 return {
                     ...farm,
-                    userVaultBalance: usersVaultBalances[farm.vault_addr],
+                    userVaultBalance: usersVaultBalances[farm.vault_addr] || 0,
                     priceOfSingleToken: priceOfSingleToken[lpAddress] || (farm.stableCoin ? 1 : 0),
                     apys: apys[farm.id],
                 };
             })
-            .filter((farm) => farm.userVaultBalance * farm.priceOfSingleToken >= 0.01);
+            .filter(
+                (farm) =>
+                    farm?.userVaultBalance &&
+                    farm?.priceOfSingleToken &&
+                    farm.userVaultBalance * farm.priceOfSingleToken >= 0.01
+            );
     }, [apys, usersVaultBalances, priceOfSingleToken]);
 
     return {

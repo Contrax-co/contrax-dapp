@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { constants, Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
-import { Balance, Balances, StateInterface, UpdateBalancesActionPayload } from "./types";
+import { Balances, StateInterface, UpdateBalancesActionPayload } from "./types";
 
 const initialState: StateInterface = { balances: {}, isLoading: false, isFetched: false, account: "" };
 
@@ -20,27 +20,19 @@ export const fetchBalances = createAsyncThunk(
             let promises = addressesArray.map((address) =>
                 new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
             );
-            promises = [
-                ...promises,
-                ...addressesArray.map((address) => new Contract(address, erc20ABI, multicallProvider).decimals()),
-            ];
+            promises = [...promises];
             const [ethBalance, ...balancesResponse] = await Promise.all([
                 multicallProvider.getBalance(account),
                 ...promises,
             ]);
-            const balances: Balances = balancesResponse
-                .slice(0, balancesResponse.length / 2)
-                .reduce((accum, balance, index) => {
-                    accum[addressesArray[index]] = {
-                        balance: balance.toString(),
-                        decimals: balancesResponse[index + balancesResponse.length / 2],
-                    };
-                    return accum;
-                }, {});
-            balances[constants.AddressZero] = { balance: ethBalance.toString(), decimals: 18 };
+            const balances = balancesResponse.reduce((accum: { [key: string]: string }, balance, index) => {
+                accum[addressesArray[index]] = balance.toString();
+                return accum;
+            }, {});
+            balances[constants.AddressZero] = ethBalance.toString();
 
             // create address checksum
-            const checksummed: { [key: string]: Balance } = {};
+            const checksummed: { [key: string]: string } = {};
             Object.entries(balances).forEach(([key, value]) => {
                 checksummed[utils.getAddress(key)] = value;
             });
