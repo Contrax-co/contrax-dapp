@@ -10,11 +10,13 @@ import { useFarmApys } from "./hooks/farms/useFarmApy";
 import useBalances from "./hooks/useBalances";
 import useFarmDetails from "./hooks/farms/useFarmDetails";
 import useTotalSupplies from "./hooks/useTotalSupplies";
+import { useDecimals } from "./hooks/useDecimals";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
     const { reloadApys } = useFarmApys();
     const { reloadBalances } = useBalances();
+    const { reloadDecimals } = useDecimals();
     const { reloadSupplies } = useTotalSupplies();
     const { reloadFarmData } = useFarmDetails();
 
@@ -29,7 +31,7 @@ function Body() {
 
     useEffect(() => {
         reloadApys();
-        // after 5 min reload prices
+        // after 5 min reload apys
         const interval = setInterval(() => {
             reloadApys();
         }, 1000 * 60 * 5);
@@ -38,7 +40,7 @@ function Body() {
 
     useEffect(() => {
         reloadBalances();
-        // after 5 min reload prices
+        // after 2 min reload balances
         const interval = setInterval(() => {
             reloadBalances();
         }, 1000 * 60 * 2);
@@ -47,12 +49,16 @@ function Body() {
 
     useEffect(() => {
         reloadSupplies();
-        // after 5 min reload prices
+        // after 2 min reload supplies
         const interval = setInterval(() => {
             reloadSupplies();
         }, 1000 * 60 * 2);
         return () => clearInterval(interval);
     }, [reloadSupplies]);
+
+    useEffect(() => {
+        reloadDecimals();
+    }, [reloadDecimals]);
 
     useEffect(() => {
         reloadFarmData();
