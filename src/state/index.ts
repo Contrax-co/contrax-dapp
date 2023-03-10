@@ -22,10 +22,7 @@ const persistedPricesReducer = persistReducer(
     pricesReducer
 );
 
-const persistedDecimalReducer = persistReducer(
-    { key: "root", version: 1, storage, blacklist: ["isFetched"] },
-    decimalsReducer
-);
+const persistedDecimalReducer = persistReducer({ key: "root", version: 1, storage }, decimalsReducer);
 
 const rootReducer = combineReducers({
     settings: settingsReducer,
