@@ -22,13 +22,18 @@ const persistedPricesReducer = persistReducer(
     pricesReducer
 );
 
+const persistedDecimalReducer = persistReducer(
+    { key: "root", version: 1, storage, blacklist: ["isFetched"] },
+    decimalsReducer
+);
+
 const rootReducer = combineReducers({
     settings: settingsReducer,
     prices: persistedPricesReducer,
     apys: apysReducer,
     farms: farmsReducer,
     balances: balancesReducer,
-    decimals: decimalsReducer,
+    decimals: persistedDecimalReducer,
     supply: supplyReducer,
 });
 
