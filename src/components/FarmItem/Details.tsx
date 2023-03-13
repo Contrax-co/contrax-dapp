@@ -43,13 +43,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
 
                     {farm.alt2 ? <img className={`details_logo2`} alt={farm.alt2} src={farm.logo2} /> : null}
 
-                    {farm.pair2 ? (
-                        <p className={`details_pair_name ${lightMode && "details_pair_name--light"}`}>
-                            {farm.pair1}/{farm.pair2}
-                        </p>
-                    ) : (
-                        <p className={`details_pair_name ${lightMode && "details_pair_name--light"}`}>{farm.pair1}</p>
-                    )}
+                    <p className={`details_pair_name ${lightMode && "details_pair_name--light"}`}>{farm.name}</p>
                 </div>
 
                 <div className={`token_details`}>
