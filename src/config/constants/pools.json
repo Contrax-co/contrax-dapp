@@ -5,7 +5,7 @@
     "source":"https://app.sushi.com/farm?chainId=42161",
     "token_type": "LP Token",
     "name": "WETH-USDC Depreciated",
-    "url_name": "WETH-USDC",
+    "url_name": "WETH-USDC Depreciated",
     "name1": "WETH",
     "name2": "USDC",
     "platform": "SushiSwap",
