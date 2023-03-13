@@ -43,11 +43,22 @@ export const useTokens = () => {
         return arr;
     }, [farms]);
     const lpAddresses = useMemo(() => {
+        const set = new Set<string>();
+
         const arr: { address: string; decimals: number }[] = [];
         for (const farm of farms) {
-            if (farm.token_type === FarmType.advanced)
-                arr.push({ address: utils.getAddress(farm.lp_address), decimals: farm.decimals });
+            set.add(farm.lp_address);
         }
+        // for (const farm of farms) {
+        //     if (farm.token_type === FarmType.advanced)
+        //         arr.push({ address: utils.getAddress(farm.lp_address), decimals: farm.decimals });
+        // }
+        set.forEach((address) => {
+            const farm = farms.find((farm) => farm.lp_address === address);
+            if (farm) {
+                arr.push({ address, decimals: farm.decimals });
+            }
+        });
         return arr;
     }, [farms]);
 
