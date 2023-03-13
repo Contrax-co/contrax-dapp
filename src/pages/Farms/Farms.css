@@ -146,8 +146,8 @@
 
   .farm_table_header,
   .farm_table_row {
-    grid-template-columns: 1fr 1fr 1fr 1fr 24px;
-    /* grid-template-columns: 1fr 1fr 1fr 24px; */
+    /* grid-template-columns: 1fr 1fr 1fr 1fr 24px; */
+    grid-template-columns: 1fr 1fr 1fr 24px;
   }
 }
 
