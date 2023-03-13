@@ -3,6 +3,7 @@ import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { AddPrice, StateInterface, UpdatePricesActionPayload } from "./types";
 import { Contract, utils, constants } from "ethers";
+import { addressesByChainId } from "src/config/constants/contracts";
 
 const initialState: StateInterface = { prices: {}, isLoading: false, isFetched: false };
 
@@ -129,7 +130,10 @@ export const updatePrices = createAsyncThunk(
                 prices[key.toLowerCase()] = price;
             });
 
-            //------------------->> 4. Set prices for tokens in state
+            //------------------->> 4. Set Stable coin prices
+            prices[addressesByChainId[chainId].usdcAddress] = 1;
+
+            //------------------->> 5. Set prices for tokens in state
 
             // create address checksum
             const checksummed: { [key: string]: number } = {};

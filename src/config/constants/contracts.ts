@@ -5,6 +5,7 @@ export interface Addresses {
     dodoTokenAddress: string;
     dodoMineAddress: string;
     usdcAddress: string;
+    usdtAddress: string;
     swapfishMasterChef?: string;
 }
 
@@ -15,6 +16,7 @@ const arbitrumAddresses: Addresses = {
     dodoMineAddress: "0xE3C10989dDc5Df5B1b9c0E6229c2E4e0862fDe3e",
     dodoTokenAddress: "0x69Eb4FA4a2fbd498C257C57Ea8b7655a2559A581",
     usdcAddress: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+    usdtAddress: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
     swapfishMasterChef: "0x33141e87ad2DFae5FBd12Ed6e61Fa2374aAeD029",
 };
 export const addressesByChainId: { [key: number]: Addresses } = {
