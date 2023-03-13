@@ -25,9 +25,6 @@
         width: 80%;
         padding: 30px;
     }
-    @include devices(mobile) {
-        padding: 20px;
-    }
 }
 .container_light {
     background-color: $color_white;
