@@ -44,7 +44,7 @@ export const getFarmData = async (
     return farmData;
 };
 
-export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices) : FarmData => {
+export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices): FarmData => {
     const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
     const tokenPrice = prices[farm.token1];
     const tokenBalance = BigNumber.from(balances[farm.token1]);
@@ -181,6 +181,7 @@ export const withdraw = async ({
             notifySuccess("Withdrawn!", `successfully`);
         }
     } catch (error) {
+        console.log(error);
         let err = JSON.parse(JSON.stringify(error));
         dismissNotify(notiId);
         notifyError("Error!", err.reason || err.message);

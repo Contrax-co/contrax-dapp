@@ -46,7 +46,6 @@ export const getFarmData = async (
         ZAP_TOKEN_PRICE: ethPrice,
         Zap_Enabled: true,
         ID: farm.id,
-       
     };
     return farmData;
 };
@@ -77,7 +76,6 @@ export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Pric
         ZAP_TOKEN_PRICE: ethPrice,
         Zap_Enabled: true,
         ID: farm.id,
-       
     };
     return result;
 };
@@ -150,6 +148,7 @@ export const deposit = async ({
             dismissNotify(notiId);
         }
     } catch (error: any) {
+        console.log(error);
         let err = JSON.parse(JSON.stringify(error));
         dismissNotify(notiId);
         notifyError("Error!", err.reason || err.message);
@@ -345,6 +344,7 @@ export const zapOut = async ({
             notifySuccess("Withdrawn!", `successfully`);
         }
     } catch (error) {
+        console.log(error);
         let err = JSON.parse(JSON.stringify(error));
         dismissNotify(notiId);
         notifyError("Error!", err.reason || err.message);
