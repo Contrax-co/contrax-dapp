@@ -42,7 +42,7 @@ const useBalances = () => {
     }, [balances]);
 
     useEffect(() => {
-        if (oldAccount !== currentWallet) {
+        if (oldAccount && currentWallet && oldAccount !== currentWallet) {
             dispatch(reset());
         }
     }, [oldAccount, currentWallet]);

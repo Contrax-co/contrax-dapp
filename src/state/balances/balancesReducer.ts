@@ -36,7 +36,6 @@ export const fetchBalances = createAsyncThunk(
             checksummed[utils.getAddress(key)] = value;
         });
         thunkApi.dispatch(setAccount(account));
-
         return checksummed;
     }
 );

@@ -5,7 +5,7 @@ export interface StateInterface {
     balances: Balances;
     isLoading: boolean;
     isFetched: boolean;
-    account:string
+    account: string;
 }
 
 export interface UpdateBalancesActionPayload {
