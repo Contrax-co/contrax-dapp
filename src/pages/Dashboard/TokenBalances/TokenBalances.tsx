@@ -12,13 +12,12 @@ import { Skeleton } from "src/components/Skeleton/Skeleton";
 
 interface IProps {}
 
-export const TokenBalances: FC<IProps> = (props) => {
+export const TokenBalances: FC<IProps> = () => {
     const { lightMode } = useApp();
     const { tokens, lpTokens, isLoading } = useTokens();
     const { currentWallet } = useWallet();
     const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
-    console.log(lpTokens);
 
     return currentWallet ? (
         <div className={styles.container}>

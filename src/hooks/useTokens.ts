@@ -123,7 +123,7 @@ export const useTokens = () => {
         tokens.unshift(ethToken);
         setTokens(tokens);
         setLpTokens(lpTokens);
-    }, [farms, prices, tokenAddresses, ethBalance, networkId, formattedBalances]);
+    }, [farms, prices, tokenAddresses, lpAddresses, ethBalance, networkId, formattedBalances]);
 
     return { tokens, lpTokens, isLoading: isLoadingBalances || isLoadingPrices };
 };
