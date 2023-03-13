@@ -17,7 +17,7 @@ function TopBar({ setOpenBurgerMenu }: { setOpenBurgerMenu: Dispatch<SetStateAct
             </div>
             <div style={{ flex: 1 }}></div>
             <div>
-                <ConnectButton />
+                <ConnectButton label="Get Started" />
             </div>
         </div>
     );
