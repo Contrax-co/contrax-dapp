@@ -131,7 +131,7 @@ export const updatePrices = createAsyncThunk(
             });
 
             //------------------->> 4. Set Stable coin prices
-            prices[addressesByChainId[chainId].usdcAddress] = 1;
+            // prices[addressesByChainId[chainId].usdcAddress] = 1;
 
             //------------------->> 5. Set prices for tokens in state
 
