@@ -8,7 +8,7 @@ import useEthPrice from "src/hooks/useEthPrice";
 import useWallet from "src/hooks/useWallet";
 import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
-import { toFixedFloor, validateNumberDecimals } from "src/utils/common";
+import { noExponents, toFixedFloor, validateNumberDecimals } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
@@ -161,7 +161,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                             type="number"
                             placeholder="0"
                             required
-                            value={amount}
+                            value={noExponents(amount)}
                             max={maxBalance}
                             onChange={handleInput}
                         />

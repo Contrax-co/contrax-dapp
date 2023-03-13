@@ -5,7 +5,7 @@ import { Token } from "src/types";
 import styles from "./TransferToken.module.scss";
 import { constants } from "ethers";
 import useNotify from "src/hooks/useNotify";
-import { toWei } from "src/utils/common";
+import { noExponents, toWei } from "src/utils/common";
 import { ModalLayout } from "../ModalLayout/ModalLayout";
 import useBalances from "src/hooks/useBalances";
 
@@ -78,7 +78,7 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
                         type="number"
                         id="amount"
                         placeholder="e.g. 250"
-                        value={amount ? Number(amount) : undefined}
+                        value={amount ? noExponents(amount) : undefined}
                         onChange={(e) => {
                             setAmount(e.target.value);
                             setMax(false);
