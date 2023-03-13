@@ -15,6 +15,7 @@ import { getWeb3AuthProvider } from "src/config/walletConfig";
 import useFarms from "src/hooks/farms/useFarms";
 import { useSearchParams } from "react-router-dom";
 import { getTokenListForUniswap } from "src/utils";
+import useBalances from "src/hooks/useBalances";
 
 interface IProps {}
 
@@ -58,6 +59,8 @@ const Exchange: React.FC<IProps> = () => {
 
     const [params] = useSearchParams();
 
+    const { reloadBalances } = useBalances();
+
     const { lightMode } = useApp();
     const containerRef = useRef<HTMLDivElement>(null);
     const [provider, setProvider] = React.useState<any>();
@@ -84,7 +87,10 @@ const Exchange: React.FC<IProps> = () => {
                 hostApiKey: RAMP_SDK_HOST_API_KEY,
                 variant: "embedded-mobile",
                 containerNode: containerRef.current || undefined,
-            }).show();
+            })
+                // @ts-ignore
+                .on("PURCHASE_CREATED", reloadBalances)
+                .show();
             return () => {
                 ramp.close();
             };
@@ -160,6 +166,7 @@ const Exchange: React.FC<IProps> = () => {
                         onSourceNetworkChange={(network) => {
                             setChainId(network.chainId);
                         }}
+                        onSubmit={() => reloadBalances}
                         API_KEY={SOCKET_API_KEY}
                         defaultSourceToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
                         defaultDestToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
@@ -191,6 +198,7 @@ const Exchange: React.FC<IProps> = () => {
                         // @ts-ignore
                         provider={websocketProvider || wagmiSigner?.provider}
                         onConnectWalletClick={connectWallet}
+                        onSubmitSwapClick={reloadBalances}
                         tokenList={tokenList}
                         permit2={true}
                     />
