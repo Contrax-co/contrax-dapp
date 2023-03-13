@@ -97,7 +97,7 @@ export const deposit = async ({
     let notiId = notifyLoading("Approving deposit!", "Please wait...");
     const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
     try {
-        const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer.provider!);
+        const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
 
         /*
          * Execute the actual deposit functionality from smart contract
