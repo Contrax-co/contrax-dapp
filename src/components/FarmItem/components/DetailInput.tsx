@@ -137,9 +137,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
         <div className={`${styles.container} ${lightMode && styles.container_light}`}>
             {(isZapping || isZappingOut || isDepositing || isWithdrawing) && <Loader />}
             {/* Left */}
-            <div>
-                <div>Description</div>
-                <br />
+            <div className={styles.description}>
                 <Description farm={farm} shouldUseLp={shouldUseLp} type={type} />
             </div>
             {/* Right */}

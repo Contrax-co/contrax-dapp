@@ -331,8 +331,6 @@
 
 @media (max-width: 768px) {
 
-
-
   .pool_name_head {
     color: var(--color_grey);
     margin-bottom: -6px !important;
@@ -384,11 +382,15 @@
   }
 
   .see_details_description {
-    font-size: 15px;
+    font-size: 13px;
   }
 
   .rewards_image {
     width: 10px;
+  }
+
+  .dropdown_menu {
+    font-size: 14px;
   }
 }
 
@@ -407,10 +409,6 @@
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .see_details_description {
-    font-size: 15px;
   }
 }
 

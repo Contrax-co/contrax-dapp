@@ -178,17 +178,39 @@
     justify-content: center;
   }
 
+  .details_pair_name {
+    font-size: 16px;
+  }
+
+  .details_logo1,
+  .details_logo2 {
+    width: 45px;
+    height: 45px;
+  }
+
   .token_details {
     justify-content: center;
     margin-bottom: 5px;
   }
 
+  .details_single_token {
+    font-size: 14px;
+  }
+
   .details_retract_description {
-    font-size: 15px;
+    font-size: 13px;
   }
 
   .details_section {
     padding: 10px;
+  }
+
+  .detailed_position_total {
+    font-size: 16px;
+  }
+
+  .detailed_header {
+    font-size: 13px;
   }
 }
 

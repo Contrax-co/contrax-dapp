@@ -21,6 +21,24 @@
     color: $color-black;
 }
 
+.description {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    @include devices(desktop) {
+        justify-content: center;
+        & > div {
+            text-align: center;
+        }
+    }
+
+    & a {
+        color: $color_primary;
+    }
+}
+
+
 .inputContainer {
     border: 0.5px solid $border-color;
     border-radius: 10px;
