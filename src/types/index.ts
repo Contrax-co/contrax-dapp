@@ -1,5 +1,5 @@
 import { Apys } from "src/state/apys/types";
-import { FarmOriginPlatform } from "./enums";
+import { FarmOriginPlatform, FarmType } from "./enums";
 
 export interface Farm {
     id: number;
@@ -59,7 +59,9 @@ export interface Vault extends Farm {
 export interface Token {
     address: string;
     name: string;
+    token_type: FarmType;
     logo: string;
+    logo2?: string;
     balance: string;
     usdBalance: string;
     decimals: number;

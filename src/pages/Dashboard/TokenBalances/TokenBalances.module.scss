@@ -7,7 +7,7 @@
 }
 
 .tokenCard{
-    max-width: 300px;
+    max-width: 340px;
     width: 100%;
     display: grid;
     grid-template-columns: max-content 1fr max-content;
@@ -60,6 +60,11 @@
 .tokenLogo{
     width: 35px;
     height: 35px;
+}
+.tokenLogo2{
+    width: 35px;
+    height: 35px;
+    margin-left: -10px;
 }
 
 .name{

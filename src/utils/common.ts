@@ -22,7 +22,7 @@ export function validateNumberDecimals(value: number, decimals: number = 18) {
     return split.join(".");
 }
 
-export const noExponents = (n: number) => {
+export const noExponents = (n: number | string) => {
     var data = String(n).split(/[eE]/);
     if (data.length === 1) return data[0];
 
@@ -82,7 +82,6 @@ export const isValidNetwork = (network: string | number) => {
     }
     return false;
 };
-
 
 export const toPreciseNumber = (x: number | string, decimals = 3, precision = 2) => {
     if (typeof x === "string") {
