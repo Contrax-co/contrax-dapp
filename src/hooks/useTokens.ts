@@ -5,7 +5,6 @@ import useFarms from "./farms/useFarms";
 import useBalances from "./useBalances";
 import usePriceOfTokens from "./usePriceOfTokens";
 import useWallet from "./useWallet";
-import ethLogo from "src/assets/images/ethereum-icon.png";
 import { constants, utils } from "ethers";
 import { FarmType } from "src/types/enums";
 
@@ -111,7 +110,7 @@ export const useTokens = () => {
                     ? noExponents(ethBalance.toPrecision(2)).slice(0, -1)
                     : toFixedFloor(ethBalance, tokenBalDecimalPlaces).toString(),
             decimals: 18,
-            logo: ethLogo,
+            logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024",
             name: "ETH",
             network: networkId === 1 ? "Mainnet" : "Arbitrum",
             usdBalance:
