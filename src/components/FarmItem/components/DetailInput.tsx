@@ -22,7 +22,6 @@ interface Props {
 
 const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { lightMode } = useApp();
-    const { balance: ethUserBal } = useWallet();
     const { price: ethPrice } = useEthPrice();
     const [amount, setAmount] = React.useState("");
     const [showInUsd, setShowInUsd] = React.useState(true);
@@ -34,6 +33,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { farmDetails, isLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
     const priceOfSingleToken = farmData?.TOKEN_PRICE || 0;
+
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
             if (shouldUseLp) {
@@ -177,7 +177,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                                 className={`${styles.select} ${lightMode && styles.select_light}`}
                             >
                                 <option value={"false"} className="currency_select">
-                                    {shouldUseLp ? farm.name : farmData?.Zap_Token_Symbol}
+                                    {shouldUseLp ? farm.name : farm.zap_symbol}
                                 </option>
                                 <option value={"true"} className="currency_select">
                                     USD

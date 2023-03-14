@@ -66,6 +66,9 @@
     color: $color_white;
     background-color: $color_primary;
 }
+.maxButton:active {
+    transform: scale(0.98);
+}
 
 .button {
     color: $color_white;

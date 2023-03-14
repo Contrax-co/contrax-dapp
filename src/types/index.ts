@@ -39,6 +39,7 @@ export interface Farm {
     vault_addr: string;
     vault_abi: any;
     lp_abi: any;
+    zap_symbol: string;
     withdraw_decimals?: number;
     vault_decimals?: number;
 }
