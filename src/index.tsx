@@ -11,6 +11,7 @@ import store, { persistor } from "./state";
 import { PersistGate } from "redux-persist/integration/react";
 import AppProvider from "./context/AppProvider";
 import "src/api/interceptor";
+import { supportChatConfig } from "./config/supportChat";
 
 // Configuration for toast notifications
 setUpNotifications({
@@ -21,6 +22,7 @@ setUpNotifications({
         dismissAfter: 3000,
     },
 });
+supportChatConfig(window, document);
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 

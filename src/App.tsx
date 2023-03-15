@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import "./App.css";
 import WalletProvider from "./context/WalletProvider";
 import "react-tooltip/dist/react-tooltip.css";
@@ -18,7 +19,14 @@ import Body from "./Body";
 setHook("notifications", useNotifications);
 
 function App() {
-    const { lightMode } = useApp();
+    const { lightMode, supportChat } = useApp();
+    // window.chaport.q("startSession");
+    useEffect(() => {
+        // @ts-ignore
+        if (supportChat) window.chaport.q("startSession");
+        // @ts-ignore
+        else window.chaport.q("stopSession");
+    }, [supportChat]);
 
     return (
         <QueryClientProvider client={queryClient}>

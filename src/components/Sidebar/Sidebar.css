@@ -26,3 +26,9 @@
   flex: 7;
   margin-top: 20px;
 }
+
+@media (max-width: 650px) {
+  .sidebar_footer {
+    padding-bottom: 120px;
+  }
+}

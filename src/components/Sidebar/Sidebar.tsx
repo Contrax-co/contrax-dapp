@@ -12,6 +12,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { RoutesPaths } from "src/config/constants";
 import useApp from "src/hooks/useApp";
 import { Dispatch, SetStateAction } from "react";
+import SupportChatToggle from "../SupportChatToggle/SupportChatToggle";
 
 function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean>> }) {
     const { lightMode } = useApp();
@@ -72,7 +73,8 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
             </div>
 
-            <div>
+            <div className="sidebar_footer">
+                <SupportChatToggle />
                 <LightModeToggle />
             </div>
         </div>

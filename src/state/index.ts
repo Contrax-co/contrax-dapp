@@ -10,22 +10,19 @@ import farmsReducer from "./farms/farmsReducer";
 import supplyReducer from "./supply/supplyReducer";
 import decimalsReducer from "./decimals/decimalsReducer";
 
-const persistConfig = {
-    key: "root",
-    version: 1,
-    storage,
-    whitelist: ["settings"],
-};
-
 const persistedPricesReducer = persistReducer(
-    { key: "root", version: 1, storage, blacklist: ["isFetched"] },
+    { key: "prices", version: 1, storage, blacklist: ["isFetched"] },
     pricesReducer
 );
 
-const persistedDecimalReducer = persistReducer({ key: "root", version: 1, storage }, decimalsReducer);
+const persistedDecimalReducer = persistReducer({ key: "decimals", version: 1, storage }, decimalsReducer);
+const persistedSettingsReducer = persistReducer(
+    { key: "settings", version: 1, storage, whitelist: ["theme"] },
+    settingsReducer
+);
 
 const rootReducer = combineReducers({
-    settings: settingsReducer,
+    settings: persistedSettingsReducer,
     prices: persistedPricesReducer,
     apys: apysReducer,
     farms: farmsReducer,
@@ -34,11 +31,11 @@ const rootReducer = combineReducers({
     supply: supplyReducer,
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+// const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
     devTools: process.env.NODE_ENV !== "production",
-    reducer: persistedReducer,
+    reducer: rootReducer,
     middleware(getDefaultMiddleware) {
         return getDefaultMiddleware({
             serializableCheck: {
