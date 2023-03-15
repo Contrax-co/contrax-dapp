@@ -13,6 +13,7 @@ import { FaKey } from "react-icons/fa";
 import { MdOutlineQrCode2 } from "react-icons/md";
 import { ExportPrivateKey } from "src/components/modals/ExportPrivateKey/ExportPrivateKey";
 import { ExportPublicKey } from "src/components/modals/ExportPublicKey/ExportPublicKey";
+import SupportChatToggle from "src/components/SupportChatToggle/SupportChatToggle";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -59,24 +60,27 @@ function Dashboard() {
                         <p className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}>No Wallet Connected</p>
                     )}
                 </div>
-                {signer && (
-                    <div className="dashboard-key-icons">
-                        <FaKey
-                            color="#ffffff"
-                            cursor="pointer"
-                            size={30}
-                            onClick={() => setOpenPrivateKeyModal(true)}
-                        />
-                        <MdOutlineQrCode2
-                            color="#ffffff"
-                            cursor="pointer"
-                            size={34}
-                            onClick={() => setOpenQrCodeModal(true)}
-                        />
-                        {openPrivateKeyModal ? <ExportPrivateKey setOpenModal={setOpenPrivateKeyModal} /> : null}
-                        {openQrCodeModal ? <ExportPublicKey setOpenModal={setOpenQrCodeModal} /> : null}
-                    </div>
-                )}
+                <div className="dashboard-key-icons">
+                    <SupportChatToggle />
+                    {signer && (
+                        <>
+                            <FaKey
+                                color="#ffffff"
+                                cursor="pointer"
+                                size={30}
+                                onClick={() => setOpenPrivateKeyModal(true)}
+                            />
+                            <MdOutlineQrCode2
+                                color="#ffffff"
+                                cursor="pointer"
+                                size={34}
+                                onClick={() => setOpenQrCodeModal(true)}
+                            />
+                            {openPrivateKeyModal ? <ExportPrivateKey setOpenModal={setOpenPrivateKeyModal} /> : null}
+                            {openQrCodeModal ? <ExportPublicKey setOpenModal={setOpenQrCodeModal} /> : null}
+                        </>
+                    )}
+                </div>
             </div>
 
             <div className={`dashboard_section`}>

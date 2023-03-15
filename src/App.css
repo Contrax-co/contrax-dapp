@@ -36,3 +36,13 @@
   --border_color: #d9d9d9;
   --border_color_light: #d2e8ef;
 }
+
+.chaport-container .chaport-launcher .chaport-launcher-button {
+  right: 2.5em !important;
+}
+
+@media (max-width: 1024px) {
+  .chaport-container .chaport-launcher .chaport-launcher-button {
+    right: 1.5em !important;
+  }
+}
