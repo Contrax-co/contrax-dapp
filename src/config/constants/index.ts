@@ -22,3 +22,4 @@ export const SWAPFISH_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/swapf
 export const APY_VISION_URL = "https://api.apy.vision";
 export const APY_VISION_STATS_URL = "https://stats.apy.vision/api/v1";
 export const WEB3AUTH_CLIENT_ID = process.env.REACT_APP_WEB3AUTH_CLIENT_ID;
+export const EARNINGS_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/abbasnaqvi10/dodo";

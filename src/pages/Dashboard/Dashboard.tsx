@@ -84,9 +84,6 @@ function Dashboard() {
             </div>
 
             <div className={`dashboard_section`}>
-                <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
-                    Token Balances
-                </p>
                 <TokenBalances />
             </div>
 
