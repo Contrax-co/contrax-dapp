@@ -1,17 +1,14 @@
 import json from "src/config/constants/pools.json";
 import { utils } from "ethers";
+import { getEarnings } from "src/api/farms";
+import useWallet from "src/hooks/useWallet";
 
 const Test = () => {
+    const { currentWallet } = useWallet();
     const fn = () => {
-        // @ts-ignore
-        let newObj = [...json];
-        newObj.forEach((item, i) => {
-            newObj[i].lp_address = utils.getAddress(newObj[i].lp_address);
-            newObj[i].token1 = utils.getAddress(newObj[i].token1);
-            // @ts-ignore
-            if (newObj[i].token2) newObj[i].token2 = utils.getAddress(newObj[i].token2);
+        getEarnings(currentWallet).then((res) => {
+            console.log("getEarnings", res[0].deposit);
         });
-        console.log(newObj);
     };
     return (
         <div onClick={fn} style={{ color: "red" }}>

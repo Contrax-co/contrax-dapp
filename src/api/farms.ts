@@ -1,19 +1,30 @@
 import axios from "axios";
+import { EARNINGS_GRAPH_URL } from "src/config/constants";
 
-export const getEarnings = async (tokenAddress: string, chainId: number) => {
-    try {
-        const res = await axios.get(coinsLamaPriceByChainId[chainId] + tokenAddress, {
-            cache: true,
-        });
+interface Response {
+    deposit: string;
+    vaultAddress: string;
+    withdraw: string;
+    blockNumber: string;
+    blockTimestamp: string;
+    userBalance: string;
+}
 
-        const prices = JSON.stringify(res.data);
-        const parse = JSON.parse(prices);
+export const getEarnings = async (userAddress: string) => {
+    const res = await axios.post(EARNINGS_GRAPH_URL, {
+        query: `query MyQuery {
+                user(id: \"${userAddress.toLowerCase()}\") {
+                  earn {
+                    vaultAddress
+                    deposit
+                    withdraw
+                    blockNumber
+                    blockTimestamp
+                    userBalance
+                  }
+                }
+              }`,
+    });
 
-        const token = parse[`coins`][`${getNetworkName(chainId)}:${tokenAddress}`];
-        const price = token ? (token[`price`] as number) : 0;
-        return price;
-    } catch (error) {
-        console.error(error);
-        return 0;
-    }
+    return res.data.data.user.earn as Response[];
 };

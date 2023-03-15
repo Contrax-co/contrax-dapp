@@ -82,7 +82,7 @@ export const TokenBalances: FC<IProps> = () => {
                 lpTokens.filter((t) => Number(t.usdBalance) > 0.01).length > 0 && (
                     <>
                         <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
-                            LP Token Balances
+                            Dual Token Balances
                         </p>
                         <div className={styles.container}>
                             {lpTokens
