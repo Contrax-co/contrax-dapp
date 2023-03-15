@@ -37,6 +37,12 @@
   --border_color_light: #d2e8ef;
 }
 
+.supportChat-close {
+  position: fixed;
+  bottom: 5em;
+  right: 2em;
+}
+
 .chaport-container .chaport-launcher .chaport-launcher-button {
   right: 2.5em !important;
 }
@@ -44,5 +50,9 @@
 @media (max-width: 1024px) {
   .chaport-container .chaport-launcher .chaport-launcher-button {
     right: 1.5em !important;
+  }
+
+  .supportChat-close {
+    right: 1em;
   }
 }
