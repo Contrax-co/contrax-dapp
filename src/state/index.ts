@@ -17,7 +17,7 @@ const persistedPricesReducer = persistReducer(
 
 const persistedDecimalReducer = persistReducer({ key: "decimals", version: 1, storage }, decimalsReducer);
 const persistedSettingsReducer = persistReducer(
-    { key: "settings", version: 1, storage, whitelist: ["theme"] },
+    { key: "settings", version: 1, storage, whitelist: ["theme", "supportChat"] },
     settingsReducer
 );
 
