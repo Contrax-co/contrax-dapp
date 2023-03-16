@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { getEarnings } from "src/api/farms";
 import farmFunctions from "src/api/pools";
-import { toEth } from "src/utils/common";
+import { sleep, toEth } from "src/utils/common";
 import { StateInterface, FetchFarmDetailsAction, FarmDetails, Earnings, FetchEarningsAction } from "./types";
 import { Contract, BigNumber } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
@@ -29,6 +29,7 @@ export const updateEarnings = createAsyncThunk(
         { currentWallet, farms, decimals, prices, balances, multicallProvider, totalSupplies }: FetchEarningsAction,
         thunkApi
     ) => {
+        await sleep(4000);
         const earns = await getEarnings(currentWallet);
         const earnings: Earnings = {};
         const balancesPromises: Promise<BigNumber>[] = [];
@@ -44,7 +45,7 @@ export const updateEarnings = createAsyncThunk(
             const balance = vaultBalancesResponse[i];
             const b = vaultBalancesResponse[i + 1];
 
-            let r = balance.mul(balances[farms[i / 2].lp_address]!).div(totalSupplies[farms[i / 2].vault_addr]!);
+            let r = balance.mul(balances[farms[i / 2].vault_addr]!).div(totalSupplies[farms[i / 2].vault_addr]!);
 
             if (b.lt(r)) {
                 const _withdraw = r.sub(b);
@@ -60,8 +61,9 @@ export const updateEarnings = createAsyncThunk(
         earns.forEach((item) => {
             const farm = farms.find((farm) => farm.vault_addr.toLowerCase() === item.vaultAddress)!;
             const earnedTokens = (
-                BigInt(item.withdraw) -
-                (BigInt(item.deposit) - BigInt(withdrawableLpAmount[farm.id]))
+                BigInt(item.withdraw) +
+                BigInt(withdrawableLpAmount[farm.id]) -
+                BigInt(item.deposit)
             ).toString();
             earnings[farm.id] = Number(toEth(earnedTokens, decimals[farm.lp_address])) * prices[farm.lp_address]!;
         });
