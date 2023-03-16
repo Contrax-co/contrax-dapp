@@ -18,6 +18,10 @@
   justify-content: space-between;
 }
 
+.dashboard_header--light {
+  background-image: linear-gradient(rgba(97, 205, 223, 0.7), rgba(97, 205, 223, 0.2), rgba(97, 205, 223, 0));
+}
+
 .dashboard_right {
   display: block;
   margin: 10px;
