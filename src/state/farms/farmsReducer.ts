@@ -3,6 +3,9 @@ import { getEarnings } from "src/api/farms";
 import farmFunctions from "src/api/pools";
 import { toEth } from "src/utils/common";
 import { StateInterface, FetchFarmDetailsAction, FarmDetails, Earnings, FetchEarningsAction } from "./types";
+import { Contract, BigNumber } from "ethers";
+import VaultAbi from "src/assets/abis/vault.json";
+import { erc20ABI } from "wagmi";
 
 const initialState: StateInterface = { farmDetails: {}, isLoading: false, isFetched: false, account: "", earnings: {} };
 
@@ -22,12 +25,44 @@ export const updateFarmDetails = createAsyncThunk(
 
 export const updateEarnings = createAsyncThunk(
     "farms/updateEarnings",
-    async ({ currentWallet, farms, decimals, prices }: FetchEarningsAction, thunkApi) => {
+    async (
+        { currentWallet, farms, decimals, prices, balances, multicallProvider, totalSupplies }: FetchEarningsAction,
+        thunkApi
+    ) => {
         const earns = await getEarnings(currentWallet);
         const earnings: Earnings = {};
+        const balancesPromises: Promise<BigNumber>[] = [];
+        const withdrawableLpAmount: { [farmId: number]: string } = {};
+        farms.forEach((farm) => {
+            balancesPromises.push(new Contract(farm.vault_addr, VaultAbi, multicallProvider).balance());
+            balancesPromises.push(
+                new Contract(farm.lp_address, erc20ABI, multicallProvider).balanceOf(farm.vault_addr)
+            );
+        });
+        const vaultBalancesResponse = await Promise.all(balancesPromises);
+        for (let i = 0; i < vaultBalancesResponse.length; i += 2) {
+            const balance = vaultBalancesResponse[i];
+            const b = vaultBalancesResponse[i + 1];
+
+            let r = balance.mul(balances[farms[i / 2].lp_address]!).div(totalSupplies[farms[i / 2].vault_addr]!);
+
+            if (b.lt(r)) {
+                const _withdraw = r.sub(b);
+                const _after = b.add(_withdraw);
+                const _diff = _after.sub(b);
+                if (_diff.lt(_withdraw)) {
+                    r = b.add(_diff);
+                }
+            }
+            withdrawableLpAmount[farms[i / 2].id] = r.toString();
+        }
+
         earns.forEach((item) => {
             const farm = farms.find((farm) => farm.vault_addr.toLowerCase() === item.vaultAddress)!;
-            const earnedTokens = (BigInt(item.withdraw) - (BigInt(item.deposit) - BigInt(item.userBalance))).toString();
+            const earnedTokens = (
+                BigInt(item.withdraw) -
+                (BigInt(item.deposit) - BigInt(withdrawableLpAmount[farm.id]))
+            ).toString();
             earnings[farm.id] = Number(toEth(earnedTokens, decimals[farm.lp_address])) * prices[farm.lp_address]!;
         });
         return { earnings, currentWallet };
