@@ -93,3 +93,7 @@ export const toPreciseNumber = (x: number | string, decimals = 3, precision = 2)
         return x.toFixed(decimals);
     }
 };
+
+export const sleep = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+};
