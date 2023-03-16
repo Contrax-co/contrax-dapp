@@ -53,9 +53,9 @@
     position: absolute;
     right: 20px;
     bottom: 15%;
-    color: $color_primary;
+    color: var(--color_primary);
     background: transparent;
-    border: 1px solid $color_primary;
+    border: 1px solid var(--color_primary);
     border-radius: 5px;
     outline: none;
     padding: 5px 12px;
@@ -64,7 +64,7 @@
 }
 .maxButton:hover {
     color: $color_white;
-    background-color: $color_primary;
+    background-color: var(--color_primary);
 }
 .maxButton:active {
     transform: scale(0.98);
@@ -72,7 +72,7 @@
 
 .button {
     color: $color_white;
-    background-color: $color_primary;
+    background-color: var(--color_primary);
     padding: 16px 40px;
     margin-top: 32px;
     margin-bottom: 8px;
