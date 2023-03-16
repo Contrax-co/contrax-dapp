@@ -4,9 +4,10 @@ import TopBar from "src/components/Topbar/TopBar";
 import "./Home.css";
 import { Outlet } from "react-router-dom";
 import useApp from "src/hooks/useApp";
+import { MdCancel } from "react-icons/md";
 
 function Home() {
-    const { lightMode } = useApp();
+    const { lightMode, supportChat, toggleSupportChat } = useApp();
     const [openBurgerMenu, setOpenBurgerMenu] = useState(false);
     return (
         <div className={`page ${lightMode && "page--light"}`}>
@@ -26,6 +27,14 @@ function Home() {
                         <TopBar setOpenBurgerMenu={setOpenBurgerMenu} />
                     </div>
                     <Outlet />
+                    {supportChat && (
+                        <MdCancel
+                            className="supportChat-close"
+                            color="#61CDDF"
+                            cursor="pointer"
+                            onClick={toggleSupportChat}
+                        />
+                    )}
                 </div>
             </div>
         </div>
