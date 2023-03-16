@@ -8,7 +8,7 @@ function SupportChatToggle() {
     return supportChat ? (
         <>
             <BsChatLeftTextFill color="#ffffff" cursor="pointer" size={30} onClick={toggleSupportChat} />
-            <MdCancel className="supportChat-close" color="#ff4444" cursor="pointer" onClick={toggleSupportChat} />
+            <MdCancel className="supportChat-close" color="#61CDDF" cursor="pointer" onClick={toggleSupportChat} />
         </>
     ) : (
         <RiChatOffFill color="#ffffff" cursor="pointer" size={30} onClick={toggleSupportChat} />
