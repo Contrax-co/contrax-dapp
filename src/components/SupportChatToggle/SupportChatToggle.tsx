@@ -1,4 +1,5 @@
 import { RiChatOffFill, RiChat4Fill } from "react-icons/ri";
+import { BsChatLeftTextFill } from "react-icons/bs";
 import { MdCancel } from "react-icons/md";
 import useApp from "src/hooks/useApp";
 
@@ -6,7 +7,7 @@ function SupportChatToggle() {
     const { supportChat, toggleSupportChat } = useApp();
     return supportChat ? (
         <>
-            <RiChat4Fill color="#ffffff" cursor="pointer" size={30} onClick={toggleSupportChat} />
+            <BsChatLeftTextFill color="#ffffff" cursor="pointer" size={30} onClick={toggleSupportChat} />
             <MdCancel className="supportChat-close" color="#ff4444" cursor="pointer" onClick={toggleSupportChat} />
         </>
     ) : (
