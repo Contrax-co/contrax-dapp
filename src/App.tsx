@@ -20,7 +20,6 @@ setHook("notifications", useNotifications);
 
 function App() {
     const { lightMode, supportChat } = useApp();
-    // window.chaport.q("startSession");
     useEffect(() => {
         // @ts-ignore
         if (supportChat) window.chaport.q("startSession");
@@ -33,7 +32,17 @@ function App() {
             <WagmiConfig client={wagmiClient}>
                 <RainbowKitProvider
                     chains={chains}
-                    theme={lightMode ? lightTheme() : darkTheme()}
+                    theme={
+                        lightMode
+                            ? lightTheme({
+                                  accentColor: "var(--color_primary)",
+                                  accentColorForeground: "white",
+                              })
+                            : darkTheme({
+                                  accentColor: "var(--color_primary)",
+                                  accentColorForeground: "white",
+                              })
+                    }
                     showRecentTransactions={false}
                     appInfo={{ appName: "Contrax", disclaimer: WalletDisclaimer }}
                 >

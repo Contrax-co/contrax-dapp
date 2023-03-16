@@ -74,7 +74,7 @@
         top: 50%;
         width: 80px;
         transform: translateY(-50%);
-        background-color: $color_primary;
+        background-color: var(--color_primary);
         color: $color_white;
         padding: 12px 20px;
         border-radius: 10px;
