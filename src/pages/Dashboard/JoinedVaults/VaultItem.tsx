@@ -57,7 +57,13 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                     <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
                                         Earning
                                     </p>
-                                    <p>{earnings[id]} $</p>
+                                    <p>
+                                        {earnings[id].toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                        })}{" "}
+                                        $
+                                    </p>
                                 </div>
                             )}
                         </div>
