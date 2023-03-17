@@ -1,6 +1,5 @@
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import useApp from "src/hooks/useApp";
-import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { Vault } from "src/types";
 import { toFixedFloor } from "src/utils/common";
 import "./VaultItem.css";
@@ -12,16 +11,13 @@ interface Props {
 const VaultItem: React.FC<Props> = ({ vault }) => {
     const { lightMode } = useApp();
     const { earnings } = useFarmDetails();
-    const { prices } = usePriceOfTokens();
 
     const {
         userVaultBalance,
         priceOfSingleToken,
         apys: { apy },
         id,
-        lp_address,
     } = vault;
-    console.log(lp_address, earnings, id);
 
     return (
         <div className={`vaults`}>
