@@ -21,6 +21,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
         id,
         lp_address,
     } = vault;
+    console.log(lp_address, earnings, id);
 
     return (
         <div className={`vaults`}>
@@ -52,20 +53,18 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                 <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>APY</p>
                                 <p>{apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : toFixedFloor(apy, 2).toString()}%</p>
                             </div>
-                            {!!earnings[id] && (
-                                <div className={`vault_items_bottom_categories`}>
-                                    <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
-                                        Earning
-                                    </p>
-                                    <p>
-                                        {earnings[id].toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        })}{" "}
-                                        $
-                                    </p>
-                                </div>
-                            )}
+                            <div className={`vault_items_bottom_categories`}>
+                                <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
+                                    Earning
+                                </p>
+                                <p>
+                                    {(earnings[id] ?? 0).toLocaleString("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                    })}{" "}
+                                    $
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
