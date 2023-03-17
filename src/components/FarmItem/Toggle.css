@@ -29,7 +29,7 @@
   font-weight: bold;
 }
 
-.switch > .second_switch--selected--light {
+.switch>.second_switch--selected--light {
   color: #009dff;
   font-weight: bold;
 }
@@ -94,6 +94,10 @@
   margin: 10px;
   margin-left: 10px;
   transition: 0.3s ease-in 0s;
+}
+
+.toggle_container--light {
+  background-color: #8798ad;
 }
 
 .toggle_container--selected {
