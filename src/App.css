@@ -48,6 +48,10 @@
   right: 2.5em !important;
 }
 
+.chaport-launcher-operator-photo {
+  clip-path: circle(50%);
+}
+
 @media (max-width: 1024px) {
   .chaport-container .chaport-launcher .chaport-launcher-button {
     right: 1.5em !important;

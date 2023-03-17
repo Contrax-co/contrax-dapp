@@ -7,13 +7,12 @@ function SidebarItem({ icon, title, icon2, active, ...props }: any) {
         <div
             className={`sideitems 
                 ${lightMode && "sideitems--light"} 
-                ${active && "sideitems--selected"} 
-                ${active && lightMode && "sideitems--selected--light"}`}
+                ${active && "sideitems--selected"}`}
             onClick={props.onClick}
         >
-            <div className={`icon ${lightMode && "icon--light"}`}>{icon}</div>
-            <div className="sidebar_title">{title}</div>
-            <div className={`icon2 ${lightMode && "icon2--light"}`}>{icon2}</div>
+            {icon}
+            <p className="sidebar_title">{title}</p>
+            {icon2}
         </div>
     );
 }
