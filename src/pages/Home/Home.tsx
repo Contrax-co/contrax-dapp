@@ -23,14 +23,12 @@ function Home() {
                 </div>
 
                 <div className={`rightside ${lightMode && "rightside--light"}`}>
-                    <div className="topbar">
-                        <TopBar setOpenBurgerMenu={setOpenBurgerMenu} />
-                    </div>
+                    <TopBar setOpenBurgerMenu={setOpenBurgerMenu} />
                     <Outlet />
                     {supportChat && (
                         <MdCancel
                             className="supportChat-close"
-                            color="#61CDDF"
+                            color="#63cce0"
                             cursor="pointer"
                             onClick={toggleSupportChat}
                         />

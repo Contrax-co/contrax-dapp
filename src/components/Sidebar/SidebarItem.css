@@ -32,7 +32,7 @@
 }
 
 .sideitems--selected--light>div {
-  color: #61cddf;
+  color: var(--color_primary);
 }
 
 .sideitems:hover>div {

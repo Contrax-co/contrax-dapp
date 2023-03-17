@@ -65,15 +65,15 @@ function Dashboard() {
                     {signer && (
                         <>
                             <FaKey
-                                color="#ffffff"
+                                color={lightMode ? "var(--color_grey)" : "#ffffff"}
                                 cursor="pointer"
-                                size={30}
+                                size={20}
                                 onClick={() => setOpenPrivateKeyModal(true)}
                             />
                             <MdOutlineQrCode2
-                                color="#ffffff"
+                                color={lightMode ? "var(--color_grey)" : "#ffffff"}
                                 cursor="pointer"
-                                size={34}
+                                size={23}
                                 onClick={() => setOpenQrCodeModal(true)}
                             />
                             {openPrivateKeyModal ? <ExportPrivateKey setOpenModal={setOpenPrivateKeyModal} /> : null}

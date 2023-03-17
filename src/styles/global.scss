@@ -12,7 +12,7 @@
 
 .custom-button-light {
     @include button();
-    background-color: #61cddf;
+    background-color: var(--color_primary);
 }
 
 .custom-button-disabled {

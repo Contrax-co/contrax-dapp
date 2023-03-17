@@ -8,6 +8,7 @@
 
   /* ///// Colors ///// */
   --color_primary: #009aff;
+  --color_primary: #63cce0;
   --color_grey: #8798ad;
   --color_white: #ffffff;
   --color_black: #000000;
@@ -27,7 +28,7 @@
   --background_light: #8798ad46;
 
   /* ///// Colors ///// */
-  --color_primary: #61cddf;
+  --color_primary: #63cce0;
   --color_grey: #8798ad;
   --color_white: #ffffff;
   --color_black: #000000;
