@@ -15,12 +15,18 @@ export const getEarnings = async (userAddress: string) => {
         query: `query MyQuery {
                 user(id: \"${userAddress.toLowerCase()}\") {
                   earn {
-                    vaultAddress
+                    vaultAddress                    
                     deposit
                     withdraw
                     blockNumber
+                    tokenId
                     blockTimestamp
                     userBalance
+                    token0
+                    token1
+                    reserve0
+                    reserve1
+                    totalSupply
                   }
                 }
               }`,
