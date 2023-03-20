@@ -94,7 +94,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                                 : ``
                                         }
                                         ${
-                                            farmApys && Number(farmApys.feeApr.toFixed(2))
+                                            farmApys && farmApys.feeApr
                                                 ? `<p>Trading Fees: ${farmApys.feeApr.toFixed(3)}%</p>`
                                                 : ``
                                         }
