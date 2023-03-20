@@ -57,8 +57,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                     {(earnings[id] ?? 0).toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
-                                    })}{" "}
-                                    $
+                                    })}
                                 </p>
                             </div>
                         </div>
