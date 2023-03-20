@@ -47,9 +47,9 @@ const lightSocketTheme = {
     secondaryText: "rgb(68,68,68)",
 };
 enum Tab {
-    Swap,
-    Bridge,
-    Buy,
+    Swap = "Swap",
+    Bridge = "Bridge",
+    Buy = "Buy",
 }
 const Exchange: React.FC<IProps> = () => {
     const { currentWallet, connectWallet, chains, signer: wagmiSigner } = useWallet();
@@ -58,8 +58,7 @@ const Exchange: React.FC<IProps> = () => {
         chainId,
     });
 
-    const [params] = useSearchParams();
-
+    const [params, setSearchParams] = useSearchParams();
     const { reloadBalances } = useBalances();
 
     const { lightMode } = useApp();
@@ -73,7 +72,13 @@ const Exchange: React.FC<IProps> = () => {
     const tokenList: TokenInfo[] = React.useMemo(() => getTokenListForUniswap(farms), [farms]);
 
     React.useEffect(() => {
-        if (params.get("tab") === "bridge") setTab(Tab.Bridge);
+        let tab = params.get("tab");
+        if (tab) setTab(tab as Tab);
+        else
+            setSearchParams((params) => {
+                params.set("tab", Tab.Buy);
+                return params;
+            });
     }, [params]);
 
     React.useEffect(() => {
@@ -146,18 +151,46 @@ const Exchange: React.FC<IProps> = () => {
             }}
         >
             <Tabs>
-                <PoolButton variant={2} onClick={() => setTab(Tab.Buy)} description="Buy" active={tab === Tab.Buy} />
                 <PoolButton
                     variant={2}
-                    onClick={() => setTab(Tab.Bridge)}
+                    onClick={() => {
+                        setTab(Tab.Buy);
+                        setSearchParams((params) => {
+                            params.set("tab", Tab.Buy);
+                            return params;
+                        });
+                    }}
+                    description="Buy"
+                    active={tab === Tab.Buy}
+                />
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab(Tab.Bridge);
+                        setSearchParams((params) => {
+                            params.set("tab", Tab.Bridge);
+                            return params;
+                        });
+                    }}
                     description="Bridge"
                     active={tab === Tab.Bridge}
                 />
-                <PoolButton variant={2} onClick={() => setTab(Tab.Swap)} description="Swap" active={tab === Tab.Swap} />
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab(Tab.Swap);
+                        setSearchParams((params) => {
+                            params.set("tab", Tab.Swap);
+                            return params;
+                        });
+                    }}
+                    description="Swap"
+                    active={tab === Tab.Swap}
+                />
             </Tabs>
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
                 {tab === Tab.Buy && (
-                    <div>
+                    <div className={styles.darkBuy}>
                         <div style={{ width: 375, height: 667 }} ref={containerRef}></div>
                     </div>
                 )}
