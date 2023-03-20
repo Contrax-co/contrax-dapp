@@ -1,8 +1,8 @@
 .pool-button-1 {
   width: 100px;
   padding: 7px;
-  background-color: #001428;
-  color: rgb(151, 151, 151);
+  background-color: var(--background_primary);
+  color: var(--color_disabled);
   font-weight: bold;
   margin-bottom: 7px;
   font-size: 13px;
@@ -14,8 +14,8 @@
 .pool-button-2 {
   width: 150px;
   padding: 10px;
-  color: white;
-  background-color: #000c18;
+  color: var(--color_disabled);
+  background-color: var(--background_secondary);
   font-weight: bold;
   margin-bottom: 7px;
   font-size: 16px;
@@ -24,24 +24,19 @@
   justify-content: center;
 }
 
-.button--light {
-  color: rgb(233, 235, 236);
-  background-color: #68b4c9;
-}
-
 .button--selected-1 {
   color: white;
-  background-color: #000c18;
+  background-color: var(--color_primary);
 }
 
 .button--selected-2 {
-  color: var(--color_primary);
-  background-color: #012243;
+  color: white;
+  background-color: var(--color_primary);
 }
 
 .button--selected--light {
   color: white;
-  background-color: #7cc4eb;
+  background-color: var(--color_primary);
 }
 
 .pool-button-1:first-child,

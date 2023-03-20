@@ -12,6 +12,7 @@ import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
+import { Tabs } from "src/components/Tabs/Tabs";
 interface FarmDataExtended extends Partial<FarmData>, Farm {
     apy: number;
 }
@@ -72,7 +73,7 @@ function Farms() {
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Farms</p>
             </div>
-            <div className="drop_buttons" style={{ padding: 0, marginBottom: 30 }}>
+            <Tabs style={{ padding: 0, marginBottom: 30 }}>
                 <PoolButton
                     variant={2}
                     onClick={() => {
@@ -91,7 +92,7 @@ function Farms() {
                     description="Dual Tokens"
                     active={tab === 2}
                 />
-            </div>
+            </Tabs>
             <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     {FarmTableColumns.Token}

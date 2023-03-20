@@ -27,7 +27,7 @@ const Vaults: React.FC<Props> = () => {
                     ) : (
                         <EmptyComponent>
                             You haven't deposited in any of the farms.{" "}
-                            <Link to={"/farms"} style={{ color: lightMode ? "#61cddf" : "#009aff" }}>
+                            <Link to={"/farms"} style={{ color: lightMode ? "var(--color_primary)" : "#009aff" }}>
                                 Go to Farms
                             </Link>
                         </EmptyComponent>

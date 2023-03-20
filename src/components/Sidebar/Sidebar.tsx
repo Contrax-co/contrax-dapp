@@ -31,21 +31,21 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
             <div className="side_items">
                 <SidebarItem
                     title="Dashboard"
-                    icon={<MdSpaceDashboard />}
+                    icon={<MdSpaceDashboard size={20} />}
                     onClick={() => handleNavigation(RoutesPaths.Home)}
                     active={pathname === RoutesPaths.Home}
                 />
 
                 <SidebarItem
                     title="Farms"
-                    icon={<GiFarmTractor />}
+                    icon={<GiFarmTractor size={20} />}
                     onClick={() => handleNavigation(RoutesPaths.Farms)}
                     active={pathname === RoutesPaths.Farms}
                 />
 
                 <SidebarItem
                     title="Exchange"
-                    icon={<FaExchangeAlt />}
+                    icon={<FaExchangeAlt size={20} />}
                     onClick={() => handleNavigation(RoutesPaths.Exchange)}
                     active={pathname === RoutesPaths.Exchange}
                 />
@@ -67,8 +67,8 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 <SidebarItem
                     title="User Guide"
                     onClick={() => handleNavigation("https://contrax.gitbook.io/contrax-docs/", "_blank")}
-                    icon={<HiDocumentText />}
-                    icon2={<AiOutlineExport />}
+                    icon={<HiDocumentText size={20} />}
+                    icon2={<AiOutlineExport size={12} />}
                 />
             </div>
 

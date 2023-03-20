@@ -31,14 +31,14 @@
 }
 
 @mixin button() {
-    background-color: rgb(89, 179, 247);
+    background-color: var(--color_primary);
     border: none;
-    border-radius: 20px;
+    border-radius: 10px;
     color: white;
     font-size: 17px;
     font-weight: bold;
-    padding: 5px 5px;
-    min-width: 120px;
+    padding: 18px 5px;
+    min-width: 200px;
     min-height: 50px;
     cursor: pointer;
     transition: all 0.1s ease-in-out;

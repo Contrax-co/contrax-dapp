@@ -5,7 +5,7 @@ import useBalances from "src/hooks/useBalances";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { Farm } from "src/types";
 import "./Details.css";
-import Toggle from "src/components/FarmItem/Toggle";
+import Toggle from "src/components/FarmItem/components/ZapToggle/Toggle";
 import { getLpAddressForFarmsPrice, toPreciseNumber } from "src/utils/common";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
@@ -34,10 +34,12 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
 
     return (
         <div className="details">
-            <div className={`details_section detials_rate`}>
+            <div className="details_zapToggle">
                 {farm.token_type === "LP Token" ? (
                     <Toggle active={shouldUseLp} farm={farm} onClick={() => setShouldUseLp((prev) => !prev)} />
                 ) : null}
+            </div>
+            <div className={`details_section detials_rate`}>
                 <div className={`details_dropdrown_header`}>
                     {farm.alt1 ? <img className={`details_logo1`} alt={farm.alt1} src={farm.logo1} /> : null}
 
