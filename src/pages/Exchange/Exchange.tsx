@@ -85,7 +85,7 @@ const Exchange: React.FC<IProps> = () => {
         if (tab === Tab.Buy) {
             const ramp = new RampInstantSDK({
                 userAddress: currentWallet,
-                defaultAsset: "ARBITRUM_ETH",
+                defaultAsset: "ARBITRUM_USDC",
                 fiatValue: "500",
                 fiatCurrency: "USD",
                 hostAppName: "Contrax",
