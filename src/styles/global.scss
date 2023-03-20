@@ -8,6 +8,9 @@
 
 .custom-button {
     @include button();
+    @include devices(tablet) {
+        padding: 15px 5px !important;
+    }
 }
 
 .custom-button-light {
@@ -17,20 +20,23 @@
 
 .custom-button-disabled {
     @include button();
-    background-color: rgb(156, 178, 193);
+    color: var(--color_disabled);
+    background-color: var(--background_primary);
     cursor: not-allowed;
 }
 
 .custom-button:disabled,
 .custom-button[disabled] {
     @include button();
-    background-color: rgb(156, 178, 193);
+    color: var(--color_disabled);
+    background-color: var(--background_primary);
     cursor: not-allowed;
 }
 .custom-button-light:disabled,
 .custom-button-light[disabled] {
     @include button();
-    background-color: rgb(156, 178, 193);
+    color: var(--color_disabled);
+    background-color: var(--background_primary);
     cursor: not-allowed;
 }
 

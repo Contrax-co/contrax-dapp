@@ -5,7 +5,6 @@ import useZapIn from "src/hooks/farms/useZapIn";
 import useZapOut from "src/hooks/farms/useZapOut";
 import useApp from "src/hooks/useApp";
 import useEthPrice from "src/hooks/useEthPrice";
-import useWallet from "src/hooks/useWallet";
 import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
 import { noExponents, toFixedFloor, validateNumberDecimals } from "src/utils/common";
@@ -134,128 +133,73 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     }, [max, maxBalance]);
 
     return (
-        <div className={`${styles.container} ${lightMode && styles.container_light}`}>
+        // <div className={`${styles.container} ${lightMode && styles.container_light}`}>
+        <form
+            className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
+            onSubmit={handleSubmit}
+        >
             {(isZapping || isZappingOut || isDepositing || isWithdrawing) && <Loader />}
-            {/* Left */}
-            <div className={styles.description}>
-                <Description farm={farm} shouldUseLp={shouldUseLp} type={type} />
-            </div>
-            {/* Right */}
-            <form
-                className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
-                onSubmit={handleSubmit}
-            >
-                {isLoading && <Skeleton w={100} h={20} style={{ marginLeft: "auto" }} />}
-                {!isLoading && (
-                    <div style={{ textAlign: "right" }}>
-                        {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
-                        {showInUsd ? `$ ${toFixedFloor(maxBalance, 2)}` : toFixedFloor(maxBalance, 6)}
-                    </div>
-                )}
-                <div></div>
-
-                <div className={`${styles.inputWrapper} ${lightMode && styles.inputWrapper_light}`}>
-                    <div style={{ display: "grid", gridTemplateColumns: "min-content 1fr" }}>
-                        <span style={{ marginBottom: 2, opacity: showInUsd ? 1 : 0 }}>$</span>
-                        <input
-                            type="number"
-                            placeholder="0"
-                            required
-                            value={noExponents(amount)}
-                            max={maxBalance}
-                            onChange={handleInput}
-                        />
-                    </div>
-                    <div className={styles.maxContainer}>
-                        <p className={styles.maxBtn} onClick={() => setMax(true)}>
-                            MAX
-                        </p>
-                        {!dontShowUsdSelect && (
-                            <select
-                                value={showInUsd.toString()}
-                                onChange={handleShowInUsdChange}
-                                className={`${styles.select} ${lightMode && styles.select_light}`}
-                            >
-                                <option value={"false"} className="currency_select">
-                                    {shouldUseLp ? farm.name : farm.zap_symbol}
-                                </option>
-                                <option value={"true"} className="currency_select">
-                                    USD
-                                </option>
-                            </select>
-                        )}
-                    </div>
+            {isLoading && <Skeleton w={100} h={20} style={{ marginLeft: "auto" }} />}
+            {!isLoading && (
+                <div style={{ textAlign: "right" }}>
+                    {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
+                    {showInUsd ? `$ ${toFixedFloor(maxBalance, 2)}` : toFixedFloor(maxBalance, 6)}
                 </div>
-                <button
-                    className={`custom-button ${lightMode && "custom-button-light"}`}
-                    type="submit"
-                    disabled={
-                        parseFloat(amount) <= 0 ||
-                        isNaN(parseFloat(amount)) ||
-                        (type === FarmTransactionType.Deposit
-                            ? isZapping || isDepositing
-                            : isWithdrawing || isZappingOut)
-                    }
-                >
-                    {parseFloat(amount) > 0
-                        ? parseFloat(amount) > maxBalance
-                            ? "Insufficent Balance"
-                            : type === FarmTransactionType.Deposit
-                            ? "Deposit"
-                            : "Withdraw"
-                        : "Enter Amount"}
-                </button>
-            </form>
-        </div>
+            )}
+            <div></div>
+
+            <div className={`${styles.inputWrapper} ${lightMode && styles.inputWrapper_light}`}>
+                <div style={{ display: "grid", gridTemplateColumns: "min-content 1fr", width: "100%" }}>
+                    <span style={{ marginBottom: 2, opacity: showInUsd ? 1 : 0 }}>$</span>
+                    <input
+                        type="number"
+                        placeholder="0"
+                        required
+                        value={noExponents(amount)}
+                        max={maxBalance}
+                        onChange={handleInput}
+                    />
+                </div>
+                <div className={styles.maxContainer}>
+                    <p className={styles.maxBtn} onClick={() => setMax(true)}>
+                        MAX
+                    </p>
+                    {!dontShowUsdSelect && (
+                        <select
+                            value={showInUsd.toString()}
+                            onChange={handleShowInUsdChange}
+                            className={`${styles.select} ${lightMode && styles.select_light}`}
+                        >
+                            <option value={"false"} className="currency_select">
+                                {shouldUseLp ? farm.name : farm.zap_symbol}
+                            </option>
+                            <option value={"true"} className="currency_select">
+                                USD
+                            </option>
+                        </select>
+                    )}
+                </div>
+            </div>
+            <button
+                className={`custom-button ${lightMode && "custom-button-light"}`}
+                type="submit"
+                disabled={
+                    parseFloat(amount) <= 0 ||
+                    isNaN(parseFloat(amount)) ||
+                    (type === FarmTransactionType.Deposit ? isZapping || isDepositing : isWithdrawing || isZappingOut)
+                }
+            >
+                {parseFloat(amount) > 0
+                    ? parseFloat(amount) > maxBalance
+                        ? "Insufficent Balance"
+                        : type === FarmTransactionType.Deposit
+                        ? "Deposit"
+                        : "Withdraw"
+                    : "Enter Amount"}
+            </button>
+        </form>
+        // </div>
     );
 };
 
 export default DetailInput;
-
-const Description: React.FC<{ type: FarmTransactionType; farm: Farm; shouldUseLp: boolean }> = ({
-    type,
-    farm,
-    shouldUseLp,
-}) => {
-    if (type === FarmTransactionType.Deposit && shouldUseLp)
-        return (
-            <div>
-                Deposit into the{" "}
-                <a href={farm.source} className="span">
-                    {farm.url_name}
-                </a>{" "}
-                auto-compounding liquidity pool. "Max" excludes a little ETH for gas.
-            </div>
-        );
-    else if (type === FarmTransactionType.Deposit && !shouldUseLp)
-        return (
-            <div>
-                Deposit into the{" "}
-                <a href={farm.source} className="span">
-                    {farm.url_name}
-                </a>{" "}
-                auto-compounding liquidity pool. "Max" excludes a little ETH for gas.
-            </div>
-        );
-    else if (type === FarmTransactionType.Withdraw && shouldUseLp)
-        return (
-            <div>
-                Withdraw from the{" "}
-                <a href={farm.source} className="span">
-                    {farm.url_name}
-                </a>{" "}
-                liquidity pool.
-            </div>
-        );
-    else if (type === FarmTransactionType.Withdraw && !shouldUseLp)
-        return (
-            <div>
-                Withdraw from the{" "}
-                <a href={farm.source} className="span">
-                    {farm.url_name}
-                </a>{" "}
-                liquidity pool.
-            </div>
-        );
-    return null;
-};

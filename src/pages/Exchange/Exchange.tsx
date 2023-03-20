@@ -16,6 +16,7 @@ import useFarms from "src/hooks/farms/useFarms";
 import { useSearchParams } from "react-router-dom";
 import { getTokenListForUniswap } from "src/utils";
 import useBalances from "src/hooks/useBalances";
+import { Tabs } from "src/components/Tabs/Tabs";
 
 interface IProps {}
 
@@ -144,7 +145,7 @@ const Exchange: React.FC<IProps> = () => {
                 height: "100%",
             }}
         >
-            <div className="drop_buttons">
+            <Tabs>
                 <PoolButton variant={2} onClick={() => setTab(Tab.Buy)} description="Buy" active={tab === Tab.Buy} />
                 <PoolButton
                     variant={2}
@@ -153,10 +154,10 @@ const Exchange: React.FC<IProps> = () => {
                     active={tab === Tab.Bridge}
                 />
                 <PoolButton variant={2} onClick={() => setTab(Tab.Swap)} description="Swap" active={tab === Tab.Swap} />
-            </div>
+            </Tabs>
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
                 {tab === Tab.Buy && (
-                    <div className={styles.darkBuy}>
+                    <div>
                         <div style={{ width: 375, height: 667 }} ref={containerRef}></div>
                     </div>
                 )}

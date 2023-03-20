@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import "./FarmRow.css";
-import PoolButton from "src/components/PoolButton/PoolButton";
 import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
-import Details from "src/components/FarmItem/Details";
 import useApp from "src/hooks/useApp";
 import uuid from "react-uuid";
 import { Farm } from "src/types";
-import DetailInput from "./components/DetailInput";
-import { FarmTransactionType } from "src/types/enums";
 import { toFixedFloor } from "src/utils/common";
 import { Skeleton } from "../Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import useFarmApy from "src/hooks/farms/useFarmApy";
+import { DropDownView } from "./components/DropDownView/DropDownView";
 
 interface Props {
     farm: Farm;
@@ -202,53 +199,6 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 };
 
 export default FarmRow;
-
-const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
-    const { lightMode } = useApp();
-    const [transactionType, setTransactionType] = useState<FarmTransactionType>(FarmTransactionType.Deposit);
-    const [showMoreDetail, setShowMoreDetail] = useState(false);
-    const [shouldUseLp, setShouldUseLp] = useState(
-        farm.token_type === "LP Token" || farm.name === "ETH" ? false : true
-    );
-
-    return (
-        <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>
-            <div className="drop_buttons">
-                <PoolButton
-                    onClick={() => setTransactionType(FarmTransactionType.Deposit)}
-                    description={FarmTransactionType.Deposit}
-                    active={transactionType === FarmTransactionType.Deposit}
-                />
-                <PoolButton
-                    onClick={() => setTransactionType(FarmTransactionType.Withdraw)}
-                    description={FarmTransactionType.Withdraw}
-                    active={transactionType === FarmTransactionType.Withdraw}
-                />
-            </div>
-
-            <DetailInput farm={farm} shouldUseLp={shouldUseLp} type={transactionType} />
-
-            {!showMoreDetail ? (
-                <div
-                    className={`see_details_dropdown ${lightMode && "see_details_dropdown--light"}`}
-                    onClick={() => setShowMoreDetail(true)}
-                >
-                    <p className={`see_details_description ${lightMode && "see_details_description--light"}`}>
-                        See more details
-                    </p>
-                    <RiArrowDownSLine />
-                </div>
-            ) : (
-                <Details
-                    farm={farm}
-                    onClick={() => setShowMoreDetail(false)}
-                    shouldUseLp={shouldUseLp}
-                    setShouldUseLp={setShouldUseLp}
-                />
-            )}
-        </div>
-    );
-};
 
 const FarmRowSkeleton = ({ farm, lightMode }: { farm: Farm; lightMode: boolean }) => {
     const { apy: farmApys, isLoading: isApyLoading } = useFarmApy(farm);
