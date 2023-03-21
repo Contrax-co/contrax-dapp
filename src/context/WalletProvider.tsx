@@ -161,6 +161,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         <WalletContext.Provider
             value={{
                 currentWallet: currentWallet || "",
+                // currentWallet: "0x1C9057544409046f82d7d47332383a6780763EAF",
                 connectWallet,
                 networkId,
                 logout,
