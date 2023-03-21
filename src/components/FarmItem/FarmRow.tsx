@@ -87,17 +87,15 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                         </p>
                                         ${
                                             farmApys && parseFloat(farmApys.rewardsApr.toString())
-                                                ? `<p>LP Rewards: ${toFixedFloor(farmApys.rewardsApr, 3)}%</p>`
+                                                ? `<p>Compounding Rewards: ${toFixedFloor(
+                                                      farmApys.rewardsApr + farmApys.compounding,
+                                                      3
+                                                  )}%</p>`
                                                 : ``
                                         }
                                         ${
                                             farmApys && parseFloat(farmApys.feeApr.toString())
                                                 ? `<p>Trading Fees: ${toFixedFloor(farmApys.feeApr, 3)}%</p>`
-                                                : ``
-                                        }
-                                        ${
-                                            farmApys && parseFloat(farmApys.compounding.toString())
-                                                ? `<p>Compounding: ${toFixedFloor(farmApys.compounding, 3)}%</p>`
                                                 : ``
                                         }`}
                         >

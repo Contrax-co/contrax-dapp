@@ -71,6 +71,10 @@ const Exchange: React.FC<IProps> = () => {
     const { farms } = useFarms();
     const tokenList: TokenInfo[] = React.useMemo(() => getTokenListForUniswap(farms), [farms]);
 
+    // Reload Balances every time this component unmounts
+    React.useEffect(() => reloadBalances, []);
+
+    // Check for query params regarding tab, if none, default = Buy
     React.useEffect(() => {
         let tab = params.get("tab");
         if (tab) setTab(tab as Tab);
@@ -86,6 +90,7 @@ const Exchange: React.FC<IProps> = () => {
             const ramp = new RampInstantSDK({
                 userAddress: currentWallet,
                 defaultAsset: "ARBITRUM_USDC",
+                swapAsset: "ARBITRUM_*",
                 fiatValue: "500",
                 fiatCurrency: "USD",
                 hostAppName: "Contrax",
@@ -200,7 +205,7 @@ const Exchange: React.FC<IProps> = () => {
                         onSourceNetworkChange={(network) => {
                             setChainId(network.chainId);
                         }}
-                        onSubmit={() => reloadBalances}
+                        onBridgeSuccess={reloadBalances}
                         API_KEY={SOCKET_API_KEY}
                         defaultSourceToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
                         defaultDestToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
@@ -232,7 +237,7 @@ const Exchange: React.FC<IProps> = () => {
                         // @ts-ignore
                         provider={websocketProvider || wagmiSigner?.provider}
                         onConnectWalletClick={connectWallet}
-                        onSubmitSwapClick={reloadBalances}
+                        onTxSuccess={reloadBalances}
                         tokenList={tokenList}
                         permit2={true}
                     />
