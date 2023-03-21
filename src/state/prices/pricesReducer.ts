@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
-import { AddPrice, StateInterface, UpdatePricesActionPayload } from "./types";
+import { AddPrice, OldPrices, StateInterface, UpdatePricesActionPayload } from "./types";
 import { Contract, utils, constants } from "ethers";
 import { addressesByChainId } from "src/config/constants/contracts";
+import { getNetworkName } from "src/utils/common";
 
-const initialState: StateInterface = { prices: {}, isLoading: false, isFetched: false };
+const initialState: StateInterface = { prices: {}, isLoading: false, isFetched: false, oldPrices: {} };
 
 const lpAbi = [
     "function token0() view returns (address)",
@@ -41,7 +42,7 @@ export const updatePrices = createAsyncThunk(
             let addresses = Array.from(set);
 
             //------------------->> 1. Get prices from coinsLama
-            const apiUrl = coinsLamaPriceByChainId[chainId] + addresses.join(",arbitrum:");
+            const apiUrl = coinsLamaPriceByChainId[chainId] + addresses.join(`,${getNetworkName(chainId)}:`);
             const res = await axios.get(apiUrl);
 
             const coins = JSON.parse(JSON.stringify(res.data)).coins;
@@ -154,6 +155,9 @@ const pricesSlice = createSlice({
         addPrice: (state: StateInterface, action: PayloadAction<AddPrice>) => {
             state.prices = { ...state.prices, ...action.payload };
         },
+        setOldPrices: (state, action: PayloadAction<OldPrices>) => {
+            state.oldPrices = action.payload;
+        },
     },
     extraReducers(builder) {
         builder.addCase(updatePrices.fulfilled, (state, action) => {
@@ -167,6 +171,6 @@ const pricesSlice = createSlice({
     },
 });
 
-export const { addPrice } = pricesSlice.actions;
+export const { addPrice, setOldPrices } = pricesSlice.actions;
 
 export default pricesSlice.reducer;

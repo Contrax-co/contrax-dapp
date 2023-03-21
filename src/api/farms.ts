@@ -8,6 +8,12 @@ interface Response {
     blockNumber: string;
     blockTimestamp: string;
     userBalance: string;
+    token0: string;
+    token1: string;
+    reserve0: string;
+    reserve1: string;
+    totalSupply: string;
+    tokenId: string;
 }
 
 export const getEarnings = async (userAddress: string) => {

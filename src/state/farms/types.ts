@@ -36,4 +36,5 @@ export interface FetchEarningsAction {
     balances: Balances;
     multicallProvider: MulticallProvider;
     totalSupplies: Partial<TotalSupplies>;
+    chainId: number;
 }

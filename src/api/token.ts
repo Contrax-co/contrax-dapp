@@ -24,6 +24,80 @@ export const getPrice = async (tokenAddress: string, chainId: number) => {
     }
 };
 
+export const getPricesByTime = async (
+    addTime: { address: string; timestamp: number; price?: number }[],
+    chainId: number
+) => {
+    try {
+        addTime = addTime.sort((a, b) => a.timestamp - b.timestamp);
+        const obj = addTime.reduce(
+            (acc, { address, timestamp }) => {
+                if (acc[`${getNetworkName(chainId)}:${address}`]) {
+                    acc[`${getNetworkName(chainId)}:${address}`].push(timestamp);
+                } else {
+                    acc[`${getNetworkName(chainId)}:${address}`] = [timestamp];
+                }
+                return acc;
+            },
+            {} as {
+                [key: string]: number[];
+            }
+        );
+
+        let prices: {
+            [key: string]: {
+                timestamp: number;
+                price: number;
+                confidence: number;
+            }[];
+        } = {};
+
+        const res = await axios.get(
+            `https://coins.llama.fi/batchHistorical?coins=${encodeURIComponent(JSON.stringify(obj))}`,
+            {
+                cache: false,
+            }
+        );
+
+        const coins = JSON.parse(JSON.stringify(res.data)).coins;
+
+        Object.entries(coins).forEach(([key, value]) => {
+            // @ts-ignore
+            prices[key.split(":")[1].toLowerCase()] = value.prices;
+        });
+
+        addTime = addTime.map((item) => {
+            return { ...item, price: prices[item.address].pop()!.price };
+        });
+
+        return addTime;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+};
+
+export const getPriceByTime = async (address: string, timestamp: number, chainId: number) => {
+    try {
+        const res = await axios.get(
+            `${coinsLamaPriceByChainId[0]}/historical/${timestamp}/${getNetworkName(chainId)}:${address}`,
+            {
+                cache: true,
+            }
+        );
+
+        const prices = JSON.stringify(res.data);
+        const parse = JSON.parse(prices);
+
+        const token = parse[`coins`][`${getNetworkName(chainId)}:${address}`];
+        const price = token ? (token[`price`] as number) : 0;
+        return { price, timestamp };
+    } catch (error) {
+        console.error(error);
+        return { price: 0, timestamp };
+    }
+};
+
 export const getBalance = async (
     tokenAddress: string,
     address: string,

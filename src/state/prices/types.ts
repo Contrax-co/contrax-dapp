@@ -3,8 +3,16 @@ import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/p
 
 export interface StateInterface {
     prices: Prices;
+    oldPrices: Partial<OldPrices>;
     isLoading: boolean;
     isFetched: boolean;
+}
+
+export interface OldPrices {
+    [key: string]: {
+        timestamp: number;
+        price: number;
+    }[];
 }
 
 export interface AddPrice {

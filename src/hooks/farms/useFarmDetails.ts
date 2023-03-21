@@ -23,7 +23,16 @@ const useFarmDetails = () => {
         if (isBalancesFetched && isPricesFetched && currentWallet) {
             dispatch(updateFarmDetails({ farms, currentWallet, balances, prices }));
             dispatch(
-                updateEarnings({ farms, currentWallet, decimals, prices, balances, multicallProvider, totalSupplies })
+                updateEarnings({
+                    farms,
+                    currentWallet,
+                    decimals,
+                    prices,
+                    balances,
+                    multicallProvider,
+                    totalSupplies,
+                    chainId: networkId,
+                })
             );
         }
     }, [
