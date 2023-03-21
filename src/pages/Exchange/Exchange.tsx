@@ -90,6 +90,7 @@ const Exchange: React.FC<IProps> = () => {
             const ramp = new RampInstantSDK({
                 userAddress: currentWallet,
                 defaultAsset: "ARBITRUM_USDC",
+                swapAsset: "ARBITRUM_*",
                 fiatValue: "500",
                 fiatCurrency: "USD",
                 hostAppName: "Contrax",
