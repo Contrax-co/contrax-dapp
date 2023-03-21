@@ -3,6 +3,8 @@ import useApp from "src/hooks/useApp";
 import { Vault } from "src/types";
 import { toFixedFloor } from "src/utils/common";
 import "./VaultItem.css";
+import { GoArrowUp, GoArrowDown } from "react-icons/go";
+import { useAppSelector } from "src/state";
 
 interface Props {
     vault: Vault;
@@ -18,6 +20,8 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
         apys: { apy },
         id,
     } = vault;
+
+    const oldPrice = useAppSelector((state) => state.prices.oldPrices[vault.lp_address]);
 
     return (
         <div className={`vaults`}>
@@ -37,12 +41,54 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                 <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
                                     Your Stake
                                 </p>
-                                <p>
-                                    {(userVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                    })}
-                                </p>
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                    <p style={{ margin: 0 }}>
+                                        {(userVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                        })}
+                                    </p>
+                                    {oldPrice &&
+                                        (oldPrice[0].price > priceOfSingleToken ? (
+                                            <span
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    transform: "translateY(2px)",
+                                                }}
+                                            >
+                                                <GoArrowDown style={{ color: "red", transform: "translateY(1px)" }} />
+                                                <p style={{ margin: 0, fontSize: 10 }}>
+                                                    {Math.abs(
+                                                        userVaultBalance * priceOfSingleToken -
+                                                            userVaultBalance * oldPrice[0].price
+                                                    ).toLocaleString("en-US", {
+                                                        style: "currency",
+                                                        currency: "USD",
+                                                    })}
+                                                </p>
+                                            </span>
+                                        ) : (
+                                            <span
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    transform: "translateY(2px)",
+                                                }}
+                                            >
+                                                <GoArrowUp style={{ color: "lime" }} />
+                                                <p style={{ margin: 0, fontSize: 10 }}>
+                                                    {Math.abs(
+                                                        userVaultBalance * oldPrice[0].price -
+                                                            userVaultBalance * priceOfSingleToken
+                                                    ).toLocaleString("en-US", {
+                                                        style: "currency",
+                                                        currency: "USD",
+                                                    })}
+                                                </p>
+                                            </span>
+                                        ))}
+                                </div>
                             </div>
 
                             <div className={`vault_items_bottom_categories`}>

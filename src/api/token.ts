@@ -29,6 +29,7 @@ export const getPricesByTime = async (
     chainId: number
 ) => {
     try {
+        if (addTime.length === 0) return undefined;
         addTime = addTime.sort((a, b) => a.timestamp - b.timestamp);
         const obj = addTime.reduce(
             (acc, { address, timestamp }) => {
@@ -91,7 +92,7 @@ export const getPriceByTime = async (address: string, timestamp: number, chainId
 
         const token = parse[`coins`][`${getNetworkName(chainId)}:${address}`];
         const price = token ? (token[`price`] as number) : 0;
-        return { price, timestamp };
+        return { price: 0, timestamp };
     } catch (error) {
         console.error(error);
         return { price: 0, timestamp };
