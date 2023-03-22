@@ -11,7 +11,7 @@ import supplyReducer from "./supply/supplyReducer";
 import decimalsReducer from "./decimals/decimalsReducer";
 
 const persistedPricesReducer = persistReducer(
-    { key: "prices", version: 1, storage, blacklist: ["isFetched"] },
+    { key: "prices", version: 1, storage, blacklist: ["isFetched", "oldPrices"] },
     pricesReducer
 );
 
