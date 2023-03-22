@@ -48,7 +48,7 @@
   right: 1.6em;
   z-index: 2000;
   background-color: white;
-  clip-path: 40%;
+  clip-path: circle(40%);
 }
 
 .chaport-container .chaport-launcher .chaport-launcher-button {
