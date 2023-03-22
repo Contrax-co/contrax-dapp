@@ -23,7 +23,7 @@ export const ExportPublicKey: FC<IProps> = ({ setOpenModal }) => {
     };
 
     return (
-        <ModalLayout onClose={() => setOpenModal(false)} style={{ paddingRight: 120 }}>
+        <ModalLayout onClose={() => setOpenModal(false)} style={{ padding: "50px 120px 50px 58px" }}>
             <div className={styles.heading}>
                 <h1>Scan Me</h1>
             </div>

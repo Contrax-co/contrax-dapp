@@ -2,14 +2,12 @@
     & h1 {
         margin: 0px;
         margin-bottom: 20px;
-        // text-align: center;
     }
 }
 .caption {
     font-size: large;
     font-weight: bold;
     margin: 0px;
-    // text-align: center;
 }
 .key {
     display: flex;
@@ -36,4 +34,5 @@
     border: 12px solid var(--color_primary);
     border-radius: 12px;
     padding: 12px;
+    box-shadow: 4px 4px 34px rgba(0, 0, 0, 0.15);
 }
