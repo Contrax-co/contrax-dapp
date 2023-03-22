@@ -35,11 +35,9 @@ export const ExportPrivateKey: FC<IProps> = ({ setOpenModal }) => {
     };
 
     return (
-        <ModalLayout onClose={() => setOpenModal(false)}>
-            <div className={styles.heading}>
-                <TiWarningOutline size={40} />
-                <h1>Disclaimer</h1>
-            </div>
+        <ModalLayout onClose={() => setOpenModal(false)} style={{ padding: "40px 60px 50px" }}>
+            <TiWarningOutline className={styles.warning} size={1} />
+            <h1 className={styles.heading}>Disclaimer</h1>
             <p className={styles.caption}>Exporting Private Key</p>
             <p className={styles.message}>
                 This is for advanced users and can put their funds at risk if they export without knowing how to handle
@@ -49,7 +47,7 @@ export const ExportPrivateKey: FC<IProps> = ({ setOpenModal }) => {
                 <input type="checkbox" name="confirm" id="confirm" onChange={() => setConfirm((prev) => !prev)} />
                 <label htmlFor="confirm">I Understand</label>
             </div>
-            <div className={`${styles.key} ${lightMode && styles.key_light}`}>
+            <div className={styles.key}>
                 {show ? (
                     <>
                         <input type="text" readOnly value={privateKey} />
@@ -63,11 +61,7 @@ export const ExportPrivateKey: FC<IProps> = ({ setOpenModal }) => {
                     <input type="text" readOnly value={"0xXXXXXXXXXXXXXXXXXXXXXXXXXXX"} />
                 )}
 
-                <button
-                    className={`${styles.showButton} ${lightMode && styles.showButton_light}`}
-                    disabled={!confirm}
-                    onClick={handleShow}
-                >
+                <button disabled={!confirm} className={styles.textButton} onClick={handleShow}>
                     {show ? "HIDE" : "SHOW"}
                 </button>
             </div>

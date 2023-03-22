@@ -34,11 +34,11 @@
   --color_primary: #63cce0;
   --color_grey: #8798ad;
   --color_white: #ffffff;
-  --color_black: #000000;
+  --color_black: #323433;
   --color_disabled: #b1e5ef;
-  --color_text: var(--color_black)
-    /* ///// Border Colors ///// */
-    --border_color: #d9d9d9;
+  --color_text: var(--color_black);
+  /* ///// Border Colors ///// */
+  --border_color: #d9d9d9;
   --border_color_light: #d2e8ef;
 }
 
@@ -48,7 +48,7 @@
   right: 1.6em;
   z-index: 2000;
   background-color: white;
-  clip-path: circle(40%);
+  clip-path: circle(38%);
 }
 
 .chaport-container .chaport-launcher .chaport-launcher-button {

@@ -2,39 +2,40 @@
 @import "../../../styles/_mixins.scss";
 
 .heading {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #ffc800;
-    & h1 {
-        margin: 8px 0px;
-    }
+    color: var(--color_text);
+    position: relative;
+}
+.warning {
+    transform: rotate(30deg) translate(-20px, 10px) scale(200);
+    color: var(--background_primary);
 }
 .caption {
     font-size: large;
     font-weight: bold;
+    color: var(--color_text);
 }
 .message {
-    color: $color_grey;
-    max-width: 500px;
+    color: var(--color_grey);
+    max-width: 440px;
 }
 .confirm {
     margin-top: 30px;
-    color: $color_grey;
+    color: var(--color_text);
     & label{
         margin-left: 8px;
     }
 }
 .note {
     margin-bottom: 0px;
+    color: var(--color_text);
 }
 .key {
-    color: $color_grey;
-    background-color: $background_primary;
+    color: #B6C1CE;
+    background-color: var(--background_primary);
     width: 100%;
     border-radius: 10px;
     padding: 16px;
-    margin-top: 30px;
+    margin-top: 12px;
     box-sizing: border-box;
     position: relative;
 
@@ -68,33 +69,19 @@
         color: inherit;
     }
 
-    .showButton {
+    .textButton {
         position: absolute;
-        right: 7px;
+        right: 20px;
         top: 50%;
-        width: 80px;
         transform: translateY(-50%);
-        background-color: var(--color_primary);
-        color: $color_white;
-        padding: 12px 20px;
-        border-radius: 10px;
+        color: var(--color_primary);
         border: none;
         outline: none;
-        font-weight: bold;
+        background: transparent;
         cursor: pointer;
-        z-index: 20;
     }
-    .showButton:disabled {
-        background-color: #276995;
-        color: $color_grey;
+    .textButton:disabled {
+        color: var(--color_disabled);
         cursor: not-allowed;
     }
-    .showButton_light:disabled {
-        background-color: $color_grey;
-        color: #4e4e4e
-    }
-}
-.key_light {
-    background-color: #f5f6f9;
-    color: $color_grey;
 }
