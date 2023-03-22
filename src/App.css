@@ -46,7 +46,9 @@
   position: fixed;
   bottom: 4.5em;
   right: 1.6em;
-  z-index: 1000;
+  z-index: 2000;
+  background-color: white;
+  clip-path: 40%;
 }
 
 .chaport-container .chaport-launcher .chaport-launcher-button {

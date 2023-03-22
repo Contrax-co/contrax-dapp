@@ -239,11 +239,13 @@ const Exchange: React.FC<IProps> = () => {
                             lightMode
                                 ? {
                                       ...lightTheme,
-                                      accent: "#08a7c7",
-                                      accentSoft: "#63cce0",
+                                      //   accent: "#08a7c7",
+                                      //   accentSoft: "#63cce0",
+                                      accent: "#63cce0",
+                                      accentSoft: "#dcf9ff",
                                       networkDefaultShadow: "rgba(99, 204, 224,0.1)",
                                   }
-                                : { ...darkTheme, accent: "#08a7c7", accentSoft: "#63cce0" }
+                                : { ...darkTheme, accent: "#63cce0", accentSoft: "#dcf9ff" }
                         }
                         // @ts-ignore
                         provider={websocketProvider || wagmiSigner?.provider}
