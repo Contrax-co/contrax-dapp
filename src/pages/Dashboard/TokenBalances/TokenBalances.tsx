@@ -42,39 +42,38 @@ export const TokenBalances: FC<IProps> = () => {
                 )}
 
             {currentWallet && !isLoading && tokens && (
-                <>
-                    <div className={styles.container}>
-                        {tokens
-                            .filter((token) => Number(token.usdBalance) > 0.01)
-                            .map((token, i) => (
-                                <div
-                                    key={i}
-                                    className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                                    onClick={() =>
-                                        token.name === "ETH" && token.network === "Mainnet"
-                                            ? navigate("/exchange/?tab=bridge")
-                                            : setSelectedToken(token)
-                                    }
-                                >
-                                    <img className={styles.tokenLogo} src={token.logo} alt="logo" />
-                                    <div>
-                                        <p className={styles.name}>
-                                            {token.name}
-                                            {token.network ? (
-                                                <span className={styles.networkName}>({token.network})</span>
-                                            ) : null}
-                                        </p>
-                                        <p className={styles.balance}>
-                                            {ethers.utils.commify(Number(token.balance).toString())}
-                                        </p>
-                                    </div>
-                                    <p className={styles.usdBalance}>
-                                        ${ethers.utils.commify(Number(token.usdBalance).toString())}
+                <div className={styles.container}>
+                    {tokens
+                        .filter((token) => Number(token.usdBalance) > 0.01)
+                        .map((token, i) => (
+                            <div
+                                key={i}
+                                className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
+                                onClick={() =>
+                                    token.name === "ETH" && token.network === "Mainnet"
+                                        ? navigate("/exchange/?tab=bridge")
+                                        : setSelectedToken(token)
+                                }
+                            >
+                                <img className={styles.tokenLogo} src={token.logo} alt="logo" />
+                                <div>
+                                    <p className={styles.name}>
+                                        {token.name}
+                                        {token.network ? (
+                                            <span className={styles.networkName}>({token.network})</span>
+                                        ) : null}
+                                    </p>
+                                    <p className={styles.balance}>
+                                        {ethers.utils.commify(Number(token.balance).toString())}
                                     </p>
                                 </div>
-                            ))}
-                    </div>
-                </>
+                                <p className={styles.usdBalance}>
+                                    ${ethers.utils.commify(Number(token.usdBalance).toString())}
+                                </p>
+                            </div>
+                        ))}
+                    {selectedToken ? <TransferToken token={selectedToken} setSelectedToken={setSelectedToken} /> : null}
+                </div>
             )}
             {currentWallet &&
                 !isLoading &&
