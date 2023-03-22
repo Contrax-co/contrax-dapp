@@ -1,19 +1,23 @@
 .heading {
     & h1 {
-        margin: 4px 0px;
-        text-align: center;
+        margin: 0px;
+        margin-bottom: 20px;
+        // text-align: center;
     }
 }
 .caption {
     font-size: large;
     font-weight: bold;
-    text-align: center;
+    margin: 0px;
+    // text-align: center;
 }
 .key {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
+    color: var(--color_grey);
+    margin-bottom: 20px;
     .copyIcon {
         cursor: pointer;
         color: inherit;
@@ -24,8 +28,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        margin: 0px;
     }
 }
 .qrCode {
     text-align: center;
+    border: 12px solid var(--color_primary);
+    border-radius: 12px;
+    padding: 12px;
 }

@@ -23,13 +23,13 @@ export const ExportPublicKey: FC<IProps> = ({ setOpenModal }) => {
     };
 
     return (
-        <ModalLayout onClose={() => setOpenModal(false)}>
+        <ModalLayout onClose={() => setOpenModal(false)} style={{ paddingRight: 120 }}>
             <div className={styles.heading}>
                 <h1>Scan Me</h1>
             </div>
             <p className={styles.caption}>Wallet Address</p>
             <div className={styles.key}>
-                <p>{currentWallet}</p>
+                <p>{`${currentWallet?.substring(0, 20)}...${currentWallet?.substring(currentWallet.length - 3)}`}</p>
                 {copied ? (
                     <BsCheckCircle className={styles.copyIcon} size={22} />
                 ) : (
