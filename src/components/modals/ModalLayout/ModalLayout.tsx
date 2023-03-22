@@ -5,9 +5,10 @@ import styles from "./ModalLayout.module.scss";
 interface IProps {
     onClose: Function;
     children: ReactNode;
+    style?: any;
 }
 
-export const ModalLayout: FC<IProps> = ({ onClose, children }) => {
+export const ModalLayout: FC<IProps> = ({ onClose, children, style }) => {
     const { lightMode } = useApp();
 
     return (
@@ -15,6 +16,7 @@ export const ModalLayout: FC<IProps> = ({ onClose, children }) => {
             <div
                 className={`${styles.container} ${lightMode && styles.container_light}`}
                 onClick={(e) => e.stopPropagation()}
+                style={style}
             >
                 {children}
             </div>
