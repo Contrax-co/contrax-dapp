@@ -41,7 +41,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                 <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>
                                     Your Stake
                                 </p>
-                                <div style={{ display: "flex", alignItems: "center" }}>
+                                <div style={{ display: "flex", alignItems: "flex-end" }}>
                                     <p style={{ margin: 0 }}>
                                         {(userVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
                                             style: "currency",
@@ -54,10 +54,9 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                                 style={{
                                                     display: "flex",
                                                     alignItems: "center",
-                                                    transform: "translateY(2px)",
                                                 }}
                                             >
-                                                <GoArrowDown style={{ color: "red", transform: "translateY(1px)" }} />
+                                                <GoArrowDown style={{ color: "red" }} />
                                                 <p style={{ margin: 0, fontSize: 10 }}>
                                                     {Math.abs(
                                                         userVaultBalance * priceOfSingleToken -
@@ -73,7 +72,6 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                                 style={{
                                                     display: "flex",
                                                     alignItems: "center",
-                                                    transform: "translateY(2px)",
                                                 }}
                                             >
                                                 <GoArrowUp style={{ color: "lime" }} />
