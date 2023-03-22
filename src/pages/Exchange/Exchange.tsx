@@ -51,6 +51,8 @@ enum Tab {
     Bridge = "Bridge",
     Buy = "Buy",
 }
+
+console.log("theme", lightTheme, darkTheme);
 const Exchange: React.FC<IProps> = () => {
     const { currentWallet, connectWallet, chains, signer: wagmiSigner } = useWallet();
     const [chainId, setChainId] = React.useState<number>(defaultChainId);
@@ -233,7 +235,16 @@ const Exchange: React.FC<IProps> = () => {
                 )}
                 {tab === Tab.Swap && SOCKET_API_KEY && (
                     <SwapWidget
-                        theme={lightMode ? lightTheme : darkTheme}
+                        theme={
+                            lightMode
+                                ? {
+                                      ...lightTheme,
+                                      accent: "#08a7c7",
+                                      accentSoft: "#63cce0",
+                                      networkDefaultShadow: "rgba(99, 204, 224,0.1)",
+                                  }
+                                : { ...darkTheme, accent: "#08a7c7", accentSoft: "#63cce0" }
+                        }
                         // @ts-ignore
                         provider={websocketProvider || wagmiSigner?.provider}
                         onConnectWalletClick={connectWallet}
