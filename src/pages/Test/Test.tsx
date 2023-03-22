@@ -3,19 +3,21 @@ import { utils } from "ethers";
 import { getEarnings } from "src/api/farms";
 import useWallet from "src/hooks/useWallet";
 import { getPricesByTime } from "src/api/token";
+import useTotalSupplies from "src/hooks/useTotalSupplies";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
+import useFarms from "src/hooks/farms/useFarms";
 
 const Test = () => {
     const { currentWallet, networkId } = useWallet();
+    const { farms } = useFarms();
+    const { formattedSupplies } = useTotalSupplies();
+    const { prices } = usePriceOfTokens();
     const fn = () => {
-        getPricesByTime(
-            [
-                { address: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", timestamp: 1671193781 },
-                { address: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", timestamp: 1679193781 },
-            ],
-            networkId
-        ).then((res) => {
-            console.log(res);
+        let sum = 0;
+        farms.forEach((farm) => {
+            sum += (formattedSupplies[farm.vault_addr] || 1) * prices[farm.vault_addr];
         });
+        console.log("sum", sum);
     };
     return (
         <div onClick={fn} style={{ color: "red" }}>

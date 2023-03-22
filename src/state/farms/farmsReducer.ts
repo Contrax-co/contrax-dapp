@@ -43,7 +43,7 @@ export const updateEarnings = createAsyncThunk(
         }: FetchEarningsAction,
         thunkApi
     ) => {
-        await sleep(4000);
+        await sleep(6000);
         const earns = await getEarnings(currentWallet);
         const earnings: Earnings = {};
         const balancesPromises: Promise<BigNumber>[] = [];
@@ -84,10 +84,10 @@ export const updateEarnings = createAsyncThunk(
 
         console.log({ earns, withdrawableLpAmount });
 
-        // @ts-ignore
-        const oldPrices = await getPricesOfLpByTimestamp(earns, farms, multicallProvider, chainId, decimals);
-
-        thunkApi.dispatch(setOldPrices(oldPrices));
+        thunkApi.dispatch(
+            // @ts-ignore
+            getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, provider: multicallProvider, decimals })
+        );
         return { earnings, currentWallet };
     }
 );
