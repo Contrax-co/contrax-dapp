@@ -2,8 +2,8 @@ import React, { useRef } from "react";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import { Bridge } from "@socket.tech/plugin";
-import { defaultChainId, RAMP_SDK_HOST_API_KEY, SOCKET_API_KEY } from "src/config/constants";
-import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
+import { defaultChainId, RAMP_SDK_HOST_API_KEY, RAMP_TRANSAK_API_KEY, SOCKET_API_KEY } from "src/config/constants";
+// import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
 
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
@@ -87,28 +87,28 @@ const Exchange: React.FC<IProps> = () => {
             });
     }, [params]);
 
-    React.useEffect(() => {
-        if (tab === Tab.Buy) {
-            const ramp = new RampInstantSDK({
-                userAddress: currentWallet,
-                defaultAsset: "ARBITRUM_USDC",
-                swapAsset: "ARBITRUM_*",
-                fiatValue: "500",
-                fiatCurrency: "USD",
-                hostAppName: "Contrax",
-                hostLogoUrl: `https://${window.location.host}/logo.svg`,
-                hostApiKey: RAMP_SDK_HOST_API_KEY,
-                variant: "embedded-mobile",
-                containerNode: containerRef.current || undefined,
-            })
-                // @ts-ignore
-                .on("PURCHASE_CREATED", reloadBalances)
-                .show();
-            return () => {
-                ramp.close();
-            };
-        }
-    }, [containerRef, tab, currentWallet]);
+    // React.useEffect(() => {
+    //     if (tab === Tab.Buy) {
+    //         const ramp = new RampInstantSDK({
+    //             userAddress: currentWallet,
+    //             defaultAsset: "ARBITRUM_USDC",
+    //             swapAsset: "ARBITRUM_*",
+    //             fiatValue: "500",
+    //             fiatCurrency: "USD",
+    //             hostAppName: "Contrax",
+    //             hostLogoUrl: `https://${window.location.host}/logo.svg`,
+    //             hostApiKey: RAMP_SDK_HOST_API_KEY,
+    //             variant: "embedded-mobile",
+    //             containerNode: containerRef.current || undefined,
+    //         })
+    //             // @ts-ignore
+    //             .on("PURCHASE_CREATED", reloadBalances)
+    //             .show();
+    //         return () => {
+    //             ramp.close();
+    //         };
+    //     }
+    // }, [containerRef, tab, currentWallet]);
 
     const handleBridgeNetworkChange = async () => {
         try {
@@ -198,7 +198,16 @@ const Exchange: React.FC<IProps> = () => {
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
                 {tab === Tab.Buy && (
                     <div className={styles.darkBuy}>
-                        <div style={{ width: 375, height: 667 }} ref={containerRef}></div>
+                        {/* <div style={{ width: 375, height: 667 }} ref={containerRef}></div> */}
+                        <iframe
+                            height="625"
+                            title="Transak On/Off Ramp Widget"
+                            src={`https://global.transak.com/?apiKey=${RAMP_TRANSAK_API_KEY}&defaultCryptoCurrency=USDC&defaultFiatAmount=500&disableWalletAddressForm=true&network=arbitrum&walletAddress=${currentWallet}`}
+                            frameBorder={"no"}
+                            allowTransparency={true}
+                            allowFullScreen={true}
+                            style={{ display: "block", width: "100%", maxHeight: "625px", maxWidth: "500px" }}
+                        ></iframe>
                     </div>
                 )}
                 {tab === Tab.Bridge && SOCKET_API_KEY && (
