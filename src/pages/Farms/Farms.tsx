@@ -7,6 +7,7 @@ import { Farm, FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
@@ -28,6 +29,7 @@ function Farms() {
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
     const [openedFarm, setOpenedFarm] = useState<number | undefined>();
+    const [openDeprecatedFarm, setOpenDeprecatedFarm] = useState<boolean>(false);
 
     useEffect(() => {
         if (sortedBuy) {
@@ -72,6 +74,14 @@ function Farms() {
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Farms</p>
+                <div className="deprecated_farms_icon" onClick={() => setOpenDeprecatedFarm((prev) => !prev)}>
+                    <BsThreeDotsVertical />
+                    {openDeprecatedFarm && (
+                        <div className="deprecated_farms_select">
+                            <p>{true ? "Deprecated Farms" : "New Farms"}</p>
+                        </div>
+                    )}
+                </div>
             </div>
             <Tabs style={{ padding: 0, marginBottom: 30 }}>
                 <PoolButton
