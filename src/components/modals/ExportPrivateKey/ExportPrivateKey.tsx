@@ -35,7 +35,7 @@ export const ExportPrivateKey: FC<IProps> = ({ setOpenModal }) => {
     };
 
     return (
-        <ModalLayout onClose={() => setOpenModal(false)} style={{ padding: "40px 60px 50px" }}>
+        <ModalLayout onClose={() => setOpenModal(false)} className={styles.container}>
             <TiWarningOutline className={styles.warning} size={1} />
             <h1 className={styles.heading}>Disclaimer</h1>
             <p className={styles.caption}>Exporting Private Key</p>
