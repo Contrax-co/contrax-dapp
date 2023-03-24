@@ -202,7 +202,7 @@ const Exchange: React.FC<IProps> = () => {
                         <iframe
                             height="625"
                             title="Transak On/Off Ramp Widget"
-                            src={`https://global.transak.com/?apiKey=${RAMP_TRANSAK_API_KEY}&defaultCryptoCurrency=USDC&defaultFiatAmount=500&disableWalletAddressForm=true&network=arbitrum&walletAddress=${currentWallet}`}
+                            src={`https://global.transak.com/?apiKey=${RAMP_TRANSAK_API_KEY}&defaultCryptoCurrency=ETH&defaultFiatAmount=500&disableWalletAddressForm=true&network=arbitrum&walletAddress=${currentWallet}`}
                             frameBorder={"no"}
                             allowTransparency={true}
                             allowFullScreen={true}
