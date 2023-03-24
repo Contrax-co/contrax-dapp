@@ -23,7 +23,7 @@ export const ExportPublicKey: FC<IProps> = ({ setOpenModal }) => {
     };
 
     return (
-        <ModalLayout onClose={() => setOpenModal(false)} style={{ padding: "50px 120px 50px 58px" }}>
+        <ModalLayout onClose={() => setOpenModal(false)} className={styles.container}>
             <div className={styles.heading}>
                 <h1>Scan Me</h1>
             </div>
@@ -39,10 +39,9 @@ export const ExportPublicKey: FC<IProps> = ({ setOpenModal }) => {
             <div className={styles.qrCode}>
                 <QRCode
                     value={currentWallet}
-                    size={256}
+                    size={window.innerWidth > 436 ? 256 : 180}
                     bgColor={lightMode ? "#fff" : "#012243"}
                     fgColor={lightMode ? "#000" : "#fff"}
-                    width="100%"
                 />
             </div>
         </ModalLayout>
