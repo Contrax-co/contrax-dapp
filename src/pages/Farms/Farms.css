@@ -56,6 +56,7 @@
   border-top-right-radius: 0px;
   width: max-content;
   padding: 8px 0px;
+  box-shadow: var(--rk-shadows-connectButton);
 }
 
 .deprecated_farms_select>p {
