@@ -140,7 +140,7 @@ function Farms() {
                 sortedFarms ? (
                     sortedFarms
                         .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
-                        .filter((farm) => (openDeprecatedFarm ? farm.isDepreciated : !farm.isDepreciated))
+                        .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
                         .map((farm, index) => (
                             <FarmRow
                                 key={index + "nowallet"}
@@ -152,7 +152,7 @@ function Farms() {
                 ) : (
                     farms
                         .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
-                        .filter((farm) => (openDeprecatedFarm ? farm.isDepreciated : !farm.isDepreciated))
+                        .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
                         .map((farm, index) => (
                             <FarmRow
                                 key={index + "nowallet"}

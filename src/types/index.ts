@@ -2,7 +2,7 @@ import { Apys } from "src/state/apys/types";
 import { FarmOriginPlatform, FarmType } from "./enums";
 
 export interface Farm {
-    isDepreciated?: boolean;
+    isDeprecated?: boolean;
     id: number;
     stableCoin?: boolean;
     originPlatform?: FarmOriginPlatform;
