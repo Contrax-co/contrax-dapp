@@ -16,7 +16,7 @@ import discordIcon from "./../assets/images/discordapp-icon.svg";
 import githubIcon from "./../assets/images/github-icon.svg";
 import { providers } from "ethers";
 
-export const ARBITRUM_MAINNET = "https://arb1.arbitrum.ios/rpc";
+export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
 
 const clientId = WEB3AUTH_CLIENT_ID as string;
