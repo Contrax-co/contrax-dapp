@@ -14,6 +14,7 @@ import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { Tabs } from "src/components/Tabs/Tabs";
+import DotMenu from "./components/DotMenu";
 interface FarmDataExtended extends Partial<FarmData>, Farm {
     apy: number;
 }
@@ -74,35 +75,30 @@ function Farms() {
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Farms</p>
-                <div className="deprecated_farms_icon" onClick={() => setOpenDeprecatedFarm((prev) => !prev)}>
-                    <BsThreeDotsVertical />
-                    {openDeprecatedFarm && (
-                        <div className="deprecated_farms_select">
-                            <p>{true ? "Deprecated Farms" : "New Farms"}</p>
-                        </div>
-                    )}
-                </div>
             </div>
-            <Tabs style={{ padding: 0, marginBottom: 30 }}>
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(1);
-                        setSortedBuy(undefined);
-                    }}
-                    description="Single Tokens"
-                    active={tab === 1}
-                />
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(2);
-                        setSortedBuy(undefined);
-                    }}
-                    description="Dual Tokens"
-                    active={tab === 2}
-                />
-            </Tabs>
+            <div style={{ position: "relative" }}>
+                <Tabs style={{ padding: 0, marginBottom: 30 }}>
+                    <PoolButton
+                        variant={2}
+                        onClick={() => {
+                            setTab(1);
+                            setSortedBuy(undefined);
+                        }}
+                        description="Single Tokens"
+                        active={tab === 1}
+                    />
+                    <PoolButton
+                        variant={2}
+                        onClick={() => {
+                            setTab(2);
+                            setSortedBuy(undefined);
+                        }}
+                        description="Dual Tokens"
+                        active={tab === 2}
+                    />
+                </Tabs>
+                <DotMenu openDeprecatedFarm={openDeprecatedFarm} setOpenDeprecatedFarm={setOpenDeprecatedFarm} />
+            </div>
             <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     {FarmTableColumns.Token}
@@ -144,6 +140,7 @@ function Farms() {
                 sortedFarms ? (
                     sortedFarms
                         .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
+                        .filter((farm) => (openDeprecatedFarm ? farm.isDepreciated : !farm.isDepreciated))
                         .map((farm, index) => (
                             <FarmRow
                                 key={index + "nowallet"}
@@ -155,6 +152,7 @@ function Farms() {
                 ) : (
                     farms
                         .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
+                        .filter((farm) => (openDeprecatedFarm ? farm.isDepreciated : !farm.isDepreciated))
                         .map((farm, index) => (
                             <FarmRow
                                 key={index + "nowallet"}
