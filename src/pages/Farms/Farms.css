@@ -34,43 +34,6 @@
   color: var(--color_primary);
 }
 
-.deprecated_farms_icon {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 12px;
-  border-radius: 50%;
-  color: var(--color_grey);
-  background: var(--background_secondary);
-  box-shadow: var(--rk-shadows-connectButton);
-  cursor: pointer;
-}
-
-.deprecated_farms_select {
-  position: absolute;
-  top: 110%;
-  right: 0;
-  background: var(--background_secondary);
-  border-radius: 10px;
-  border-top-right-radius: 0px;
-  width: max-content;
-  padding: 8px 0px;
-  box-shadow: var(--rk-shadows-connectButton);
-}
-
-.deprecated_farms_select>p {
-  margin: 0px;
-  padding: 10px 12px;
-  width: 140px;
-  text-align: center;
-  font-weight: 500;
-}
-
-.deprecated_farms_select>p:hover {
-  color: var(--color_primary);
-  font-weight: 700;
-}
 
 .farm__title {
   display: flex;
