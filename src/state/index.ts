@@ -9,6 +9,7 @@ import settingsReducer from "./settings/settingsReducer";
 import farmsReducer from "./farms/farmsReducer";
 import supplyReducer from "./supply/supplyReducer";
 import decimalsReducer from "./decimals/decimalsReducer";
+import errorReducer from "./error/errorReducer";
 
 const persistedPricesReducer = persistReducer(
     { key: "prices", version: 1, storage, blacklist: ["isFetched", "oldPrices"] },
@@ -23,6 +24,7 @@ const persistedSettingsReducer = persistReducer(
 
 const rootReducer = combineReducers({
     settings: persistedSettingsReducer,
+    error: errorReducer,
     prices: persistedPricesReducer,
     apys: apysReducer,
     farms: farmsReducer,

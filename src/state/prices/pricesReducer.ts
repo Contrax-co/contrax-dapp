@@ -4,10 +4,8 @@ import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface, UpdatePricesActionPayload } from "./types";
 import { Contract, utils, constants, BigNumber } from "ethers";
 import { getNetworkName } from "src/utils/common";
-import { Farm } from "src/types";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
-import { Decimals } from "../decimals/types";
 import { getPriceByTime, getPricesByTime } from "src/api/token";
+import { incrementErrorCount, resetErrorCount } from "../error/errorReducer";
 
 const initialState: StateInterface = { prices: {}, isLoading: false, isFetched: false, oldPrices: {} };
 
@@ -144,9 +142,11 @@ export const updatePrices = createAsyncThunk(
             Object.entries(prices).forEach(([key, value]) => {
                 checksummed[utils.getAddress(key)] = value;
             });
+            thunkApi.dispatch(resetErrorCount());
             return checksummed;
         } catch (error) {
             console.error(error);
+            thunkApi.dispatch(incrementErrorCount());
         }
     }
 );
