@@ -37,6 +37,5 @@ export const getEarnings = async (userAddress: string) => {
                 }
               }`,
     });
-
     return res.data.data.user.earn as Response[];
 };
