@@ -248,7 +248,6 @@ export const getPricesOfLpByTimestamp = createAsyncThunk(
 
             prices[utils.getAddress(lp.address)] = [{ price, timestamp: Number(lp.blockTimestamp) }];
         });
-
         thunkApi.dispatch(setOldPrices(prices));
     }
 );

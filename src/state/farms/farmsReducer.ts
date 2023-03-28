@@ -43,52 +43,59 @@ export const updateEarnings = createAsyncThunk(
         }: FetchEarningsAction,
         thunkApi
     ) => {
-        await sleep(6000);
-        const earns = await getEarnings(currentWallet);
-        const earnings: Earnings = {};
-        const balancesPromises: Promise<BigNumber>[] = [];
-        const withdrawableLpAmount: { [farmId: number]: string } = {};
-        farms.forEach((farm) => {
-            balancesPromises.push(new Contract(farm.vault_addr, VaultAbi, multicallProvider).balance());
-            balancesPromises.push(
-                new Contract(farm.lp_address, erc20ABI, multicallProvider).balanceOf(farm.vault_addr)
-            );
-        });
-        const vaultBalancesResponse = await Promise.all(balancesPromises);
-        for (let i = 0; i < vaultBalancesResponse.length; i += 2) {
-            const balance = vaultBalancesResponse[i];
-            const b = vaultBalancesResponse[i + 1];
+        try {
+            await sleep(6000);
+            const earns = await getEarnings(currentWallet);
+            const earnings: Earnings = {};
+            const balancesPromises: Promise<BigNumber>[] = [];
+            const withdrawableLpAmount: { [farmId: number]: string } = {};
+            farms.forEach((farm) => {
+                balancesPromises.push(new Contract(farm.vault_addr, VaultAbi, multicallProvider).balance());
+                balancesPromises.push(
+                    new Contract(farm.lp_address, erc20ABI, multicallProvider).balanceOf(farm.vault_addr)
+                );
+            });
+            const vaultBalancesResponse = await Promise.all(balancesPromises);
+            for (let i = 0; i < vaultBalancesResponse.length; i += 2) {
+                const balance = vaultBalancesResponse[i];
+                const b = vaultBalancesResponse[i + 1];
+                console.log(
+                    balances[farms[i / 2].vault_addr]!,
+                    totalSupplies[farms[i / 2].vault_addr]!,
+                    totalSupplies[farms[i / 2].vault_addr]! || 1
+                );
 
-            let r = balance.mul(balances[farms[i / 2].vault_addr]!).div(totalSupplies[farms[i / 2].vault_addr]!);
-
-            if (b.lt(r)) {
-                const _withdraw = r.sub(b);
-                const _after = b.add(_withdraw);
-                const _diff = _after.sub(b);
-                if (_diff.lt(_withdraw)) {
-                    r = b.add(_diff);
+                let r = balance.mul(balances[farms[i / 2].vault_addr]!);
+                if (totalSupplies[farms[i / 2].vault_addr] !== "0") r = r.div(totalSupplies[farms[i / 2].vault_addr]!);
+                if (b.lt(r)) {
+                    const _withdraw = r.sub(b);
+                    const _after = b.add(_withdraw);
+                    const _diff = _after.sub(b);
+                    if (_diff.lt(_withdraw)) {
+                        r = b.add(_diff);
+                    }
                 }
+                withdrawableLpAmount[farms[i / 2].id] = r.toString();
             }
-            withdrawableLpAmount[farms[i / 2].id] = r.toString();
+            earns.forEach((item) => {
+                const farm = farms.find((farm) => farm.vault_addr.toLowerCase() === item.vaultAddress)!;
+                const earnedTokens = (
+                    BigInt(item.withdraw) +
+                    BigInt(withdrawableLpAmount[farm.id]) -
+                    BigInt(item.deposit)
+                ).toString();
+                earnings[farm.id] = Number(toEth(earnedTokens, decimals[farm.lp_address])) * prices[farm.lp_address]!;
+            });
+
+            thunkApi.dispatch(
+                // @ts-ignore
+                getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, provider: multicallProvider, decimals })
+            );
+            return { earnings, currentWallet };
+        } catch (error) {
+            console.error(error);
+            return thunkApi.rejectWithValue(error);
         }
-
-        earns.forEach((item) => {
-            const farm = farms.find((farm) => farm.vault_addr.toLowerCase() === item.vaultAddress)!;
-            const earnedTokens = (
-                BigInt(item.withdraw) +
-                BigInt(withdrawableLpAmount[farm.id]) -
-                BigInt(item.deposit)
-            ).toString();
-            earnings[farm.id] = Number(toEth(earnedTokens, decimals[farm.lp_address])) * prices[farm.lp_address]!;
-        });
-
-        console.log({ earns, withdrawableLpAmount });
-
-        thunkApi.dispatch(
-            // @ts-ignore
-            getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, provider: multicallProvider, decimals })
-        );
-        return { earnings, currentWallet };
     }
 );
 
