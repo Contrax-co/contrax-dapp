@@ -22,7 +22,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
     } = vault;
 
     const oldPrice = useAppSelector((state) => state.prices.oldPrices[vault.lp_address]);
-
+    console.log({ oldPrice, priceOfSingleToken });
     return (
         <div className={`vaults`}>
             <div>

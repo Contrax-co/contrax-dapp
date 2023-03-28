@@ -59,11 +59,6 @@ export const updateEarnings = createAsyncThunk(
             for (let i = 0; i < vaultBalancesResponse.length; i += 2) {
                 const balance = vaultBalancesResponse[i];
                 const b = vaultBalancesResponse[i + 1];
-                console.log(
-                    balances[farms[i / 2].vault_addr]!,
-                    totalSupplies[farms[i / 2].vault_addr]!,
-                    totalSupplies[farms[i / 2].vault_addr]! || 1
-                );
 
                 let r = balance.mul(balances[farms[i / 2].vault_addr]!);
                 if (totalSupplies[farms[i / 2].vault_addr] !== "0") r = r.div(totalSupplies[farms[i / 2].vault_addr]!);
@@ -85,8 +80,8 @@ export const updateEarnings = createAsyncThunk(
                     BigInt(item.deposit)
                 ).toString();
                 earnings[farm.id] = Number(toEth(earnedTokens, decimals[farm.lp_address])) * prices[farm.lp_address]!;
+                if (earnings[farm.id] < 0.0001) earnings[farm.id] = 0;
             });
-
             thunkApi.dispatch(
                 // @ts-ignore
                 getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, provider: multicallProvider, decimals })

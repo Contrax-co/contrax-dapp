@@ -54,7 +54,7 @@ export const getPricesByTime = async (
         } = {};
 
         const res = await axios.get(
-            `https://coins.llama.fi/batchHistorical?coins=${encodeURIComponent(JSON.stringify(obj))}`,
+            `https://coins.llama.fi/batchHistorical?coins=${encodeURIComponent(JSON.stringify(obj))}&searchWidth=12h`,
             {
                 cache: false,
             }
@@ -66,7 +66,6 @@ export const getPricesByTime = async (
             // @ts-ignore
             prices[key.split(":")[1].toLowerCase()] = value.prices;
         });
-
         addTime = addTime.map((item) => {
             return { ...item, price: prices[item.address].pop()!.price };
         });
