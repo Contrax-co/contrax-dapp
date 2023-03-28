@@ -32,6 +32,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
     const unstakedTokenValue = useMemo(() => formattedBalances[lpAddress], [formattedBalances]);
     const stakedTokenValue = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances]);
 
+
     return (
         <div className="details">
             <div className="details_zapToggle">
@@ -60,6 +61,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                                 {price1.toLocaleString("en-US", {
                                     style: "currency",
                                     currency: "USD",
+                                    maximumFractionDigits: 3,
                                 })}
                             </p>
                         </div>
@@ -73,6 +75,7 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                                 {price2.toLocaleString("en-US", {
                                     style: "currency",
                                     currency: "USD",
+                                    maximumFractionDigits: 3,
                                 })}
                             </p>
                         </div>
