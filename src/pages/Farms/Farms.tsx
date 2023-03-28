@@ -76,7 +76,7 @@ function Farms() {
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Farms</p>
             </div>
-            <div style={{ position: "relative" }}>
+            <div style={{ position: "relative", paddingRight: 50 }}>
                 <Tabs style={{ padding: 0, marginBottom: 30 }}>
                     <PoolButton
                         variant={2}

@@ -12,6 +12,7 @@
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
+    backdrop-filter: blur(3px);
 }
 .container {
     min-height: 200px;

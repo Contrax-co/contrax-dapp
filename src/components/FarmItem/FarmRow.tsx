@@ -74,15 +74,19 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                 <div className={`container1 ${lightMode && "container1--light"} desktop`}>
                     <div className={`container1_apy ${lightMode && "container1_apy--light"}`}>
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                            {farmApys && farmApys.apy < 0.01
-                                ? farmApys.apy.toPrecision(2).slice(0, -1)
-                                : toFixedFloor(farmApys?.apy || 0, 2).toString()}
-                            %
-                        </p>
-                        <a
-                            id={key}
-                            data-tooltip-html={`<p>
+                        {farmApys && toFixedFloor(farmApys?.apy || 0, 2) == 0 ? (
+                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>--</p>
+                        ) : (
+                            <>
+                                <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                    {farmApys && farmApys.apy < 0.01
+                                        ? farmApys.apy.toPrecision(2).slice(0, -1)
+                                        : toFixedFloor(farmApys?.apy || 0, 2).toString()}
+                                    %
+                                </p>
+                                <a
+                                    id={key}
+                                    data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
                                         ${
@@ -98,10 +102,15 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                                 ? `<p>Trading Fees: ${toFixedFloor(farmApys.feeApr, 3)}%</p>`
                                                 : ``
                                         }`}
-                        >
-                            <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
-                        </a>
-                        <Tooltip anchorId={key} className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`} />
+                                >
+                                    <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
+                                </a>
+                                <Tooltip
+                                    anchorId={key}
+                                    className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                                />
+                            </>
+                        )}
                     </div>
                 </div>
 
@@ -145,12 +154,16 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                 <div className={`container1 ${lightMode && "container1--light"} apy mobile-view`}>
                     <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>APY</p>
-                    <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                        {farmApys && farmApys.apy < 0.01
-                            ? farmApys.apy.toPrecision(2).slice(0, -1)
-                            : toFixedFloor(farmApys?.apy || 0, 2).toString()}
-                        %
-                    </p>
+                    {farmApys && toFixedFloor(farmApys?.apy || 0, 2) == 0 ? (
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>--</p>
+                    ) : (
+                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                            {farmApys && farmApys.apy < 0.01
+                                ? farmApys.apy.toPrecision(2).slice(0, -1)
+                                : toFixedFloor(farmApys?.apy || 0, 2).toString()}
+                            %
+                        </p>
+                    )}
                 </div>
 
                 <div className={`mobile-view ${lightMode && "mobile-view--light"}`}>

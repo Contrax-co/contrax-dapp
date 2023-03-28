@@ -1,14 +1,17 @@
 import { useState } from "react";
 import Sidebar from "src/components/Sidebar/Sidebar";
 import TopBar from "src/components/Topbar/TopBar";
-import "./Home.css";
 import { Outlet } from "react-router-dom";
 import useApp from "src/hooks/useApp";
 import { MdCancel } from "react-icons/md";
+import { useAppSelector } from "src/state";
+import "./Home.css";
+import { Maintainance } from "src/components/modals/MaintainanceModal/Maintainance";
 
 function Home() {
     const { lightMode, supportChat, toggleSupportChat } = useApp();
     const [openBurgerMenu, setOpenBurgerMenu] = useState(false);
+    const isError = useAppSelector((state) => state.error.isError);
     return (
         <div className={`page ${lightMode && "page--light"}`}>
             <div className="ac_page">
@@ -35,6 +38,7 @@ function Home() {
                     )}
                 </div>
             </div>
+            {isError && <Maintainance />}
         </div>
     );
 }
