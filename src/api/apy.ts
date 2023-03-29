@@ -13,7 +13,7 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { getPrice } from "./token";
 import { BigNumber, providers, Contract } from "ethers";
 import { erc20ABI } from "wagmi";
-import { calcCompoundingApy, toEth } from "src/utils/common";
+import { calcCompoundingApy, getNetworkName, toEth } from "src/utils/common";
 import { getGmxApyArbitrum } from "./getGmxApy";
 import dodoMineAbi from "src/assets/abis/dodoMine.json";
 import swapFishMaterchef from "src/assets/abis/swapfishMasterchef.json";
@@ -269,8 +269,32 @@ const getFraxApy = async () => {
     }
 };
 
+const getHopApy = async (farmName: string, chainId: number) => {
+    try {
+        const res = await axios.get(`https://assets.hop.exchange/v1.1-pool-stats.json`);
+        const _apr = res.data.data.pools[farmName][getNetworkName(chainId)].apr * 100;
+        const _apy = res.data.data.pools[farmName][getNetworkName(chainId)].apy * 100;
+        const apr = _apr;
+        const compounding = calcCompoundingApy(_apy - apr);
+        const apy = compounding + _apy;
+        return {
+            feeApr: apr,
+            rewardsApr: _apy - apr,
+            apy,
+            compounding: compounding,
+        };
+    } catch (error) {
+        return {
+            feeApr: 0,
+            rewardsApr: 0,
+            apy: 0,
+            compounding: 0,
+        };
+    }
+};
+
 export const getApy = async (
-    farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy" | "pool_id">,
+    farm: Pick<Farm, "originPlatform" | "lp_address" | "rewards_apy" | "total_apy" | "pool_id" | "name">,
     chainId: number,
     provider: MulticallProvider,
     currentWallet?: string
@@ -295,6 +319,8 @@ export const getApy = async (
                 return getFraxApy();
             case FarmOriginPlatform.SwapFish:
                 return getSwapFishApy(farm.lp_address, chainId, provider, farm.pool_id!);
+            case FarmOriginPlatform.Hop:
+                return getHopApy(farm.name, chainId);
 
             default:
                 return {
