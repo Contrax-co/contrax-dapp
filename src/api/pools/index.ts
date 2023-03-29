@@ -26,6 +26,9 @@ const farmFunctions: { [key: number]: ReturnType<typeof sushi> } = {
     13: usdcAgeur,
     14: wethWbtcSwapfish,
     15: wethWsteth,
+    24: sushi(24), // 24: wethDPX,
+    25: sushi(25), // 25: wethrDpx,
+    26: sushi(26), // 25: wethSushi,
 
     99: sushi(99), // 10: wethUSDC-deprecated
     100: sushi(100), // 10: wethUSDT-deprecated
