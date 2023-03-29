@@ -22,7 +22,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
     } = vault;
 
     const oldPrice = useAppSelector((state) => state.prices.oldPrices[vault.lp_address]);
-    console.log({ oldPrice, priceOfSingleToken });
+
     return (
         <div className={`vaults`}>
             <div>
@@ -49,6 +49,12 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                         })}
                                     </p>
                                     {oldPrice &&
+                                        Number(
+                                            (
+                                                userVaultBalance * priceOfSingleToken -
+                                                userVaultBalance * oldPrice[0].price
+                                            ).toFixed(3)
+                                        ) !== 0 &&
                                         (oldPrice[0].price > priceOfSingleToken ? (
                                             <span
                                                 style={{

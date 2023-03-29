@@ -8,7 +8,9 @@ import * as wethWbtcSwapfish from "./weth-wbtc-swapfish";
 import * as usdcAgeur from "./usdc-ageur";
 import * as usdcTusd from "./usdc-tusd";
 import * as usdcUsx from "./usdc-usx";
+import * as ethHop from "./ethHop";
 import sushi from "./sushi";
+import hop from "./hop";
 
 const farmFunctions: { [key: number]: ReturnType<typeof sushi> } = {
     1: sushi(1), // 1: wethDai,
@@ -26,6 +28,10 @@ const farmFunctions: { [key: number]: ReturnType<typeof sushi> } = {
     13: usdcAgeur,
     14: wethWbtcSwapfish,
     15: wethWsteth,
+    16: ethHop, // 16: hopEth,
+    17: hop(17), // 17: hopUsdc,
+    18: hop(18), // 18: hopUsdt,
+    19: hop(19), // 19: hopDai,
     24: sushi(24), // 24: wethDPX,
     25: sushi(25), // 25: wethrDpx,
     26: sushi(26), // 25: wethSushi,
