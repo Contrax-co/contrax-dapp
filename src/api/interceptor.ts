@@ -26,7 +26,7 @@ axios.interceptors.request.use(
                                 data: oldData, // The cached data
                                 status: 200, // The HTTP status code
                                 statusText: "OK", // The HTTP status message
-                                headers: { "content-type": "application/json; charset=utf-8", cache: true }, // The response headers
+                                headers: { "content-type": "application/json; charset=utf-8" }, // The response headers
                                 config,
                                 request: {},
                             });
@@ -60,3 +60,4 @@ axios.interceptors.response.use(
 );
 
 export {};
+
