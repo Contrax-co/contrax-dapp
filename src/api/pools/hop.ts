@@ -7,6 +7,7 @@ import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/ap
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { Balances } from "src/state/balances/types";
 import { Prices } from "src/state/prices/types";
+import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 
 export default function hop(farmId: number) {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
@@ -57,7 +58,7 @@ export default function hop(farmId: number) {
         if (!signer) return;
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
-        let notiId = notifyLoading("Approving zapping!", "Please wait...");
+        let notiId = notifyLoading(loadingMessages.approvingZapping());
         try {
             let formattedBal = utils.parseUnits(depositAmount.toString(), farm.decimals);
             // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
@@ -68,7 +69,7 @@ export default function hop(farmId: number) {
             await approveErc20(farm.token1, farm.zapper_addr, formattedBal, currentWallet, signer);
             let zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, farm.token1, formattedBal);
             dismissNotify(notiId);
-            notifyLoading("Zapping...", `Txn hash: ${zapperTxn.hash}`, {
+            notifyLoading(loadingMessages.zapping(zapperTxn.hash), {
                 id: notiId,
                 buttons: [
                     {
@@ -84,13 +85,13 @@ export default function hop(farmId: number) {
                 throw new Error("Error zapping into vault!");
             } else {
                 dismissNotify(notiId);
-                notifySuccess("Zapped in!", `Success`);
+                notifySuccess(successMessages.zapIn());
             }
         } catch (error: any) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(notiId);
-            notifyError("Error!", err.reason || err.message);
+            notifyError(errorMessages.generalError(err.reason || err.message));
         }
         cb && cb();
     };
@@ -112,7 +113,7 @@ export default function hop(farmId: number) {
     }) => {
         if (!signer) return;
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
-        const notiId = notifyLoading("Approving Withdraw!", "Please wait...");
+        const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
             /*
              * Execute the actual withdraw functionality from smart contract
@@ -125,12 +126,12 @@ export default function hop(farmId: number) {
             await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, signer);
 
             dismissNotify(notiId);
-            notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
+            notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
             let withdrawTxn = await zapperContract.zapOut(farm.vault_addr, max ? vaultBalance : formattedBal);
 
             dismissNotify(notiId);
-            notifyLoading("Withdrawing...", `Txn hash: ${withdrawTxn.hash}`, {
+            notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
                 id: notiId,
                 buttons: [
                     {
@@ -146,13 +147,13 @@ export default function hop(farmId: number) {
                 throw new Error("Error withdrawing Try again!");
             } else {
                 dismissNotify(notiId);
-                notifySuccess("Withdrawn!", `successfully`);
+                notifySuccess(successMessages.withdraw());
             }
         } catch (error) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(notiId);
-            notifyError("Error!", err.reason || err.message);
+            notifyError(errorMessages.generalError(err.reason || err.message));
         }
         cb && cb();
     };
