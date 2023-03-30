@@ -12,11 +12,8 @@ import styles from "./DetailInput.module.scss";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import Loader from "src/components/Loader/Loader";
-import { BigNumber } from "ethers";
-import { MAX_GAS_UNITS_PER_TRANSACTION } from "src/config/constants";
-import { notifyError } from "src/api/notify";
-import { errorMessages } from "src/config/constants/notifyMessages";
 import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
+import useWallet from "src/hooks/useWallet";
 
 interface Props {
     farm: Farm;
@@ -38,6 +35,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { farmDetails, isLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
     const priceOfSingleToken = farmData?.TOKEN_PRICE || 0;
+    const { currentWallet, connectWallet } = useWallet();
 
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
@@ -197,7 +195,9 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
                     (type === FarmTransactionType.Deposit ? isZapping || isDepositing : isWithdrawing || isZappingOut)
                 }
             >
-                {parseFloat(amount) > 0
+                {!currentWallet
+                    ? "Please Login"
+                    : parseFloat(amount) > 0
                     ? parseFloat(amount) > maxBalance
                         ? "Insufficent Balance"
                         : type === FarmTransactionType.Deposit
