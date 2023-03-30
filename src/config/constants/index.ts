@@ -25,3 +25,4 @@ export const APY_VISION_URL = "https://api.apy.vision";
 export const APY_VISION_STATS_URL = "https://stats.apy.vision/api/v1";
 export const WEB3AUTH_CLIENT_ID = process.env.REACT_APP_WEB3AUTH_CLIENT_ID;
 export const EARNINGS_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/abbasnaqvi10/dodo";
+export const HOP_EXCHANGE_APY_URL = "https://assets.hop.exchange/v1.1-pool-stats.json";

@@ -310,7 +310,7 @@ export default function sushi(farmId: number) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(notiId);
-            notifyError(errorMessages.generalError(err.reason || err.message));
+            notifyError(errorMessages.generalError(err.reason || err.message || err?.data?.message));
         }
         cb && cb();
     };
