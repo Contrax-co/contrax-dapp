@@ -52,7 +52,6 @@ enum Tab {
     Buy = "Buy",
 }
 
-console.log("theme", lightTheme, darkTheme);
 const Exchange: React.FC<IProps> = () => {
     const { currentWallet, connectWallet, chains, signer: wagmiSigner } = useWallet();
     const [chainId, setChainId] = React.useState<number>(defaultChainId);

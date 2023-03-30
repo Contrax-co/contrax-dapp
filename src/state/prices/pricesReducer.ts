@@ -173,7 +173,6 @@ export const getPricesOfLpByTimestamp = createAsyncThunk(
                 return { ...lps[index] };
             })
             .filter((lp) => !!lp);
-
         // ----------------- Get prices for tokens holded by Lps from api -----------------
         const res = await getPricesByTime(
             remainingLps.reduce((acc, curr) => {

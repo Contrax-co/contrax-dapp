@@ -66,7 +66,9 @@ export const getPricesByTime = async (
             // @ts-ignore
             prices[key.split(":")[1].toLowerCase()] = value.prices;
         });
-        addTime = addTime.map((item) => {
+        console.log(JSON.parse(JSON.stringify(addTime)), JSON.parse(JSON.stringify(prices)));
+        addTime = addTime.map((item, i) => {
+            console.log("inm", i);
             return { ...item, price: prices[item.address].pop()!.price };
         });
 
@@ -91,7 +93,7 @@ export const getPriceByTime = async (address: string, timestamp: number, chainId
 
         const token = parse[`coins`][`${getNetworkName(chainId)}:${address}`];
         const price = token ? (token[`price`] as number) : 0;
-        return { price: 0, timestamp };
+        return { price, timestamp };
     } catch (error) {
         console.error(error);
         return { price: 0, timestamp };
