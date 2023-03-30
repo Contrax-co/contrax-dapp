@@ -12,6 +12,12 @@ import styles from "./DetailInput.module.scss";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import Loader from "src/components/Loader/Loader";
+import { useFeeData } from "wagmi";
+import { BigNumber } from "ethers";
+import useWallet from "src/hooks/useWallet";
+import { MAX_GAS_UNITS_PER_TRANSACTION } from "src/config/constants";
+import { notifyError } from "src/api/notify";
+import { errorMessages } from "src/config/constants/notifyMessages";
 
 interface Props {
     farm: Farm;
@@ -21,6 +27,8 @@ interface Props {
 
 const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
     const { lightMode } = useApp();
+    const { data } = useFeeData();
+    const { balanceBigNumber } = useWallet();
     const { price: ethPrice } = useEthPrice();
     const [amount, setAmount] = React.useState("");
     const [showInUsd, setShowInUsd] = React.useState(true);
@@ -95,6 +103,15 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
+        // check for eth balance greater than gas fee
+        if (
+            data &&
+            data.gasPrice &&
+            data.gasPrice.mul(BigNumber.from(MAX_GAS_UNITS_PER_TRANSACTION)).gt(balanceBigNumber)
+        ) {
+            notifyError(errorMessages.insufficientGas());
+            return;
+        }
         if (type === FarmTransactionType.Deposit) {
             if (shouldUseLp) {
                 await depositAsync({ depositAmount: getTokenAmount(), max });
