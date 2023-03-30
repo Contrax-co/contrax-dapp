@@ -9,7 +9,7 @@ function TopBar({ setOpenBurgerMenu }: { setOpenBurgerMenu: Dispatch<SetStateAct
 
     return (
         <div className={`topbar ${lightMode && "topbar--light"}`}>
-            <ConnectButton label="Get Started" />
+            <ConnectButton label="Sign In/Up" />
             <TbMenu2
                 className={`burger-icon ${lightMode && "burger-icon--light"}`}
                 size={30}
