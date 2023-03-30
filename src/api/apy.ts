@@ -5,6 +5,7 @@ import {
     FRAX_APR_API_URL,
     SWAPFISH_GRAPH_URL,
     defaultChainId,
+    HOP_EXCHANGE_APY_URL,
 } from "src/config/constants/index";
 import { FarmOriginPlatform } from "src/types/enums";
 import { Farm } from "src/types";
@@ -271,7 +272,7 @@ const getFraxApy = async () => {
 
 const getHopApy = async (farmName: string, chainId: number) => {
     try {
-        const res = await axios.get(`https://assets.hop.exchange/v1.1-pool-stats.json`);
+        const res = await axios.get(HOP_EXCHANGE_APY_URL);
         const _apr = res.data.data.pools[farmName][getNetworkName(chainId)].apr * 100;
         const _apy = res.data.data.pools[farmName][getNetworkName(chainId)].apy * 100;
         const apr = _apr;
