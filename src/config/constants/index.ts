@@ -6,6 +6,7 @@ export const RoutesPaths = {
     Exchange: "/exchange",
 };
 
+export const MAX_GAS_UNITS_PER_TRANSACTION = "2000000";
 export const defaultChainId = 42161; // Arbitrum
 export const defaultNetworkName = "arbitrum";
 

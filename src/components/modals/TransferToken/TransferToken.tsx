@@ -4,10 +4,11 @@ import useTransfer from "src/hooks/useTransfer";
 import { Token } from "src/types";
 import styles from "./TransferToken.module.scss";
 import { constants } from "ethers";
-import useNotify from "src/hooks/useNotify";
 import { noExponents, toWei } from "src/utils/common";
 import { ModalLayout } from "../ModalLayout/ModalLayout";
 import useBalances from "src/hooks/useBalances";
+import { dismissNotify, notifyError, notifyLoading, notifySuccess } from "src/api/notify";
+import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 
 interface IProps {
     token: Token;
@@ -20,12 +21,11 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
     const [reciverAddress, setReciverAddress] = useState<string>("");
     const [amount, setAmount] = useState("0");
     const { transferEth, transferToken, isLoading } = useTransfer();
-    const { notifyLoading, notifyError, notifySuccess, dismissNotify } = useNotify();
     const [max, setMax] = useState(false);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        const id = notifyLoading("Transferring...", "Please wait while we transfer your tokens");
+        const id = notifyLoading(loadingMessages.transferingTokens());
         try {
             if (token.address === constants.AddressZero) {
                 await transferEth({ to: reciverAddress, amount: toWei(amount.toString(), token.decimals), max });
@@ -37,10 +37,10 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
                     max,
                 });
             }
-            notifySuccess("Success", "Tokens transferred successfully");
+            notifySuccess(successMessages.tokenTransfered());
         } catch (error: any) {
             let err = JSON.parse(JSON.stringify(error));
-            notifyError("Error!", err.reason || err.message);
+            notifyError(errorMessages.generalError(err.reason || err.message));
         }
         dismissNotify(id);
         setSelectedToken(undefined);

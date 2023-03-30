@@ -175,3 +175,33 @@ export interface FarmData {
      */
     ZAP_TOKEN_PRICE: number;
 }
+
+export interface NotifyMessage {
+    title: string;
+    message: string | ((params: string) => string);
+}
+
+export interface ErrorMessages {
+    generalError: (message: string) => NotifyMessage;
+    insufficientGas: () => NotifyMessage;
+    privateKeyError: () => NotifyMessage;
+}
+
+export interface SuccessMessages {
+    deposit: () => NotifyMessage;
+    zapIn: () => NotifyMessage;
+    withdraw: () => NotifyMessage;
+    tokenTransfered: () => NotifyMessage;
+}
+
+export interface LoadingMessages {
+    approvingZapping: () => NotifyMessage;
+    zapping: (tx: string) => NotifyMessage;
+    approvingWithdraw: () => NotifyMessage;
+    confirmingWithdraw: () => NotifyMessage;
+    withDrawing: (tx: string) => NotifyMessage;
+    approvingDeposit: () => NotifyMessage;
+    confirmDeposit: () => NotifyMessage;
+    depositing: (tx: string) => NotifyMessage;
+    transferingTokens: () => NotifyMessage;
+}

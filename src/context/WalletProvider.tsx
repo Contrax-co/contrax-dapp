@@ -3,23 +3,14 @@ import * as ethers from "ethers";
 import { defaultChainId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ACCOUNT_BALANCE } from "src/config/constants/query";
-import useConstants from "src/hooks/useConstants";
-import {
-    useProvider,
-    useSigner,
-    useAccount,
-    useConnect,
-    useDisconnect,
-    useNetwork,
-    useSwitchNetwork,
-    Chain,
-} from "wagmi";
+import { useProvider, useSigner, useAccount, useDisconnect, useNetwork, useSwitchNetwork, Chain } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import useNotify from "src/hooks/useNotify";
+import { notifyError } from "src/api/notify";
 import { getNetworkName } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
+import { errorMessages } from "src/config/constants/notifyMessages";
 
 interface IWalletContext {
     /**
@@ -83,7 +74,6 @@ interface IProps {
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
-    const { notifyError } = useNotify();
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
     const { balances } = useBalances();
 
@@ -140,7 +130,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             return pkey;
         } catch (error) {
             console.log(error);
-            notifyError("Error", "Cannot get private key, use your extension wallet instead");
+            notifyError(errorMessages.privateKeyError());
         }
     };
 

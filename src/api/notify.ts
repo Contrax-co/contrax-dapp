@@ -1,28 +1,30 @@
 import { getHook } from "react-hooks-outside";
 import { Notification } from "reapop";
+import { NotifyMessage } from "src/types";
 
-export const notifySuccess = (title: string, message: string) => {
+export const notifySuccess = (successMessage: NotifyMessage) => {
     const { notify } = getHook("notifications");
     notify({
-        title,
-        message,
+        title: successMessage.title,
+        message: successMessage.message,
         status: "success",
     });
 };
-export const notifyError = (title: string, message: string) => {
+
+export const notifyError = (errorMessage: NotifyMessage) => {
     const { notify } = getHook("notifications");
     notify({
-        title,
-        message,
+        title: errorMessage.title,
+        message: errorMessage.message,
         status: "error",
     });
 };
 
-export const notifyLoading = (title: string, message: string, options?: Partial<Notification>) => {
+export const notifyLoading = (loadingMessage: NotifyMessage, options?: Partial<Notification>) => {
     const { notify } = getHook("notifications");
     let nt = notify({
-        title,
-        message,
+        title: loadingMessage.title,
+        message: loadingMessage.message,
         status: "loading",
         dismissAfter: 0,
         dismissible: false,
@@ -35,6 +37,7 @@ export const dismissNotify = (id: string) => {
     const { dismissNotification } = getHook("notifications");
     dismissNotification(id);
 };
+
 export const dismissNotifyAll = () => {
     const { dismissNotifications } = getHook("notifications");
     dismissNotifications();

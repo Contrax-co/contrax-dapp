@@ -1,15 +1,14 @@
 import pools from "src/config/constants/pools.json";
-import { Farm, FarmData } from "src/types";
-import { constants, providers, BigNumber, Signer, Contract, utils } from "ethers";
-import { approveErc20, getBalance, getPrice } from "src/api/token";
-import { defaultChainId } from "src/config/constants";
+import { Farm } from "src/types";
+import { constants, BigNumber, Signer, Contract, utils } from "ethers";
+import { approveErc20, getBalance } from "src/api/token";
 import { toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { Balances } from "src/state/balances/types";
 import { Prices } from "src/state/prices/types";
+import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 
 export default function sushi(farmId: number) {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
@@ -60,7 +59,7 @@ export default function sushi(farmId: number) {
         cb?: () => any;
     }) => {
         if (!signer) return;
-        let notiId = notifyLoading("Approving deposit!", "Please wait...");
+        let notiId = notifyLoading(loadingMessages.approvingDeposit());
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         try {
             const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
@@ -83,7 +82,7 @@ export default function sushi(farmId: number) {
             await approveErc20(farm.lp_address, farm.vault_addr, lpBalance, currentWallet, signer);
 
             dismissNotify(notiId);
-            notifyLoading("Confirm Deposit!", "", { id: notiId });
+            notifyLoading(loadingMessages.confirmDeposit(), { id: notiId });
 
             let depositTxn: any;
             if (max) {
@@ -93,7 +92,7 @@ export default function sushi(farmId: number) {
             }
 
             dismissNotify(notiId);
-            notifyLoading("Depositing...", `Txn hash: ${depositTxn.hash}`, {
+            notifyLoading(loadingMessages.depositing(depositTxn.hash), {
                 id: notiId,
                 buttons: [
                     {
@@ -108,14 +107,14 @@ export default function sushi(farmId: number) {
             if (!depositTxnStatus.status) {
                 throw new Error("Error depositing into vault!");
             } else {
-                notifySuccess("Deposit!", "Successful");
+                notifySuccess(successMessages.deposit());
                 dismissNotify(notiId);
             }
         } catch (error: any) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(notiId);
-            notifyError("Error!", err.reason || err.message);
+            notifyError(errorMessages.generalError(err.reason || err.message));
         }
         cb && cb();
     };
@@ -137,7 +136,7 @@ export default function sushi(farmId: number) {
     }) => {
         if (!signer) return;
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
-        const notiId = notifyLoading("Approving Withdraw!", "Please wait...");
+        const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
             const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
 
@@ -147,7 +146,7 @@ export default function sushi(farmId: number) {
             let formattedBal;
             formattedBal = utils.parseUnits(validateNumberDecimals(withdrawAmount, farm.decimals), farm.decimals);
             dismissNotify(notiId);
-            notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
+            notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
             let withdrawTxn: any;
             if (max) {
@@ -157,7 +156,7 @@ export default function sushi(farmId: number) {
             }
 
             dismissNotify(notiId);
-            notifyLoading("Withdrawing...", `Txn hash: ${withdrawTxn.hash}`, {
+            notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
                 id: notiId,
                 buttons: [
                     {
@@ -173,13 +172,13 @@ export default function sushi(farmId: number) {
                 throw new Error("Error withdrawing Try again!");
             } else {
                 dismissNotify(notiId);
-                notifySuccess("Withdrawn!", `successfully`);
+                notifySuccess(successMessages.withdraw());
             }
         } catch (error) {
             let err = JSON.parse(JSON.stringify(error));
             console.log(err);
             dismissNotify(notiId);
-            notifyError("Error!", err.reason || err.message);
+            notifyError(errorMessages.generalError(err.reason || err.message));
         }
         cb && cb();
     };
@@ -203,7 +202,7 @@ export default function sushi(farmId: number) {
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         const wethAddress = addressesByChainId[chainId].wethAddress;
-        let notiId = notifyLoading("Approving zapping!", "Please wait...");
+        let notiId = notifyLoading(loadingMessages.approvingZapping());
         try {
             let formattedBal = utils.parseUnits(zapAmount.toString(), 18);
             // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
@@ -221,7 +220,7 @@ export default function sushi(farmId: number) {
                 value: formattedBal,
             });
             dismissNotify(notiId);
-            notifyLoading("Zapping...", `Txn hash: ${zapperTxn.hash}`, {
+            notifyLoading(loadingMessages.zapping(zapperTxn.hash), {
                 id: notiId,
                 buttons: [
                     {
@@ -237,13 +236,13 @@ export default function sushi(farmId: number) {
                 throw new Error("Error zapping into vault!");
             } else {
                 dismissNotify(notiId);
-                notifySuccess("Zapped in!", `Success`);
+                notifySuccess(successMessages.zapIn());
             }
         } catch (error: any) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(notiId);
-            notifyError("Error!", err.reason || err.message);
+            notifyError(errorMessages.generalError(err.reason || err.message));
         }
         cb && cb();
     };
@@ -266,7 +265,7 @@ export default function sushi(farmId: number) {
         if (!signer) return;
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const wethAddress = addressesByChainId[chainId].wethAddress;
-        const notiId = notifyLoading("Approving Withdraw!", "Please wait...");
+        const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
             /*
              * Execute the actual withdraw functionality from smart contract
@@ -279,7 +278,7 @@ export default function sushi(farmId: number) {
             await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, signer);
 
             dismissNotify(notiId);
-            notifyLoading("Confirming Withdraw!", "Please wait...", { id: notiId });
+            notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
             let withdrawTxn = await zapperContract.zapOutAndSwap(
                 farm.vault_addr,
@@ -289,7 +288,7 @@ export default function sushi(farmId: number) {
             );
 
             dismissNotify(notiId);
-            notifyLoading("Withdrawing...", `Txn hash: ${withdrawTxn.hash}`, {
+            notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
                 id: notiId,
                 buttons: [
                     {
@@ -305,13 +304,13 @@ export default function sushi(farmId: number) {
                 throw new Error("Error withdrawing Try again!");
             } else {
                 dismissNotify(notiId);
-                notifySuccess("Withdrawn!", `successfully`);
+                notifySuccess(successMessages.withdraw());
             }
         } catch (error) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(notiId);
-            notifyError("Error!", err.reason || err.message);
+            notifyError(errorMessages.generalError(err.reason || err.message));
         }
         cb && cb();
     };
