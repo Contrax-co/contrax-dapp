@@ -9,6 +9,7 @@ import { ModalLayout } from "../ModalLayout/ModalLayout";
 import useBalances from "src/hooks/useBalances";
 import { dismissNotify, notifyError, notifyLoading, notifySuccess } from "src/api/notify";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
+import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
 
 interface IProps {
     token: Token;
@@ -17,6 +18,7 @@ interface IProps {
 
 export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
     const { reloadBalances } = useBalances();
+    const { isBalanceTooLow } = useEstimateGasFee();
     const { lightMode } = useApp();
     const [reciverAddress, setReciverAddress] = useState<string>("");
     const [amount, setAmount] = useState("0");
@@ -25,6 +27,8 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        // check for eth balance greater than gas fee
+        if (isBalanceTooLow()) return;
         const id = notifyLoading(loadingMessages.transferingTokens());
         try {
             if (token.address === constants.AddressZero) {
