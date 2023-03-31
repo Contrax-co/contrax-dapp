@@ -21,8 +21,8 @@ export const successMessages: SuccessMessages = {
         message: "Successful",
     }),
     zapIn: () => ({
-        title: "Zapped in!",
-        message: "successfully",
+        title: "Successfully staked!",
+        message: "",
     }),
     withdraw: () => ({
         title: "Withdrawn!",
@@ -40,7 +40,7 @@ export const loadingMessages: LoadingMessages = {
         message: "Please wait...",
     }),
     zapping: (tx: string) => ({
-        title: "Zapping...",
+        title: "Creating your staking position...",
         message: `Txn hash: ${tx}`,
     }),
     approvingWithdraw: () => ({

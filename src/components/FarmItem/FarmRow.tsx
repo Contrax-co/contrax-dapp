@@ -11,6 +11,7 @@ import { Skeleton } from "../Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import useFarmApy from "src/hooks/farms/useFarmApy";
 import { DropDownView } from "./components/DropDownView/DropDownView";
+import { DeprecatedChip } from "./components/Chip/DeprecatedChip";
 
 interface Props {
     farm: Farm;
@@ -42,6 +43,8 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     ) : (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
             <div className="farm_table_row" key={farm?.id} onClick={handleClick}>
+                {farm.isDeprecated && <DeprecatedChip top="20px" right="26px" />}
+
                 {/* Asset Name and Logo */}
 
                 <div className="title_container">

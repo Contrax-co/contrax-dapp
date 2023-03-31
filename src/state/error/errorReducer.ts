@@ -15,6 +15,7 @@ const errorSlice = createSlice({
         },
         resetErrorCount: (state: StateInterface) => {
             state.errorCount = 0;
+            state.isError = false;
         },
         incrementErrorCount: (state: StateInterface) => {
             state.errorCount++;

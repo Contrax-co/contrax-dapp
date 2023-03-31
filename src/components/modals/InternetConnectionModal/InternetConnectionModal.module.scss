@@ -1,0 +1,40 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/_mixins.scss";
+
+.container {
+    max-width: 470px;
+    text-align: center;
+    color: var(--color_text);
+    padding: 40px 60px 50px;
+    @include devices(tablet) {
+        width: initial;
+    }
+    @include devices(mobile) {
+        padding: 45px 30px;
+    }
+}
+
+.logo {
+    width: 54%;
+    min-width: 200px;
+}
+
+.heading {
+    color: var(--color_primary);
+    margin: 0px;
+    margin-bottom: 4px;
+}
+
+.caption {
+    font-weight: 400;
+    margin: 0px;
+}
+// .caption {
+//     font-size: large;
+//     font-weight: bold;
+//     color: var(--color_text);
+// }
+// .message {
+//     color: var(--color_grey);
+//     max-width: 440px;
+// }

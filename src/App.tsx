@@ -15,11 +15,24 @@ import { useNotifications } from "reapop";
 import { queryClient } from "./config/reactQuery";
 import useApp from "./hooks/useApp";
 import Body from "./Body";
+import { useDispatch } from "react-redux";
+import { setOffline, setOnline } from "src/state/internet/internetReducer";
+import { resetErrorCount } from "./state/error/errorReducer";
 
 setHook("notifications", useNotifications);
 
 function App() {
-    const { lightMode, supportChat } = useApp();
+    const { lightMode, supportChat, toggleSupportChat } = useApp();
+    const dispatch = useDispatch();
+
+    window.addEventListener("online", () => {
+        dispatch(setOnline());
+        dispatch(resetErrorCount());
+    });
+    window.addEventListener("offline", () => {
+        dispatch(setOffline());
+    });
+
     useEffect(() => {
         // @ts-ignore
         if (supportChat) window.chaport.q("startSession");

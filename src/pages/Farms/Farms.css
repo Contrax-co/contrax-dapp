@@ -57,6 +57,7 @@
 
 .farm_table_row {
   min-height: 10vh;
+  position: relative;
 }
 
 .farm_table_header {
