@@ -43,7 +43,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     ) : (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
             <div className="farm_table_row" key={farm?.id} onClick={handleClick}>
-                {farm.isDeprecated && <DeprecatedChip />}
+                {farm.isDeprecated && <DeprecatedChip top="12px" right="12px" />}
 
                 {/* Asset Name and Logo */}
 
