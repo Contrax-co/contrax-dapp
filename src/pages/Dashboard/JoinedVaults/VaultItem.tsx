@@ -57,7 +57,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                             (
                                                 userVaultBalance * priceOfSingleToken -
                                                 userVaultBalance * oldPrice[0].price
-                                            ).toFixed(3)
+                                            ).toFixed(2)
                                         ) !== 0 &&
                                         (oldPrice[0].price > priceOfSingleToken ? (
                                             <span
