@@ -31,7 +31,7 @@ function Home() {
                     {supportChat && (
                         <MdCancel
                             className="supportChat-close"
-                            color="#63cce0"
+                            color="#414141"
                             cursor="pointer"
                             onClick={toggleSupportChat}
                         />
