@@ -14,6 +14,7 @@ import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import Loader from "src/components/Loader/Loader";
 import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
 import useWallet from "src/hooks/useWallet";
+import { constants } from "ethers";
 
 interface Props {
     farm: Farm;
@@ -105,13 +106,13 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm, type }) => {
             if (shouldUseLp) {
                 await depositAsync({ depositAmount: getTokenAmount(), max });
             } else {
-                await zapInAsync({ ethZapAmount: getTokenAmount(), max });
+                await zapInAsync({ zapAmount: getTokenAmount(), max, token: constants.AddressZero });
             }
         } else {
             if (shouldUseLp) {
                 await withdrawAsync({ withdrawAmount: getTokenAmount(), max });
             } else {
-                await zapOutAsync({ withdrawAmt: getTokenAmount(), max });
+                await zapOutAsync({ withdrawAmt: getTokenAmount(), max, token: constants.AddressZero });
             }
         }
         setAmount("");

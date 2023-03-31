@@ -3,26 +3,25 @@ import { Farm } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
-import { FARM_DATA, FARM_ZAP_IN } from "src/config/constants/query";
-import { queryClient } from "src/config/reactQuery";
+import { FARM_ZAP_IN } from "src/config/constants/query";
 import farmFunctions from "src/api/pools";
-import useFarmDetails from "./useFarmDetails";
 import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
 
 export interface ZapIn {
-    ethZapAmount: number;
+    zapAmount: number;
     max?: boolean;
+    token: string;
 }
 
 const useZapIn = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
-    const { reloadBalances } = useBalances();
+    const { reloadBalances, balances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
 
-    const _zapIn = async ({ ethZapAmount, max }: ZapIn) => {
-        await farmFunctions[farm.id].zapIn({ zapAmount: ethZapAmount, currentWallet, signer, chainId, max });
+    const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
+        await farmFunctions[farm.id].zapIn({ zapAmount, balances, signer, chainId, max, token });
         reloadBalances();
         reloadSupplies();
     };

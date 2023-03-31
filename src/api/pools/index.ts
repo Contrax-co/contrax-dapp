@@ -11,8 +11,9 @@ import * as usdcUsx from "./usdc-usx";
 import * as ethHop from "./ethHop";
 import sushi from "./sushi";
 import hop from "./hop";
+import { FarmFunctions } from "./types";
 
-const farmFunctions: { [key: number]: ReturnType<typeof sushi> } = {
+const farmFunctions: { [key: number]: FarmFunctions } = {
     1: sushi(1), // 1: wethDai,
     2: sushi(2), // 2: wethUsdc,
     3: sushi(3), // 3: wethUsdt,

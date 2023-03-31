@@ -3,10 +3,8 @@ import { Farm } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
-import { FARM_DATA, FARM_ZAP_OUT } from "src/config/constants/query";
+import { FARM_ZAP_OUT } from "src/config/constants/query";
 import farmFunctions from "src/api/pools";
-import { queryClient } from "src/config/reactQuery";
-import useFarmDetails from "./useFarmDetails";
 import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
 
@@ -16,8 +14,8 @@ const useZapOut = (farm: Farm) => {
     const { reloadBalances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
 
-    const _zapOut = async ({ withdrawAmt, max }: { withdrawAmt: number; max?: boolean }) => {
-        await farmFunctions[farm.id].zapOut({ zapAmount: withdrawAmt, currentWallet, signer, chainId, max });
+    const _zapOut = async ({ withdrawAmt, max, token }: { withdrawAmt: number; max?: boolean; token: string }) => {
+        await farmFunctions[farm.id].zapOut({ zapAmount: withdrawAmt, currentWallet, signer, chainId, max, token });
         reloadBalances();
         reloadSupplies();
     };
