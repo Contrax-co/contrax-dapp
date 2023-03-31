@@ -26,8 +26,7 @@ function App() {
     const dispatch = useDispatch();
 
     window.addEventListener("online", () => {
-        dispatch(setOnline());
-        dispatch(resetErrorCount());
+        window.location.reload();
     });
     window.addEventListener("offline", () => {
         dispatch(setOffline());
