@@ -11,6 +11,10 @@ export const useEstimateGasFee = () => {
     const { balanceBigNumber } = useWallet();
 
     const isBalanceTooLow = useCallback(() => {
+        console.log(
+            balanceBigNumber.gt(data!.gasPrice!.mul(BigNumber.from(MAX_GAS_UNITS_PER_TRANSACTION))),
+            data!.gasPrice!.mul(BigNumber.from(MAX_GAS_UNITS_PER_TRANSACTION))
+        );
         if (
             data &&
             data.gasPrice &&
@@ -20,7 +24,7 @@ export const useEstimateGasFee = () => {
         }
         notifyError(errorMessages.insufficientGas());
         return true;
-    }, [data]);
+    }, [data, balanceBigNumber]);
 
     return { isBalanceTooLow };
 };
