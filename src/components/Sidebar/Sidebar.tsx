@@ -4,6 +4,7 @@ import { GiFarmTractor } from "react-icons/gi";
 import { HiDocumentText } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { FaExchangeAlt } from "react-icons/fa";
+import { ReactComponent as EarnIcon } from "src/assets/images/earn.svg";
 import logo from "src/assets/images/logo.png";
 import logo2 from "src/assets/images/logo-4x.png";
 import LightModeToggle from "src/components/LightModeToggle/LightModeToggle";
@@ -31,21 +32,21 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
             <div className="side_items">
                 <SidebarItem
                     title="Dashboard"
-                    icon={<MdSpaceDashboard size={20} />}
+                    icon={<MdSpaceDashboard size={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Home)}
                     active={pathname === RoutesPaths.Home}
                 />
 
                 <SidebarItem
-                    title="Farms"
-                    icon={<GiFarmTractor size={20} />}
+                    title="Earn"
+                    icon={<EarnIcon height={18} width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Farms)}
                     active={pathname === RoutesPaths.Farms}
                 />
 
                 <SidebarItem
                     title="Exchange"
-                    icon={<FaExchangeAlt size={20} />}
+                    icon={<FaExchangeAlt size={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Exchange)}
                     active={pathname === RoutesPaths.Exchange}
                 />
@@ -67,7 +68,7 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 <SidebarItem
                     title="User Guide"
                     onClick={() => handleNavigation("https://contrax.gitbook.io/contrax-docs/", "_blank")}
-                    icon={<HiDocumentText size={20} />}
+                    icon={<HiDocumentText size={18} />}
                     icon2={<AiOutlineExport size={12} />}
                 />
             </div>
