@@ -19,5 +19,5 @@ export const SUSHUISWAP_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/sus
 export const SHUSHISWAP_CHEF_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/jiro-ono/arbitrum-minichef-staging";
 export const SWAPFISH_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/swapfish/swapfish";
 export const WEB3AUTH_CLIENT_ID = process.env.REACT_APP_WEB3AUTH_CLIENT_ID;
-export const EARNINGS_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/abbasnaqvi10/dodo";
+export const EARNINGS_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/rafay-contrax/contrax-finance-subgraph";
 export const HOP_EXCHANGE_APY_URL = "https://assets.hop.exchange/v1.1-pool-stats.json";
