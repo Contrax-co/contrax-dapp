@@ -7,11 +7,14 @@ import { MdCancel } from "react-icons/md";
 import { useAppSelector } from "src/state";
 import "./Home.css";
 import { Maintainance } from "src/components/modals/MaintainanceModal/Maintainance";
+import { InternetConnectionModal } from "src/components/modals/InternetConnectionModal/InternetConnectionModal";
 
 function Home() {
     const { lightMode, supportChat, toggleSupportChat } = useApp();
     const [openBurgerMenu, setOpenBurgerMenu] = useState(false);
     const isError = useAppSelector((state) => state.error.isError);
+    const { isOnline } = useAppSelector((state) => state.internet);
+
     return (
         <div className={`page ${lightMode && "page--light"}`}>
             <div className="ac_page">
@@ -38,7 +41,8 @@ function Home() {
                     )}
                 </div>
             </div>
-            {isError && <Maintainance />}
+            {!isOnline && <InternetConnectionModal />}
+            {isError && isOnline && <Maintainance />}
         </div>
     );
 }
