@@ -5,6 +5,7 @@ import { toFixedFloor } from "src/utils/common";
 import "./VaultItem.css";
 import { GoArrowUp, GoArrowDown } from "react-icons/go";
 import { useAppSelector } from "src/state";
+import { DeprecatedChip } from "src/components/FarmItem/components/Chip/DeprecatedChip";
 
 interface Props {
     vault: Vault;
@@ -32,7 +33,10 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
                         {vault.alt2 ? <img className={`vault_item_logo2`} alt={vault.alt2} src={vault.logo2} /> : null}
 
-                        <p className={`vault_item_name`}>{vault.name}</p>
+                        <p className={`vault_item_name`}>
+                            {vault.name}
+                            {vault.isDeprecated && <DeprecatedChip top="24px" />}
+                        </p>
                     </div>
 
                     <div className={`vault_items_bottom_header`}>
