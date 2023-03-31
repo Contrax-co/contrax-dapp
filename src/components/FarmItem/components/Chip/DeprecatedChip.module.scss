@@ -1,15 +1,9 @@
-@import "../../../../styles/_mixins.scss";
-
 .deprecatedChip {
-    background: var(--color_primary);
-    color: var(--background_secondary);
+    background: var(--color_warning);
+    color: var(--color_black);
     position: absolute;
-    padding: 4px 8px;
-    border-radius: 12px;
+    padding: 2px 6px;
+    border-radius: 10px;
     font-size: 12px;
     font-weight: 700;
-
-    @include devices(xlMobile) {
-        font-size: 10px;
-    }
 }
