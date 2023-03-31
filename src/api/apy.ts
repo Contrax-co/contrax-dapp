@@ -44,7 +44,7 @@ interface ChefResponse {
     }[];
 }
 
-export const getSushiswapApy = async (pairAddress: string, chainId: number, provider: providers.Provider) => {
+const getSushiswapApy = async (pairAddress: string, chainId: number, provider: providers.Provider) => {
     const priceOfSushi = await getPrice(addressesByChainId[chainId].sushiAddress, chainId);
 
     let query = `{

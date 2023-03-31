@@ -158,8 +158,8 @@ interface ProcessedData {
     gmxAprTotalWithBoost: BigNumber;
     gmxAprForNativeTokenWithBoost: BigNumber;
 }
-export const SECONDS_PER_YEAR = 31536000;
-export const BASIS_POINTS_DIVISOR = 10000;
+const SECONDS_PER_YEAR = 31536000;
+const BASIS_POINTS_DIVISOR = 10000;
 
 function getProcessedData(
     supplyData?: { stakedGmxTracker: BigNumber },

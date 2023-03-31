@@ -69,38 +69,6 @@ export interface Token {
     decimals: number;
     network?: string;
 }
-
-export interface CovalentToken {
-    balance: string;
-    balance_24h: string;
-    contract_address: string;
-    contract_decimals: number;
-    contract_name: string;
-    contract_ticker_symbol: string;
-    last_transferred_at: unknown;
-    logo_url: string;
-    native_token: boolean;
-    nft_data: unknown;
-    quote: number;
-    quote_24h: unknown;
-    quote_rate: number;
-    quote_rate_24h: unknown;
-    supports_erc: unknown;
-    type: string;
-}
-
-export interface CreateToken {
-    name: string;
-    symbol: string;
-    decimal: number;
-    burnPercantageIdentifier: boolean;
-    initialSupply: number;
-    mintable: boolean;
-    burnPercentage: number;
-    transactionFeePercentage: number;
-    transactionFeePercentageIdentiier: boolean;
-}
-
 export interface FarmData {
     /**
      * Farm Id
