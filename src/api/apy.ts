@@ -273,14 +273,19 @@ const getFraxApy = async () => {
 const getHopApy = async (farmName: string, chainId: number) => {
     try {
         const res = await axios.get(HOP_EXCHANGE_APY_URL);
-        const _apr = res.data.data.pools[farmName][getNetworkName(chainId)].apr * 100;
-        const _apy = res.data.data.pools[farmName][getNetworkName(chainId)].apy * 100;
-        const apr = _apr;
-        const compounding = calcCompoundingApy(_apy - apr);
-        const apy = compounding + _apy;
+        const tradingFees = res.data.data.pools[farmName][getNetworkName(chainId)].apr * 100;
+        // const totalYield = res.data.data.optimalYield[farmName][getNetworkName(chainId)].apr * 100;
+        const rewards =
+            (Object.values(res.data.data.stakingRewards[farmName][getNetworkName(chainId)]).reduce(
+                (acc, cur: any) => acc + cur.apr,
+                0
+            ) as number) * 100;
+
+        const compounding = calcCompoundingApy(rewards);
+        const apy = compounding + rewards + tradingFees;
         return {
-            feeApr: apr,
-            rewardsApr: _apy - apr,
+            feeApr: tradingFees,
+            rewardsApr: rewards,
             apy,
             compounding: compounding,
         };
