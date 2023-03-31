@@ -16,8 +16,7 @@ import { queryClient } from "./config/reactQuery";
 import useApp from "./hooks/useApp";
 import Body from "./Body";
 import { useDispatch } from "react-redux";
-import { setOffline, setOnline } from "src/state/internet/internetReducer";
-import { resetErrorCount } from "./state/error/errorReducer";
+import { setOffline } from "src/state/internet/internetReducer";
 
 setHook("notifications", useNotifications);
 
