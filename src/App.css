@@ -13,6 +13,7 @@
   --color_white: #ffffff;
   --color_black: #000000;
   --color_disabled: #1d4864;
+  --color_warning: #ffcc00;
   /* #2f6d95 */
   --color_text: var(--color_white);
 
@@ -37,6 +38,7 @@
   --color_black: #323433;
   --color_disabled: #b1e5ef;
   --color_text: var(--color_black);
+  --color_warning: #ffcc00;
   /* ///// Border Colors ///// */
   --border_color: #d9d9d9;
   --border_color_light: #d2e8ef;
