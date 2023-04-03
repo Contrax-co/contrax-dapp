@@ -46,10 +46,13 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                 </p>
                                 <div style={{ display: "flex", alignItems: "flex-end" }}>
                                     <p style={{ margin: 0 }}>
-                                        {(userVaultBalance * priceOfSingleToken).toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                        })}
+                                        {(userVaultBalance * priceOfSingleToken)
+                                            .toLocaleString("en-US", {
+                                                style: "currency",
+                                                currency: "USD",
+                                                minimumFractionDigits: 3,
+                                            })
+                                            .slice(0, -1)}
                                     </p>
                                     {isLoadingOldData && <Skeleton w={45} h={16} style={{ marginLeft: 5 }} />}
                                     {!isLoadingOldData &&

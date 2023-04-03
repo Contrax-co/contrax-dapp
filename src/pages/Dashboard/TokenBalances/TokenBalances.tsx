@@ -68,11 +68,13 @@ export const TokenBalances: FC<IProps> = () => {
                                     </p>
                                 </div>
                                 <p className={styles.usdBalance}>
-                                    $
-                                    {Number(token.usdBalance).toLocaleString("en-US", {
-                                        currency: "USD",
-                                        minimumFractionDigits: 2,
-                                    })}
+                                    {Number(token.usdBalance)
+                                        .toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            minimumFractionDigits: 3,
+                                        })
+                                        .slice(0, -1)}
                                 </p>
                             </div>
                         ))}
