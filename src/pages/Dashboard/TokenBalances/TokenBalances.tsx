@@ -68,7 +68,11 @@ export const TokenBalances: FC<IProps> = () => {
                                     </p>
                                 </div>
                                 <p className={styles.usdBalance}>
-                                    ${ethers.utils.commify(Number(token.usdBalance).toString())}
+                                    $
+                                    {Number(token.usdBalance).toLocaleString("en-US", {
+                                        currency: "USD",
+                                        minimumFractionDigits: 2,
+                                    })}
                                 </p>
                             </div>
                         ))}
