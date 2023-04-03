@@ -147,6 +147,7 @@ export const updatePrices = createAsyncThunk(
             thunkApi.dispatch(resetErrorCount());
             return checksummed;
         } catch (error) {
+            console.log("Price unable to fetch", chainId, defaultChainId);
             console.error(error);
             if (chainId === defaultChainId) {
                 thunkApi.dispatch(incrementErrorCount());
