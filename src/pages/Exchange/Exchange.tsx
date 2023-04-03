@@ -14,9 +14,9 @@ import { useSigner, useWebSocketProvider } from "wagmi";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
 import useFarms from "src/hooks/farms/useFarms";
 import { useSearchParams } from "react-router-dom";
-import { getTokenListForUniswap } from "src/utils";
 import useBalances from "src/hooks/useBalances";
 import { Tabs } from "src/components/Tabs/Tabs";
+import uniswapTokens from "./uniswapTokens.json";
 
 interface IProps {}
 
@@ -70,7 +70,6 @@ const Exchange: React.FC<IProps> = () => {
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
 
     const { farms } = useFarms();
-    const tokenList: TokenInfo[] = React.useMemo(() => getTokenListForUniswap(farms), [farms]);
 
     // Reload Balances every time this component unmounts
     React.useEffect(() => reloadBalances, []);
@@ -259,7 +258,7 @@ const Exchange: React.FC<IProps> = () => {
                         provider={websocketProvider || wagmiSigner?.provider}
                         onConnectWalletClick={connectWallet}
                         onTxSuccess={reloadBalances}
-                        tokenList={tokenList}
+                        tokenList={uniswapTokens}
                         permit2={true}
                     />
                 )}
