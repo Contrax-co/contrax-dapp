@@ -6,6 +6,7 @@ import { Contract, utils, constants, BigNumber } from "ethers";
 import { getNetworkName } from "src/utils/common";
 import { getPriceByTime, getPricesByTime } from "src/api/token";
 import { incrementErrorCount, resetErrorCount } from "../error/errorReducer";
+import { defaultChainId } from "src/config/constants";
 
 const initialState: StateInterface = { prices: {}, isLoading: false, isFetched: false, oldPrices: {} };
 
@@ -30,6 +31,7 @@ export const updatePrices = createAsyncThunk(
     "prices/updatePrices",
     async ({ chainId, farms, multicallProvider }: UpdatePricesActionPayload, thunkApi) => {
         try {
+            if (chainId !== defaultChainId) return;
             //----------------- Get Addresses -----------------
             let prices: { [key: string]: number } = {};
             const set = farms.reduce((acc, farm) => {
@@ -146,7 +148,9 @@ export const updatePrices = createAsyncThunk(
             return checksummed;
         } catch (error) {
             console.error(error);
-            thunkApi.dispatch(incrementErrorCount());
+            if (chainId !== defaultChainId) {
+                thunkApi.dispatch(incrementErrorCount());
+            }
         }
     }
 );

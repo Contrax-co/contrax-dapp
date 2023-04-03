@@ -11,6 +11,7 @@ import { Farm } from "src/types";
 import { getPriceByTime, getPricesByTime } from "src/api/token";
 import { Decimals } from "../decimals/types";
 import { getPricesOfLpByTimestamp, setOldPrices } from "../prices/pricesReducer";
+import { defaultChainId } from "src/config/constants";
 
 const initialState: StateInterface = { farmDetails: {}, isLoading: false, isFetched: false, account: "", earnings: {} };
 
@@ -44,6 +45,7 @@ export const updateEarnings = createAsyncThunk(
         thunkApi
     ) => {
         try {
+            if (chainId !== defaultChainId) throw new Error("Wrong chain");
             await sleep(6000);
             const earns = await getEarnings(currentWallet);
             const earnings: Earnings = {};
@@ -89,7 +91,7 @@ export const updateEarnings = createAsyncThunk(
             return { earnings, currentWallet };
         } catch (error) {
             console.error(error);
-            return thunkApi.rejectWithValue(error);
+            return thunkApi.rejectWithValue("");
         }
     }
 );

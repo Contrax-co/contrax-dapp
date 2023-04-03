@@ -17,7 +17,6 @@ export const useFarmApys = () => {
     const dispatch = useAppDispatch();
 
     const reloadApys = useCallback(() => {
-        console.log("reloadApys");
         dispatch(fetchApys({ farms, chainId: networkId, multicallProvider }));
     }, [farms, networkId, dispatch, multicallProvider]);
 

@@ -272,7 +272,7 @@ const getFraxApy = async () => {
 
 const getHopApy = async (farmName: string, chainId: number) => {
     try {
-        const res = await axios.get(HOP_EXCHANGE_APY_URL);
+        const res = await axios.get(HOP_EXCHANGE_APY_URL, { cache: true });
         const tradingFees = res.data.data.pools[farmName][getNetworkName(chainId)].apr * 100;
         // const totalYield = res.data.data.optimalYield[farmName][getNetworkName(chainId)].apr * 100;
         const rewards =
