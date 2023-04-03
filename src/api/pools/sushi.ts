@@ -213,7 +213,7 @@ export default function sushi(farmId: number) {
                 const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, wethAddress, {
                     value: formattedBal,
                 });
-                const gasToRemove = gasLimit.mul(gasPrice).mul(8);
+                const gasToRemove = gasLimit.mul(gasPrice).mul(5);
                 formattedBal = balance.sub(gasToRemove);
             }
             let zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
