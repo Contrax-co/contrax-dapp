@@ -6,22 +6,63 @@ import { getPricesByTime } from "src/api/token";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import useFarms from "src/hooks/farms/useFarms";
+import useNotify from "src/hooks/useNotify";
 
 const Test = () => {
-    const { currentWallet, networkId } = useWallet();
-    const { farms } = useFarms();
-    const { formattedSupplies } = useTotalSupplies();
-    const { prices } = usePriceOfTokens();
-    const fn = () => {
-        let sum = 0;
-        farms.forEach((farm) => {
-            sum += (formattedSupplies[farm.vault_addr] || 1) * prices[farm.vault_addr];
-        });
-        console.log("sum", sum);
-    };
+    const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
+    const fn = () => {};
     return (
         <div onClick={fn} style={{ color: "red" }}>
             Test
+            <button
+                onClick={() => {
+                    notifySuccess("Approving Zapping!", "Please wait...a sadasfas fsa fsafsafsaf saf");
+                }}
+            >
+                success long
+            </button>
+            <button
+                onClick={() => {
+                    notifySuccess("Approving Zapping!", "Please wait...");
+                }}
+            >
+                success
+            </button>
+            <button
+                onClick={() => {
+                    notifyError("Approving Zapping!", "Please wait...");
+                }}
+            >
+                error
+            </button>
+            <button
+                onClick={() => {
+                    notifyLoading("Approving Zapping!", "Please wait...");
+                }}
+            >
+                loading
+            </button>
+            <button
+                onClick={() => {
+                    notifyLoading("Approving Zapping!", "Please wait...", {
+                        buttons: [
+                            {
+                                name: "View",
+                                onClick: () => {},
+                            },
+                        ],
+                    });
+                }}
+            >
+                btns
+            </button>
+            <button
+                onClick={() => {
+                    dismissNotifyAll();
+                }}
+            >
+                dismiss
+            </button>
         </div>
     );
 };
