@@ -49,12 +49,6 @@ interface IWalletContext {
      * Balance of the native eth that the user has
      */
     balance: number;
-
-    /**
-     * Balance of the native eth that the user has in bignumber
-     */
-    balanceBigNumber: ethers.BigNumber;
-
     /**
      * Refetches the balance of the user
      */
@@ -160,7 +154,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 signer,
                 provider,
                 balance,
-                balanceBigNumber,
                 refetchBalance,
                 switchNetworkAsync,
                 chains,

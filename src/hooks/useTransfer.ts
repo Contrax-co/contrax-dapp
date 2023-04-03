@@ -6,16 +6,18 @@ import { useMutation } from "@tanstack/react-query";
 import { TRANSFER_ETH, TRANSFER_TOKEN } from "src/config/constants/query";
 import useConstants from "./useConstants";
 import { BigNumber, Contract } from "ethers";
+import useBalances from "./useBalances";
 
 const useTransfer = () => {
-    const { signer, currentWallet, balanceBigNumber } = useWallet();
+    const { signer, currentWallet } = useWallet();
     const { NETWORK_NAME } = useConstants();
+    const { ethBalance } = useBalances();
 
     const _transferEth = async ({ to, amount, max }: { to: string; amount: BigNumber; max?: boolean }) => {
         if (max) {
             const gasPrice = await signer?.getGasPrice();
             if (!gasPrice) return;
-            amount = balanceBigNumber.sub(gasPrice.mul(21000).mul(1000));
+            amount = ethBalance.sub(gasPrice.mul(21000).mul(1000));
         }
         const transactionConfig = await prepareSendTransaction({
             request: {
