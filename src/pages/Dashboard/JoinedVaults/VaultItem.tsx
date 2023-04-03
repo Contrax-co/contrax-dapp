@@ -101,7 +101,13 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
                             <div className={`vault_items_bottom_categories`}>
                                 <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>APY</p>
-                                <p>{apy < 0.01 ? apy.toPrecision(2).slice(0, -1) : toFixedFloor(apy, 2).toString()}%</p>
+                                <p>
+                                    {toFixedFloor(apy || 0, 2) == 0
+                                        ? "--"
+                                        : apy < 0.01
+                                        ? `${apy.toPrecision(2).slice(0, -1)}%`
+                                        : `${toFixedFloor(apy, 2).toString()}%`}
+                                </p>
                             </div>
                             {/* <div className={`vault_items_bottom_categories`}>
                                 <p className={`vault_items_title ${lightMode && "vault_items_title--light"}`}>Earned</p>
