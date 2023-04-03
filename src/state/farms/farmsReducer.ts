@@ -13,7 +13,14 @@ import { Decimals } from "../decimals/types";
 import { getPricesOfLpByTimestamp, setOldPrices } from "../prices/pricesReducer";
 import { defaultChainId } from "src/config/constants";
 
-const initialState: StateInterface = { farmDetails: {}, isLoading: false, isFetched: false, account: "", earnings: {} };
+const initialState: StateInterface = {
+    farmDetails: {},
+    isLoading: false,
+    isFetched: false,
+    account: "",
+    earnings: {},
+    isLoadingEarnings: false,
+};
 
 export const updateFarmDetails = createAsyncThunk(
     "farms/updateFarmDetails",
@@ -124,12 +131,17 @@ const farmsSlice = createSlice({
             state.isFetched = false;
             state.farmDetails = {};
         });
+        builder.addCase(updateEarnings.pending, (state) => {
+            state.isLoadingEarnings = true;
+        });
         builder.addCase(updateEarnings.fulfilled, (state, action) => {
             state.earnings = { ...action.payload.earnings };
             state.account = action.payload.currentWallet;
+            state.isLoadingEarnings = false;
         });
         builder.addCase(updateEarnings.rejected, (state) => {
             state.earnings = {};
+            state.isLoadingEarnings = false;
         });
     },
 });

@@ -8,6 +8,7 @@ import { TotalSupplies } from "../supply/types";
 export interface StateInterface {
     farmDetails: FarmDetails;
     earnings: Earnings;
+    isLoadingEarnings: boolean;
     isLoading: boolean;
     isFetched: boolean;
     account: string;

@@ -6,6 +6,7 @@ import "./VaultItem.css";
 import { GoArrowUp, GoArrowDown } from "react-icons/go";
 import { useAppSelector } from "src/state";
 import { DeprecatedChip } from "src/components/FarmItem/components/Chip/DeprecatedChip";
+import { Skeleton } from "src/components/Skeleton/Skeleton";
 
 interface Props {
     vault: Vault;
@@ -13,7 +14,7 @@ interface Props {
 
 const VaultItem: React.FC<Props> = ({ vault }) => {
     const { lightMode } = useApp();
-    const { earnings } = useFarmDetails();
+    const { oldPrice, isLoading: isLoadingOldData } = useOldPrice(vault.lp_address);
 
     const {
         userVaultBalance,
@@ -21,8 +22,6 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
         apys: { apy },
         id,
     } = vault;
-
-    const oldPrice = useAppSelector((state) => state.prices.oldPrices[vault.lp_address]);
 
     return (
         <div className={`vaults`}>
@@ -52,7 +51,9 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                             currency: "USD",
                                         })}
                                     </p>
-                                    {oldPrice &&
+                                    {isLoadingOldData && <Skeleton w={45} h={16} style={{ marginLeft: 5 }} />}
+                                    {!isLoadingOldData &&
+                                        oldPrice &&
                                         Number(
                                             (
                                                 userVaultBalance * priceOfSingleToken -
@@ -127,3 +128,11 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 };
 
 export default VaultItem;
+
+function useOldPrice(address: string) {
+    const { isLoadingEarnings } = useFarmDetails();
+    const oldPrice = useAppSelector((state) => state.prices.oldPrices[address]);
+    const isLoadingOldPrices = useAppSelector((state) => state.prices.isLoadingOldPrices);
+
+    return { oldPrice, isLoading: isLoadingEarnings || isLoadingOldPrices };
+}

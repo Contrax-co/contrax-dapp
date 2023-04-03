@@ -8,7 +8,13 @@ import { getPriceByTime, getPricesByTime } from "src/api/token";
 import { incrementErrorCount, resetErrorCount } from "../error/errorReducer";
 import { defaultChainId } from "src/config/constants";
 
-const initialState: StateInterface = { prices: {}, isLoading: false, isFetched: false, oldPrices: {} };
+const initialState: StateInterface = {
+    prices: {},
+    isLoading: false,
+    isFetched: false,
+    oldPrices: {},
+    isLoadingOldPrices: false,
+};
 
 const lpAbi = [
     "function token0() view returns (address)",
@@ -275,6 +281,15 @@ const pricesSlice = createSlice({
         });
         builder.addCase(updatePrices.pending, (state, action) => {
             state.isLoading = true;
+        });
+        builder.addCase(getPricesOfLpByTimestamp.pending, (state) => {
+            state.isLoadingOldPrices = true;
+        });
+        builder.addCase(getPricesOfLpByTimestamp.fulfilled, (state) => {
+            state.isLoadingOldPrices = false;
+        });
+        builder.addCase(getPricesOfLpByTimestamp.rejected, (state) => {
+            state.isLoadingOldPrices = false;
         });
     },
 });

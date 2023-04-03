@@ -13,7 +13,9 @@ const useFarmDetails = () => {
     const { balances, isFetched: isBalancesFetched } = useBalances();
     const { prices, isFetched: isPricesFetched } = usePriceOfTokens();
     const { totalSupplies } = useTotalSupplies();
-    const { isLoading, farmDetails, isFetched, account, earnings } = useAppSelector((state) => state.farms);
+    const { isLoading, farmDetails, isFetched, account, earnings, isLoadingEarnings } = useAppSelector(
+        (state) => state.farms
+    );
     const { decimals } = useDecimals();
 
     const { networkId, currentWallet, multicallProvider } = useWallet();
@@ -59,6 +61,7 @@ const useFarmDetails = () => {
         reloadFarmData,
         farmDetails,
         earnings,
+        isLoadingEarnings,
     };
 };
 
