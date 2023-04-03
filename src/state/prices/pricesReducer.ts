@@ -148,7 +148,7 @@ export const updatePrices = createAsyncThunk(
             return checksummed;
         } catch (error) {
             console.error(error);
-            if (chainId !== defaultChainId) {
+            if (chainId === defaultChainId) {
                 thunkApi.dispatch(incrementErrorCount());
             }
         }
