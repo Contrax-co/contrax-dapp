@@ -7,6 +7,9 @@ import styles from "./DetailInput.module.scss";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import Loader from "src/components/Loader/Loader";
 import { useDetailInput } from "src/hooks/useDetailInput";
+import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
+import useWallet from "src/hooks/useWallet";
+import { constants } from "ethers";
 
 interface Props {
     farm: Farm;
@@ -111,7 +114,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
     //     setAmount("");
     //     setMax(false);
     // };
-
+   
     // const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     //     setAmount(e.target.value);
     //     setMax(false);

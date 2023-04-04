@@ -249,7 +249,7 @@ export const zapIn = async ({
             const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, usdcAddress, {
                 value: formattedBal,
             });
-            const gasToRemove = gasLimit.mul(gasPrice).mul(8);
+            const gasToRemove = gasLimit.mul(gasPrice).mul(2);
             formattedBal = balance.sub(gasToRemove);
         }
         let zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, usdcAddress, {
