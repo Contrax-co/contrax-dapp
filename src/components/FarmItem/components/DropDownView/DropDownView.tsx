@@ -12,7 +12,9 @@ import "./DropDownView.css";
 
 export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
-    const [transactionType, setTransactionType] = useState<FarmTransactionType>(FarmTransactionType.Deposit);
+    const [transactionType, setTransactionType] = useState<FarmTransactionType>(
+        farm.isDeprecated ? FarmTransactionType.Withdraw : FarmTransactionType.Deposit
+    );
     const [showMoreDetail, setShowMoreDetail] = useState(false);
     const [shouldUseLp, setShouldUseLp] = useState(farm.token_type === "LP Token" ? false : true);
 
@@ -21,11 +23,13 @@ export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
             <div className="basic_container">
                 <div className="type_tab">
                     <Tabs>
-                        <PoolButton
-                            onClick={() => setTransactionType(FarmTransactionType.Deposit)}
-                            description={FarmTransactionType.Deposit}
-                            active={transactionType === FarmTransactionType.Deposit}
-                        />
+                        {!farm.isDeprecated && (
+                            <PoolButton
+                                onClick={() => setTransactionType(FarmTransactionType.Deposit)}
+                                description={FarmTransactionType.Deposit}
+                                active={transactionType === FarmTransactionType.Deposit}
+                            />
+                        )}
                         <PoolButton
                             onClick={() => setTransactionType(FarmTransactionType.Withdraw)}
                             description={FarmTransactionType.Withdraw}
@@ -34,12 +38,14 @@ export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
                     </Tabs>
                 </div>
                 <div className="type_selector">
-                    <p
-                        onClick={() => setTransactionType(FarmTransactionType.Deposit)}
-                        className={transactionType === FarmTransactionType.Deposit ? "active" : ""}
-                    >
-                        {FarmTransactionType.Deposit}
-                    </p>
+                    {!farm.isDeprecated && (
+                        <p
+                            onClick={() => setTransactionType(FarmTransactionType.Deposit)}
+                            className={transactionType === FarmTransactionType.Deposit ? "active" : ""}
+                        >
+                            {FarmTransactionType.Deposit}
+                        </p>
+                    )}
                     <p
                         onClick={() => setTransactionType(FarmTransactionType.Withdraw)}
                         className={transactionType === FarmTransactionType.Withdraw ? "active" : ""}
