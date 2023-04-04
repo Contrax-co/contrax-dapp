@@ -7,6 +7,8 @@ import { FARM_ZAP_IN } from "src/config/constants/query";
 import farmFunctions from "src/api/pools";
 import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
+import { useDecimals } from "../useDecimals";
+import { utils } from "ethers";
 
 export interface ZapIn {
     zapAmount: number;
@@ -19,9 +21,11 @@ const useZapIn = (farm: Farm) => {
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances, balances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
+    const { decimals } = useDecimals();
 
     const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
-        await farmFunctions[farm.id].zapIn({ zapAmount, balances, signer, chainId, max, token });
+        let amountInWei = utils.parseUnits(zapAmount.toString(), decimals[token]);
+        await farmFunctions[farm.id].zapIn({ amountInWei, balances, signer, chainId, max, token });
         reloadBalances();
         reloadSupplies();
     };

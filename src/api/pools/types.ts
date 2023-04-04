@@ -1,9 +1,9 @@
-import { Signer } from "ethers";
+import { BigNumber, Signer } from "ethers";
 import { Balances } from "src/state/balances/types";
 import { Prices } from "src/state/prices/types";
 
 export interface ZapInArgs {
-    zapAmount: number;
+    amountInWei: string | BigNumber;
     signer?: Signer;
     chainId: number;
     max?: boolean;
@@ -12,7 +12,7 @@ export interface ZapInArgs {
 }
 
 export interface ZapOutArgs {
-    zapAmount: number;
+    amountInWei: string | BigNumber;
     currentWallet: string;
     signer?: Signer;
     chainId: number;

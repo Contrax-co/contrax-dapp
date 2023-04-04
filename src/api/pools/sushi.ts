@@ -149,35 +149,34 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const zapIn: ZapInFn = async ({ zapAmount, signer, chainId, max, token, balances }) => {
+    const zapIn: ZapInFn = async ({ amountInWei, signer, chainId, max, token, balances }) => {
         if (!signer) return;
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         const wethAddress = addressesByChainId[chainId].wethAddress;
         let notiId = notifyLoading(loadingMessages.approvingZapping());
         try {
-            let formattedBal = utils.parseUnits(zapAmount.toString(), 18);
             // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
             let zapperTxn: any;
             if (token === constants.AddressZero) {
                 if (max) {
                     const balance = await signer.getBalance();
-                    formattedBal = await signer.getBalance();
+                    amountInWei = await signer.getBalance();
                     const gasPrice: any = await signer.getGasPrice();
                     const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, wethAddress, {
-                        value: formattedBal,
+                        value: amountInWei,
                     });
                     const gasToRemove = gasLimit.mul(gasPrice).mul(2);
-                    formattedBal = balance.sub(gasToRemove);
+                    amountInWei = balance.sub(gasToRemove);
                 }
                 zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
-                    value: formattedBal,
+                    value: amountInWei,
                 });
             } else {
                 if (max) {
-                    formattedBal = BigNumber.from(balances[token]);
+                    amountInWei = BigNumber.from(balances[token]);
                 }
-                zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, token, formattedBal);
+                zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei);
             }
 
             dismissNotify(notiId);
@@ -207,7 +206,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const zapOut: ZapOutFn = async ({ zapAmount, currentWallet, signer, chainId, max, token }) => {
+    const zapOut: ZapOutFn = async ({ amountInWei, currentWallet, signer, chainId, max, token }) => {
         if (!signer) return;
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const wethAddress = addressesByChainId[chainId].wethAddress;
@@ -216,8 +215,8 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             /*
              * Execute the actual withdraw functionality from smart contract
              */
-            let formattedBal;
-            formattedBal = utils.parseUnits(validateNumberDecimals(zapAmount), farm.decimals || 18);
+            // let formattedBal;
+            // formattedBal = utils.parseUnits(validateNumberDecimals(zapAmount), farm.decimals || 18);
             const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
 
             await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer);
@@ -228,7 +227,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
 
             let withdrawTxn = await zapperContract.zapOutAndSwap(
                 farm.vault_addr,
-                max ? vaultBalance : formattedBal,
+                max ? vaultBalance : amountInWei,
                 token === constants.AddressZero ? wethAddress : token,
                 0
             );

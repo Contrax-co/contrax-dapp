@@ -7,15 +7,19 @@ import { FARM_ZAP_OUT } from "src/config/constants/query";
 import farmFunctions from "src/api/pools";
 import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
+import { useDecimals } from "../useDecimals";
+import { utils } from "ethers";
 
 const useZapOut = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances } = useBalances();
+    const { decimals } = useDecimals();
     const { reloadSupplies } = useTotalSupplies();
 
     const _zapOut = async ({ withdrawAmt, max, token }: { withdrawAmt: number; max?: boolean; token: string }) => {
-        await farmFunctions[farm.id].zapOut({ zapAmount: withdrawAmt, currentWallet, signer, chainId, max, token });
+        let amountInWei = utils.parseUnits(withdrawAmt.toString(), decimals[token]);
+        await farmFunctions[farm.id].zapOut({ amountInWei, currentWallet, signer, chainId, max, token });
         reloadBalances();
         reloadSupplies();
     };
