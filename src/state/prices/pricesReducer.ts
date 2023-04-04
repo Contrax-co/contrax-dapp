@@ -6,8 +6,15 @@ import { Contract, utils, constants, BigNumber } from "ethers";
 import { getNetworkName } from "src/utils/common";
 import { getPriceByTime, getPricesByTime } from "src/api/token";
 import { incrementErrorCount, resetErrorCount } from "../error/errorReducer";
+import { defaultChainId } from "src/config/constants";
 
-const initialState: StateInterface = { prices: {}, isLoading: false, isFetched: false, oldPrices: {} };
+const initialState: StateInterface = {
+    prices: {},
+    isLoading: false,
+    isFetched: false,
+    oldPrices: {},
+    isLoadingOldPrices: false,
+};
 
 const lpAbi = [
     "function token0() view returns (address)",
@@ -30,6 +37,7 @@ export const updatePrices = createAsyncThunk(
     "prices/updatePrices",
     async ({ chainId, farms, multicallProvider }: UpdatePricesActionPayload, thunkApi) => {
         try {
+            if (chainId !== defaultChainId) return;
             //----------------- Get Addresses -----------------
             let prices: { [key: string]: number } = {};
             const set = farms.reduce((acc, farm) => {
@@ -145,8 +153,11 @@ export const updatePrices = createAsyncThunk(
             thunkApi.dispatch(resetErrorCount());
             return checksummed;
         } catch (error) {
+            console.log("Price unable to fetch", chainId, defaultChainId);
             console.error(error);
-            thunkApi.dispatch(incrementErrorCount());
+            if (chainId === defaultChainId) {
+                thunkApi.dispatch(incrementErrorCount());
+            }
         }
     }
 );
@@ -270,6 +281,15 @@ const pricesSlice = createSlice({
         });
         builder.addCase(updatePrices.pending, (state, action) => {
             state.isLoading = true;
+        });
+        builder.addCase(getPricesOfLpByTimestamp.pending, (state) => {
+            state.isLoadingOldPrices = true;
+        });
+        builder.addCase(getPricesOfLpByTimestamp.fulfilled, (state) => {
+            state.isLoadingOldPrices = false;
+        });
+        builder.addCase(getPricesOfLpByTimestamp.rejected, (state) => {
+            state.isLoadingOldPrices = false;
         });
     },
 });

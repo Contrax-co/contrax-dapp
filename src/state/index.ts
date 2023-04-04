@@ -38,7 +38,8 @@ const rootReducer = combineReducers({
 // const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
-    devTools: process.env.NODE_ENV !== "production",
+    // devTools: process.env.NODE_ENV !== "production",
+    devTools: true,
     reducer: rootReducer,
     middleware(getDefaultMiddleware) {
         return getDefaultMiddleware({

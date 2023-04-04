@@ -34,8 +34,8 @@ root.render(
                 <NotificationsProvider>
                     <AppProvider>
                         <App />
+                        <Notifications />
                     </AppProvider>
-                    <Notifications />
                 </NotificationsProvider>
             </PersistGate>
         </Provider>

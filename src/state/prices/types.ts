@@ -7,6 +7,7 @@ export interface StateInterface {
     oldPrices: Partial<OldPrices>;
     isLoading: boolean;
     isFetched: boolean;
+    isLoadingOldPrices: boolean;
 }
 
 export interface OldPrices {

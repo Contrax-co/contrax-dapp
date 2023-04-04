@@ -47,10 +47,13 @@ const useBalances = () => {
         }
     }, [oldAccount, currentWallet]);
 
+    const ethBalance = useMemo(() => ethers.BigNumber.from(balances[ethers.constants.AddressZero] || 0), [balances]);
+
     return {
         balances,
         reloadBalances,
         formattedBalances,
+        ethBalance,
         isLoading: (isLoading || isDecimalsLoading) && !isFetched && !isDecimalsFetched,
         isFetched: isFetched && isDecimalsFetched,
         isFetching: isLoading || isDecimalsFetching,
