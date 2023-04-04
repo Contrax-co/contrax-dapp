@@ -4,6 +4,7 @@ import { Balances } from "../balances/types";
 import { Decimals } from "../decimals/types";
 import { Prices } from "../prices/types";
 import { TotalSupplies } from "../supply/types";
+import { FarmTransactionType } from "src/types/enums";
 
 export interface StateInterface {
     farmDetails: FarmDetails;
@@ -12,6 +13,7 @@ export interface StateInterface {
     isLoading: boolean;
     isFetched: boolean;
     account: string;
+    transactionType: FarmTransactionType;
 }
 
 export interface FarmDetails {

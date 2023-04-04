@@ -12,12 +12,14 @@ import { getPriceByTime, getPricesByTime } from "src/api/token";
 import { Decimals } from "../decimals/types";
 import { getPricesOfLpByTimestamp, setOldPrices } from "../prices/pricesReducer";
 import { defaultChainId } from "src/config/constants";
+import { FarmTransactionType } from "src/types/enums";
 
 const initialState: StateInterface = {
     farmDetails: {},
     isLoading: false,
     isFetched: false,
     account: "",
+    transactionType: FarmTransactionType.Deposit,
     earnings: {},
     isLoadingEarnings: false,
 };
@@ -110,11 +112,15 @@ const farmsSlice = createSlice({
         setAccount(state, action: { payload: string }) {
             state.account = action.payload;
         },
+        setTransactionType(state, action: { payload: FarmTransactionType }) {
+            state.transactionType = action.payload;
+        },
         reset(state) {
             state.farmDetails = {};
             state.isLoading = false;
             state.isFetched = false;
             state.account = "";
+            state.transactionType = FarmTransactionType.Deposit;
         },
     },
     extraReducers(builder) {
@@ -146,6 +152,6 @@ const farmsSlice = createSlice({
     },
 });
 
-export const { reset, setAccount } = farmsSlice.actions;
+export const { reset, setAccount, setTransactionType } = farmsSlice.actions;
 
 export default farmsSlice.reducer;
