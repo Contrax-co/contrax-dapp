@@ -21,3 +21,9 @@ export enum FarmType {
     normal = "Token",
     advanced = "LP Token",
 }
+
+export enum TransactionCurrency {
+    USDC = "USDC",
+    ETH = "ETH",
+    LP_Token = "LP Token",
+}
