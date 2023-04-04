@@ -7,6 +7,7 @@ import { TRANSFER_ETH, TRANSFER_TOKEN } from "src/config/constants/query";
 import useConstants from "./useConstants";
 import { BigNumber, Contract } from "ethers";
 import useBalances from "./useBalances";
+import { errorMessages } from "src/config/constants/notifyMessages";
 
 const useTransfer = () => {
     const { signer, currentWallet } = useWallet();
@@ -18,6 +19,7 @@ const useTransfer = () => {
             const gasPrice = await signer?.getGasPrice();
             if (!gasPrice) return;
             amount = ethBalance.sub(gasPrice.mul(21000).mul(1000));
+            if (amount.lt(0)) throw { message: errorMessages.insufficientGas().message };
         }
         const transactionConfig = await prepareSendTransaction({
             request: {
