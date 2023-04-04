@@ -1,4 +1,4 @@
-import pools from "src/config/constants/pools.json";
+import pools from "src/config/constants/pools";
 import { Farm } from "src/types";
 import { constants, BigNumber, Signer, Contract, utils } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
@@ -149,7 +149,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const zapIn: ZapInFn = async ({ amountInWei, signer, chainId, max, token, balances }) => {
+    const zapIn: ZapInFn = async ({ amountInWei, signer, chainId, max, token, balances, currentWallet }) => {
         if (!signer) return;
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
@@ -176,6 +176,8 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 if (max) {
                     amountInWei = BigNumber.from(balances[token]);
                 }
+                await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
+
                 zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei);
             }
 

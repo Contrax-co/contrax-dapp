@@ -11,6 +11,7 @@ import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
 import useWallet from "src/hooks/useWallet";
 import { useAppSelector } from "src/state";
+import { constants } from "ethers";
 
 export const useDetailInput = (farm: Farm) => {
     const [amount, setAmount] = useState("");
@@ -196,7 +197,7 @@ export const useDetailInput = (farm: Farm) => {
                     //
                     break;
                 case TransactionCurrency.ETH:
-                    await zapInAsync({ ethZapAmount: getTokenAmount(), max });
+                    await zapInAsync({ zapAmount: getTokenAmount(), max, token: constants.AddressZero });
                     break;
                 case TransactionCurrency.LP_Token:
                     await depositAsync({ depositAmount: getTokenAmount(), max });
@@ -211,12 +212,11 @@ export const useDetailInput = (farm: Farm) => {
                     //
                     break;
                 case TransactionCurrency.ETH:
-                    await zapOutAsync({ withdrawAmt: getTokenAmount(), max });
+                    await zapOutAsync({ withdrawAmt: getTokenAmount(), max, token: constants.AddressZero });
                     break;
                 case TransactionCurrency.LP_Token:
                     await withdrawAsync({ withdrawAmount: getTokenAmount(), max });
                     break;
-
                 default:
                     break;
             }

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import pools from "src/config/constants/pools.json";
+import pools from "src/config/constants/pools";
 import { Farm } from "src/types";
 
 const farms = pools as Farm[];

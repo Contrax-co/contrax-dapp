@@ -43,6 +43,11 @@ export interface Farm {
     zap_symbol: string;
     withdraw_decimals?: number;
     vault_decimals?: number;
+    zap_currencies?: {
+        symbol: string;
+        address: string;
+        decimals: number;
+    }[];
 }
 export interface FarmDetails extends Farm {
     userVaultBalance: number;

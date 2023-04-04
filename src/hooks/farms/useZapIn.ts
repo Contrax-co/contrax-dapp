@@ -25,7 +25,7 @@ const useZapIn = (farm: Farm) => {
 
     const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
         let amountInWei = utils.parseUnits(zapAmount.toString(), decimals[token]);
-        await farmFunctions[farm.id].zapIn({ amountInWei, balances, signer, chainId, max, token });
+        await farmFunctions[farm.id].zapIn({ currentWallet, amountInWei, balances, signer, chainId, max, token });
         reloadBalances();
         reloadSupplies();
     };

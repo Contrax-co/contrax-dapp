@@ -1,4 +1,4 @@
-import json from "src/config/constants/pools.json";
+import json from "src/config/constants/pools";
 import { utils } from "ethers";
 import { getEarnings } from "src/api/farms";
 import useWallet from "src/hooks/useWallet";

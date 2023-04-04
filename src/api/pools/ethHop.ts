@@ -1,4 +1,4 @@
-import pools from "src/config/constants/pools.json";
+import pools from "src/config/constants/pools";
 import { Farm } from "src/types";
 import { BigNumber, Signer, Contract, utils, constants } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
@@ -8,10 +8,12 @@ import { blockExplorersByChainId } from "src/config/constants/urls";
 import { Balances } from "src/state/balances/types";
 import { Prices } from "src/state/prices/types";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
+import { DepositFn, GetFarmDataProcessedFn, WithdrawFn, ZapInFn, ZapOutFn } from "./types";
+import { addressesByChainId } from "src/config/constants/contracts";
 
 const farm = pools.find((farm) => farm.id === 16) as Farm;
 
-export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices) => {
+export const getModifiedFarmDataByEthBalance: GetFarmDataProcessedFn = (balances: Balances, prices: Prices) => {
     const ethBalance = balances[constants.AddressZero]!;
     const ethPrice = prices[constants.AddressZero];
     const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
@@ -40,34 +42,33 @@ export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Pric
     };
 };
 
-export const deposit = async ({
-    depositAmount,
-    currentWallet,
-    signer,
-    chainId,
-    max,
-    cb,
-}: {
-    depositAmount: number;
-    currentWallet: string;
-    signer?: Signer;
-    chainId: number;
-    max?: boolean;
-    cb?: () => any;
-}) => {
+export const zapIn: ZapInFn = async ({ amountInWei, balances, token, signer, chainId, currentWallet, max }) => {
     if (!signer) return;
     const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
     const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
     let notiId = notifyLoading(loadingMessages.approvingZapping());
     try {
-        let formattedBal = utils.parseUnits(depositAmount.toString(), farm.decimals);
-        // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
-        if (max) {
-            const balance = await getBalance(farm.token1, currentWallet, signer.provider!);
-            formattedBal = balance;
+        let zapperTxn: any;
+        if (token === constants.AddressZero) {
+            if (max) {
+                amountInWei = balances[constants.AddressZero]!;
+            }
+            await approveErc20(
+                addressesByChainId[chainId].wethAddress,
+                farm.zapper_addr,
+                amountInWei,
+                currentWallet,
+                signer
+            );
+            zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, farm.token1, { value: amountInWei });
+        } else {
+            if (max) {
+                amountInWei = balances[token]!;
+            }
+            await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
+            zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, farm.token1, amountInWei);
         }
-        await approveErc20(farm.token1, farm.zapper_addr, formattedBal, currentWallet, signer);
-        let zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, farm.token1, { value: formattedBal });
+
         dismissNotify(notiId);
         notifyLoading(loadingMessages.zapping(zapperTxn.hash), {
             id: notiId,
@@ -93,33 +94,13 @@ export const deposit = async ({
         dismissNotify(notiId);
         notifyError(errorMessages.generalError(err.reason || err.message));
     }
-    cb && cb();
 };
 
-export const withdraw = async ({
-    withdrawAmount,
-    currentWallet,
-    signer,
-    chainId,
-    max,
-    cb,
-}: {
-    withdrawAmount: number;
-    currentWallet: string;
-    signer?: Signer;
-    chainId: number;
-    max?: boolean;
-    cb?: () => any;
-}) => {
+export const zapOut: ZapOutFn = async ({ amountInWei, currentWallet, signer, chainId, token, max }) => {
     if (!signer) return;
     const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
     const notiId = notifyLoading(loadingMessages.approvingWithdraw());
     try {
-        /*
-         * Execute the actual withdraw functionality from smart contract
-         */
-        let formattedBal;
-        formattedBal = utils.parseUnits(validateNumberDecimals(withdrawAmount), farm.decimals || 18);
         const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
 
         await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer);
@@ -127,8 +108,20 @@ export const withdraw = async ({
 
         dismissNotify(notiId);
         notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
-
-        let withdrawTxn = await zapperContract.zapOut(farm.vault_addr, max ? vaultBalance : formattedBal);
+        let withdrawTxn: any;
+        if (max) {
+            amountInWei = vaultBalance;
+        }
+        if (token === constants.AddressZero) {
+            withdrawTxn = await zapperContract.zapOut(farm.vault_addr, max ? vaultBalance : amountInWei);
+        } else {
+            withdrawTxn = await zapperContract.zapOutAndSwap(
+                farm.vault_addr,
+                max ? vaultBalance : amountInWei,
+                token,
+                0
+            );
+        }
 
         dismissNotify(notiId);
         notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
@@ -155,5 +148,4 @@ export const withdraw = async ({
         dismissNotify(notiId);
         notifyError(errorMessages.generalError(err.reason || err.message));
     }
-    cb && cb();
 };

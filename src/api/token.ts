@@ -123,7 +123,7 @@ export const getBalance = async (
 export const approveErc20 = async (
     contractAddress: string,
     spender: string,
-    amount: BigNumber,
+    amount: BigNumber | string,
     currentWallet: string,
     signer: Signer
 ) => {
@@ -131,9 +131,9 @@ export const approveErc20 = async (
     // check allowance
     const allowance = await contract.allowance(currentWallet, spender);
     // if allowance is lower than amount, approve
-    if (amount.gt(allowance)) {
+    if (BigNumber.from(amount).gt(allowance)) {
         // approve
-        await (await contract.approve(spender, constants.MaxUint256)).wait();
+        await(await contract.approve(spender, constants.MaxUint256)).wait();
     }
 };
 
