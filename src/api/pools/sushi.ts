@@ -1,4 +1,4 @@
-import pools from "src/config/constants/pools";
+import pools from "src/config/constants/pools.json";
 import { Farm } from "src/types";
 import { constants, BigNumber, Signer, Contract, utils } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
@@ -9,35 +9,83 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { Balances } from "src/state/balances/types";
 import { Prices } from "src/state/prices/types";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
-import { DepositFn, DynamicFarmFunctions, GetFarmDataProcessedFn, WithdrawFn, ZapInFn, ZapOutFn } from "./types";
+import {
+    DepositFn,
+    DynamicFarmFunctions,
+    GetFarmDataProcessedFn,
+    TokenAmounts,
+    WithdrawFn,
+    ZapInFn,
+    ZapOutFn,
+} from "./types";
+import { defaultChainId } from "src/config/constants";
 
 let sushi: DynamicFarmFunctions = function (farmId) {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
 
-    const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices) => {
+    const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals) => {
         const ethPrice = prices[constants.AddressZero];
-        const lpPrice = prices[farm.lp_address];
+        const lpAddress = farm.lp_address;
+        const lpPrice = prices[lpAddress];
         const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
         const ethBalance = BigNumber.from(balances[constants.AddressZero]);
-        const lpBalance = BigNumber.from(balances[farm.lp_address]);
+        const lpBalance = BigNumber.from(balances[lpAddress]);
+
+        const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
+
+        let Depositable_Amounts: TokenAmounts[] = [
+            {
+                tokenAddress: usdcAddress,
+                tokenSymbol: "USDC",
+                amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
+                amountDollar: (
+                    Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
+                ).toString(),
+                price: prices[usdcAddress],
+            },
+            {
+                tokenAddress: constants.AddressZero,
+                tokenSymbol: "ETH",
+                amount: toEth(balances[constants.AddressZero]!, 18),
+                amountDollar: (Number(toEth(balances[constants.AddressZero]!, 18)) * ethPrice).toString(),
+                price: ethPrice,
+            },
+            {
+                tokenAddress: lpAddress,
+                tokenSymbol: farm.name,
+                amount: toEth(balances[lpAddress]!, decimals[lpAddress]),
+                amountDollar: (Number(toEth(balances[lpAddress]!, decimals[lpAddress])) * prices[lpAddress]).toString(),
+                price: prices[lpAddress],
+            },
+        ];
+
+        let Withdrawable_Amounts: TokenAmounts[] = [
+            {
+                tokenAddress: usdcAddress,
+                tokenSymbol: "USDC",
+                amount: ((Number(toEth(vaultBalance)) * lpPrice) / prices[usdcAddress]).toString(),
+                amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+                price: prices[usdcAddress],
+            },
+            {
+                tokenAddress: constants.AddressZero,
+                tokenSymbol: "ETH",
+                amount: ((Number(toEth(vaultBalance)) * lpPrice) / ethPrice).toString(),
+                amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+                price: ethPrice,
+            },
+            {
+                tokenAddress: lpAddress,
+                tokenSymbol: farm.name,
+                amount: toEth(vaultBalance),
+                amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+                price: prices[lpAddress],
+            },
+        ];
 
         const result = {
-            Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
-            Max_Zap_Withdraw_Balance: ((Number(toEth(vaultBalance)) * lpPrice) / ethPrice).toString(),
-            Max_Token_Withdraw_Balance: toEth(vaultBalance),
-            Max_Token_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
-            Max_Token_Deposit_Balance: toEth(lpBalance),
-            Max_Token_Deposit_Balance_Dollar: (Number(toEth(lpBalance)) * lpPrice).toString(),
-            Max_Zap_Deposit_Balance_Dollar: (Number(toEth(ethBalance)) * ethPrice).toString(),
-            Max_Zap_Deposit_Balance: toEth(ethBalance),
-            Token_Token_Symbol: farm.name,
-            Zap_Token_Symbol: "ETH",
-            Token_Deposit_Token_Address: farm.lp_address,
-            Token_Withdraw_Token_Address: farm.lp_address,
-            Zap_Deposit_Token_Address: constants.AddressZero,
-            Zap_Withdraw_Token_Address: constants.AddressZero,
-            TOKEN_PRICE: lpPrice,
-            ZAP_TOKEN_PRICE: ethPrice,
+            Depositable_Amounts,
+            Withdrawable_Amounts,
             ID: farm.id,
         };
         return result;
@@ -214,11 +262,6 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         const wethAddress = addressesByChainId[chainId].wethAddress;
         const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
-            /*
-             * Execute the actual withdraw functionality from smart contract
-             */
-            // let formattedBal;
-            // formattedBal = utils.parseUnits(validateNumberDecimals(zapAmount), farm.decimals || 18);
             const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
 
             await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer);
