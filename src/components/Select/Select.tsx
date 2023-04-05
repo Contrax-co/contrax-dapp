@@ -16,10 +16,10 @@ export const Select: FC<IProps> = ({ value, setValue, options, extraText }) => {
     return (
         <div className={styles.selectWrapper}>
             <OutsideClickHandler display="inline-block" onOutsideClick={() => setOpenSelect(false)}>
-                <div className={styles.select} onClick={() => setOpenSelect(true)}>
+                <div className={styles.select} onClick={() => setOpenSelect((prev) => !prev)}>
                     {value}{" "}
                     {extraText && extraText[options.reduce((prev, curr, index) => (curr === value ? index : prev), 0)]}
-                    <AiOutlineCaretDown className={styles.arrow} />
+                    <AiOutlineCaretDown className={`${styles.arrow} ${openSelect && styles.rotate}`} />
                 </div>
                 {openSelect && (
                     <div className={styles.options} onClick={() => setOpenSelect(false)}>
