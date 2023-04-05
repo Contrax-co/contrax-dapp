@@ -1,0 +1,40 @@
+.darkmode_toggle_container {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+.lighttoggle:hover {
+    cursor: pointer;
+}
+
+.lighttoggle {
+    background-color: var(--color_primary);
+    background-color: var(--background_secondary);
+    color: var(--color_disabled);
+    padding: 3px;
+    width: 56px;
+    border-radius: 20px;
+    margin: 10px;
+    margin-left: 10px;
+    transition: 0.3s ease-in 0s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.lighttoggle_on {
+    flex-direction: row-reverse;
+}
+
+.lighttoggle_switch {
+    background-color: var(--color_primary);
+    border-radius: 999px;
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+    transition: 0.3s ease-in 0s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
