@@ -1,0 +1,39 @@
+.selectWrapper {
+    position: relative;
+    width: fit-content;
+    justify-self: end;
+}
+.select {
+    position: relative;
+    width: fit-content;
+    color: var(--color_text);
+    background: var(--background_primary);
+    padding: 6px 18px;
+    padding-right: 30px;
+    border: 1px solid var(--color_primary);
+    border-radius: 4px;
+}
+.arrow{
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.options {
+    position: absolute;
+    background: var(--background_primary);
+    border: 1px solid var(--color_primary);
+    border-radius: 4px;
+    padding: 6px 22px;
+    bottom: 0;
+    right: 0;
+}
+.option {
+    white-space: nowrap;
+    padding: 8px 4px;
+    border-bottom: 1px solid var(--color_text);
+
+    &:last-child {
+        border-bottom: transparent;
+    }
+}
