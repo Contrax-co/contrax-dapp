@@ -94,6 +94,7 @@ let hop = (farmId: number) => {
         if (!signer) return;
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
+        const wethAddress = addressesByChainId[chainId].wethAddress;
         let notiId = notifyLoading(loadingMessages.approvingZapping());
         try {
             let zapperTxn: any;
@@ -102,7 +103,19 @@ let hop = (farmId: number) => {
                 if (max) {
                     amountInWei = balances[constants.AddressZero]!;
                 }
-                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, addressesByChainId[chainId].wethAddress, {
+                amountInWei = BigNumber.from(amountInWei);
+
+                //=============Gas Logic================
+                const balance = BigNumber.from(balances[constants.AddressZero]);
+                const gasPrice: any = await signer.getGasPrice();
+                const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, wethAddress, {
+                    value: balance,
+                });
+                const gasToRemove = gasLimit.mul(gasPrice).mul(3);
+                if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
+                //=============Gas Logic================
+
+                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
                     value: amountInWei,
                 });
             } else {

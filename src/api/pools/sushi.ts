@@ -208,24 +208,29 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             let zapperTxn: any;
             if (token === constants.AddressZero) {
                 if (max) {
-                    const balance = await signer.getBalance();
-                    amountInWei = await signer.getBalance();
-                    const gasPrice: any = await signer.getGasPrice();
-                    const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, wethAddress, {
-                        value: amountInWei,
-                    });
-                    const gasToRemove = gasLimit.mul(gasPrice).mul(2);
-                    amountInWei = balance.sub(gasToRemove);
+                    amountInWei = balances[constants.AddressZero]!;
                 }
+                amountInWei = BigNumber.from(amountInWei);
+
+                //=============Gas Logic================
+                const balance = BigNumber.from(balances[constants.AddressZero]);
+                const gasPrice: any = await signer.getGasPrice();
+                const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, wethAddress, {
+                    value: balance,
+                });
+                const gasToRemove = gasLimit.mul(gasPrice).mul(3);
+                if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
+                //=============Gas Logic================
+
                 zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
                     value: amountInWei,
                 });
             } else {
                 if (max) {
-                    amountInWei = BigNumber.from(balances[token]);
+                    amountInWei = balances[token]!;
                 }
-                await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
 
+                await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
                 zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei);
             }
 
@@ -270,12 +275,20 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             dismissNotify(notiId);
             notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
-            let withdrawTxn = await zapperContract.zapOutAndSwap(
-                farm.vault_addr,
-                max ? vaultBalance : amountInWei,
-                token === constants.AddressZero ? wethAddress : token,
-                0
-            );
+            let withdrawTxn: any;
+            if (max) {
+                amountInWei = vaultBalance;
+            }
+            if (token === constants.AddressZero) {
+                withdrawTxn = await zapperContract.zapOut(farm.vault_addr, max ? vaultBalance : amountInWei);
+            } else {
+                withdrawTxn = await zapperContract.zapOutAndSwap(
+                    farm.vault_addr,
+                    max ? vaultBalance : amountInWei,
+                    token,
+                    0
+                );
+            }
 
             dismissNotify(notiId);
             notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
