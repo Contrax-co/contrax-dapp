@@ -55,7 +55,11 @@ export type DepositFn = (args: DepositArgs) => Promise<void>;
 export type WithdrawFn = (args: WithdrawArgs) => Promise<void>;
 export type ZapInFn = (args: ZapInArgs) => Promise<void>;
 export type ZapOutFn = (args: ZapOutArgs) => Promise<void>;
-export type GetFarmDataProcessedFn = (balances: Balances, prices: Prices, decimals: Decimals) => FarmDataProcessed;
+export type GetFarmDataProcessedFn = (
+    balances: Balances,
+    prices: Prices,
+    decimals: Partial<Decimals>
+) => FarmDataProcessed;
 export interface FarmFunctions {
     getProcessedFarmData: GetFarmDataProcessedFn;
     deposit: DepositFn;

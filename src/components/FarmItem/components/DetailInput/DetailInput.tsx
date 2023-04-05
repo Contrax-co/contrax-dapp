@@ -25,7 +25,6 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
         showInUsd,
         currentWallet,
         maxBalance,
-        dontShowUsdSelect,
         setMax,
         handleInput,
         handleSubmit,
@@ -114,7 +113,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
     //     setAmount("");
     //     setMax(false);
     // };
-   
+
     // const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     //     setAmount(e.target.value);
     //     setMax(false);
@@ -145,7 +144,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
             {!isLoadingFarm && (
                 <div style={{ textAlign: "right" }}>
                     {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
-                    {showInUsd ? `$ ${toFixedFloor(maxBalance, 2)}` : toFixedFloor(maxBalance, 6)}
+                    {showInUsd ? `$ ${toFixedFloor(Number(maxBalance), 2)}` : toFixedFloor(Number(maxBalance), 6)}
                 </div>
             )}
             <div></div>
@@ -190,7 +189,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
                 {!currentWallet
                     ? "Please Login"
                     : parseFloat(amount) > 0
-                    ? parseFloat(amount) > maxBalance
+                    ? parseFloat(amount) > parseFloat(maxBalance)
                         ? "Insufficent Balance"
                         : type === FarmTransactionType.Deposit
                         ? "Deposit"

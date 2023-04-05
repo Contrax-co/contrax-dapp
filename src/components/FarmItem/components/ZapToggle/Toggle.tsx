@@ -21,7 +21,7 @@ const Toggle: React.FC<Props> = ({ active, farm, ...props }) => {
                     active && lightMode && "first_switch--selected--light"
                 }`}
             >
-                Zap {farmData?.Zap_Token_Symbol}
+                Zap
             </p>
 
             <div
