@@ -1,7 +1,7 @@
 import { arbitrum, mainnet, avalanche, bsc, optimism, polygon, gnosis, fantom } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
-import { Web3AuthCore } from "@web3auth/core";
+import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -46,7 +46,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
 );
 
 // Instantiating Web3Auth
-const web3AuthInstance = new Web3AuthCore({
+const web3AuthInstance = new Web3AuthNoModal({
     clientId,
     chainConfig: {
         chainNamespace: CHAIN_NAMESPACES.EIP155,
