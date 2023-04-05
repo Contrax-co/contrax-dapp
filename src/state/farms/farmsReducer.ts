@@ -28,13 +28,20 @@ export const updateFarmDetails = createAsyncThunk(
     "farms/updateFarmDetails",
     async ({ currentWallet, farms, balances, prices, decimals }: FetchFarmDetailsAction, thunkApi) => {
         if (!currentWallet) return;
-        const data: FarmDetails = {};
-        farms.forEach((farm) => {
-            data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(balances, prices, decimals);
-        });
+        try {
+            const data: FarmDetails = {};
+            console.log({ farms });
+            farms.forEach((farm) => {
+                // @ts-ignore
+                if (farmFunctions[farm.id]?.getProcessedFarmData)
+                    data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(balances, prices, decimals);
+            });
 
-        thunkApi.dispatch(setAccount(currentWallet));
-        return data;
+            thunkApi.dispatch(setAccount(currentWallet));
+            return data;
+        } catch (error) {
+            console.error(error);
+        }
     }
 );
 

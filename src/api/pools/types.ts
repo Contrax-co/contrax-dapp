@@ -43,6 +43,7 @@ export interface TokenAmounts {
     amountDollar: string;
     tokenAddress: string;
     tokenSymbol: string;
+    price: number;
 }
 
 export interface FarmDataProcessed {

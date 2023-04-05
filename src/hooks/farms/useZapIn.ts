@@ -9,6 +9,8 @@ import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
 import { useDecimals } from "../useDecimals";
 import { utils } from "ethers";
+import { toWei } from "src/utils/common";
+import useFarmDetails from "./useFarmDetails";
 
 export interface ZapIn {
     zapAmount: number;
@@ -24,7 +26,7 @@ const useZapIn = (farm: Farm) => {
     const { decimals } = useDecimals();
 
     const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
-        let amountInWei = utils.parseUnits(zapAmount.toString(), decimals[token]);
+        let amountInWei = toWei(zapAmount, decimals[token]);
         await farmFunctions[farm.id].zapIn({ currentWallet, amountInWei, balances, signer, chainId, max, token });
         reloadBalances();
         reloadSupplies();

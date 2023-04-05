@@ -12,15 +12,16 @@ import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
 import useWallet from "src/hooks/useWallet";
 import { useAppSelector } from "src/state";
 import { constants } from "ethers";
+import usePriceOfTokens from "./usePriceOfTokens";
 
 export const useDetailInput = (farm: Farm) => {
     const [amount, setAmount] = useState("");
     const [showInUsd, setShowInUsd] = useState<boolean>(true);
     const [max, setMax] = useState(false);
 
-    const type = useAppSelector((state) => state.farms.transactionType);
+    const [type, setType] = useState<FarmTransactionType>(FarmTransactionType.Withdraw);
     const { isBalanceTooLow } = useEstimateGasFee();
-    const { price: ethPrice } = useEthPrice();
+    const { prices } = usePriceOfTokens();
     const { isLoading: isZapping, zapInAsync } = useZapIn(farm);
     const { isLoading: isDepositing, depositAsync } = useDeposit(farm);
     const { isLoading: isZappingOut, zapOutAsync } = useZapOut(farm);
@@ -30,6 +31,7 @@ export const useDetailInput = (farm: Farm) => {
     const { currentWallet } = useWallet();
     const [depositable, setDepositable] = React.useState(farmData?.Depositable_Amounts[0]);
     const [withdrawable, setWithdrawable] = React.useState(farmData?.Withdrawable_Amounts[0]);
+    console.log({ type, farmData, farmDetails });
 
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
@@ -48,52 +50,25 @@ export const useDetailInput = (farm: Farm) => {
     }, [showInUsd, depositable, withdrawable, type]);
 
     const getTokenAmount = () => {
-        let amt = amount;
-        // if (farmData) {
-        //     if (showInUsd) {
-        //         switch (transactionCurrency) {
-        //             case TransactionCurrency.USDC:
-        //                 //
-        //                 break;
-        //             case TransactionCurrency.ETH:
-        //                 if (type === FarmTransactionType.Deposit) {
-        //                     amt = parseFloat(amount) / farmData.ZAP_TOKEN_PRICE;
-        //                 } else {
-        //                     amt = parseFloat(amount) / farmData.TOKEN_PRICE;
-        //                 }
-        //                 break;
-        //             case TransactionCurrency.LP_Token:
-        //                 amt = parseFloat(amount) / farmData.TOKEN_PRICE;
-        //                 break;
-
-        //             default:
-        //                 amt = 0;
-        //                 break;
-        //         }
-        //     } else {
-        //         switch (transactionCurrency) {
-        //             case TransactionCurrency.USDC:
-        //                 //
-        //                 break;
-        //             case TransactionCurrency.ETH:
-        //                 if (type === FarmTransactionType.Deposit) {
-        //                     amt = parseFloat(amount);
-        //                 } else {
-        //                     amt = (parseFloat(amount) * farmData.ZAP_TOKEN_PRICE) / farmData.TOKEN_PRICE;
-        //                 }
-        //                 break;
-        //             case TransactionCurrency.LP_Token:
-        //                 amt = parseFloat(amount);
-        //                 break;
-
-        //             default:
-        //                 amt = 0;
-        //                 break;
-        //         }
-        //     }
-        // }
-        // return Number(validateNumberDecimals(amt, farm.decimals));
-        return Number(amt);
+        let amt = Number(amount);
+        if (!depositable) return amt;
+        if (type === FarmTransactionType.Deposit) {
+            if (showInUsd) {
+                return amt / depositable.price;
+            } else {
+                if (depositable?.tokenAddress === farm.lp_address) {
+                    return amt;
+                } else {
+                    return amt;
+                }
+            }
+        } else {
+            if (showInUsd) {
+                return amt / prices[farm.lp_address];
+            } else {
+                return (amt * withdrawable?.price!) / prices[farm.lp_address];
+            }
+        }
     };
 
     const handleToggleShowInUsdc = () => {
@@ -109,20 +84,18 @@ export const useDetailInput = (farm: Farm) => {
 
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
+        console.log(depositable?.tokenAddress === farm.lp_address, showInUsd, type === FarmTransactionType.Deposit);
         // check for eth balance greater than gas fee
         if (isBalanceTooLow()) return;
         // if enough balance than proceed transaction
         if (type === FarmTransactionType.Deposit) {
-            if (showInUsd) {
+            if (depositable?.tokenAddress === farm.lp_address) {
+                await depositAsync({ depositAmount: getTokenAmount(), max });
             } else {
-                if (depositable?.tokenSymbol === farm.name) {
-                    await depositAsync({ depositAmount: getTokenAmount(), max });
-                } else {
-                    await zapInAsync({ zapAmount: getTokenAmount(), max, token: depositable?.tokenAddress! });
-                }
+                await zapInAsync({ zapAmount: getTokenAmount(), max, token: depositable?.tokenAddress! });
             }
         } else {
-            if (depositable?.tokenSymbol === farm.name) {
+            if (withdrawable?.tokenAddress === farm.lp_address) {
                 await withdrawAsync({ withdrawAmount: getTokenAmount(), max });
             } else {
                 await zapOutAsync({ withdrawAmt: getTokenAmount(), max, token: withdrawable?.tokenAddress! });

@@ -1,4 +1,4 @@
-import pools from "src/config/constants/pools";
+import pools from "src/config/constants/pools.json";
 import { Farm } from "src/types";
 import { BigNumber, Signer, Contract, utils, constants } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
@@ -16,11 +16,10 @@ import { defaultChainId } from "src/config/constants";
 let hop = (farmId: number) => {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
 
-    const getModifiedFarmDataByEthBalance: GetFarmDataProcessedFn = (balances, prices, decimals) => {
+    const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals) => {
         const ethPrice = prices[constants.AddressZero];
         const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
         const vaultTokenPrice = prices[farm.token1];
-        const tokenBalance = BigNumber.from(balances[farm.token1]);
         const zapCurriences = farm.zap_currencies;
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
@@ -32,36 +31,34 @@ let hop = (farmId: number) => {
                 amountDollar: (
                     Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
                 ).toString(),
+                price: prices[usdcAddress],
             },
             {
                 tokenAddress: constants.AddressZero,
                 tokenSymbol: "ETH",
                 amount: toEth(balances[constants.AddressZero]!, 18),
                 amountDollar: (Number(toEth(balances[constants.AddressZero]!, 18)) * ethPrice).toString(),
+                price: ethPrice,
             },
         ];
 
         let Withdrawable_Amounts: TokenAmounts[] = [
             {
-                tokenAddress: farm.pair1,
-                tokenSymbol: farm.name1,
-                amount: toEth(vaultBalance, farm.decimals),
+                tokenAddress: usdcAddress,
+                tokenSymbol: "USDC",
+                amount: (
+                    (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
+                    prices[usdcAddress]
+                ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
+                price: prices[usdcAddress],
             },
             {
                 tokenAddress: constants.AddressZero,
                 tokenSymbol: "ETH",
                 amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / ethPrice).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-            },
-            {
-                tokenAddress: usdcAddress,
-                tokenSymbol: "USDC",
-                amount: (
-                    (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[usdcAddress    ]
-                ).toString(),
-                amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
+                price: ethPrice,
             },
         ];
 
@@ -73,6 +70,17 @@ let hop = (farmId: number) => {
                 tokenSymbol: currency.symbol,
                 amount: toEth(currencyBalance, decimals[currency.symbol]),
                 amountDollar: (Number(toEth(currencyBalance, decimals[currency.address])) * currencyPrice).toString(),
+                price: prices[currency.address],
+            });
+            Withdrawable_Amounts.push({
+                tokenAddress: currency.address,
+                tokenSymbol: currency.symbol,
+                amount: (
+                    (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
+                    prices[currency.address]
+                ).toString(),
+                amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
+                price: prices[currency.address],
             });
         });
         return {
@@ -94,20 +102,15 @@ let hop = (farmId: number) => {
                 if (max) {
                     amountInWei = balances[constants.AddressZero]!;
                 }
-                await approveErc20(
-                    addressesByChainId[chainId].wethAddress,
-                    farm.zapper_addr,
-                    amountInWei,
-                    currentWallet,
-                    signer
-                );
-                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, farm.token1, { value: amountInWei });
+                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, addressesByChainId[chainId].wethAddress, {
+                    value: amountInWei,
+                });
             } else {
                 if (max) {
                     amountInWei = balances[token]!;
                 }
                 await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
-                zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, farm.token1, amountInWei);
+                zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei);
             }
 
             dismissNotify(notiId);
@@ -192,7 +195,7 @@ let hop = (farmId: number) => {
         }
     };
 
-    return { zapIn, zapOut, getModifiedFarmDataByEthBalance };
+    return { zapIn, zapOut, getProcessedFarmData };
 };
 
 export default hop;
