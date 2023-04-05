@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import useApp from "src/hooks/useApp";
 import { Farm } from "src/types";
-import { FarmTransactionType } from "src/types/enums";
-import { noExponents, toFixedFloor } from "src/utils/common";
+import { FarmTransactionType, TransactionCurrency } from "src/types/enums";
+import { noExponents } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import Loader from "src/components/Loader/Loader";
 import { useDetailInput } from "src/hooks/useDetailInput";
+import { Select } from "src/components/Select/Select";
+import { UsdToggle } from "../UsdToggle/UsdToggle";
 
 interface Props {
     farm: Farm;
@@ -132,6 +134,8 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
     //     if (max) setAmount(maxBalance.toString());
     // }, [max, maxBalance]);
 
+    const [transactionCurrency, setTransactionCurrency] = useState(TransactionCurrency.USDC);
+
     return (
         <form
             className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
@@ -139,11 +143,15 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
         >
             {isLoadingTransaction && <Loader />}
             {isLoadingFarm && <Skeleton w={100} h={20} style={{ marginLeft: "auto" }} />}
-            {!isLoadingFarm && (
-                <div style={{ textAlign: "right" }}>
-                    {shouldUseLp ? ` ${farm.name}` : " ETH"} Balance: &nbsp;
-                    {showInUsd ? `$ ${toFixedFloor(maxBalance, 2)}` : toFixedFloor(maxBalance, 6)}
-                </div>
+            {!isLoadingFarm && currentWallet ? (
+                <Select
+                    options={[TransactionCurrency.USDC, TransactionCurrency.ETH, TransactionCurrency.LP_Token]}
+                    value={transactionCurrency}
+                    setValue={setTransactionCurrency}
+                    extraText={[": $ 823", ": $ 84", ": 83724"]}
+                />
+            ) : (
+                <div></div>
             )}
             <div></div>
 
@@ -163,6 +171,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
                     <p className={styles.maxBtn} onClick={() => setMax(true)}>
                         MAX
                     </p>
+                    <UsdToggle showInUsd={showInUsd} handleToggleShowInUsdc={handleToggleShowInUsdc} />
                     {/* {!dontShowUsdSelect && (
                         <select
                             value={showInUsd.toString()}
