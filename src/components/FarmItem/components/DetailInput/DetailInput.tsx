@@ -9,6 +9,9 @@ import Loader from "src/components/Loader/Loader";
 import { useDetailInput } from "src/hooks/useDetailInput";
 import { Select } from "src/components/Select/Select";
 import { UsdToggle } from "../UsdToggle/UsdToggle";
+import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
+import useWallet from "src/hooks/useWallet";
+import { constants } from "ethers";
 
 interface Props {
     farm: Farm;

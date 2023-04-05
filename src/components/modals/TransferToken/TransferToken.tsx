@@ -28,7 +28,6 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         // check for eth balance greater than gas fee
-        if (isBalanceTooLow()) return;
         const id = notifyLoading(loadingMessages.transferingTokens());
         try {
             if (token.address === constants.AddressZero) {
@@ -44,7 +43,7 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
             notifySuccess(successMessages.tokenTransfered());
         } catch (error: any) {
             let err = JSON.parse(JSON.stringify(error));
-            notifyError(errorMessages.generalError(err.reason || err.message));
+            notifyError(errorMessages.generalError(err.cause?.reason || err.reason || err.message));
         }
         dismissNotify(id);
         setSelectedToken(undefined);

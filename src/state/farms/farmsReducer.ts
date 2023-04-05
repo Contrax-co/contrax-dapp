@@ -30,7 +30,7 @@ export const updateFarmDetails = createAsyncThunk(
         if (!currentWallet) return;
         const data: FarmDetails = {};
         farms.forEach((farm) => {
-            data[farm.id] = farmFunctions[farm.id]?.getModifiedFarmDataByEthBalance(balances, prices);
+            data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(balances, prices);
         });
 
         thunkApi.dispatch(setAccount(currentWallet));
