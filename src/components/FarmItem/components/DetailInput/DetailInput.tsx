@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import useApp from "src/hooks/useApp";
 import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
@@ -9,9 +9,6 @@ import Loader from "src/components/Loader/Loader";
 import { useDetailInput } from "src/hooks/useDetailInput";
 import { Select } from "src/components/Select/Select";
 import { UsdToggle } from "../UsdToggle/UsdToggle";
-import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
-import useWallet from "src/hooks/useWallet";
-import { constants } from "ethers";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
@@ -19,11 +16,9 @@ import { FarmDetailInputOptions } from "src/state/farms/types";
 
 interface Props {
     farm: Farm;
-    shouldUseLp: boolean;
-    type: FarmTransactionType;
 }
 
-const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
+const DetailInput: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const { transactionType, currencySymbol } = useAppSelector((state) => state.farms.farmDetailInputOptions);
 
@@ -113,20 +108,6 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
                         MAX
                     </p>
                     <UsdToggle showInUsd={showInUsd} handleToggleShowInUsdc={handleToggleShowInUsdc} />
-                    {/* {!dontShowUsdSelect && (
-                        <select
-                            value={showInUsd.toString()}
-                            onChange={handleShowInUsdChange}
-                            className={`${styles.select} ${lightMode && styles.select_light}`}
-                        >
-                            <option value={"false"} className="currency_select">
-                                {shouldUseLp ? farm.name : farm.zap_symbol}
-                            </option>
-                            <option value={"true"} className="currency_select">
-                                USD
-                            </option>
-                        </select>
-                    )} */}
                 </div>
             </div>
             <button

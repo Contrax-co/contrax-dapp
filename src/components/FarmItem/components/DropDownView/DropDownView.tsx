@@ -16,7 +16,6 @@ import { FarmDetailInputOptions } from "src/state/farms/types";
 export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [showMoreDetail, setShowMoreDetail] = useState(false);
-    const [shouldUseLp, setShouldUseLp] = useState(farm.token_type === "LP Token" ? false : true);
     const transactionType = useAppSelector((state) => state.farms.farmDetailInputOptions.transactionType);
     const dispatch = useAppDispatch();
 
@@ -56,8 +55,8 @@ export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
                     </p>
                 </div>
                 <div className="right_container">
-                    <Description farm={farm} shouldUseLp={shouldUseLp} type={transactionType} />
-                    <DetailInput farm={farm} shouldUseLp={shouldUseLp} type={transactionType} />
+                    <Description farm={farm} />
+                    <DetailInput farm={farm} />
                 </div>
             </div>
 
@@ -72,12 +71,7 @@ export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
                     <RiArrowDownSLine />
                 </div>
             ) : (
-                <Details
-                    farm={farm}
-                    onClick={() => setShowMoreDetail(false)}
-                    shouldUseLp={shouldUseLp}
-                    setShouldUseLp={setShouldUseLp}
-                />
+                <Details farm={farm} onClick={() => setShowMoreDetail(false)} />
             )}
         </div>
     );
