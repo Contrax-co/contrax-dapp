@@ -61,7 +61,6 @@ export function getNetworkName(id: number) {
 }
 
 export const toWei = (value: string | number, decimals = 18) => {
-    console.log(value);
     value = Number(value)
         .toFixed(decimals + 1)
         .slice(0, -1);
