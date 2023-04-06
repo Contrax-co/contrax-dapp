@@ -9,22 +9,18 @@
 }
 
 .lighttoggle {
-    background-color: var(--color_primary);
     background-color: var(--background_secondary);
     color: var(--color_disabled);
-    padding: 3px;
     width: 56px;
+    height: 24px;
     border-radius: 20px;
     margin: 10px;
     margin-left: 10px;
-    transition: 0.3s ease-in 0s;
+    transition: 3s ease-in 0s;
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.lighttoggle_on {
-    flex-direction: row-reverse;
+    position: relative;
 }
 
 .lighttoggle_switch {
@@ -38,4 +34,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: absolute;
+    right: 0px;
+}
+.lighttoggle_switch_on {
+    transform: translateX(-32px);
+}
+
+.lighttoggle_switch_bg {
+    padding: 3px 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left: 0px;
+}
+
+.lighttoggle_switch_bg_on {
+    transform: translateX(28px);
 }

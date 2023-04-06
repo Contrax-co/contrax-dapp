@@ -15,7 +15,7 @@ export const UsdToggle: FC<IProps> = ({ showInUsd, handleToggleShowInUsdc }) => 
                 className={`${styles.lighttoggle} ${showInUsd && styles.lighttoggle_on}`}
                 onClick={handleToggleShowInUsdc}
             >
-                <div style={{ padding: 3, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <div className={`${styles.lighttoggle_switch_bg} ${showInUsd && styles.lighttoggle_switch_bg_on}`}>
                     {showInUsd ? <CoinStack width={16} height={16} /> : <FaDollarSign size={16} />}
                 </div>
                 <div className={`${styles.lighttoggle_switch} ${showInUsd && styles.lighttoggle_switch_on}`}>
