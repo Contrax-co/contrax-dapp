@@ -91,26 +91,14 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         return result;
     };
 
-    const deposit: DepositFn = async ({ depositAmount, currentWallet, signer, chainId, max }) => {
+    const deposit: DepositFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
         if (!signer) return;
         let notiId = notifyLoading(loadingMessages.approvingDeposit());
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         try {
             const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
 
-            /*
-             * Execute the actual deposit functionality from smart contract
-             */
-            let formattedBal;
-
             const lpBalance = await getBalance(farm.lp_address, currentWallet, signer.provider!);
-            if (max) {
-                // Deposit all
-                formattedBal = lpBalance;
-            } else {
-                // Deposit
-                formattedBal = utils.parseUnits(validateNumberDecimals(depositAmount, farm.decimals), farm.decimals);
-            }
 
             // approve the vault to spend asset
             await approveErc20(farm.lp_address, farm.vault_addr, lpBalance, currentWallet, signer);
@@ -122,7 +110,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             if (max) {
                 depositTxn = await vaultContract.depositAll();
             } else {
-                depositTxn = await vaultContract.deposit(formattedBal);
+                depositTxn = await vaultContract.deposit(amountInWei);
             }
 
             dismissNotify(notiId);
@@ -152,14 +140,13 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const withdraw: WithdrawFn = async ({ withdrawAmount, currentWallet, signer, chainId, max }) => {
+    const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
         if (!signer) return;
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
             const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
-            let formattedBal;
-            formattedBal = utils.parseUnits(validateNumberDecimals(withdrawAmount, farm.decimals), farm.decimals);
+
             dismissNotify(notiId);
             notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
@@ -167,7 +154,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             if (max) {
                 withdrawTxn = await vaultContract.withdrawAll();
             } else {
-                withdrawTxn = await vaultContract.withdraw(formattedBal);
+                withdrawTxn = await vaultContract.withdraw(amountInWei);
             }
 
             dismissNotify(notiId);

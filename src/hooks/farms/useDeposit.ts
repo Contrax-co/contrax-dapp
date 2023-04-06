@@ -19,8 +19,8 @@ const useDeposit = (farm: Farm) => {
     const { decimals } = useDecimals();
 
     const _deposit = async ({ depositAmount, max }: { depositAmount: number; max?: boolean }) => {
-        let amountInWei = utils.parseUnits(depositAmount.toString(), farm.decimals);
-        await farmFunctions[farm.id].deposit({ depositAmount, currentWallet, signer, chainId, max });
+        let amountInWei = utils.parseUnits(depositAmount.toString(), decimals[farm.lp_address]);
+        await farmFunctions[farm.id].deposit({ amountInWei, currentWallet, signer, chainId, max });
         reloadBalances();
         reloadSupplies();
     };

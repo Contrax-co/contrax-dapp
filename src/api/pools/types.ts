@@ -23,7 +23,7 @@ export interface ZapOutArgs {
 }
 
 export interface DepositArgs {
-    depositAmount: number;
+    amountInWei: string | BigNumber;
     currentWallet: string;
     signer?: Signer;
     chainId: number;
@@ -31,7 +31,7 @@ export interface DepositArgs {
 }
 
 export interface WithdrawArgs {
-    withdrawAmount: number;
+    amountInWei: string | BigNumber;
     currentWallet: string;
     signer?: Signer;
     chainId: number;
