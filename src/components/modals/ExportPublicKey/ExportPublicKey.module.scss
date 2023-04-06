@@ -1,7 +1,7 @@
 @import "../../../styles/_mixins.scss";
 
 .container {
-    padding: 50px 120px 50px 58px;
+    padding: 50px 58px 50px 58px;
     @include devices(tablet) {
         width: initial;
     }
