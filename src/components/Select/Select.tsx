@@ -12,7 +12,7 @@ interface IProps {
 
 export const Select: FC<IProps> = ({ value, setValue, options, extraText }) => {
     const [openSelect, setOpenSelect] = useState(false);
-
+console.log(options);
     return (
         <div className={styles.selectWrapper}>
             <OutsideClickHandler display="inline-block" onOutsideClick={() => setOpenSelect(false)}>

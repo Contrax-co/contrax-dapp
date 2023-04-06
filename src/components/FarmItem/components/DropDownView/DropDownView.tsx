@@ -9,12 +9,20 @@ import { Description } from "../Description/Description";
 import DetailInput from "../DetailInput/DetailInput";
 import Details from "../Details/Details";
 import "./DropDownView.css";
+import { useAppDispatch, useAppSelector } from "src/state";
+import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
+import { FarmDetailInputOptions } from "src/state/farms/types";
 
 export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
-    const [transactionType, setTransactionType] = useState<FarmTransactionType>(FarmTransactionType.Deposit);
     const [showMoreDetail, setShowMoreDetail] = useState(false);
     const [shouldUseLp, setShouldUseLp] = useState(farm.token_type === "LP Token" ? false : true);
+    const transactionType = useAppSelector((state) => state.farms.farmDetailInputOptions.transactionType);
+    const dispatch = useAppDispatch();
+
+    const setFarmOptions = (opt: Partial<FarmDetailInputOptions>) => {
+        dispatch(setFarmDetailInputOptions(opt));
+    };
 
     return (
         <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>
@@ -22,12 +30,12 @@ export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
                 <div className="type_tab">
                     <Tabs>
                         <PoolButton
-                            onClick={() => setTransactionType(FarmTransactionType.Deposit)}
+                            onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Deposit })}
                             description={FarmTransactionType.Deposit}
                             active={transactionType === FarmTransactionType.Deposit}
                         />
                         <PoolButton
-                            onClick={() => setTransactionType(FarmTransactionType.Withdraw)}
+                            onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Withdraw })}
                             description={FarmTransactionType.Withdraw}
                             active={transactionType === FarmTransactionType.Withdraw}
                         />
@@ -35,13 +43,13 @@ export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
                 </div>
                 <div className="type_selector">
                     <p
-                        onClick={() => setTransactionType(FarmTransactionType.Deposit)}
+                        onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Deposit })}
                         className={transactionType === FarmTransactionType.Deposit ? "active" : ""}
                     >
                         {FarmTransactionType.Deposit}
                     </p>
                     <p
-                        onClick={() => setTransactionType(FarmTransactionType.Withdraw)}
+                        onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Withdraw })}
                         className={transactionType === FarmTransactionType.Withdraw ? "active" : ""}
                     >
                         {FarmTransactionType.Withdraw}

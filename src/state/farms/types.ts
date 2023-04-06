@@ -13,7 +13,11 @@ export interface StateInterface {
     isLoading: boolean;
     isFetched: boolean;
     account: string;
+    farmDetailInputOptions: FarmDetailInputOptions;
+}
+export interface FarmDetailInputOptions {
     transactionType: FarmTransactionType;
+    showInUsd: boolean;
 }
 
 export interface FarmDetails {

@@ -2,7 +2,14 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { getEarnings } from "src/api/farms";
 import farmFunctions from "src/api/pools";
 import { sleep, toEth } from "src/utils/common";
-import { StateInterface, FetchFarmDetailsAction, FarmDetails, Earnings, FetchEarningsAction } from "./types";
+import {
+    StateInterface,
+    FetchFarmDetailsAction,
+    FarmDetails,
+    Earnings,
+    FetchEarningsAction,
+    FarmDetailInputOptions,
+} from "./types";
 import { Contract, BigNumber, utils } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
 import { erc20ABI } from "wagmi";
@@ -19,9 +26,12 @@ const initialState: StateInterface = {
     isLoading: false,
     isFetched: false,
     account: "",
-    transactionType: FarmTransactionType.Deposit,
     earnings: {},
     isLoadingEarnings: false,
+    farmDetailInputOptions: {
+        transactionType: FarmTransactionType.Deposit,
+        showInUsd: true,
+    },
 };
 
 export const updateFarmDetails = createAsyncThunk(
@@ -119,15 +129,14 @@ const farmsSlice = createSlice({
         setAccount(state, action: { payload: string }) {
             state.account = action.payload;
         },
-        setTransactionType(state, action: { payload: FarmTransactionType }) {
-            state.transactionType = action.payload;
+        setFarmDetailInputOptions(state, action: { payload: Partial<FarmDetailInputOptions> }) {
+            state.farmDetailInputOptions = { ...state.farmDetailInputOptions, ...action.payload };
         },
         reset(state) {
             state.farmDetails = {};
             state.isLoading = false;
             state.isFetched = false;
             state.account = "";
-            state.transactionType = FarmTransactionType.Deposit;
         },
     },
     extraReducers(builder) {
@@ -159,6 +168,6 @@ const farmsSlice = createSlice({
     },
 });
 
-export const { reset, setAccount, setTransactionType } = farmsSlice.actions;
+export const { reset, setAccount, setFarmDetailInputOptions } = farmsSlice.actions;
 
 export default farmsSlice.reducer;

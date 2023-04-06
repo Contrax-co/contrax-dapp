@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import useApp from "src/hooks/useApp";
 import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
@@ -13,6 +13,7 @@ import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
 import useWallet from "src/hooks/useWallet";
 import { constants } from "ethers";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
+import { useAppDispatch, useAppSelector } from "src/state";
 
 interface Props {
     farm: Farm;
@@ -22,8 +23,9 @@ interface Props {
 
 const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
     const { lightMode } = useApp();
+    const transactionType = useAppSelector((state) => state.farms.farmDetailInputOptions.transactionType);
+
     const {
-        type,
         amount,
         showInUsd,
         currentWallet,
@@ -35,10 +37,38 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
         isLoadingFarm,
         isLoadingTransaction,
     } = useDetailInput(farm);
-    const { farmDetails, isLoading } = useFarmDetails();
+    const { farmDetails } = useFarmDetails();
     const farmData = farmDetails[farm.id];
 
     const [transactionCurrency, setTransactionCurrency] = useState("USDC");
+
+    const selectOptions = useMemo(
+        () =>
+            transactionType === FarmTransactionType.Deposit
+                ? farmData?.Depositable_Amounts.map((_) => _.tokenSymbol)
+                : farmData?.Withdrawable_Amounts.map((_) => _.tokenSymbol) || [],
+        [transactionType, farmData]
+    );
+
+    const selectExtraOptions = useMemo(
+        () =>
+            transactionType === FarmTransactionType.Deposit
+                ? farmData?.Depositable_Amounts.map(
+                      (_) =>
+                          (showInUsd ? ": $" : ": ") +
+                          Number(showInUsd ? _.amountDollar : _.amount).toLocaleString("en-us", {
+                              maximumFractionDigits: 4,
+                          })
+                  )
+                : farmData?.Withdrawable_Amounts.map(
+                      (_) =>
+                          (showInUsd ? ": $" : ": ") +
+                          Number(showInUsd ? _.amountDollar : _.amount).toLocaleString("en-us", {
+                              maximumFractionDigits: 4,
+                          })
+                  ) || [],
+        [transactionType, farmData, showInUsd]
+    );
 
     return (
         <form
@@ -50,14 +80,10 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
 
             {!isLoadingFarm && currentWallet ? (
                 <Select
-                    options={
-                        type === FarmTransactionType.Deposit
-                            ? farmData?.Depositable_Amounts.map((_) => (showInUsd ? _.amountDollar : _.amount))
-                            : farmData?.Withdrawable_Amounts.map((_) => (showInUsd ? _.amountDollar : _.amount)) || []
-                    }
+                    options={selectOptions}
                     value={transactionCurrency}
                     setValue={setTransactionCurrency}
-                    extraText={[": $ 823", ": $ 84", ": 83724"]}
+                    extraText={selectExtraOptions}
                 />
             ) : (
                 <div></div>
@@ -107,7 +133,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
                     : parseFloat(amount) > 0
                     ? parseFloat(amount) > parseFloat(maxBalance)
                         ? "Insufficent Balance"
-                        : type === FarmTransactionType.Deposit
+                        : transactionType === FarmTransactionType.Deposit
                         ? "Deposit"
                         : "Withdraw"
                     : "Enter Amount"}

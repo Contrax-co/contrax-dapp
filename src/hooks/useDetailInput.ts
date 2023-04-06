@@ -16,10 +16,11 @@ import usePriceOfTokens from "./usePriceOfTokens";
 
 export const useDetailInput = (farm: Farm) => {
     const [amount, setAmount] = useState("");
-    const [showInUsd, setShowInUsd] = useState<boolean>(true);
     const [max, setMax] = useState(false);
+    const type = useAppSelector((state) => state.farms.farmDetailInputOptions.transactionType);
 
-    const [type, setType] = useState<FarmTransactionType>(FarmTransactionType.Withdraw);
+    const [showInUsd, setShowInUsd] = useState<boolean>(true);
+
     const { isBalanceTooLow } = useEstimateGasFee();
     const { prices } = usePriceOfTokens();
     const { isLoading: isZapping, zapInAsync } = useZapIn(farm);
