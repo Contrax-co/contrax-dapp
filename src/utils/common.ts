@@ -60,7 +60,10 @@ export function getNetworkName(id: number) {
     }
 }
 
-export const toWei = (value: string, decimals = 18) => {
+export const toWei = (value: string | number, decimals = 18) => {
+    value = Number(value)
+        .toFixed(decimals + 1)
+        .slice(0, -1);
     return utils.parseUnits(value, decimals);
 };
 

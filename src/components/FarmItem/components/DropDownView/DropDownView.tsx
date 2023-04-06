@@ -9,53 +9,54 @@ import { Description } from "../Description/Description";
 import DetailInput from "../DetailInput/DetailInput";
 import Details from "../Details/Details";
 import "./DropDownView.css";
+import { useAppDispatch, useAppSelector } from "src/state";
+import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
+import { FarmDetailInputOptions } from "src/state/farms/types";
 
 export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
-    const [transactionType, setTransactionType] = useState<FarmTransactionType>(
-        farm.isDeprecated ? FarmTransactionType.Withdraw : FarmTransactionType.Deposit
-    );
     const [showMoreDetail, setShowMoreDetail] = useState(false);
-    const [shouldUseLp, setShouldUseLp] = useState(farm.token_type === "LP Token" ? false : true);
+    const transactionType = useAppSelector((state) => state.farms.farmDetailInputOptions.transactionType);
+    const dispatch = useAppDispatch();
+
+    const setFarmOptions = (opt: Partial<FarmDetailInputOptions>) => {
+        dispatch(setFarmDetailInputOptions(opt));
+    };
 
     return (
         <div className={`dropdown_menu ${lightMode && "dropdown_menu--light"}`}>
             <div className="basic_container">
                 <div className="type_tab">
                     <Tabs>
-                        {!farm.isDeprecated && (
-                            <PoolButton
-                                onClick={() => setTransactionType(FarmTransactionType.Deposit)}
-                                description={FarmTransactionType.Deposit}
-                                active={transactionType === FarmTransactionType.Deposit}
-                            />
-                        )}
                         <PoolButton
-                            onClick={() => setTransactionType(FarmTransactionType.Withdraw)}
+                            onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Deposit })}
+                            description={FarmTransactionType.Deposit}
+                            active={transactionType === FarmTransactionType.Deposit}
+                        />
+                        <PoolButton
+                            onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Withdraw })}
                             description={FarmTransactionType.Withdraw}
                             active={transactionType === FarmTransactionType.Withdraw}
                         />
                     </Tabs>
                 </div>
                 <div className="type_selector">
-                    {!farm.isDeprecated && (
-                        <p
-                            onClick={() => setTransactionType(FarmTransactionType.Deposit)}
-                            className={transactionType === FarmTransactionType.Deposit ? "active" : ""}
-                        >
-                            {FarmTransactionType.Deposit}
-                        </p>
-                    )}
                     <p
-                        onClick={() => setTransactionType(FarmTransactionType.Withdraw)}
+                        onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Deposit })}
+                        className={transactionType === FarmTransactionType.Deposit ? "active" : ""}
+                    >
+                        {FarmTransactionType.Deposit}
+                    </p>
+                    <p
+                        onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Withdraw })}
                         className={transactionType === FarmTransactionType.Withdraw ? "active" : ""}
                     >
                         {FarmTransactionType.Withdraw}
                     </p>
                 </div>
                 <div className="right_container">
-                    <Description farm={farm} shouldUseLp={shouldUseLp} type={transactionType} />
-                    <DetailInput farm={farm} shouldUseLp={shouldUseLp} type={transactionType} />
+                    <Description farm={farm} />
+                    <DetailInput farm={farm} />
                 </div>
             </div>
 
@@ -70,12 +71,7 @@ export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
                     <RiArrowDownSLine />
                 </div>
             ) : (
-                <Details
-                    farm={farm}
-                    onClick={() => setShowMoreDetail(false)}
-                    shouldUseLp={shouldUseLp}
-                    setShouldUseLp={setShouldUseLp}
-                />
+                <Details farm={farm} onClick={() => setShowMoreDetail(false)} />
             )}
         </div>
     );

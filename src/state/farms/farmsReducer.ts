@@ -2,7 +2,14 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { getEarnings } from "src/api/farms";
 import farmFunctions from "src/api/pools";
 import { sleep, toEth } from "src/utils/common";
-import { StateInterface, FetchFarmDetailsAction, FarmDetails, Earnings, FetchEarningsAction } from "./types";
+import {
+    StateInterface,
+    FetchFarmDetailsAction,
+    FarmDetails,
+    Earnings,
+    FetchEarningsAction,
+    FarmDetailInputOptions,
+} from "./types";
 import { Contract, BigNumber, utils } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
 import { erc20ABI } from "wagmi";
@@ -12,6 +19,7 @@ import { getPriceByTime, getPricesByTime } from "src/api/token";
 import { Decimals } from "../decimals/types";
 import { getPricesOfLpByTimestamp, setOldPrices } from "../prices/pricesReducer";
 import { defaultChainId } from "src/config/constants";
+import { FarmTransactionType } from "src/types/enums";
 
 const initialState: StateInterface = {
     farmDetails: {},
@@ -20,19 +28,30 @@ const initialState: StateInterface = {
     account: "",
     earnings: {},
     isLoadingEarnings: false,
+    farmDetailInputOptions: {
+        transactionType: FarmTransactionType.Deposit,
+        showInUsd: true,
+        currencySymbol: "USDC",
+    },
 };
 
 export const updateFarmDetails = createAsyncThunk(
     "farms/updateFarmDetails",
-    async ({ currentWallet, farms, balances, prices }: FetchFarmDetailsAction, thunkApi) => {
+    async ({ currentWallet, farms, balances, prices, decimals }: FetchFarmDetailsAction, thunkApi) => {
         if (!currentWallet) return;
-        const data: FarmDetails = {};
-        farms.forEach((farm) => {
-            data[farm.id] = farmFunctions[farm.id]?.getModifiedFarmDataByEthBalance(balances, prices);
-        });
+        try {
+            const data: FarmDetails = {};
+            farms.forEach((farm) => {
+                // @ts-ignore
+                if (farmFunctions[farm.id]?.getProcessedFarmData)
+                    data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(balances, prices, decimals);
+            });
 
-        thunkApi.dispatch(setAccount(currentWallet));
-        return data;
+            thunkApi.dispatch(setAccount(currentWallet));
+            return data;
+        } catch (error) {
+            console.error(error);
+        }
     }
 );
 
@@ -110,6 +129,9 @@ const farmsSlice = createSlice({
         setAccount(state, action: { payload: string }) {
             state.account = action.payload;
         },
+        setFarmDetailInputOptions(state, action: { payload: Partial<FarmDetailInputOptions> }) {
+            state.farmDetailInputOptions = { ...state.farmDetailInputOptions, ...action.payload };
+        },
         reset(state) {
             state.farmDetails = {};
             state.isLoading = false;
@@ -146,6 +168,6 @@ const farmsSlice = createSlice({
     },
 });
 
-export const { reset, setAccount } = farmsSlice.actions;
+export const { reset, setAccount, setFarmDetailInputOptions } = farmsSlice.actions;
 
 export default farmsSlice.reducer;

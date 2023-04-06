@@ -4,20 +4,17 @@ import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { Farm } from "src/types";
-import "./Details.css";
-import Toggle from "src/components/FarmItem/components/ZapToggle/Toggle";
 import { getLpAddressForFarmsPrice, toPreciseNumber } from "src/utils/common";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
+import "./Details.css";
 
 interface Props {
     farm: Farm;
     onClick: () => void;
-    shouldUseLp: boolean;
-    setShouldUseLp: (shouldUseLp: boolean | ((prev: boolean) => boolean)) => void;
 }
 
-const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props }) => {
+const Details: React.FC<Props> = ({ farm, ...props }) => {
     const { lightMode } = useApp();
     const lpAddress = getLpAddressForFarmsPrice([farm])[0];
     const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();
@@ -32,14 +29,8 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
     const unstakedTokenValue = useMemo(() => formattedBalances[lpAddress], [formattedBalances]);
     const stakedTokenValue = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances]);
 
-
     return (
         <div className="details">
-            <div className="details_zapToggle">
-                {farm.token_type === "LP Token" ? (
-                    <Toggle active={shouldUseLp} farm={farm} onClick={() => setShouldUseLp((prev) => !prev)} />
-                ) : null}
-            </div>
             <div className={`details_section detials_rate`}>
                 <div className={`details_dropdrown_header`}>
                     {farm.alt1 ? <img className={`details_logo1`} alt={farm.alt1} src={farm.logo1} /> : null}
@@ -210,15 +201,15 @@ const Details: React.FC<Props> = ({ farm, shouldUseLp, setShouldUseLp, ...props 
                         </div>
                     ) : null}
 
-                    {farmData?.Max_Token_Withdraw_Balance &&
+                    {farmData?.Withdrawable_Amounts[0].amount &&
                     formattedSupplies[farm.vault_addr] &&
-                    Number(farmData.Max_Token_Withdraw_Balance) / formattedSupplies[farm.vault_addr]! ? (
+                    Number(farmData.Withdrawable_Amounts[0].amount) / formattedSupplies[farm.vault_addr]! ? (
                         <div className={`detailed_header`}>
                             <p>Share</p>
                             <div className={`unstaked_details`}>
                                 <p className={`detailed_unstaked_pairs`}>
                                     {(
-                                        (Number(farmData?.Max_Token_Withdraw_Balance) /
+                                        (Number(farmData?.Withdrawable_Amounts[0].amount) /
                                             formattedSupplies[farm.vault_addr]!) *
                                             100 || 0
                                     ).toFixed(2)}

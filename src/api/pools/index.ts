@@ -1,34 +1,17 @@
 // @ts-nocheck
-import * as gmx from "./gmx";
-import * as usdcDodo from "./usdcDodo";
-import * as usdtDodo from "./usdtDodo";
-import * as frax from "./frax";
-import * as wethWsteth from "./weth-wsteth";
-import * as wethWbtcSwapfish from "./weth-wbtc-swapfish";
-import * as usdcAgeur from "./usdc-ageur";
-import * as usdcTusd from "./usdc-tusd";
-import * as usdcUsx from "./usdc-usx";
-import * as ethHop from "./ethHop";
+
 import sushi from "./sushi";
 import hop from "./hop";
+import { FarmFunctions } from "./types";
 
-const farmFunctions: { [key: number]: ReturnType<typeof sushi> } = {
+const farmFunctions: { [key: number]: FarmFunctions } = {
     1: sushi(1), // 1: wethDai,
     2: sushi(2), // 2: wethUsdc,
     3: sushi(3), // 3: wethUsdt,
     4: sushi(4), // 4: wethWbtc,
-    5: gmx,
-    6: usdcDodo,
-    7: usdtDodo,
     8: sushi(8), // 8: plsWeth,
-    9: frax,
     10: sushi(10), // 10: wethMagic,
-    11: usdcUsx,
-    12: usdcTusd,
-    13: usdcAgeur,
-    14: wethWbtcSwapfish,
-    15: wethWsteth,
-    16: ethHop, // 16: hopEth,
+    16: hop(16), // 16: hopEth,
     17: hop(17), // 17: hopUsdc,
     18: hop(18), // 18: hopUsdt,
     19: hop(19), // 19: hopDai,

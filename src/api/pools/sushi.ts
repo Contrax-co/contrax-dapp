@@ -9,74 +9,96 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { Balances } from "src/state/balances/types";
 import { Prices } from "src/state/prices/types";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
+import {
+    DepositFn,
+    DynamicFarmFunctions,
+    GetFarmDataProcessedFn,
+    TokenAmounts,
+    WithdrawFn,
+    ZapInFn,
+    ZapOutFn,
+} from "./types";
+import { defaultChainId } from "src/config/constants";
 
-export default function sushi(farmId: number) {
+let sushi: DynamicFarmFunctions = function (farmId) {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
 
-    const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices) => {
+    const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals) => {
         const ethPrice = prices[constants.AddressZero];
-        const lpPrice = prices[farm.lp_address];
+        const lpAddress = farm.lp_address;
+        const lpPrice = prices[lpAddress];
         const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
         const ethBalance = BigNumber.from(balances[constants.AddressZero]);
-        const lpBalance = BigNumber.from(balances[farm.lp_address]);
+        const lpBalance = BigNumber.from(balances[lpAddress]);
+
+        const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
+
+        let Depositable_Amounts: TokenAmounts[] = [
+            {
+                tokenAddress: usdcAddress,
+                tokenSymbol: "USDC",
+                amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
+                amountDollar: (
+                    Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
+                ).toString(),
+                price: prices[usdcAddress],
+            },
+            {
+                tokenAddress: constants.AddressZero,
+                tokenSymbol: "ETH",
+                amount: toEth(balances[constants.AddressZero]!, 18),
+                amountDollar: (Number(toEth(balances[constants.AddressZero]!, 18)) * ethPrice).toString(),
+                price: ethPrice,
+            },
+            {
+                tokenAddress: lpAddress,
+                tokenSymbol: farm.name,
+                amount: toEth(balances[lpAddress]!, decimals[lpAddress]),
+                amountDollar: (Number(toEth(balances[lpAddress]!, decimals[lpAddress])) * prices[lpAddress]).toString(),
+                price: prices[lpAddress],
+            },
+        ];
+
+        let Withdrawable_Amounts: TokenAmounts[] = [
+            {
+                tokenAddress: usdcAddress,
+                tokenSymbol: "USDC",
+                amount: ((Number(toEth(vaultBalance)) * lpPrice) / prices[usdcAddress]).toString(),
+                amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+                price: prices[usdcAddress],
+            },
+            {
+                tokenAddress: constants.AddressZero,
+                tokenSymbol: "ETH",
+                amount: ((Number(toEth(vaultBalance)) * lpPrice) / ethPrice).toString(),
+                amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+                price: ethPrice,
+            },
+            {
+                tokenAddress: lpAddress,
+                tokenSymbol: farm.name,
+                amount: toEth(vaultBalance),
+                amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+                price: prices[lpAddress],
+            },
+        ];
 
         const result = {
-            Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
-            Max_Zap_Withdraw_Balance: ((Number(toEth(vaultBalance)) * lpPrice) / ethPrice).toString(),
-            Max_Token_Withdraw_Balance: toEth(vaultBalance),
-            Max_Token_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
-            Max_Token_Deposit_Balance: toEth(lpBalance),
-            Max_Token_Deposit_Balance_Dollar: (Number(toEth(lpBalance)) * lpPrice).toString(),
-            Max_Zap_Deposit_Balance_Dollar: (Number(toEth(ethBalance)) * ethPrice).toString(),
-            Max_Zap_Deposit_Balance: toEth(ethBalance),
-            Token_Token_Symbol: farm.name,
-            Zap_Token_Symbol: "ETH",
-            Token_Deposit_Token_Address: farm.lp_address,
-            Token_Withdraw_Token_Address: farm.lp_address,
-            Zap_Deposit_Token_Address: constants.AddressZero,
-            Zap_Withdraw_Token_Address: constants.AddressZero,
-            TOKEN_PRICE: lpPrice,
-            ZAP_TOKEN_PRICE: ethPrice,
-            Zap_Enabled: true,
+            Depositable_Amounts,
+            Withdrawable_Amounts,
             ID: farm.id,
         };
         return result;
     };
 
-    const deposit = async ({
-        depositAmount,
-        currentWallet,
-        signer,
-        chainId,
-        max,
-        cb,
-    }: {
-        depositAmount: number;
-        currentWallet: string;
-        signer?: Signer;
-        chainId: number;
-        max?: boolean;
-        cb?: () => any;
-    }) => {
+    const deposit: DepositFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
         if (!signer) return;
         let notiId = notifyLoading(loadingMessages.approvingDeposit());
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         try {
             const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
 
-            /*
-             * Execute the actual deposit functionality from smart contract
-             */
-            let formattedBal;
-
             const lpBalance = await getBalance(farm.lp_address, currentWallet, signer.provider!);
-            if (max) {
-                // Deposit all
-                formattedBal = lpBalance;
-            } else {
-                // Deposit
-                formattedBal = utils.parseUnits(validateNumberDecimals(depositAmount, farm.decimals), farm.decimals);
-            }
 
             // approve the vault to spend asset
             await approveErc20(farm.lp_address, farm.vault_addr, lpBalance, currentWallet, signer);
@@ -88,7 +110,7 @@ export default function sushi(farmId: number) {
             if (max) {
                 depositTxn = await vaultContract.depositAll();
             } else {
-                depositTxn = await vaultContract.deposit(formattedBal);
+                depositTxn = await vaultContract.deposit(amountInWei);
             }
 
             dismissNotify(notiId);
@@ -116,35 +138,15 @@ export default function sushi(farmId: number) {
             dismissNotify(notiId);
             notifyError(errorMessages.generalError(err.reason || err.message));
         }
-        cb && cb();
     };
 
-    const withdraw = async ({
-        withdrawAmount,
-        currentWallet,
-        signer,
-        chainId,
-        max,
-        cb,
-    }: {
-        withdrawAmount: number;
-        currentWallet: string;
-        signer?: Signer;
-        chainId: number;
-        max?: boolean;
-        cb?: () => any;
-    }) => {
+    const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
         if (!signer) return;
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
             const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
 
-            /*
-             * Execute the actual withdraw functionality from smart contract
-             */
-            let formattedBal;
-            formattedBal = utils.parseUnits(validateNumberDecimals(withdrawAmount, farm.decimals), farm.decimals);
             dismissNotify(notiId);
             notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
@@ -152,7 +154,7 @@ export default function sushi(farmId: number) {
             if (max) {
                 withdrawTxn = await vaultContract.withdrawAll();
             } else {
-                withdrawTxn = await vaultContract.withdraw(formattedBal);
+                withdrawTxn = await vaultContract.withdraw(amountInWei);
             }
 
             dismissNotify(notiId);
@@ -180,45 +182,45 @@ export default function sushi(farmId: number) {
             dismissNotify(notiId);
             notifyError(errorMessages.generalError(err.reason || err.message));
         }
-        cb && cb();
     };
 
-    const zapIn = async ({
-        zapAmount,
-        currentWallet,
-        signer,
-        chainId,
-        max,
-        cb,
-    }: {
-        zapAmount: number;
-        currentWallet: string;
-        signer?: Signer;
-        chainId: number;
-        max?: boolean;
-        cb?: () => any;
-    }) => {
+    const zapIn: ZapInFn = async ({ amountInWei, signer, chainId, max, token, balances, currentWallet }) => {
         if (!signer) return;
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         const wethAddress = addressesByChainId[chainId].wethAddress;
         let notiId = notifyLoading(loadingMessages.approvingZapping());
         try {
-            let formattedBal = utils.parseUnits(zapAmount.toString(), 18);
             // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
-            if (max) {
-                const balance = await signer.getBalance();
-                formattedBal = await signer.getBalance();
+            let zapperTxn: any;
+            if (token === constants.AddressZero) {
+                if (max) {
+                    amountInWei = balances[constants.AddressZero]!;
+                }
+                amountInWei = BigNumber.from(amountInWei);
+
+                //=============Gas Logic================
+                const balance = BigNumber.from(balances[constants.AddressZero]);
                 const gasPrice: any = await signer.getGasPrice();
                 const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, wethAddress, {
-                    value: formattedBal,
+                    value: balance,
                 });
                 const gasToRemove = gasLimit.mul(gasPrice).mul(3);
-                formattedBal = balance.sub(gasToRemove);
+                if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
+                //=============Gas Logic================
+
+                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
+                    value: amountInWei,
+                });
+            } else {
+                if (max) {
+                    amountInWei = balances[token]!;
+                }
+
+                await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
+                zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei);
             }
-            let zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
-                value: formattedBal,
-            });
+
             dismissNotify(notiId);
             notifyLoading(loadingMessages.zapping(zapperTxn.hash), {
                 id: notiId,
@@ -244,34 +246,14 @@ export default function sushi(farmId: number) {
             dismissNotify(notiId);
             notifyError(errorMessages.generalError(err.reason || err.message));
         }
-        cb && cb();
     };
 
-    const zapOut = async ({
-        zapAmount,
-        currentWallet,
-        signer,
-        chainId,
-        max,
-        cb,
-    }: {
-        zapAmount: number;
-        currentWallet: string;
-        signer?: Signer;
-        chainId: number;
-        max?: boolean;
-        cb?: () => any;
-    }) => {
+    const zapOut: ZapOutFn = async ({ amountInWei, currentWallet, signer, chainId, max, token }) => {
         if (!signer) return;
         const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
         const wethAddress = addressesByChainId[chainId].wethAddress;
         const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
-            /*
-             * Execute the actual withdraw functionality from smart contract
-             */
-            let formattedBal;
-            formattedBal = utils.parseUnits(validateNumberDecimals(zapAmount), farm.decimals || 18);
             const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
 
             await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer);
@@ -280,12 +262,25 @@ export default function sushi(farmId: number) {
             dismissNotify(notiId);
             notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
-            let withdrawTxn = await zapperContract.zapOutAndSwap(
-                farm.vault_addr,
-                max ? vaultBalance : formattedBal,
-                wethAddress,
-                0
-            );
+            let withdrawTxn: any;
+            if (max) {
+                amountInWei = vaultBalance;
+            }
+            if (token === constants.AddressZero) {
+                withdrawTxn = await zapperContract.zapOutAndSwap(
+                    farm.vault_addr,
+                    max ? vaultBalance : amountInWei,
+                    wethAddress,
+                    0
+                );
+            } else {
+                withdrawTxn = await zapperContract.zapOutAndSwap(
+                    farm.vault_addr,
+                    max ? vaultBalance : amountInWei,
+                    token,
+                    0
+                );
+            }
 
             dismissNotify(notiId);
             notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
@@ -312,8 +307,9 @@ export default function sushi(farmId: number) {
             dismissNotify(notiId);
             notifyError(errorMessages.generalError(err.reason || err.message || err?.data?.message));
         }
-        cb && cb();
     };
 
-    return { getModifiedFarmDataByEthBalance, deposit, withdraw, zapIn, zapOut };
-}
+    return { getProcessedFarmData, deposit, withdraw, zapIn, zapOut };
+};
+
+export default sushi;

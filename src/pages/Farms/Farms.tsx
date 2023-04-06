@@ -45,9 +45,9 @@ function Farms() {
     const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDataExtended, b: FarmDataExtended) =>
         (decOrder ? 1 : -1) *
         (column === FarmTableColumns.Deposited
-            ? Number(a.Max_Token_Withdraw_Balance_Dollar) < Number(b.Max_Token_Withdraw_Balance_Dollar)
+            ? Number(a.Withdrawable_Amounts![0].amountDollar) < Number(b.Withdrawable_Amounts![0].amountDollar)
                 ? -1
-                : Number(a.Max_Token_Withdraw_Balance_Dollar) > Number(b.Max_Token_Withdraw_Balance_Dollar)
+                : Number(a.Withdrawable_Amounts![0].amountDollar) > Number(b.Withdrawable_Amounts![0].amountDollar)
                 ? 1
                 : 0
             : column === FarmTableColumns.APY
