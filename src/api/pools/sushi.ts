@@ -267,7 +267,12 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 amountInWei = vaultBalance;
             }
             if (token === constants.AddressZero) {
-                withdrawTxn = await zapperContract.zapOut(farm.vault_addr, max ? vaultBalance : amountInWei);
+                withdrawTxn = await zapperContract.zapOutAndSwap(
+                    farm.vault_addr,
+                    max ? vaultBalance : amountInWei,
+                    wethAddress,
+                    0
+                );
             } else {
                 withdrawTxn = await zapperContract.zapOutAndSwap(
                     farm.vault_addr,
