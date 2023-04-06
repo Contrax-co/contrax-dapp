@@ -9,6 +9,8 @@ import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
 import { useDecimals } from "../useDecimals";
 import { utils } from "ethers";
+import useFarmDetails from "./useFarmDetails";
+import { toWei } from "src/utils/common";
 
 const useZapOut = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
@@ -18,7 +20,7 @@ const useZapOut = (farm: Farm) => {
     const { reloadSupplies } = useTotalSupplies();
 
     const _zapOut = async ({ withdrawAmt, max, token }: { withdrawAmt: number; max?: boolean; token: string }) => {
-        let amountInWei = utils.parseUnits(withdrawAmt.toString(), decimals[token]);
+        let amountInWei = toWei(withdrawAmt, decimals[token]);
         await farmFunctions[farm.id].zapOut({ amountInWei, currentWallet, signer, chainId, max, token });
         reloadBalances();
         reloadSupplies();

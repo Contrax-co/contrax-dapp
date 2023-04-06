@@ -27,7 +27,6 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
         showInUsd,
         currentWallet,
         maxBalance,
-        dontShowUsdSelect,
         setMax,
         handleInput,
         handleSubmit,
@@ -146,6 +145,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
         >
             {isLoadingTransaction && <Loader />}
             {isLoadingFarm && <Skeleton w={100} h={20} style={{ marginLeft: "auto" }} />}
+
             {!isLoadingFarm && currentWallet ? (
                 <Select
                     options={[TransactionCurrency.USDC, TransactionCurrency.ETH, TransactionCurrency.LP_Token]}
@@ -155,6 +155,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
                 />
             ) : (
                 <div></div>
+
             )}
             <div></div>
 
@@ -199,7 +200,7 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
                 {!currentWallet
                     ? "Please Login"
                     : parseFloat(amount) > 0
-                    ? parseFloat(amount) > maxBalance
+                    ? parseFloat(amount) > parseFloat(maxBalance)
                         ? "Insufficent Balance"
                         : type === FarmTransactionType.Deposit
                         ? "Deposit"

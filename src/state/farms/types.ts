@@ -25,6 +25,7 @@ export interface FetchFarmDetailsAction {
     currentWallet: string;
     balances: Balances;
     prices: Prices;
+    decimals: Partial<Decimals>;
 }
 
 export interface Earnings {

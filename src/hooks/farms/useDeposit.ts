@@ -8,14 +8,18 @@ import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
 import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
+import { utils } from "ethers";
+import { useDecimals } from "../useDecimals";
 
 const useDeposit = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
+    const { decimals } = useDecimals();
 
     const _deposit = async ({ depositAmount, max }: { depositAmount: number; max?: boolean }) => {
+        let amountInWei = utils.parseUnits(depositAmount.toString(), farm.decimals);
         await farmFunctions[farm.id].deposit({ depositAmount, currentWallet, signer, chainId, max });
         reloadBalances();
         reloadSupplies();

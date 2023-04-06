@@ -1,5 +1,6 @@
 import { Apys } from "src/state/apys/types";
 import { FarmOriginPlatform, FarmType } from "./enums";
+import { FarmDataProcessed } from "src/api/pools/types";
 
 export interface Farm {
     isDeprecated?: boolean;
@@ -43,6 +44,11 @@ export interface Farm {
     zap_symbol: string;
     withdraw_decimals?: number;
     vault_decimals?: number;
+    zap_currencies?: {
+        symbol: string;
+        address: string;
+        decimals: number;
+    }[];
 }
 export interface FarmDetails extends Farm {
     userVaultBalance: number;
@@ -69,80 +75,7 @@ export interface Token {
     decimals: number;
     network?: string;
 }
-export interface FarmData {
-    /**
-     * Farm Id
-     */
-    ID: number;
-    /**
-     * When Zapping in deposit column the max amount in token
-     */
-    Max_Zap_Deposit_Balance: string;
-    /**
-     * When Zapping in deposit column the max amount in token in Dollar
-     */
-    Max_Zap_Deposit_Balance_Dollar: string;
-    /**
-     * When Depositing in deposit column the max amount in token
-     */
-    Max_Token_Deposit_Balance: string;
-    /**
-     * When Depositing in deposit column the max amount in token in Dollar
-     */
-    Max_Token_Deposit_Balance_Dollar: string;
-    /**
-     * When Zapping in withdraw column the max amount in token
-     */
-    Max_Zap_Withdraw_Balance: string;
-    /**
-     * When Zapping in withdraw column the max amount in token in Dollar
-     */
-    Max_Zap_Withdraw_Balance_Dollar: string;
-    /**
-     * When Withdrawing in withdraw column the max amount in token
-     */
-    Max_Token_Withdraw_Balance: string;
-    /**
-     * When Withdrawing in withdraw column the max amount in token in Dollar
-     */
-    Max_Token_Withdraw_Balance_Dollar: string;
-    /**
-     * Token address of zapping token in deposit column
-     */
-    Zap_Deposit_Token_Address: string;
-    /**
-     * Token address of depositing token in deposit column
-     */
-    Token_Deposit_Token_Address: string;
-    /**
-     * Token address of zapping token in withdraw column
-     */
-    Zap_Withdraw_Token_Address: string;
-    /**
-     * Token address of withdrawing token in withdraw column
-     */
-    Token_Withdraw_Token_Address: string;
-    /**
-     * Token symbol for zap
-     */
-    Zap_Token_Symbol: string;
-    /**
-     * Token symbol for deposit or withdraw
-     */
-    Token_Token_Symbol: string;
-    /**
-     * Zap Enabled or not, used in showing zap toggle
-     */
-    Zap_Enabled?: boolean;
-    /**
-     * Price of token when depositing or withdrawing
-     */
-    TOKEN_PRICE: number;
-    /**
-     * Price of token which is used in zapping
-     */
-    ZAP_TOKEN_PRICE: number;
-}
+export interface FarmData extends FarmDataProcessed {}
 
 export interface NotifyMessage {
     title: string;

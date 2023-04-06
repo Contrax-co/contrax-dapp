@@ -121,11 +121,11 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                 <div className={`container ${lightMode && "container--light"} desktop`}>
                     {farmData &&
-                    farmData.Max_Token_Withdraw_Balance_Dollar &&
-                    parseFloat(farmData.Max_Token_Withdraw_Balance_Dollar) >= 0.01 ? (
+                    farmData.Withdrawable_Amounts[0].amountDollar &&
+                    parseFloat(farmData.Withdrawable_Amounts[0].amountDollar) >= 0.01 ? (
                         <>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {parseFloat(farmData?.Max_Token_Withdraw_Balance_Dollar || "0")
+                                {parseFloat(farmData?.Withdrawable_Amounts[0].amountDollar || "0")
                                     .toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
@@ -134,7 +134,10 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                     .slice(0, -1)}
                             </p>
                             <p className={`deposited ${lightMode && "deposited--light"}`}>
-                                {toFixedFloor(parseFloat(farmData?.Max_Token_Withdraw_Balance || "0"), 10).toString()}
+                                {toFixedFloor(
+                                    parseFloat(farmData?.Withdrawable_Amounts[0].amount || "0"),
+                                    10
+                                ).toString()}
                                 &nbsp;{farm?.name}
                             </p>
                         </>
@@ -145,8 +148,8 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                 {/* <div className={`container1 ${lightMode && "container1--light"} desktop`}>
                     {farmData &&
-                    farmData.Max_Token_Withdraw_Balance_Dollar &&
-                    parseFloat(farmData.Max_Token_Withdraw_Balance_Dollar) >= 0.01 ? (
+                    farmData.Withdrawable_Amounts[0].amountDollar &&
+                    parseFloat(farmData.Withdrawable_Amounts[0].amountDollar) >= 0.01 ? (
                         <p className={`pool_name ${lightMode && "pool_name--light"}`}>NA</p>
                     ) : null}
                 </div> */}
@@ -173,12 +176,12 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                     {/* How much the user has deposited */}
 
                     {farmData &&
-                    farmData.Max_Token_Withdraw_Balance_Dollar &&
-                    parseFloat(farmData.Max_Token_Withdraw_Balance_Dollar) >= 0.01 ? (
+                    farmData.Withdrawable_Amounts[0].amountDollar &&
+                    parseFloat(farmData.Withdrawable_Amounts[0].amountDollar) >= 0.01 ? (
                         <div className={`container ${lightMode && "container--light"} deposite`}>
                             <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>Deposited</p>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {parseFloat(farmData?.Max_Token_Withdraw_Balance_Dollar || "0")
+                                {parseFloat(farmData?.Withdrawable_Amounts[0].amountDollar || "0")
                                     .toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
@@ -193,8 +196,8 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                     {/* <div className={`container1 ${lightMode && "container1--light"} earned`}>
                         {farmData &&
-                        farmData.Max_Token_Withdraw_Balance_Dollar &&
-                        parseFloat(farmData.Max_Token_Withdraw_Balance_Dollar) >= 0.01 ? (
+                        farmData.Withdrawable_Amounts[0].amountDollar &&
+                        parseFloat(farmData.Withdrawable_Amounts[0].amountDollar) >= 0.01 ? (
                             <>
                                 <p className={`pool_name pool_name_head ${lightMode && "pool_name--light"}`}>Earned</p>
                                 <p className={`pool_name ${lightMode && "pool_name--light"}`}>NA</p>
