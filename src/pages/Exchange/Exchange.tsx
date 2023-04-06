@@ -11,8 +11,6 @@ import "@uniswap/widgets/fonts.css";
 import styles from "./Exchange.module.scss";
 import "./Exchange.css";
 import { useSigner, useWebSocketProvider } from "wagmi";
-import { getWeb3AuthProvider } from "src/config/walletConfig";
-import useFarms from "src/hooks/farms/useFarms";
 import { useSearchParams } from "react-router-dom";
 import useBalances from "src/hooks/useBalances";
 import { Tabs } from "src/components/Tabs/Tabs";
@@ -69,8 +67,6 @@ const Exchange: React.FC<IProps> = () => {
     const [tab, setTab] = React.useState<Tab>(Tab.Buy);
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
 
-    const { farms } = useFarms();
-
     // Reload Balances every time this component unmounts
     React.useEffect(() => reloadBalances, []);
 
@@ -110,29 +106,9 @@ const Exchange: React.FC<IProps> = () => {
 
     const handleBridgeNetworkChange = async () => {
         try {
-            // @ts-ignore
-            const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
-
-            if (!pkey) {
-                setIsWeb3Auth(true);
-                setProvider(undefined);
-                return;
-            }
-            const chain = chains.find((c) => c.id === chainId);
-            const _provider = await getWeb3AuthProvider({
-                chainId: chain?.id!,
-                blockExplorer: chain?.blockExplorers?.default.url!,
-                name: chain?.name!,
-                rpc: chain?.rpcUrls.public.http[0]!,
-                ticker: chain?.nativeCurrency.symbol!,
-                tickerName: chain?.nativeCurrency.name!,
-                pkey,
-            });
-            setProvider(_provider);
-            setIsWeb3Auth(true);
+            // setProvider(_provider);
         } catch {
             // switchNetworkAsync && (await switchNetworkAsync(chainId));
-            setIsWeb3Auth(false);
         }
     };
 
