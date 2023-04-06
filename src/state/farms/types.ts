@@ -18,6 +18,7 @@ export interface StateInterface {
 export interface FarmDetailInputOptions {
     transactionType: FarmTransactionType;
     showInUsd: boolean;
+    currencySymbol: string;
 }
 
 export interface FarmDetails {

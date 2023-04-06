@@ -14,6 +14,8 @@ import useWallet from "src/hooks/useWallet";
 import { constants } from "ethers";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { useAppDispatch, useAppSelector } from "src/state";
+import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
+import { FarmDetailInputOptions } from "src/state/farms/types";
 
 interface Props {
     farm: Farm;
@@ -23,7 +25,7 @@ interface Props {
 
 const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
     const { lightMode } = useApp();
-    const transactionType = useAppSelector((state) => state.farms.farmDetailInputOptions.transactionType);
+    const { transactionType, currencySymbol } = useAppSelector((state) => state.farms.farmDetailInputOptions);
 
     const {
         amount,
@@ -40,7 +42,11 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
     const { farmDetails } = useFarmDetails();
     const farmData = farmDetails[farm.id];
 
-    const [transactionCurrency, setTransactionCurrency] = useState("USDC");
+    const dispatch = useAppDispatch();
+
+    const setFarmOptions = (opt: Partial<FarmDetailInputOptions>) => {
+        dispatch(setFarmDetailInputOptions(opt));
+    };
 
     const selectOptions = useMemo(
         () =>
@@ -81,8 +87,8 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
             {!isLoadingFarm && currentWallet ? (
                 <Select
                     options={selectOptions}
-                    value={transactionCurrency}
-                    setValue={setTransactionCurrency}
+                    value={currencySymbol}
+                    setValue={(val) => setFarmOptions({ currencySymbol: val })}
                     extraText={selectExtraOptions}
                 />
             ) : (

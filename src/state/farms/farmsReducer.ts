@@ -31,6 +31,7 @@ const initialState: StateInterface = {
     farmDetailInputOptions: {
         transactionType: FarmTransactionType.Deposit,
         showInUsd: true,
+        currencySymbol: "USDC",
     },
 };
 

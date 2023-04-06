@@ -10,16 +10,24 @@ import { validateNumberDecimals } from "src/utils/common";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
 import useWallet from "src/hooks/useWallet";
-import { useAppSelector } from "src/state";
+import { useAppDispatch, useAppSelector } from "src/state";
 import { constants } from "ethers";
 import usePriceOfTokens from "./usePriceOfTokens";
+import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 
 export const useDetailInput = (farm: Farm) => {
     const [amount, setAmount] = useState("");
     const [max, setMax] = useState(false);
-    const type = useAppSelector((state) => state.farms.farmDetailInputOptions.transactionType);
+    const {
+        transactionType: type,
+        currencySymbol,
+        showInUsd,
+    } = useAppSelector((state) => state.farms.farmDetailInputOptions);
+    const dispatch = useAppDispatch();
 
-    const [showInUsd, setShowInUsd] = useState<boolean>(true);
+    const setShowInUsd = (val: boolean) => {
+        dispatch(setFarmDetailInputOptions({ showInUsd: val }));
+    };
 
     const { isBalanceTooLow } = useEstimateGasFee();
     const { prices } = usePriceOfTokens();
@@ -32,7 +40,6 @@ export const useDetailInput = (farm: Farm) => {
     const { currentWallet } = useWallet();
     const [depositable, setDepositable] = React.useState(farmData?.Depositable_Amounts[0]);
     const [withdrawable, setWithdrawable] = React.useState(farmData?.Withdrawable_Amounts[0]);
-    console.log({ type, farmData, farmDetails });
 
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
@@ -73,7 +80,7 @@ export const useDetailInput = (farm: Farm) => {
     };
 
     const handleToggleShowInUsdc = () => {
-        setShowInUsd((prev) => !prev);
+        setShowInUsd(!showInUsd);
 
         setAmount("0");
     };
@@ -110,6 +117,22 @@ export const useDetailInput = (farm: Farm) => {
     useEffect(() => {
         if (max) setAmount(maxBalance.toString());
     }, [max, maxBalance]);
+
+    useEffect(() => {
+        let _depositable = farmData?.Depositable_Amounts.find((item) => item.tokenSymbol === currencySymbol);
+        if (!_depositable) {
+            _depositable = farmData?.Depositable_Amounts[0];
+        }
+        setDepositable(_depositable);
+
+        let _withdrawable = farmData?.Withdrawable_Amounts.find((item) => item.tokenSymbol === currencySymbol);
+        if (!_withdrawable) {
+            _withdrawable = farmData?.Withdrawable_Amounts[0];
+        }
+        setWithdrawable(_withdrawable);
+        setMax(false);
+        setAmount("0");
+    }, [currencySymbol, farmData]);
 
     return {
         type,
