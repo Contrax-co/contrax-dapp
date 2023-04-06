@@ -16,7 +16,7 @@
     border-radius: 20px;
     margin: 10px;
     margin-left: 10px;
-    transition: 3s ease-in 0s;
+    transition: transform 3s ease-in 0s;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -30,7 +30,7 @@
     width: 20px;
     height: 20px;
     padding: 2px;
-    transition: 0.3s ease-in 0s;
+    transition: transform 0.3s ease-in 0s;
     display: flex;
     align-items: center;
     justify-content: center;
