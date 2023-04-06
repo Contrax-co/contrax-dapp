@@ -41,7 +41,6 @@ export const updateFarmDetails = createAsyncThunk(
         if (!currentWallet) return;
         try {
             const data: FarmDetails = {};
-            console.log({ farms });
             farms.forEach((farm) => {
                 // @ts-ignore
                 if (farmFunctions[farm.id]?.getProcessedFarmData)

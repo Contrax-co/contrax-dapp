@@ -100,6 +100,10 @@ let hop = (farmId: number) => {
             let zapperTxn: any;
 
             if (token === constants.AddressZero) {
+                token = wethAddress;
+                // Only for HOP farms
+                token = farm.token1;
+
                 if (max) {
                     amountInWei = balances[constants.AddressZero]!;
                 }
@@ -108,14 +112,14 @@ let hop = (farmId: number) => {
                 //=============Gas Logic================
                 const balance = BigNumber.from(balances[constants.AddressZero]);
                 const gasPrice: any = await signer.getGasPrice();
-                const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, wethAddress, {
+                const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
                     value: balance,
                 });
                 const gasToRemove = gasLimit.mul(gasPrice).mul(3);
                 if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
                 //=============Gas Logic================
 
-                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
+                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, token, {
                     value: amountInWei,
                 });
             } else {
@@ -171,7 +175,11 @@ let hop = (farmId: number) => {
                 amountInWei = vaultBalance;
             }
             if (token === constants.AddressZero) {
-                withdrawTxn = await zapperContract.zapOut(farm.vault_addr, max ? vaultBalance : amountInWei);
+                withdrawTxn = await zapperContract.zapOutAndSwapEth(
+                    farm.vault_addr,
+                    max ? vaultBalance : amountInWei,
+                    0
+                );
             } else {
                 withdrawTxn = await zapperContract.zapOutAndSwap(
                     farm.vault_addr,
