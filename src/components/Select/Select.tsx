@@ -6,7 +6,7 @@ import { AiOutlineCaretDown } from "react-icons/ai";
 interface IProps {
     value: any;
     setValue: Dispatch<SetStateAction<any>>;
-    options: any[];
+    options?: string[];
     extraText?: string[];
 }
 
@@ -18,12 +18,12 @@ export const Select: FC<IProps> = ({ value, setValue, options, extraText }) => {
             <OutsideClickHandler display="inline-block" onOutsideClick={() => setOpenSelect(false)}>
                 <div className={styles.select} onClick={() => setOpenSelect((prev) => !prev)}>
                     {value}{" "}
-                    {extraText && extraText[options.reduce((prev, curr, index) => (curr === value ? index : prev), 0)]}
+                    {extraText && extraText[options!.reduce((prev, curr, index) => (curr === value ? index : prev), 0)]}
                     <AiOutlineCaretDown className={`${styles.arrow} ${openSelect && styles.rotate}`} />
                 </div>
                 {openSelect && (
                     <div className={styles.options} onClick={() => setOpenSelect(false)}>
-                        {options.map((option, index) => (
+                        {options?.map((option, index) => (
                             <div key={index} className={styles.option} onClick={() => setValue(option)}>
                                 {option} {extraText && extraText[index]}
                             </div>

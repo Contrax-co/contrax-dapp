@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import useApp from "src/hooks/useApp";
 import { Farm } from "src/types";
-import { FarmTransactionType, TransactionCurrency } from "src/types/enums";
+import { FarmTransactionType } from "src/types/enums";
 import { noExponents } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
@@ -12,6 +12,7 @@ import { UsdToggle } from "../UsdToggle/UsdToggle";
 import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
 import useWallet from "src/hooks/useWallet";
 import { constants } from "ethers";
+import useFarmDetails from "src/hooks/farms/useFarmDetails";
 
 interface Props {
     farm: Farm;
@@ -34,109 +35,10 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
         isLoadingFarm,
         isLoadingTransaction,
     } = useDetailInput(farm);
+    const { farmDetails, isLoading } = useFarmDetails();
+    const farmData = farmDetails[farm.id];
 
-    // const maxBalance = React.useMemo(() => {
-    //     if (type === FarmTransactionType.Deposit) {
-    //         if (shouldUseLp) {
-    //             return showInUsd
-    //                 ? parseFloat(farmData?.Max_Token_Deposit_Balance_Dollar || "0")
-    //                 : parseFloat(farmData?.Max_Token_Deposit_Balance || "0");
-    //         } else {
-    //             return showInUsd
-    //                 ? parseFloat(farmData?.Max_Zap_Deposit_Balance_Dollar || "0")
-    //                 : parseFloat(farmData?.Max_Zap_Deposit_Balance || "0");
-    //         }
-    //     } else {
-    //         if (shouldUseLp) {
-    //             return showInUsd
-    //                 ? parseFloat(farmData?.Max_Token_Withdraw_Balance_Dollar || "0")
-    //                 : parseFloat(farmData?.Max_Token_Withdraw_Balance || "0");
-    //         } else {
-    //             return showInUsd
-    //                 ? parseFloat(farmData?.Max_Zap_Withdraw_Balance_Dollar || "0")
-    //                 : parseFloat(farmData?.Max_Zap_Withdraw_Balance || "0");
-    //         }
-    //     }
-    // }, [shouldUseLp, showInUsd, type, farmData]);
-
-    // const getTokenAmount = () => {
-    //     let amt = 0;
-    //     if (farmData)
-    //         if (shouldUseLp) {
-    //             if (showInUsd) amt = parseFloat(amount) / farmData.TOKEN_PRICE;
-    //             else amt = parseFloat(amount);
-    //         } else {
-    //             if (type === FarmTransactionType.Deposit) {
-    //                 if (showInUsd) amt = parseFloat(amount) / farmData.ZAP_TOKEN_PRICE;
-    //                 else amt = parseFloat(amount);
-    //             } else {
-    //                 if (showInUsd) amt = parseFloat(amount) / farmData.TOKEN_PRICE;
-    //                 else amt = (parseFloat(amount) * farmData.ZAP_TOKEN_PRICE) / farmData.TOKEN_PRICE;
-    //             }
-    //         }
-    //     return Number(validateNumberDecimals(amt, farm.decimals));
-    // };
-
-    // const handleShowInUsdChange: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
-    //     setShowInUsd(e.target.value === "true");
-
-    //     if (e.target.value === "true") {
-    //         if (!shouldUseLp) {
-    //             setAmount((prev) => (parseFloat(prev) * ethPrice).toString());
-    //         } else {
-    //             setAmount((prev) => (parseFloat(prev) * priceOfSingleToken).toString());
-    //         }
-    //     } else {
-    //         if (!shouldUseLp) {
-    //             setAmount((prev) => (parseFloat(prev) / ethPrice).toString());
-    //         } else {
-    //             setAmount((prev) => (parseFloat(prev) / priceOfSingleToken).toString());
-    //         }
-    //     }
-    // };
-
-    // const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-    //     e.preventDefault();
-    //     // check for eth balance greater than gas fee
-    //     if (isBalanceTooLow()) return;
-    //     if (type === FarmTransactionType.Deposit) {
-    //         if (shouldUseLp) {
-    //             await depositAsync({ depositAmount: getTokenAmount(), max });
-    //         } else {
-    //             await zapInAsync({ ethZapAmount: getTokenAmount(), max });
-    //         }
-    //     } else {
-    //         if (shouldUseLp) {
-    //             await withdrawAsync({ withdrawAmount: getTokenAmount(), max });
-    //         } else {
-    //             await zapOutAsync({ withdrawAmt: getTokenAmount(), max });
-    //         }
-    //     }
-    //     setAmount("");
-    //     setMax(false);
-    // };
-
-    // const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    //     setAmount(e.target.value);
-    //     setMax(false);
-    // };
-
-    // const dontShowUsdSelect = React.useMemo(() => {
-    //     switch (farm.name) {
-    //         case "Usdt":
-    //             return true;
-    //         case "Usdc":
-    //             return true;
-    //         default:
-    //             return false;
-    //     }
-    // }, [farm]);
-
-    // React.useEffect(() => {
-    //     if (max) setAmount(maxBalance.toString());
-    // }, [max, maxBalance]);
-
-    const [transactionCurrency, setTransactionCurrency] = useState(TransactionCurrency.USDC);
+    const [transactionCurrency, setTransactionCurrency] = useState("USDC");
 
     return (
         <form
@@ -148,14 +50,17 @@ const DetailInput: React.FC<Props> = ({ shouldUseLp, farm }) => {
 
             {!isLoadingFarm && currentWallet ? (
                 <Select
-                    options={[TransactionCurrency.USDC, TransactionCurrency.ETH, TransactionCurrency.LP_Token]}
+                    options={
+                        type === FarmTransactionType.Deposit
+                            ? farmData?.Depositable_Amounts.map((_) => (showInUsd ? _.amountDollar : _.amount))
+                            : farmData?.Withdrawable_Amounts.map((_) => (showInUsd ? _.amountDollar : _.amount)) || []
+                    }
                     value={transactionCurrency}
                     setValue={setTransactionCurrency}
                     extraText={[": $ 823", ": $ 84", ": 83724"]}
                 />
             ) : (
                 <div></div>
-
             )}
             <div></div>
 
