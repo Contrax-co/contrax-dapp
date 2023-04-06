@@ -50,6 +50,7 @@
   right: 1.6em;
   z-index: 2000;
   background-color: white;
+  color: var(--color_primary);
   clip-path: circle(38%);
 }
 

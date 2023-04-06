@@ -1,6 +1,5 @@
 import SidebarItem from "./SidebarItem";
 import { MdSpaceDashboard } from "react-icons/md";
-import { GiFarmTractor } from "react-icons/gi";
 import { HiDocumentText } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { FaExchangeAlt } from "react-icons/fa";

@@ -1,4 +1,4 @@
-import { RiChatOffFill, RiChat4Fill } from "react-icons/ri";
+import { RiChatOffFill } from "react-icons/ri";
 import { BsChatLeftTextFill } from "react-icons/bs";
 import useApp from "src/hooks/useApp";
 
