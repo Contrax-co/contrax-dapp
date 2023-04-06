@@ -175,7 +175,12 @@ let hop = (farmId: number) => {
                 amountInWei = vaultBalance;
             }
             if (token === constants.AddressZero) {
-                withdrawTxn = await zapperContract.zapOut(farm.vault_addr, max ? vaultBalance : amountInWei);
+                console.log("zaping out eth");
+                withdrawTxn = await zapperContract.zapOutAndSwapEth(
+                    farm.vault_addr,
+                    max ? vaultBalance : amountInWei,
+                    0
+                );
             } else {
                 withdrawTxn = await zapperContract.zapOutAndSwap(
                     farm.vault_addr,

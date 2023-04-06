@@ -6,7 +6,7 @@ import { ACCOUNT_BALANCE } from "src/config/constants/query";
 import { useProvider, useSigner, useAccount, useDisconnect, useNetwork, useSwitchNetwork, Chain } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { notifyError } from "src/api/notify";
-import { getNetworkName } from "src/utils/common";
+import { getNetworkName, noExponents } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
@@ -84,9 +84,11 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const getBalance = async () => {
         if (!provider || !currentWallet)
             return { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) };
-        const balance = await provider.getBalance(currentWallet);
         const mainnetBalance = await mainnetProvider.getBalance(currentWallet);
-        return { balance: ethers.BigNumber.from(balances[ethers.constants.AddressZero]), mainnetBalance };
+        return {
+            balance: ethers.BigNumber.from(noExponents(balances[ethers.constants.AddressZero] || "")),
+            mainnetBalance,
+        };
     };
 
     const connectWallet = async () => {
