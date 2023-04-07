@@ -42,7 +42,7 @@ export const useTokens = () => {
 
         const arr: { address: string; decimals: number }[] = [];
         for (const farm of farms) {
-            set.add(farm.lp_address);
+            if (farm.name !== "GMX") set.add(farm.lp_address);
         }
         // for (const farm of farms) {
         //     if (farm.token_type === FarmType.advanced)
