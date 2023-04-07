@@ -33,7 +33,7 @@ function getTheme(isLight: boolean) {
             padding: "10px 16px",
             paddingBottom: 12,
             paddingLeft: 0,
-            width: notification.buttons.length > 0 ? 189.2 : notification.dismissible ? 200 : 240,
+            width: notification.buttons.length > 0 ? 187 : notification.dismissible ? 200 : 238,
         }),
         notificationTitle: (notification: Notification) => ({
             ...atalhoTheme.notificationMessage(notification),
