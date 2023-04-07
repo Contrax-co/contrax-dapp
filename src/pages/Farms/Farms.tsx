@@ -76,29 +76,26 @@ function Farms() {
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Farms</p>
             </div>
-            <div style={{ position: "relative", paddingRight: 50 }}>
-                <Tabs style={{ padding: 0, marginBottom: 30 }}>
-                    <PoolButton
-                        variant={2}
-                        onClick={() => {
-                            setTab(1);
-                            setSortedBuy(undefined);
-                        }}
-                        description="Single Tokens"
-                        active={tab === 1}
-                    />
-                    <PoolButton
-                        variant={2}
-                        onClick={() => {
-                            setTab(2);
-                            setSortedBuy(undefined);
-                        }}
-                        description="Dual Tokens"
-                        active={tab === 2}
-                    />
-                </Tabs>
-                <DotMenu openDeprecatedFarm={openDeprecatedFarm} setOpenDeprecatedFarm={setOpenDeprecatedFarm} />
-            </div>
+            <Tabs style={{ padding: 0, marginBottom: 30 }}>
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab(1);
+                        setSortedBuy(undefined);
+                    }}
+                    description="Single Tokens"
+                    active={tab === 1}
+                />
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab(2);
+                        setSortedBuy(undefined);
+                    }}
+                    description="Dual Tokens"
+                    active={tab === 2}
+                />
+            </Tabs>
             <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     {FarmTableColumns.Token}
