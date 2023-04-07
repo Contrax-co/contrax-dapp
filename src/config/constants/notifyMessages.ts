@@ -36,7 +36,7 @@ export const successMessages: SuccessMessages = {
 
 export const loadingMessages: LoadingMessages = {
     approvingZapping: () => ({
-        title: "Approving zapping!",
+        title: "Approving zap!",
         message: "Please wait...",
     }),
     zapping: (tx: string) => ({
