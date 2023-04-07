@@ -63,13 +63,11 @@ const Exchange: React.FC<IProps> = () => {
     const { reloadBalances } = useBalances();
 
     const { lightMode } = useApp();
-    const containerRef = useRef<HTMLDivElement>(null);
+    // const containerRef = useRef<HTMLDivElement>(null);
     const [provider, setProvider] = React.useState<any>();
     const websocketProvider = useWebSocketProvider();
     const [tab, setTab] = React.useState<Tab>(Tab.Buy);
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
-
-    const { farms } = useFarms();
 
     // Reload Balances every time this component unmounts
     React.useEffect(() => reloadBalances, []);
