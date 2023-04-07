@@ -42,8 +42,9 @@ export const noExponents = (n: number | string) => {
 };
 
 export const calcCompoundingApy = (rewardsApr: number) => {
-    const period = 365 / 7; // Number of Weeks
-    const rate = rewardsApr / 100;
+    const period = 365 / 7; // Number of times compounded per year
+    const fee = 0.1; // 10% fee
+    const rate = (rewardsApr / 100) * (1 - fee);
     const apy = ((1 + rate / period) ** period - 1) * 100;
     return apy - rewardsApr;
     // return apy;
