@@ -18,7 +18,6 @@ interface IProps {
 
 export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
     const { reloadBalances } = useBalances();
-    const { isBalanceTooLow } = useEstimateGasFee();
     const { lightMode } = useApp();
     const [reciverAddress, setReciverAddress] = useState<string>("");
     const [amount, setAmount] = useState("0");

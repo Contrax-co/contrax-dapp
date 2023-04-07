@@ -7,6 +7,7 @@ import usePriceOfTokens from "./usePriceOfTokens";
 import useWallet from "./useWallet";
 import { constants, utils } from "ethers";
 import { FarmType } from "src/types/enums";
+import { useDecimals } from "./useDecimals";
 
 const ethAddress = constants.AddressZero;
 const tokenBalDecimalPlaces = 3;
@@ -17,6 +18,7 @@ export const useTokens = () => {
     const { balance: ethBalance, networkId } = useWallet();
     const [tokens, setTokens] = useState<Token[]>([]);
     const [lpTokens, setLpTokens] = useState<Token[]>([]);
+    const { decimals } = useDecimals();
 
     const tokenAddresses = useMemo(() => {
         const set = new Set<string>();
@@ -27,21 +29,14 @@ export const useTokens = () => {
         }
         set.forEach((address) => {
             const farm = farms.find((farm) => farm.token1 === address || farm.token2 === address);
-            const decimals =
-                (farm?.token1 === address
-                    ? // @ts-ignore
-                      farm.decimals1
-                    : // @ts-ignore
-                    farm?.decimals2
-                    ? // @ts-ignore
-                      farm?.decimals2
-                    : farm?.decimals) || 18;
+            const decimal = decimals[address] || 18;
             if (farm) {
-                arr.push({ address, decimals });
+                arr.push({ address, decimals: decimal });
             }
         });
         return arr;
     }, [farms]);
+
     const lpAddresses = useMemo(() => {
         const set = new Set<string>();
 
