@@ -91,9 +91,9 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
                     </button>
                 </div>
                 <button
+                    className={`custom-button ${lightMode && "custom-button-light"} ${styles.button}`}
                     type="submit"
                     disabled={isLoading || Number(amount) <= 0 || !reciverAddress}
-                    className={`${styles.button} ${lightMode && styles.button_light}`}
                 >
                     Transfer
                 </button>

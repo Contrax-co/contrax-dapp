@@ -6,7 +6,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 500px;
+    width: 540px;
     @include devices(tablet) {
         width: 100%;
     }
@@ -71,24 +71,8 @@
 }
 
 .button {
-    color: $color_white;
-    background-color: var(--color_primary);
-    padding: 16px 40px;
+    font-size: larger !important;
+    font-weight: bold !important;
     margin-top: 32px;
     margin-bottom: 8px;
-    border: none;
-    border-radius: 10px;
-    font-size: larger;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.button:disabled {
-    background-color: #276995;
-    color: $color_grey;
-    cursor: not-allowed;
-}
-.button_light:disabled {
-    background-color: $color_grey;
-    color: #4e4e4e
 }

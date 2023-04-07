@@ -2,18 +2,30 @@
 
 .container {
     padding: 50px 58px 50px 58px;
+    // width: 400px;
+    min-height: 330px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 26px;
     @include devices(tablet) {
         width: initial;
+        display: block;
     }
     @include devices(mobile) {
         padding: 50px 58px;
     }
 }
 
+.left {
+    text-align: left;
+}
+
 .heading {
     & h1 {
         margin: 0px;
         margin-bottom: 20px;
+        font-size: 52px;
     }
 }
 .caption {
@@ -34,17 +46,33 @@
     }
     & p {
         max-width: 377px;
-        width: -webkit-fill-available;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         margin: 0px;
     }
 }
+.extraText{
+    width: 250px;
+    @include devices(tablet) {
+        display: none;
+    }
+}
+// .qrWrapper {
+//     display: grid;
+//     grid-template-columns: 1fr 1fr;
+//     & img{
+//         width: 200px;
+//         height: 200px;
+//     }
+// }
 .qrCode {
+    width: fit-content;
+    height: fit-content;
     text-align: center;
+    padding: 12px;
+    margin: 0px auto;
     border: 12px solid var(--color_primary);
     border-radius: 12px;
-    padding: 12px;
     box-shadow: 4px 4px 34px rgba(0, 0, 0, 0.15);
 }
