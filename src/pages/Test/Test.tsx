@@ -37,6 +37,13 @@ const Test = () => {
             </button>
             <button
                 onClick={() => {
+                    notifyError("Approving Zapping!", "Please wait...ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+                }}
+            >
+                error long
+            </button>
+            <button
+                onClick={() => {
                     notifyLoading("Approving Zapping!", "Please wait...");
                 }}
             >

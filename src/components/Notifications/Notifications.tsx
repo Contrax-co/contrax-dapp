@@ -23,13 +23,17 @@ function getTheme(isLight: boolean) {
             border: "1px solid #63CCE0",
             boxShadow: "none",
         }),
-
+        // notificationImageContainer: (notification) => ({
+        //     ...atalhoTheme.notificationImageContainer(notification),
+        //     margin: 0,
+        // }),
         notificationMeta: (notification: Notification) => ({
             ...atalhoTheme.notificationMeta(notification),
             verticalAlign: "top",
-            width: "100%",
             padding: "10px 16px",
             paddingBottom: 12,
+            paddingLeft: 0,
+            width: notification.buttons.length > 0 ? 189.2 : notification.dismissible ? 200 : 240,
         }),
         notificationTitle: (notification: Notification) => ({
             ...atalhoTheme.notificationMessage(notification),
@@ -45,6 +49,7 @@ function getTheme(isLight: boolean) {
             fontSize: "12px",
             color: txtColor,
             fontFamily: "'Montserrat', sans-serif",
+            wordBreak: "break-all",
         }),
         notificationButton: (notification, position, state) => ({
             ...atalhoTheme.notificationButton(notification, position, state),
@@ -65,9 +70,10 @@ function getTheme(isLight: boolean) {
         }),
         notificationButtonText: (notification, position, state) => ({
             ...atalhoTheme.notificationButtonText(notification, position, state),
-            maxWidth: "auto",
-            minWidth: 0,
             color: txtColor,
+            padding: 0,
+            minWidth: 0,
+            width: 50,
         }),
     };
 
@@ -100,7 +106,7 @@ function NotificationIcon({ notification }: { notification: Notification }) {
     if (notification.status === "success") src = NotiCheck;
     else if (notification.status === "error") src = NotiCross;
     return (
-        <div style={{ margin: "auto", marginLeft: 16 }}>
+        <div style={{ margin: "auto", marginLeft: 16, marginRight: 16 }}>
             {src ? (
                 <img src={src} width={30} height={30} />
             ) : (
