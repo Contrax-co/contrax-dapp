@@ -2,6 +2,7 @@
 
 import sushi from "./sushi";
 import hop from "./hop";
+import * as gmx from "./gmx";
 import { FarmFunctions } from "./types";
 
 const farmFunctions: { [key: number]: FarmFunctions } = {
@@ -9,6 +10,7 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     2: sushi(2), // 2: wethUsdc,
     3: sushi(3), // 3: wethUsdt,
     4: sushi(4), // 4: wethWbtc,
+    5: gmx, // 5: gmx,
     8: sushi(8), // 8: plsWeth,
     10: sushi(10), // 10: wethMagic,
     16: hop(16), // 16: hopEth,
