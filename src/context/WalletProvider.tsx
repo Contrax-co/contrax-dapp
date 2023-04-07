@@ -11,6 +11,8 @@ import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
 import { errorMessages } from "src/config/constants/notifyMessages";
+import { useDispatch } from "react-redux";
+import { setConnectorId } from "src/state/settings/settingsReducer";
 
 interface IWalletContext {
     /**
@@ -73,8 +75,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     const { switchNetworkAsync, chains } = useSwitchNetwork();
     const { data: signer } = useSigner();
-
-    const { address: currentWallet } = useAccount();
+    const dispatch = useDispatch();
+    const { address: currentWallet, connector } = useAccount();
     const { disconnect } = useDisconnect();
     const mainnetProvider = useProvider({ chainId: 1 });
     const { chain } = useNetwork();
@@ -142,6 +144,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     React.useEffect(() => {
         setMulticallProvider(getMulticallProvider(provider));
     }, [provider]);
+
+    React.useEffect(() => {
+        dispatch(setConnectorId(connector?.id || ""));
+    }, [connector]);
 
     return (
         <WalletContext.Provider

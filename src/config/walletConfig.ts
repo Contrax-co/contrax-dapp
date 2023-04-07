@@ -48,22 +48,25 @@ const { wallets } = getDefaultWallets({
     chains,
 });
 
+const projectId = ZERODEV_PROJECT_ID;
+// const projectId = "a20aa1ab-79b0-435d-92b9-dad4442af747";
+
 const connectors = connectorsForWallets([
     {
         groupName: "Social",
         wallets: [
-            googleWallet({ options: { projectId: ZERODEV_PROJECT_ID } }),
-            facebookWallet({ options: { projectId: ZERODEV_PROJECT_ID } }),
-            githubWallet({ options: { projectId: ZERODEV_PROJECT_ID } }),
-            discordWallet({ options: { projectId: ZERODEV_PROJECT_ID } }),
-            twitchWallet({ options: { projectId: ZERODEV_PROJECT_ID } }),
-            twitterWallet({ options: { projectId: ZERODEV_PROJECT_ID } }),
+            googleWallet({ options: { projectId: projectId } }),
+            facebookWallet({ options: { projectId: projectId } }),
+            githubWallet({ options: { projectId: projectId } }),
+            discordWallet({ options: { projectId: projectId } }),
+            twitchWallet({ options: { projectId: projectId } }),
+            twitterWallet({ options: { projectId: projectId } }),
         ],
     },
     ...wallets,
 ]);
 export const wagmiClient = createClient({
-    autoConnect: true,
+    autoConnect: false,
     connectors,
     provider,
     webSocketProvider,

@@ -74,6 +74,7 @@ export const updateEarnings = createAsyncThunk(
             if (chainId !== defaultChainId) throw new Error("Wrong chain");
             await sleep(6000);
             const earns = await getEarnings(currentWallet);
+            if (!earns) throw new Error("No data");
             const earnings: Earnings = {};
             const balancesPromises: Promise<BigNumber>[] = [];
             const withdrawableLpAmount: { [farmId: number]: string } = {};
