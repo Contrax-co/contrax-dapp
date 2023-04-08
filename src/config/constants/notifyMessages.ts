@@ -39,7 +39,7 @@ export const loadingMessages: LoadingMessages = {
         title: "Approving zap!",
         message: "Please wait...",
     }),
-    zapping: (tx: string) => ({
+    zapping: (tx?: string) => ({
         title: "Creating your staking position...",
         message: `Please wait...`,
     }),
@@ -51,7 +51,7 @@ export const loadingMessages: LoadingMessages = {
         title: "Confirming Withdraw!",
         message: "Please wait...",
     }),
-    withDrawing: (tx: string) => ({
+    withDrawing: (tx?: string) => ({
         title: "Withdrawing...",
         message: `Please wait...`,
     }),
@@ -63,7 +63,7 @@ export const loadingMessages: LoadingMessages = {
         title: "Confirm Deposit!",
         message: "",
     }),
-    depositing: (tx: string) => ({
+    depositing: (tx?: string) => ({
         title: "Depositing...",
         message: `Please wait...`,
     }),

@@ -5,6 +5,7 @@ import hop from "./hop";
 import * as gmx from "./gmx";
 import { FarmFunctions } from "./types";
 
+// TODO: find a better way to add farms here, instead of using the farm id manually
 const farmFunctions: { [key: number]: FarmFunctions } = {
     1: sushi(1), // 1: wethDai,
     2: sushi(2), // 2: wethUsdc,

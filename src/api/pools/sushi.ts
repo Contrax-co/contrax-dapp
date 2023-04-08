@@ -19,6 +19,7 @@ import {
     ZapOutFn,
 } from "./types";
 import { defaultChainId } from "src/config/constants";
+import { zapInBase, zapOutBase } from "./common";
 
 let sushi: DynamicFarmFunctions = function (farmId) {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
@@ -184,130 +185,9 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const zapIn: ZapInFn = async ({ amountInWei, signer, chainId, max, token, balances, currentWallet }) => {
-        if (!signer) return;
-        const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
-        const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
-        const wethAddress = addressesByChainId[chainId].wethAddress;
-        let notiId = notifyLoading(loadingMessages.approvingZapping());
-        try {
-            // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
-            let zapperTxn: any;
-            if (token === constants.AddressZero) {
-                if (max) {
-                    amountInWei = balances[constants.AddressZero]!;
-                }
-                amountInWei = BigNumber.from(amountInWei);
+    const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
 
-                //=============Gas Logic================
-                const balance = BigNumber.from(balances[constants.AddressZero]);
-                const gasPrice: any = await signer.getGasPrice();
-                const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, wethAddress, {
-                    value: balance,
-                });
-                const gasToRemove = gasLimit.mul(gasPrice).mul(3);
-                if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
-                //=============Gas Logic================
-
-                zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
-                    value: amountInWei,
-                });
-            } else {
-                if (max) {
-                    amountInWei = balances[token]!;
-                }
-
-                await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
-                zapperTxn = await zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei);
-            }
-
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.zapping(zapperTxn.hash), {
-                id: notiId,
-                buttons: [
-                    {
-                        name: "View",
-                        // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${zapperTxn.hash}`, "_blank"),
-                    },
-                ],
-            });
-
-            const zapperTxnStatus = await zapperTxn.wait(1);
-            if (!zapperTxnStatus.status) {
-                throw new Error("Error zapping into vault!");
-            } else {
-                dismissNotify(notiId);
-                notifySuccess(successMessages.zapIn());
-            }
-        } catch (error: any) {
-            console.log(error);
-            let err = JSON.parse(JSON.stringify(error));
-            dismissNotify(notiId);
-            notifyError(errorMessages.generalError(err.reason || err.message));
-        }
-    };
-
-    const zapOut: ZapOutFn = async ({ amountInWei, currentWallet, signer, chainId, max, token }) => {
-        if (!signer) return;
-        const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
-        const wethAddress = addressesByChainId[chainId].wethAddress;
-        const notiId = notifyLoading(loadingMessages.approvingWithdraw());
-        try {
-            const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
-
-            await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer);
-            await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, signer);
-
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
-
-            let withdrawTxn: any;
-            if (max) {
-                amountInWei = vaultBalance;
-            }
-            if (token === constants.AddressZero) {
-                withdrawTxn = await zapperContract.zapOutAndSwap(
-                    farm.vault_addr,
-                    max ? vaultBalance : amountInWei,
-                    wethAddress,
-                    0
-                );
-            } else {
-                withdrawTxn = await zapperContract.zapOutAndSwap(
-                    farm.vault_addr,
-                    max ? vaultBalance : amountInWei,
-                    token,
-                    0
-                );
-            }
-
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
-                id: notiId,
-                buttons: [
-                    {
-                        name: "View",
-                        // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${withdrawTxn.hash}`, "_blank"),
-                    },
-                ],
-            });
-
-            const withdrawTxnStatus = await withdrawTxn.wait(1);
-            if (!withdrawTxnStatus.status) {
-                throw new Error("Error withdrawing Try again!");
-            } else {
-                dismissNotify(notiId);
-                notifySuccess(successMessages.withdraw());
-            }
-        } catch (error) {
-            console.log(error);
-            let err = JSON.parse(JSON.stringify(error));
-            dismissNotify(notiId);
-            notifyError(errorMessages.generalError(err.reason || err.message || err?.data?.message));
-        }
-    };
+    const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
 
     return { getProcessedFarmData, deposit, withdraw, zapIn, zapOut };
 };

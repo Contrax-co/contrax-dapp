@@ -97,12 +97,12 @@ export interface SuccessMessages {
 
 export interface LoadingMessages {
     approvingZapping: () => NotifyMessage;
-    zapping: (tx: string) => NotifyMessage;
+    zapping: (tx?: string) => NotifyMessage;
     approvingWithdraw: () => NotifyMessage;
     confirmingWithdraw: () => NotifyMessage;
-    withDrawing: (tx: string) => NotifyMessage;
+    withDrawing: (tx?: string) => NotifyMessage;
     approvingDeposit: () => NotifyMessage;
     confirmDeposit: () => NotifyMessage;
-    depositing: (tx: string) => NotifyMessage;
+    depositing: (tx?: string) => NotifyMessage;
     transferingTokens: () => NotifyMessage;
 }

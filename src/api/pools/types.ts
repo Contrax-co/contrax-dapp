@@ -2,6 +2,7 @@ import { BigNumber, Signer } from "ethers";
 import { Balances } from "src/state/balances/types";
 import { Decimals } from "src/state/decimals/types";
 import { Prices } from "src/state/prices/types";
+import { Farm } from "src/types";
 
 export interface ZapInArgs {
     amountInWei: string | BigNumber;
@@ -55,7 +56,9 @@ export interface FarmDataProcessed {
 export type DepositFn = (args: DepositArgs) => Promise<void>;
 export type WithdrawFn = (args: WithdrawArgs) => Promise<void>;
 export type ZapInFn = (args: ZapInArgs) => Promise<void>;
+export type ZapInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<void>;
 export type ZapOutFn = (args: ZapOutArgs) => Promise<void>;
+export type ZapOutBaseFn = (args: ZapOutArgs & { farm: Farm }) => Promise<void>;
 export type GetFarmDataProcessedFn = (
     balances: Balances,
     prices: Prices,
