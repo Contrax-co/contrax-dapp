@@ -12,6 +12,7 @@ export interface ZapInArgs {
     token: string;
     balances: Balances;
     currentWallet: string;
+    tokenIn?: string;
 }
 
 export interface ZapOutArgs {
@@ -48,9 +49,10 @@ export interface TokenAmounts {
 }
 
 export interface FarmDataProcessed {
-    Depositable_Amounts: TokenAmounts[];
-    Withdrawable_Amounts: TokenAmounts[];
-    ID: number;
+    depositableAmounts: TokenAmounts[];
+    withdrawableAmounts: TokenAmounts[];
+    vaultBalanceFormated: string;
+    id: number;
 }
 
 export type DepositFn = (args: DepositArgs) => Promise<void>;

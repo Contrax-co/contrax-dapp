@@ -29,12 +29,10 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         const lpAddress = farm.lp_address;
         const lpPrice = prices[lpAddress];
         const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
-        const ethBalance = BigNumber.from(balances[constants.AddressZero]);
-        const lpBalance = BigNumber.from(balances[lpAddress]);
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
-        let Depositable_Amounts: TokenAmounts[] = [
+        let depositableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
@@ -60,7 +58,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             },
         ];
 
-        let Withdrawable_Amounts: TokenAmounts[] = [
+        let withdrawableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
@@ -85,9 +83,10 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         ];
 
         const result = {
-            Depositable_Amounts,
-            Withdrawable_Amounts,
-            ID: farm.id,
+            depositableAmounts,
+            withdrawableAmounts,
+            vaultBalanceFormated: toEth(vaultBalance, farm.decimals),
+            id: farm.id,
         };
         return result;
     };

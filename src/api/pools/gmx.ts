@@ -20,7 +20,7 @@ export const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, d
     const zapCurriences = farm.zap_currencies;
     const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
-    let Depositable_Amounts: TokenAmounts[] = [
+    let depositableAmounts: TokenAmounts[] = [
         {
             tokenAddress: usdcAddress,
             tokenSymbol: "USDC",
@@ -39,7 +39,7 @@ export const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, d
         },
     ];
 
-    let Withdrawable_Amounts: TokenAmounts[] = [
+    let withdrawableAmounts: TokenAmounts[] = [
         {
             tokenAddress: usdcAddress,
             tokenSymbol: "USDC",
@@ -59,14 +59,14 @@ export const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, d
     zapCurriences?.forEach((currency) => {
         const currencyBalance = BigNumber.from(balances[currency.address]);
         const currencyPrice = prices[currency.address];
-        Depositable_Amounts.push({
+        depositableAmounts.push({
             tokenAddress: currency.address,
             tokenSymbol: currency.symbol,
             amount: toEth(currencyBalance, decimals[currency.symbol]),
             amountDollar: (Number(toEth(currencyBalance, decimals[currency.address])) * currencyPrice).toString(),
             price: prices[currency.address],
         });
-        Withdrawable_Amounts.push({
+        withdrawableAmounts.push({
             tokenAddress: currency.address,
             tokenSymbol: currency.symbol,
             amount: (
@@ -79,9 +79,10 @@ export const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, d
     });
 
     return {
-        Depositable_Amounts,
-        Withdrawable_Amounts,
-        ID: farm.id,
+        depositableAmounts,
+        withdrawableAmounts,
+        vaultBalanceFormated: toEth(vaultBalance, farm.decimals),
+        id: farm.id,
     };
 };
 

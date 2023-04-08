@@ -24,7 +24,7 @@ let hop = (farmId: number) => {
         const zapCurriences = farm.zap_currencies;
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
-        let Depositable_Amounts: TokenAmounts[] = [
+        let depositableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
@@ -43,7 +43,7 @@ let hop = (farmId: number) => {
             },
         ];
 
-        let Withdrawable_Amounts: TokenAmounts[] = [
+        let withdrawableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
@@ -66,14 +66,14 @@ let hop = (farmId: number) => {
         zapCurriences?.forEach((currency) => {
             const currencyBalance = BigNumber.from(balances[currency.address]);
             const currencyPrice = prices[currency.address];
-            Depositable_Amounts.push({
+            depositableAmounts.push({
                 tokenAddress: currency.address,
                 tokenSymbol: currency.symbol,
                 amount: toEth(currencyBalance, decimals[currency.symbol]),
                 amountDollar: (Number(toEth(currencyBalance, decimals[currency.address])) * currencyPrice).toString(),
                 price: prices[currency.address],
             });
-            Withdrawable_Amounts.push({
+            withdrawableAmounts.push({
                 tokenAddress: currency.address,
                 tokenSymbol: currency.symbol,
                 amount: (
@@ -85,13 +85,14 @@ let hop = (farmId: number) => {
             });
         });
         return {
-            Depositable_Amounts,
-            Withdrawable_Amounts,
-            ID: farm.id,
+            depositableAmounts,
+            withdrawableAmounts,
+            vaultBalanceFormated: toEth(vaultBalance, farm.decimals),
+            id: farm.id,
         };
     };
 
-    const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
+    const zapIn: ZapInFn = (props) => zapInBase({ ...props, tokenIn: farm.token1, farm });
 
     const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
 

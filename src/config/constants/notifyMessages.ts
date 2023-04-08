@@ -40,7 +40,7 @@ export const loadingMessages: LoadingMessages = {
         message: "Please wait...",
     }),
     zapping: (tx?: string) => ({
-        title: "Creating your staking position...",
+        title: "Creating your stake position...",
         message: `Please wait...`,
     }),
     approvingWithdraw: () => ({

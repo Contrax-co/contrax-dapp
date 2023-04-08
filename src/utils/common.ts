@@ -1,4 +1,4 @@
-import { BigNumberish, utils } from "ethers";
+import { BigNumberish, Signer, utils } from "ethers";
 import { defaultChainId } from "src/config/constants";
 import { Farm } from "src/types";
 
@@ -112,8 +112,6 @@ export const awaitTransaction = async (transaction: any) => {
         receipt = await tx.wait();
         status = true;
     } catch (e: any) {
-        console.log("eRrOr", Error(e).message);
-
         // temp fix for zerodev timeout error
         if (Error(e).message === "Error: Timed out") {
             status = true;
@@ -139,4 +137,10 @@ export const awaitTransaction = async (transaction: any) => {
         error,
         status,
     };
+};
+
+export const isZeroDevSigner = (signer: any) => {
+    // do we have a better way to do this ?? :/
+    if (signer.zdProvider) return true;
+    return false;
 };
