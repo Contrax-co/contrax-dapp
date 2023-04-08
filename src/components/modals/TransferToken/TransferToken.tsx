@@ -21,27 +21,23 @@ export const TransferToken: FC<IProps> = ({ token, setSelectedToken }) => {
     const { lightMode } = useApp();
     const [reciverAddress, setReciverAddress] = useState<string>("");
     const [amount, setAmount] = useState("0");
-    const { transferEth, transferToken, isLoading } = useTransfer();
+    const { transfer, isLoading } = useTransfer();
     const [max, setMax] = useState(false);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        // check for eth balance greater than gas fee
         const id = notifyLoading(loadingMessages.transferingTokens());
-        try {
-            if (token.address === constants.AddressZero) {
-                await transferEth({ to: reciverAddress, amount: toWei(amount.toString(), token.decimals), max });
-            } else {
-                await transferToken({
-                    tokenAddress: token.address,
-                    to: reciverAddress,
-                    amount: toWei(amount.toString(), token.decimals),
-                    max,
-                });
-            }
+        let response = await transfer({
+            tokenAddress: token.address,
+            to: reciverAddress,
+            amount: toWei(amount.toString(), token.decimals),
+            max,
+        });
+
+        if (response?.status) {
             notifySuccess(successMessages.tokenTransfered());
-        } catch (error: any) {
-            let err = JSON.parse(JSON.stringify(error));
+        } else {
+            let err = JSON.parse(JSON.stringify(response?.error && "Error transfering tokens..."));
             notifyError(errorMessages.generalError(err.cause?.reason || err.reason || err.message));
         }
         dismissNotify(id);

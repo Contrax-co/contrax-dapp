@@ -100,3 +100,40 @@ export const toPreciseNumber = (x: number | string, decimals = 3, precision = 2)
 export const sleep = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
+
+export const awaitTransaction = async (transaction: any) => {
+    let tx;
+    let receipt;
+    let error;
+    let status;
+    try {
+        tx = await transaction;
+        receipt = await tx.wait();
+        status = true;
+    } catch (e: any) {
+        // temp fix for zerodev timeout error
+        if (String(e).includes("Error: Timed out at UserOperationEventListener")) {
+            status = true;
+            return {
+                tx: "",
+                receipt: "",
+                error,
+                status,
+            };
+        }
+
+        if (e.reason) error = e.reason.replace("execution reverted:", "");
+        else if (e.code === 4001) error = "Transaction Denied!";
+        else if (e.code === -32000) error = "Insuficient Funds in your account for transaction";
+        else if (e.data?.code === -32000) error = "Insuficient Funds in your account for transaction";
+        else if (e.data?.message) error = e.data.message;
+        else if (e.message) error = e.message;
+        status = false;
+    }
+    return {
+        tx,
+        receipt,
+        error,
+        status,
+    };
+};
