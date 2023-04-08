@@ -46,22 +46,22 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
     const selectOptions = useMemo(
         () =>
             transactionType === FarmTransactionType.Deposit
-                ? farmData?.Depositable_Amounts.map((_) => _.tokenSymbol)
-                : farmData?.Withdrawable_Amounts.map((_) => _.tokenSymbol) || [],
+                ? farmData?.depositableAmounts.map((_) => _.tokenSymbol)
+                : farmData?.withdrawableAmounts.map((_) => _.tokenSymbol) || [],
         [transactionType, farmData]
     );
 
     const selectExtraOptions = useMemo(
         () =>
             transactionType === FarmTransactionType.Deposit
-                ? farmData?.Depositable_Amounts.map(
+                ? farmData?.depositableAmounts.map(
                       (_) =>
                           (showInUsd ? ": $" : ": ") +
                           Number(showInUsd ? _.amountDollar : _.amount).toLocaleString("en-us", {
                               maximumFractionDigits: 4,
                           })
                   )
-                : farmData?.Withdrawable_Amounts.map(
+                : farmData?.withdrawableAmounts.map(
                       (_) =>
                           (showInUsd ? ": $" : ": ") +
                           Number(showInUsd ? _.amountDollar : _.amount).toLocaleString("en-us", {

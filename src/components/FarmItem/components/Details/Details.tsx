@@ -201,15 +201,15 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
                         </div>
                     ) : null}
 
-                    {farmData?.Withdrawable_Amounts[0].amount &&
+                    {farmData?.withdrawableAmounts[0].amount &&
                     formattedSupplies[farm.vault_addr] &&
-                    Number(farmData.Withdrawable_Amounts[0].amount) / formattedSupplies[farm.vault_addr]! ? (
+                    Number(farmData.withdrawableAmounts[0].amount) / formattedSupplies[farm.vault_addr]! ? (
                         <div className={`detailed_header`}>
                             <p>Share</p>
                             <div className={`unstaked_details`}>
                                 <p className={`detailed_unstaked_pairs`}>
                                     {(
-                                        (Number(farmData?.Withdrawable_Amounts[0].amount) /
+                                        (Number(farmData?.withdrawableAmounts[0].amount) /
                                             formattedSupplies[farm.vault_addr]!) *
                                             100 || 0
                                     ).toFixed(2)}

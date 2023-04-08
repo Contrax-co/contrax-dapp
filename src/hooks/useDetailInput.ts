@@ -38,8 +38,8 @@ export const useDetailInput = (farm: Farm) => {
     const { farmDetails, isLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
     const { currentWallet } = useWallet();
-    const [depositable, setDepositable] = React.useState(farmData?.Depositable_Amounts[0]);
-    const [withdrawable, setWithdrawable] = React.useState(farmData?.Withdrawable_Amounts[0]);
+    const [depositable, setDepositable] = React.useState(farmData?.depositableAmounts[0]);
+    const [withdrawable, setWithdrawable] = React.useState(farmData?.withdrawableAmounts[0]);
 
     const maxBalance = React.useMemo(() => {
         if (type === FarmTransactionType.Deposit) {
@@ -118,15 +118,15 @@ export const useDetailInput = (farm: Farm) => {
     }, [max, maxBalance]);
 
     useEffect(() => {
-        let _depositable = farmData?.Depositable_Amounts.find((item) => item.tokenSymbol === currencySymbol);
+        let _depositable = farmData?.depositableAmounts.find((item) => item.tokenSymbol === currencySymbol);
         if (!_depositable) {
-            _depositable = farmData?.Depositable_Amounts[0];
+            _depositable = farmData?.depositableAmounts[0];
         }
         setDepositable(_depositable);
 
-        let _withdrawable = farmData?.Withdrawable_Amounts.find((item) => item.tokenSymbol === currencySymbol);
+        let _withdrawable = farmData?.withdrawableAmounts.find((item) => item.tokenSymbol === currencySymbol);
         if (!_withdrawable) {
-            _withdrawable = farmData?.Withdrawable_Amounts[0];
+            _withdrawable = farmData?.withdrawableAmounts[0];
         }
         setWithdrawable(_withdrawable);
         setMax(false);
