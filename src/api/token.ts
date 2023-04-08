@@ -1,6 +1,6 @@
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
-import { getNetworkName } from "src/utils/common";
+import { awaitTransaction, getNetworkName } from "src/utils/common";
 import { Contract, providers, BigNumber, Signer, constants } from "ethers";
 import { erc20ABI } from "wagmi";
 import { utils } from "ethers/lib/ethers";
@@ -133,8 +133,10 @@ export const approveErc20 = async (
     // if allowance is lower than amount, approve
     if (BigNumber.from(amount).gt(allowance)) {
         // approve
-        await(await contract.approve(spender, constants.MaxUint256)).wait();
+        return await awaitTransaction(contract.approve(spender, constants.MaxUint256));
     }
+    // if already approved just return status as true
+    return { status: true };
 };
 
 export const getLpPriceDepreached = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
