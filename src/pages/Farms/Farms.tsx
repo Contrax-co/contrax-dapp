@@ -15,7 +15,7 @@ import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { Tabs } from "src/components/Tabs/Tabs";
 import DotMenu from "./components/DotMenu";
-interface FarmDataExtended extends Partial<FarmData>, Farm {
+interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
     apy: number;
 }
 function Farms() {
