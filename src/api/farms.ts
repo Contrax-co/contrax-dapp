@@ -17,9 +17,9 @@ interface Response {
 }
 
 export const getEarnings = async (userAddress: string) => {
-  try {
-      const res = await axios.post(EARNINGS_GRAPH_URL, {
-          query: `query MyQuery {
+    try {
+        const res = await axios.post(EARNINGS_GRAPH_URL, {
+            query: `query MyQuery {
                 user(id: \"${userAddress.toLowerCase()}\") {
                   earn {
                     vaultAddress                    
@@ -37,10 +37,10 @@ export const getEarnings = async (userAddress: string) => {
                   }
                 }
               }`,
-      });
-      return res.data.data.user.earn as Response[];
-  } catch (err: any) {
-      console.error(err);
-      return undefined;
-  }
+        });
+        return res.data.data.user?.earn as Response[];
+    } catch (err: any) {
+        console.error(err);
+        return undefined;
+    }
 };
