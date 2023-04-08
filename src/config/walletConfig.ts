@@ -19,8 +19,6 @@ import { ZERODEV_PROJECT_ID } from "./constants";
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
 
-
-
 // Configure chains & providers with the Alchemy provider.
 // Popular providers are Alchemy (alchemy.com), Infura (infura.io), Quicknode (quicknode.com) etc.
 export const { chains, provider, webSocketProvider } = configureChains(
@@ -55,18 +53,18 @@ const connectors = connectorsForWallets([
     {
         groupName: "Social",
         wallets: [
-            googleWallet({ options: { projectId: projectId } }),
-            facebookWallet({ options: { projectId: projectId } }),
-            githubWallet({ options: { projectId: projectId } }),
-            discordWallet({ options: { projectId: projectId } }),
-            twitchWallet({ options: { projectId: projectId } }),
-            twitterWallet({ options: { projectId: projectId } }),
+            googleWallet({ options: { projectId: projectId, shimDisconnect: true } }),
+            facebookWallet({ options: { projectId: projectId, shimDisconnect: true } }),
+            githubWallet({ options: { projectId: projectId, shimDisconnect: true } }),
+            discordWallet({ options: { projectId: projectId, shimDisconnect: true } }),
+            twitchWallet({ options: { projectId: projectId, shimDisconnect: true } }),
+            twitterWallet({ options: { projectId: projectId, shimDisconnect: true } }),
         ],
     },
     ...wallets,
 ]);
 export const wagmiClient = createClient({
-    autoConnect: false,
+    autoConnect: true,
     connectors,
     provider,
     webSocketProvider,
