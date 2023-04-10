@@ -112,6 +112,7 @@ export const awaitTransaction = async (transaction: any) => {
         receipt = await tx.wait();
         status = true;
     } catch (e: any) {
+        console.info("awaitTransaction error", e);
         // temp fix for zerodev timeout error
         if (Error(e).message === "Error: Timed out") {
             status = true;

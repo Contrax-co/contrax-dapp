@@ -21,7 +21,7 @@ const useTransfer = () => {
             const gasPrice = await signer?.getGasPrice();
             if (!gasPrice) return;
             amount = ethBalance.sub(gasPrice.mul(21000).mul(1000));
-            if (amount.lt(0)) throw { message: errorMessages.insufficientGas().message };
+            if (amount.lte(0)) throw { message: errorMessages.insufficientGas().message };
         }
         const transactionConfig = await prepareSendTransaction({
             request: {
