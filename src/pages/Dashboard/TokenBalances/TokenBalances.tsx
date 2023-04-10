@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { FC, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import useApp from "src/hooks/useApp";
 import { useTokens } from "src/hooks/useTokens";
 import styles from "./TokenBalances.module.scss";
@@ -18,6 +18,8 @@ export const TokenBalances: FC<IProps> = () => {
     const { currentWallet } = useWallet();
     const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
+
+    const handleCloseModal = useCallback(() => setSelectedToken(undefined), [setSelectedToken]);
 
     return (
         <>
@@ -78,7 +80,7 @@ export const TokenBalances: FC<IProps> = () => {
                                 </p>
                             </div>
                         ))}
-                    {selectedToken ? <TransferToken token={selectedToken} setSelectedToken={setSelectedToken} /> : null}
+                    {selectedToken ? <TransferToken token={selectedToken} handleClose={handleCloseModal} /> : null}
                 </div>
             )}
             {currentWallet &&
