@@ -60,7 +60,7 @@ export const TransferToken: FC<IProps> = ({ token, handleClose }) => {
                             type="number"
                             placeholder="e.g. 250"
                             required
-                            value={amount ? noExponents(amount) : undefined}
+                            value={amount ? noExponents(amount) : ""}
                             onChange={(e) => {
                                 setAmount(e.target.value);
                                 setMax(false);
