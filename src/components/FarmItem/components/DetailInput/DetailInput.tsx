@@ -8,7 +8,7 @@ import { Skeleton } from "src/components/Skeleton/Skeleton";
 import Loader from "src/components/Loader/Loader";
 import { useDetailInput } from "src/hooks/useDetailInput";
 import { Select } from "src/components/Select/Select";
-import { UsdToggle } from "../UsdToggle/UsdToggle";
+import { UsdToggle } from "../../../UsdToggle/UsdToggle";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
@@ -91,18 +91,15 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
             )}
             <div></div>
 
-            <div className={`${styles.inputWrapper} ${lightMode && styles.inputWrapper_light}`}>
-                <div style={{ display: "grid", gridTemplateColumns: "min-content 1fr", width: "100%" }}>
-                    <span style={{ marginBottom: 2, opacity: showInUsd ? 1 : 0 }}>$</span>
-                    <input
-                        type="number"
-                        placeholder="0"
-                        required
-                        value={noExponents(amount)}
-                        max={maxBalance}
-                        onChange={handleInput}
-                    />
-                </div>
+            <div className={styles.inputWrapper}>
+                <input
+                    type="number"
+                    placeholder="0"
+                    required
+                    value={noExponents(amount)}
+                    max={maxBalance}
+                    onChange={handleInput}
+                />
                 <div className={styles.maxContainer}>
                     <p className={styles.maxBtn} onClick={() => setMax(true)}>
                         MAX

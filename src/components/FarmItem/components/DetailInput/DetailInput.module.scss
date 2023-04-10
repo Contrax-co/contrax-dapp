@@ -61,7 +61,7 @@
 }
 
 .inputWrapper {
-    background-color: $background-primary;
+    background-color: var(--background_primary);
     border-radius: 10px;
     padding: 5px 10px;
     display: flex;
@@ -71,16 +71,10 @@
     & input {
         background-color: transparent;
         border: none;
-        color: white;
+        color: var(--color_text);
         padding: 5px;
         outline: none;
         width: 100%;
-    }
-}
-.inputWrapper_light {
-    background-color: rgb(231, 240, 247);
-    & input {
-        color: $color-black;
     }
 }
 .maxContainer {

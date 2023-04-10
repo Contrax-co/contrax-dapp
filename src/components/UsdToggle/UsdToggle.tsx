@@ -1,7 +1,7 @@
 import { FC } from "react";
 import styles from "./UsdToggle.module.scss";
 import { FaDollarSign } from "react-icons/fa";
-import { ReactComponent as CoinStack } from "./../../../../assets/images/coinStack.svg";
+import { ReactComponent as CoinStack } from "src/assets/images/coinStack.svg";
 
 interface IProps {
     showInUsd: boolean;
