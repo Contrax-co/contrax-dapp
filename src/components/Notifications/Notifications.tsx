@@ -49,7 +49,7 @@ function getTheme(isLight: boolean) {
             fontSize: "12px",
             color: txtColor,
             fontFamily: "'Montserrat', sans-serif",
-            wordBreak: "break-all",
+            wordBreak: "break-word",
         }),
         notificationButton: (notification, position, state) => ({
             ...atalhoTheme.notificationButton(notification, position, state),
