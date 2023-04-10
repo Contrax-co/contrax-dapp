@@ -111,17 +111,16 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             } else {
                 depositTxn = await vaultContract.deposit(amountInWei);
             }
-
             dismissNotify(notiId);
-            notifyLoading(loadingMessages.depositing(depositTxn.hash), {
+            notifyLoading(loadingMessages.depositing(depositTxn.bundleTransactionHash), {
                 id: notiId,
-                buttons: [
-                    {
-                        name: "View",
-                        // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${depositTxn.hash}`, "_blank"),
-                    },
-                ],
+                // buttons: [
+                //     {
+                //         name: "View",
+                //         // @ts-ignore
+                //         onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${depositTxn.hash}`, "_blank"),
+                //     },
+                // ],
             });
 
             const depositTxnStatus = await depositTxn.wait(1);
@@ -157,15 +156,15 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             }
 
             dismissNotify(notiId);
-            notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
+            notifyLoading(loadingMessages.withDrawing(withdrawTxn.bundleTransactionHash), {
                 id: notiId,
-                buttons: [
-                    {
-                        name: "View",
-                        // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${withdrawTxn.hash}`, "_blank"),
-                    },
-                ],
+                // buttons: [
+                //     {
+                //         name: "View",
+                //         // @ts-ignore
+                //         onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${withdrawTxn.bundleTransactionHash}`, "_blank"),
+                //     },
+                // ],
             });
 
             const withdrawTxnStatus = await withdrawTxn.wait(1);
