@@ -75,6 +75,7 @@ export const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, d
             ).toString(),
             amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
             price: prices[currency.address],
+            isPrimaryVault: currency.symbol === farm.name,
         });
     });
 

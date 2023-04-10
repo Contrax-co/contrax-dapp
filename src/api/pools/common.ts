@@ -47,6 +47,7 @@ export const zapInBase: ZapInBaseFn = async ({
         if (token !== constants.AddressZero) {
             notiId = notifyLoading(loadingMessages.approvingZapping());
             const response = await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
+            console.log({ response });
             if (!response.status) throw new Error("Error approving vault!");
             dismissNotify(notiId);
         }
@@ -96,7 +97,7 @@ export const zapInBase: ZapInBaseFn = async ({
         console.log(error);
         let err = JSON.parse(JSON.stringify(error));
         notiId && dismissNotify(notiId);
-        notifyError(errorMessages.generalError(err.reason || err.message));
+        notifyError(errorMessages.generalError(error.message || err.reason || err.message));
     }
 };
 
@@ -141,10 +142,10 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
             notifySuccess(successMessages.withdraw());
         }
         //#endregion
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
         let err = JSON.parse(JSON.stringify(error));
         dismissNotify(notiId);
-        notifyError(errorMessages.generalError(err.reason || err.message));
+        notifyError(errorMessages.generalError(error.message || err.reason || err.message));
     }
 };
