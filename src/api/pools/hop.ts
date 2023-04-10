@@ -82,6 +82,7 @@ let hop = (farmId: number) => {
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: prices[currency.address],
+                isPrimaryVault: currency.symbol === farm.name,
             });
         });
         return {

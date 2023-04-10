@@ -46,6 +46,11 @@ export interface TokenAmounts {
     tokenAddress: string;
     tokenSymbol: string;
     price: number;
+    /**
+     * If true, this token is the primary vault token, We show this token in the balance columns of table
+     * @type {boolean}
+     */
+    isPrimaryVault?: boolean;
 }
 
 export interface FarmDataProcessed {

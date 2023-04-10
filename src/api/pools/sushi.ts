@@ -6,8 +6,6 @@ import { toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
-import { Balances } from "src/state/balances/types";
-import { Prices } from "src/state/prices/types";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 import {
     DepositFn,
@@ -79,6 +77,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 amount: toEth(vaultBalance),
                 amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
                 price: prices[lpAddress],
+                isPrimaryVault: true,
             },
         ];
 

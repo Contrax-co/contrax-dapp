@@ -121,11 +121,13 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
                 <div className={`container ${lightMode && "container--light"} desktop`}>
                     {farmData &&
-                    farmData.withdrawableAmounts[0].amountDollar &&
+                    farmData.withdrawableAmounts.find((_) => _.isPrimaryVault)?.amountDollar &&
                     parseFloat(farmData.withdrawableAmounts[0].amountDollar) >= 0.01 ? (
                         <>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                                {parseFloat(farmData?.withdrawableAmounts[0].amountDollar || "0")
+                                {parseFloat(
+                                    farmData.withdrawableAmounts.find((_) => _.isPrimaryVault)?.amountDollar || "0"
+                                )
                                     .toLocaleString("en-US", {
                                         style: "currency",
                                         currency: "USD",
@@ -135,7 +137,9 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                             </p>
                             <p className={`deposited ${lightMode && "deposited--light"}`}>
                                 {toFixedFloor(
-                                    parseFloat(farmData?.withdrawableAmounts[0].amount || "0"),
+                                    parseFloat(
+                                        farmData.withdrawableAmounts.find((_) => _.isPrimaryVault)?.amount || "0"
+                                    ),
                                     10
                                 ).toString()}
                                 &nbsp;{farm?.name}
