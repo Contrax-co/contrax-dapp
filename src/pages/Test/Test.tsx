@@ -17,6 +17,7 @@ import {
     twitterWallet,
 } from "@zerodevapp/wagmi/rainbowkit";
 import { useAccount, useConnect, useDisconnect, useSwitchNetwork } from "wagmi";
+import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
@@ -24,41 +25,52 @@ const Test = () => {
     const { connector } = useAccount();
     const { switchNetworkAsync } = useSwitchNetwork();
     const { disconnectAsync } = useDisconnect();
+    const addRecentTransaction = useAddRecentTransaction();
 
     console.log(connector);
     const fn = async () => {
-        const mainnetProjectId = "a20aa1ab-79b0-435d-92b9-dad4442af747";
-        await disconnectAsync();
-        let connector: any;
-        switch (connector?.id) {
-            case "github":
-                connector = githubWallet({ options: { projectId: mainnetProjectId } });
-                break;
-            case "google":
-                connector = googleWallet({ options: { projectId: mainnetProjectId } });
-                break;
-            case "facebook":
-                connector = facebookWallet({ options: { projectId: mainnetProjectId } });
-                break;
-            case "discord":
-                connector = discordWallet({ options: { projectId: mainnetProjectId } });
-                break;
-            case "twitch":
-                connector = twitchWallet({ options: { projectId: mainnetProjectId } });
-                break;
-            case "twitter":
-                connector = twitterWallet({ options: { projectId: mainnetProjectId } });
-                break;
-            default:
-                switchNetworkAsync && (await switchNetworkAsync(1));
-                return;
-        }
-
-        await connectAsync(connector.createConnector());
+        // const mainnetProjectId = "a20aa1ab-79b0-435d-92b9-dad4442af747";
+        // await disconnectAsync();
+        // let connector: any;
+        // switch (connector?.id) {
+        //     case "github":
+        //         connector = githubWallet({ options: { projectId: mainnetProjectId } });
+        //         break;
+        //     case "google":
+        //         connector = googleWallet({ options: { projectId: mainnetProjectId } });
+        //         break;
+        //     case "facebook":
+        //         connector = facebookWallet({ options: { projectId: mainnetProjectId } });
+        //         break;
+        //     case "discord":
+        //         connector = discordWallet({ options: { projectId: mainnetProjectId } });
+        //         break;
+        //     case "twitch":
+        //         connector = twitchWallet({ options: { projectId: mainnetProjectId } });
+        //         break;
+        //     case "twitter":
+        //         connector = twitterWallet({ options: { projectId: mainnetProjectId } });
+        //         break;
+        //     default:
+        //         switchNetworkAsync && (await switchNetworkAsync(1));
+        //         return;
+        // }
+        // await connectAsync(connector.createConnector());
     };
     return (
         <div onClick={fn} style={{ color: "red" }}>
             Test
+            <button
+                onClick={() => {
+                    addRecentTransaction({
+                        hash: "0x272cc8bb28c988f9c73fa2f96dea48aae0f19d8a7e39d16a1d78248cae797a50",
+                        description: "Approving Zapping!",
+                        confirmations: 100,
+                    });
+                }}
+            >
+                Add Tran
+            </button>
             <button
                 onClick={() => {
                     notifySuccess("Approving Zapping!", "Please wait...a sadasfas fsa fsafsafsaf saf");
