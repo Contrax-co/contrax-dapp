@@ -6,7 +6,6 @@ import useTransfer from "./useTransfer";
 import { toWei } from "src/utils/common";
 import { dismissNotify, notifyError, notifyLoading, notifySuccess } from "src/api/notify";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
-import { constants } from "ethers";
 
 export const useTransferToken = (token: Token, handleClose: Function) => {
     const { reloadBalances } = useBalances();
@@ -25,19 +24,20 @@ export const useTransferToken = (token: Token, handleClose: Function) => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const id = notifyLoading(loadingMessages.transferingTokens());
-        let response = await transfer({
-            tokenAddress: token.address,
-            to: reciverAddress,
-            amount: getAmountInWei(),
-            max,
-        });
-
-        if (response?.status) {
+        try {
+            await transfer({
+                tokenAddress: token.address,
+                to: reciverAddress,
+                amount: getAmountInWei(),
+                max,
+            });
             notifySuccess(successMessages.tokenTransfered());
-        } else {
-            let err = JSON.parse(JSON.stringify(response?.error && "Error transfering tokens..."));
-            notifyError(errorMessages.generalError(err.cause?.reason || err.reason || err.message));
+        } catch (error: any) {
+            console.log(error);
+            let err = JSON.parse(JSON.stringify(error.message || "Error transfering tokens..."));
+            notifyError(errorMessages.generalError(err));
         }
+
         dismissNotify(id);
         handleClose();
         reloadBalances();
