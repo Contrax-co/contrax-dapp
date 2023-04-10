@@ -60,6 +60,7 @@ let hop = (farmId: number) => {
                 amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / ethPrice).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: ethPrice,
+                isPrimaryVault: "ETH" === farm.name,
             },
         ];
 
