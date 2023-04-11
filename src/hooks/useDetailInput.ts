@@ -78,8 +78,6 @@ export const useDetailInput = (farm: Farm) => {
 
     const handleToggleShowInUsdc = () => {
         setShowInUsd(!showInUsd);
-
-        setAmount("");
     };
 
     const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
