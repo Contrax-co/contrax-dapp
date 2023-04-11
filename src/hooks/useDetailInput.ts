@@ -3,15 +3,12 @@ import useDeposit from "src/hooks/farms/useDeposit";
 import useWithdraw from "src/hooks/farms/useWithdraw";
 import useZapIn from "src/hooks/farms/useZapIn";
 import useZapOut from "src/hooks/farms/useZapOut";
-import useEthPrice from "src/hooks/useEthPrice";
 import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
-import { validateNumberDecimals } from "src/utils/common";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
 import useWallet from "src/hooks/useWallet";
 import { useAppDispatch, useAppSelector } from "src/state";
-import { constants } from "ethers";
 import usePriceOfTokens from "./usePriceOfTokens";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 
@@ -82,7 +79,7 @@ export const useDetailInput = (farm: Farm) => {
     const handleToggleShowInUsdc = () => {
         setShowInUsd(!showInUsd);
 
-        setAmount("0");
+        setAmount("");
     };
 
     const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -130,7 +127,7 @@ export const useDetailInput = (farm: Farm) => {
         }
         setWithdrawable(_withdrawable);
         setMax(false);
-        setAmount("0");
+        setAmount("");
     }, [currencySymbol, farmData]);
 
     return {
