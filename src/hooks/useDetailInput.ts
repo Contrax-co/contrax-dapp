@@ -112,7 +112,7 @@ export const useDetailInput = (farm: Farm) => {
 
     useEffect(() => {
         if (max) setAmount(maxBalance.toString());
-    }, [max, maxBalance]);
+    }, [max, maxBalance, showInUsd]);
 
     useEffect(() => {
         let _depositable = farmData?.depositableAmounts.find((item) => item.tokenSymbol === currencySymbol);
