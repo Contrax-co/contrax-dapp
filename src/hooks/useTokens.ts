@@ -59,7 +59,7 @@ export const useTokens = () => {
 
     const { prices, isLoading: isLoadingPrices } = usePriceOfTokens();
 
-    const { formattedBalances, isFetching: isLoadingBalances } = useBalances();
+    const { formattedBalances, isLoading: isLoadingBalances } = useBalances();
 
     useEffect(() => {
         const tokens: Token[] = tokenAddresses.map(({ address, decimals }) => {
