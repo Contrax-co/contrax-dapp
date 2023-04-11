@@ -1,380 +1,377 @@
 .pools {
-  width: 100%;
-  height: 100%;
-  background-color: #012243;
-  border-radius: 20px;
-  margin-bottom: 7px;
+    width: 100%;
+    height: 100%;
+    background-color: #012243;
+    border-radius: 20px;
+    margin-bottom: 7px;
 }
 
 .pools--light {
-  background-color: white;
+    background-color: white;
 }
 
 .pools:hover {
-  background-color: #032a51;
-  cursor: pointer;
+    background-color: #032a51;
+    cursor: pointer;
 }
 
 .pools--light:hover {
-  background-color: white;
-  cursor: pointer;
+    background-color: white;
+    cursor: pointer;
 }
 
 .single_pool {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 15vh;
-  justify-content: space-evenly;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 15vh;
+    justify-content: space-evenly;
 }
 
 .pool_row {
-  width: 100%;
-  height: 15vh;
+    width: 100%;
+    height: 15vh;
 }
 
 .farm_row {
-  width: 100%;
-  background-color: #012243;
+    width: 100%;
+    background-color: #012243;
 }
 
 .farm_row_top {
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding: 10px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 10px;
 }
 
 .farm_row_bottom {
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  padding: 10px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding: 10px;
 }
 
 .farm_row_divider {
-  padding: 10px;
+    padding: 10px;
 }
 
 .farm_row_main {
-  height: 7vh;
-  padding: 20px;
+    height: 7vh;
+    padding: 20px;
 }
 
 .row_items {
-  display: flex;
-  flex-direction: row;
-  padding: 20px;
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
 }
 
 .title_container {
-  display: flex;
-  flex: 1.6;
-  align-items: center;
-  text-align: left;
+    display: flex;
+    flex: 1.6;
+    align-items: center;
+    text-align: left;
 }
 
 .pair {
-  display: flex;
-  margin-right: 10px;
+    display: flex;
+    margin-right: 10px;
 }
 
 .pool_title {
-  line-height: 0px;
+    line-height: 0px;
 }
 
 .logofirst {
-  width: 60px;
-  height: 60px;
-  border-radius: 999px;
+    width: 60px;
+    height: 60px;
+    border-radius: 999px;
 }
 
 .logo {
-  width: 60px;
-  height: 60px;
-  margin-left: -10px;
-  border-radius: 999px;
+    width: 60px;
+    height: 60px;
+    margin-left: -10px;
+    border-radius: 999px;
 }
 
 .rewards_div {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .dropdown {
-  width: 15px;
-  color: white;
-  font-size: 21px;
-  align-self: center;
+    width: 15px;
+    color: white;
+    font-size: 21px;
+    align-self: center;
 }
 
 .dropdown--light {
-  color: black;
+    color: black;
 }
 
 .rewards_image {
-  width: 15px;
-  border-radius: 999px;
-  border: 1px solid black;
-  background-color: black;
+    width: 15px;
+    border-radius: 999px;
+    border: 1px solid black;
+    background-color: black;
 }
 
 .pool_name {
-  white-space: nowrap;
-  font-size: 17px;
-  font-weight: bold;
-  color: rgb(237, 232, 232);
+    white-space: nowrap;
+    font-size: 17px;
+    font-weight: bold;
+    color: rgb(237, 232, 232);
 }
 
 .pool_name__apy {
-  font-size: 17px;
-  font-weight: 700;
-  color: rgb(237, 232, 232);
+    font-size: 17px;
+    font-weight: 700;
+    color: rgb(237, 232, 232);
 }
 
 .pool_name__apy--light {
-  color: black;
+    color: black;
 }
 
 .pool_name--light {
-  color: black;
+    color: black;
 }
 
 .deposited {
-  color: lightgrey;
-  font-size: 15px;
-  font-weight: 600;
+    color: lightgrey;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 .deposited--light {
-  color: #8798ad;
+    color: #8798ad;
 }
 
 .farm_type {
-  color: white;
-  font-size: 13px;
-  margin-right: 5px;
+    color: white;
+    font-size: 13px;
+    margin-right: 5px;
 }
 
 .farm_type--light {
-  color: black;
+    color: black;
 }
 
 .pool_info {
-  display: flex;
-  flex: 3.6;
-  justify-content: space-around;
+    display: flex;
+    flex: 3.6;
+    justify-content: space-around;
 }
 
 .container {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .liquidity_container {
-  flex: 2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container__apy {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .rewards {
-  width: 15px;
+    width: 15px;
 }
 
 .container1 {
-  flex: 2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container_rewards {
-  width: 20px;
-  height: 20px;
+    width: 20px;
+    height: 20px;
 }
 
 .reward_apy {
-  color: lightgrey;
-  font-size: 15px;
-  font-weight: 600;
+    color: lightgrey;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 .reward_apy--light {
-  color: #8798ad;
+    color: #8798ad;
 }
 
 .container1_apy {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .apy_info {
-  color: rgb(237, 232, 232);
-  font-size: 15px;
-  margin-left: 5px;
+    color: rgb(237, 232, 232);
+    font-size: 15px;
+    margin-left: 5px;
 }
 
 .apy_info--light {
-  color: black;
+    color: black;
 }
 
 .overlay_apy {
-  position: relative;
+    position: relative;
 }
 
 .apy_hidden {
-  position: absolute;
-  display: none;
+    position: absolute;
+    display: none;
 }
 
 .apy_tooltip {
-  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%) !important;
-  color: white !important;
-  padding: 3px 10px !important;
-  border-radius: 10px !important;
-  background-color: #032a51 !important;
-  line-height: 6px;
+    box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%) !important;
+    color: white !important;
+    padding: 3px 10px !important;
+    border-radius: 10px !important;
+    background-color: #032a51 !important;
+    line-height: 6px;
 }
 
 .apy_tooltip--light {
-  box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%) !important;
-  color: black !important;
-  padding: 3px 10px !important;
-  border-radius: 10px !important;
-  background-color: white !important;
-  line-height: 6px;
+    box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0 0 0 / 19%) !important;
+    color: black !important;
+    padding: 3px 10px !important;
+    border-radius: 10px !important;
+    background-color: white !important;
+    line-height: 6px;
 }
 
 @media (max-width: 1024px) {
-  .logo {
-    width: 45px;
-    height: 45px;
-  }
+    .logo {
+        width: 45px;
+        height: 45px;
+    }
 
-  .logofirst {
-    width: 45px;
-    height: 45px;
-  }
+    .logofirst {
+        width: 45px;
+        height: 45px;
+    }
 
-  .pool_name {
-    font-size: 16px;
-    font-weight: 800;
-  }
+    .pool_name {
+        font-size: 16px;
+        font-weight: 800;
+    }
 
-  .deposited {
-    font-size: 13px;
-  }
+    .deposited {
+        font-size: 13px;
+    }
 }
 
 .mobile-view {
-  display: none;
+    display: none;
 }
 
 @media (max-width: 768px) {
+    .pool_name_head {
+        color: var(--color_grey);
+        margin-bottom: -6px !important;
+    }
 
-  .pool_name_head {
-    color: var(--color_grey);
-    margin-bottom: -6px !important;
-  }
+    .pools {
+        overflow: auto;
+    }
 
-  .pools {
-    overflow: auto;
-  }
+    .logo {
+        width: 20px;
+        height: 20px;
+        margin-left: 0px;
+    }
 
-  .logo {
-    width: 20px;
-    height: 20px;
-    margin-left: 0px;
-  }
+    .logofirst {
+        width: 20px;
+        height: 20px;
+        margin-right: -5px;
+    }
 
-  .logofirst {
-    width: 20px;
-    height: 20px;
-    margin-right: -5px;
-  }
+    .title_container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+    }
 
-  .title_container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-  }
+    .pool_name {
+        font-size: 14px;
+        font-weight: 800;
+    }
 
-  .pool_name {
-    font-size: 14px;
-    font-weight: 800;
-  }
+    .farm_type {
+        font-size: 10px;
+    }
 
-  .farm_type {
-    font-size: 10px;
-  }
+    .row_items {
+        padding: 10px;
+    }
 
-  .row_items {
-    padding: 10px;
-  }
+    .deposited {
+        font-size: 11px;
+        margin-top: 0;
+    }
 
-  .deposited {
-    font-size: 11px;
-    margin-top: 0;
-  }
+    .pool_name__apy {
+        font-size: 11px;
+    }
 
-  .pool_name__apy {
-    font-size: 11px;
-  }
-
-  .rewards_image {
-    width: 10px;
-  }
+    .rewards_image {
+        width: 10px;
+    }
 }
 
 @media (max-width: 650px) {
-  .apy_info {
-    margin-left: 0px;
-  }
+    .apy_info {
+        margin-left: 0px;
+    }
 
+    .pool_name {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
 
-  .pool_name {
-    font-size: 11px;
-    margin-bottom: 2px;
-  }
-
-  .deposited {
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+    .deposited {
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 @media (max-width: 500px) {
-  .desktop {
-    display: none;
-  }
+    .desktop {
+        display: none;
+    }
 
-  .mobile-view {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+    .mobile-view {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 
-  .apy,
-  .earned,
-  .deposite {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 60px;
-  }
+    .apy,
+    .earned,
+    .deposite {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 60px;
+    }
 }
