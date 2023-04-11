@@ -125,7 +125,6 @@ export const useDetailInput = (farm: Farm) => {
         }
         setWithdrawable(_withdrawable);
         setMax(false);
-        setAmount("");
     }, [currencySymbol, farmData]);
 
     return {
