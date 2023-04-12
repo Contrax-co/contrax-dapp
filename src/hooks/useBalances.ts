@@ -54,7 +54,8 @@ const useBalances = () => {
         reloadBalances,
         formattedBalances,
         ethBalance,
-        isLoading: (isLoading || isDecimalsLoading) && !isFetched && !isDecimalsFetched,
+        isLoading: isLoading && !isFetched && isDecimalsFetched,
+        // isLoading: (isLoading || isDecimalsLoading) && !isFetched && !isDecimalsFetched,
         isFetched: isFetched && isDecimalsFetched,
         isFetching: isLoading || isDecimalsFetching,
     };

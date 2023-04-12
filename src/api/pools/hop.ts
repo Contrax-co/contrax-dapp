@@ -20,7 +20,7 @@ let hop = (farmId: number) => {
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals) => {
         const ethPrice = prices[constants.AddressZero];
         const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
-        const vaultTokenPrice = prices[farm.token1];
+        const vaultTokenPrice = prices[farm.lp_address];
         const zapCurriences = farm.zap_currencies;
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
@@ -42,7 +42,7 @@ let hop = (farmId: number) => {
                 price: ethPrice,
             },
         ];
-
+        const multiplier = 100;
         let withdrawableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
@@ -53,6 +53,7 @@ let hop = (farmId: number) => {
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: prices[usdcAddress],
+                isPrimaryVault: "USDC" === farm.name,
             },
             {
                 tokenAddress: constants.AddressZero,

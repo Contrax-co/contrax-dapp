@@ -43,7 +43,7 @@ function Body() {
         // after 2 min reload balances
         const interval = setInterval(() => {
             reloadBalances();
-        }, 1000 * 60 * 2);
+        }, 1000 * 60 * 1);
         return () => clearInterval(interval);
     }, [reloadBalances]);
 
