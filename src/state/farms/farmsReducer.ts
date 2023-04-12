@@ -47,10 +47,10 @@ export const updateFarmDetails = createAsyncThunk(
                     data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(balances, prices, decimals);
             });
 
-            thunkApi.dispatch(setAccount(currentWallet));
-            return data;
+            return { data, currentWallet };
         } catch (error) {
             console.error(error);
+            thunkApi.rejectWithValue(error);
         }
     }
 );
@@ -151,7 +151,8 @@ const farmsSlice = createSlice({
         builder.addCase(updateFarmDetails.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isFetched = true;
-            state.farmDetails = { ...action.payload };
+            state.farmDetails = { ...action.payload!.data };
+            state.account = action.payload!.currentWallet;
         });
         builder.addCase(updateFarmDetails.rejected, (state) => {
             state.isLoading = false;
