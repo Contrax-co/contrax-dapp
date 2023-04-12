@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
-import "./Farms.css";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
 import FarmRow from "src/components/FarmItem/FarmRow";
-import { Farm, FarmData, FarmDetails } from "src/types";
+import { Farm, FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { Tabs } from "src/components/Tabs/Tabs";
-import DotMenu from "./components/DotMenu";
+import "./Farms.css";
+
 interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
     apy: number;
 }
