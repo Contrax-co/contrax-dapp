@@ -53,6 +53,7 @@ let hop = (farmId: number) => {
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: prices[usdcAddress],
+                isPrimaryVault: "USDC" === farm.name,
             },
             {
                 tokenAddress: constants.AddressZero,
