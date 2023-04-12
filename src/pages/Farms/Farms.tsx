@@ -3,7 +3,7 @@ import "./Farms.css";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
 import FarmRow from "src/components/FarmItem/FarmRow";
-import { Farm, FarmData } from "src/types";
+import { Farm, FarmData, FarmDetails } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
@@ -25,7 +25,6 @@ function Farms() {
     const { networkId } = useWallet();
     const { apys } = useFarmApys();
     const { farmDetails } = useFarmDetails();
-
     const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
@@ -60,14 +59,13 @@ function Farms() {
 
     const handleSort = (column: FarmTableColumns) => {
         const data: FarmDataExtended[] = farms.map((ele) => {
-            const queryData = Object.values(farmDetails).find((item) => item?.ID === ele.id);
+            const queryData = Object.values(farmDetails).find((item: FarmData) => item?.id === ele.id);
             return {
                 ...ele,
                 ...queryData,
                 apy: apys[ele.id].apy,
             };
         });
-
         setSortedFarms(data.sort(dynamicSort(column, decOrder)));
     };
 
