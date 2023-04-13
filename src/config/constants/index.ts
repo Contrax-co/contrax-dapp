@@ -9,6 +9,7 @@ export const RoutesPaths = {
 export const MAX_GAS_UNITS_PER_TRANSACTION = "700000";
 export const defaultChainId = 42161; // Arbitrum
 export const defaultNetworkName = "arbitrum";
+export const web3AuthConnectorId = "web3auth";
 
 export const SOCKET_API_KEY = process.env.REACT_APP_SOCKET_API_KEY;
 export const RAMP_TRANSAK_API_KEY = process.env.REACT_APP_RAMP_TRANSAK_API_KEY;
@@ -22,3 +23,4 @@ export const SWAPFISH_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/swapf
 export const WEB3AUTH_CLIENT_ID = process.env.REACT_APP_WEB3AUTH_CLIENT_ID;
 export const EARNINGS_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/rafay-contrax/contrax-finance-subgraph";
 export const HOP_EXCHANGE_APY_URL = "https://assets.hop.exchange/v1.1-pool-stats.json";
+export const BACKEND_BASE_URL = "https://12a8-202-47-37-103.ngrok-free.app/api/v1/transaction/";
