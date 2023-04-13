@@ -58,7 +58,6 @@ const Exchange: React.FC<IProps> = () => {
     const { data: signer } = useSigner({
         chainId,
     });
-
     const [params, setSearchParams] = useSearchParams();
     const { reloadBalances } = useBalances();
 

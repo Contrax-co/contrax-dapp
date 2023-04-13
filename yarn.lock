@@ -5410,7 +5410,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/conedison@npm:^1.5.3":
+"@uniswap/conedison@npm:^1.3.0":
   version: 1.6.0
   resolution: "@uniswap/conedison@npm:1.6.0"
   peerDependencies:
@@ -5485,31 +5485,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/sdk-core@npm:^3.2.0":
-  version: 3.2.2
-  resolution: "@uniswap/sdk-core@npm:3.2.2"
-  dependencies:
-    "@ethersproject/address": ^5.0.2
-    big.js: ^5.2.2
-    decimal.js-light: ^2.5.0
-    jsbi: ^3.1.4
-    tiny-invariant: ^1.1.0
-    toformat: ^2.0.0
-  checksum: 6a2b85ef429b2f19324764944f7de309e74509bcc7c4f869e4fb39b836e75d3efda6c842a35511e9e4747dddaf24c4675f2bf980668110e742c76bafab29e8b4
-  languageName: node
-  linkType: hard
-
-"@uniswap/smart-order-router@npm:^3.10.0":
-  version: 3.10.2
-  resolution: "@uniswap/smart-order-router@npm:3.10.2"
+"@uniswap/smart-order-router@npm:^2.10.0":
+  version: 2.10.2
+  resolution: "@uniswap/smart-order-router@npm:2.10.2"
   dependencies:
     "@uniswap/default-token-list": ^2.0.0
-    "@uniswap/permit2-sdk": ^1.2.0
     "@uniswap/router-sdk": ^1.3.0
     "@uniswap/swap-router-contracts": ^1.3.0
     "@uniswap/token-lists": ^1.0.0-beta.25
-    "@uniswap/universal-router": ^1.0.1
-    "@uniswap/universal-router-sdk": ^1.3.9
     "@uniswap/v2-sdk": ^3.0.1
     "@uniswap/v3-sdk": ^3.7.0
     async-retry: ^1.3.1
@@ -5517,7 +5500,7 @@ __metadata:
     axios: ^0.21.1
     bunyan: ^1.8.15
     bunyan-blackhole: ^1.1.1
-    ethers: ^5.7.2
+    ethers: ^5.6.1
     graphql: ^15.5.0
     graphql-request: ^3.4.0
     lodash: ^4.17.21
@@ -5526,7 +5509,7 @@ __metadata:
     stats-lite: ^2.2.0
   peerDependencies:
     jsbi: ^3.2.0
-  checksum: 24b849df68f74fccfbb762f7cca6c3a199c608518959e7f79cb4f9a315ea80cc53cae647484ab65b56a2f2da3cd2eb0a8d435b9ff30dbb0c661fbcb486db2d96
+  checksum: 561225756f7bbbb9ac559d5a31687732fc890f93fee0bbd9f967a095553997b2d6331345844f833972c88b80b58c5925c38c69ae2f75122b4eea35fcb9688a29
   languageName: node
   linkType: hard
 
@@ -5564,7 +5547,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/universal-router-sdk@npm:^1.3.8, @uniswap/universal-router-sdk@npm:^1.3.9":
+"@uniswap/universal-router-sdk@npm:^1.3.6":
   version: 1.4.4
   resolution: "@uniswap/universal-router-sdk@npm:1.4.4"
   dependencies:
@@ -5580,7 +5563,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/universal-router@npm:1.3.1, @uniswap/universal-router@npm:^1.0.1":
+"@uniswap/universal-router@npm:1.3.1":
   version: 1.3.1
   resolution: "@uniswap/universal-router@npm:1.3.1"
   dependencies:
@@ -5686,41 +5669,41 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/widgets@npm:^2.51.1":
-  version: 2.51.1
-  resolution: "@uniswap/widgets@npm:2.51.1"
+"@uniswap/widgets@npm:2.42.2":
+  version: 2.42.2
+  resolution: "@uniswap/widgets@npm:2.42.2"
   dependencies:
     "@babel/runtime": ">=7.17.0"
     "@fontsource/ibm-plex-mono": ^4.5.1
     "@fontsource/inter": ^4.5.1
     "@popperjs/core": ^2.4.4
     "@reduxjs/toolkit": ^1.6.1
-    "@uniswap/conedison": ^1.5.3
+    "@uniswap/conedison": ^1.3.0
     "@uniswap/permit2-sdk": ^1.2.0
     "@uniswap/redux-multicall": ^1.1.8
     "@uniswap/router-sdk": ^1.3.0
-    "@uniswap/sdk-core": ^3.2.0
-    "@uniswap/smart-order-router": ^3.10.0
+    "@uniswap/sdk-core": ^3.0.1
+    "@uniswap/smart-order-router": ^2.10.0
     "@uniswap/token-lists": ^1.0.0-beta.30
-    "@uniswap/universal-router-sdk": ^1.3.8
+    "@uniswap/universal-router-sdk": ^1.3.6
     "@uniswap/v2-sdk": ^3.0.1
     "@uniswap/v3-sdk": ^3.8.2
-    "@web3-react/core": 8.1.2-beta.0
-    "@web3-react/eip1193": 8.1.2-beta.0
-    "@web3-react/empty": 8.1.2-beta.0
-    "@web3-react/metamask": 8.1.2-beta.0
-    "@web3-react/network": 8.1.2-beta.0
-    "@web3-react/types": 8.1.2-beta.0
-    "@web3-react/url": 8.1.2-beta.0
-    "@web3-react/walletconnect": 8.1.2-beta.0
+    "@web3-react/core": 8.0.35-beta.0
+    "@web3-react/eip1193": 8.0.27-beta.0
+    "@web3-react/empty": 8.0.20-beta.0
+    "@web3-react/metamask": 8.0.30-beta.0
+    "@web3-react/network": 8.0.27-beta.0
+    "@web3-react/types": 8.0.20-beta.0
+    "@web3-react/url": 8.0.25-beta.0
+    "@web3-react/walletconnect": 8.0.37-beta.0
     ajv: ^8.11.0
     ajv-formats: ^2.1.1
     bufferutil: ^4.0.6
     cids: ^1.0.0
     encoding: ^0.1.13
-    ethers: ^5.7.2
+    ethers: ^5.6.1
     immer: ^9.0.6
-    jotai: 1.4.0
+    jotai: ^1.3.7
     jsbi: ^3.1.4
     make-plural: ^7.0.0
     ms.macro: ^2.0.0
@@ -5748,7 +5731,7 @@ __metadata:
     wicg-inert: ^3.1.1
   peerDependencies:
     "@babel/runtime": ">=7.17.0"
-    ethers: ^5.7.2
+    ethers: ^5.6.1
     react: ">=17.0.1"
     react-dom: ">=17.0.1"
     react-redux: ">=7.2.2"
@@ -5761,7 +5744,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 5e68757a1a29b5d39edec697670fc1243ecf93212f481a0e4168ee66dc74c7432a83057a1553174f49621c831765bcd472330ae76ad41f65f522d387f7592028
+  checksum: e3fbb1ee9b82d0cf6e708cf5903235dcafb9dabcfc09f8a33dcb3c0015d6bffa0332e4f624499d6f2b310e224e1eccf3a7c8c3220be9f8dd19ebecf6a1ac59d9
   languageName: node
   linkType: hard
 
@@ -6062,7 +6045,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/ethereum-provider@npm:^1.7.8, @walletconnect/ethereum-provider@npm:^1.8.0":
+"@walletconnect/ethereum-provider@npm:^1.8.0":
   version: 1.8.0
   resolution: "@walletconnect/ethereum-provider@npm:1.8.0"
   dependencies:
@@ -6502,99 +6485,100 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3-react/core@npm:8.1.2-beta.0":
-  version: 8.1.2-beta.0
-  resolution: "@web3-react/core@npm:8.1.2-beta.0"
+"@web3-react/core@npm:8.0.35-beta.0":
+  version: 8.0.35-beta.0
+  resolution: "@web3-react/core@npm:8.0.35-beta.0"
   dependencies:
     "@ethersproject/providers": ^5
-    "@web3-react/store": ^8.1.2-beta.0
-    "@web3-react/types": ^8.1.2-beta.0
-    zustand: ^4.3.5
+    "@web3-react/store": ^8.0.25-beta.0
+    "@web3-react/types": ^8.0.20-beta.0
+    zustand: ^4.0.0-rc.0
   peerDependencies:
     react: ">=16.8"
   dependenciesMeta:
     "@ethersproject/providers":
       optional: true
-  checksum: 68b80f17b2b58ad02222f0e5ebd3cd19beda0fb6454373c8486bdbd35ccb1f9453b178f37db4afe5985e79bd200fdcef310f32417714548056421bf0f38e32e0
+  checksum: 4c129fbcd97436d62fa788c06b53ee49966f9be3f27f0f5882863949ecfa8c2d7d3d79053d959dd4fb5a1d5775606ae2ba9ccd78b0d8033cb76b6f2513702629
   languageName: node
   linkType: hard
 
-"@web3-react/eip1193@npm:8.1.2-beta.0":
-  version: 8.1.2-beta.0
-  resolution: "@web3-react/eip1193@npm:8.1.2-beta.0"
+"@web3-react/eip1193@npm:8.0.27-beta.0":
+  version: 8.0.27-beta.0
+  resolution: "@web3-react/eip1193@npm:8.0.27-beta.0"
   dependencies:
-    "@web3-react/types": ^8.1.2-beta.0
-  checksum: d0b721deec3179b628eb1a712301e420362b80b19924fa2a85be1899ccc55a3c2b9fb962418c3fab03d8916fbc8c8bb1b5269e4fc789d6cc1a5ec217f803c8d0
+    "@web3-react/types": ^8.0.20-beta.0
+  checksum: d50109144fc887be8e94a78ae4a39d49939a6909fb0c14d263906adf2998f9c14f3a73564b67cf896431bf5b2f3e41ed90197aa134a350316ab02354586e0b51
   languageName: node
   linkType: hard
 
-"@web3-react/empty@npm:8.1.2-beta.0":
-  version: 8.1.2-beta.0
-  resolution: "@web3-react/empty@npm:8.1.2-beta.0"
+"@web3-react/empty@npm:8.0.20-beta.0":
+  version: 8.0.20-beta.0
+  resolution: "@web3-react/empty@npm:8.0.20-beta.0"
   dependencies:
-    "@web3-react/types": ^8.1.2-beta.0
-  checksum: ec0f917c1b8fb54a8ccf423b2ccef73514335a67ad03554fad7578ef3c47fe82cfb696e35a4f54fbd75f17e0e2482526e587265fdebc83937927b733de0958c8
+    "@web3-react/types": ^8.0.20-beta.0
+  checksum: 56d74ce0daf0a9706d92e9c5a726d7b716bfc774c4ec83b8632920661890e882c53094c80f86fd4361aefa963b9d6291b17b4a916d83a864db069521832644cc
   languageName: node
   linkType: hard
 
-"@web3-react/metamask@npm:8.1.2-beta.0":
-  version: 8.1.2-beta.0
-  resolution: "@web3-react/metamask@npm:8.1.2-beta.0"
+"@web3-react/metamask@npm:8.0.30-beta.0":
+  version: 8.0.30-beta.0
+  resolution: "@web3-react/metamask@npm:8.0.30-beta.0"
   dependencies:
     "@metamask/detect-provider": ^1.2.0
-    "@web3-react/types": ^8.1.2-beta.0
-  checksum: b5a81789d2e05a8b9f5399134554ce2bb046a3d52599fd8a612dbfa30fc72d19ad2d60074ab52981fa5f0f701d724a35a68010a437597a96f534de608e17d5e7
+    "@web3-react/types": ^8.0.20-beta.0
+  checksum: a9fb153045d996c5fd3d2a2352dd668ede5309e4c96a0b19a2e5a8ae58b04dba77c5d0da543ff5ac7c3b111a3152f42c77cd00c5e1f5f3b97ab38287198c9aae
   languageName: node
   linkType: hard
 
-"@web3-react/network@npm:8.1.2-beta.0":
-  version: 8.1.2-beta.0
-  resolution: "@web3-react/network@npm:8.1.2-beta.0"
+"@web3-react/network@npm:8.0.27-beta.0":
+  version: 8.0.27-beta.0
+  resolution: "@web3-react/network@npm:8.0.27-beta.0"
   dependencies:
     "@ethersproject/providers": ^5
-    "@web3-react/types": ^8.1.2-beta.0
-  checksum: 01bda2ea9b640089f8f5df86884900c6e575dbcf752a73fa6381ad74e87141d172b259fbff279e689518c971c4376f5e919ec5e7f65e4a73a710a9320c9c7244
+    "@web3-react/types": ^8.0.20-beta.0
+  checksum: 5073c450aa7450790c37f262660490a751de8218a392d87d7fd4cb8c20107996479c83adf0a04f14e69444ca40d330eb6dd180be56d80f6b46ef2996372886b1
   languageName: node
   linkType: hard
 
-"@web3-react/store@npm:^8.1.2-beta.0":
-  version: 8.1.2-beta.0
-  resolution: "@web3-react/store@npm:8.1.2-beta.0"
+"@web3-react/store@npm:^8.0.25-beta.0":
+  version: 8.0.25-beta.0
+  resolution: "@web3-react/store@npm:8.0.25-beta.0"
   dependencies:
     "@ethersproject/address": ^5
-    "@web3-react/types": ^8.1.2-beta.0
-    zustand: ^4.3.5
-  checksum: b43a7ab6422abbb9d48958b31adc5cef7b21ce372c2f0bb1da69bd601c36272775a5178c24a4eee9f4956cb126b4de6c2c139cdda589a8e69cf529e1ad1b0cad
+    "@web3-react/types": ^8.0.20-beta.0
+    zustand: ^4.0.0-rc.0
+  checksum: f7061e8eb1e10774f3508a9557459e6ff7586ba7b980a4910f727066ca77bbbac3c5dad4ce7fab67c16646d4e2156a60bd736c32e0d7ec2c059eb9979810ab86
   languageName: node
   linkType: hard
 
-"@web3-react/types@npm:8.1.2-beta.0, @web3-react/types@npm:^8.1.2-beta.0":
-  version: 8.1.2-beta.0
-  resolution: "@web3-react/types@npm:8.1.2-beta.0"
+"@web3-react/types@npm:8.0.20-beta.0, @web3-react/types@npm:^8.0.20-beta.0":
+  version: 8.0.20-beta.0
+  resolution: "@web3-react/types@npm:8.0.20-beta.0"
   dependencies:
-    zustand: ^4.3.5
-  checksum: ef085687b229368326618b6621005941e2fc09f1e0601a624dc8875fe3aa98d301b5cbeb01d4462180e0894745a57b5b10b940784227c4d50295831dfa144964
+    zustand: ^4.0.0-rc.0
+  checksum: 65a91fd1c7dfdb21affc2c29d67d697004a0eaeecfb3491da9da9adfc665b2b4c4fe794e5d23d182ad4809fc94ae4e2906cedbca4f5025af697e863b1f672d40
   languageName: node
   linkType: hard
 
-"@web3-react/url@npm:8.1.2-beta.0":
-  version: 8.1.2-beta.0
-  resolution: "@web3-react/url@npm:8.1.2-beta.0"
+"@web3-react/url@npm:8.0.25-beta.0":
+  version: 8.0.25-beta.0
+  resolution: "@web3-react/url@npm:8.0.25-beta.0"
   dependencies:
     "@ethersproject/providers": ^5
-    "@web3-react/types": ^8.1.2-beta.0
-  checksum: 3bf96b10862250bbb165662e582b3aba515538eceebd7d71259f1a2b64eded43bb250150bad294e9dc02a414a316ee715bc5bb33a78fc1f79ad2dfe5cb37bd7b
+    "@web3-react/types": ^8.0.20-beta.0
+  checksum: 635d156f511f58764533f2ee706d1d9b647cb07373a3ba2de56f12e792166cd579ec64547de2360ae97faf6d7b0f44b1e39118f598582be0b91f938304c0f440
   languageName: node
   linkType: hard
 
-"@web3-react/walletconnect@npm:8.1.2-beta.0":
-  version: 8.1.2-beta.0
-  resolution: "@web3-react/walletconnect@npm:8.1.2-beta.0"
+"@web3-react/walletconnect@npm:8.0.37-beta.0":
+  version: 8.0.37-beta.0
+  resolution: "@web3-react/walletconnect@npm:8.0.37-beta.0"
   dependencies:
-    "@walletconnect/ethereum-provider": ^1.7.8
-    "@web3-react/types": ^8.1.2-beta.0
+    "@web3-react/types": ^8.0.20-beta.0
     eventemitter3: ^4.0.7
-  checksum: 3e7b02a71a99af92931fd40a368b5edab97f6560415a03f629e0a0b4fac2862431ce70e20405692af03fc152bb70db299de608ee1c5300cd02fa810bae90476e
+  peerDependencies:
+    "@walletconnect/ethereum-provider": ^1.7.8
+  checksum: c1ac05c41e8e179d11c9a16cbc589c3ae32862fbec8ca180a0ac9bd249971c2c2fc0c7de9293346b6b311e43868bfed733ebe31f0fa98364704c9b0185acd6a3
   languageName: node
   linkType: hard
 
@@ -9260,7 +9244,7 @@ __metadata:
     "@types/uuid": ^9.0.1
     "@uniswap/sdk-core": ^3.1.1
     "@uniswap/v3-sdk": ^3.9.0
-    "@uniswap/widgets": ^2.51.1
+    "@uniswap/widgets": 2.42.2
     "@web3auth/base": ^5.1.0
     "@web3auth/core": ^4.6.0
     "@web3auth/no-modal": ^5.1.0
@@ -11238,7 +11222,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^5.3.1, ethers@npm:^5.6.5, ethers@npm:^5.6.9, ethers@npm:^5.7.0, ethers@npm:^5.7.1, ethers@npm:^5.7.2":
+"ethers@npm:^5.3.1, ethers@npm:^5.6.1, ethers@npm:^5.6.5, ethers@npm:^5.6.9, ethers@npm:^5.7.0, ethers@npm:^5.7.1, ethers@npm:^5.7.2":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
   dependencies:
@@ -13941,40 +13925,46 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jotai@npm:1.4.0":
-  version: 1.4.0
-  resolution: "jotai@npm:1.4.0"
+"jotai@npm:^1.3.7":
+  version: 1.13.1
+  resolution: "jotai@npm:1.13.1"
   peerDependencies:
     "@babel/core": "*"
     "@babel/template": "*"
-    "@urql/core": "*"
-    immer: "*"
-    optics-ts: "*"
+    jotai-devtools: "*"
+    jotai-immer: "*"
+    jotai-optics: "*"
+    jotai-redux: "*"
+    jotai-tanstack-query: "*"
+    jotai-urql: "*"
+    jotai-valtio: "*"
+    jotai-xstate: "*"
+    jotai-zustand: "*"
     react: ">=16.8"
-    react-query: "*"
-    valtio: "*"
-    wonka: "*"
-    xstate: "*"
   peerDependenciesMeta:
     "@babel/core":
       optional: true
     "@babel/template":
       optional: true
-    "@urql/core":
+    jotai-devtools:
       optional: true
-    immer:
+    jotai-immer:
       optional: true
-    optics-ts:
+    jotai-optics:
       optional: true
-    react-query:
+    jotai-redux:
       optional: true
-    valtio:
+    jotai-tanstack-query:
       optional: true
-    wonka:
+    jotai-urql:
       optional: true
-    xstate:
+    jotai-valtio:
       optional: true
-  checksum: 9382d10f496e8f778832cce15b29c89f30df23e36fdcbef239378a9bffd0ce9760742b4fc5f70e63713903efc5ab3b2d1827f452a553e4e71e6c660e948ab642
+    jotai-xstate:
+      optional: true
+    jotai-zustand:
+      optional: true
+  checksum: bc1f88ec1d52dda7c2aa39d278b15c128a6babc91fe9294862feb1b2d8467e47fc37cd193fd1358107212b9a4e5f5a8ae9a5a5ed1e845b74421d4476ce5d9efd
   languageName: node
   linkType: hard
 
@@ -21647,6 +21637,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"zustand@npm:^4.0.0-rc.0":
+  version: 4.3.7
+  resolution: "zustand@npm:4.3.7"
+  dependencies:
+    use-sync-external-store: 1.2.0
+  peerDependencies:
+    immer: ">=9.0"
+    react: ">=16.8"
+  peerDependenciesMeta:
+    immer:
+      optional: true
+    react:
+      optional: true
+  checksum: 355b414ba4830b6106bcb888077c5f90f40ed649e4127e337eff4fb4ea90e88bf5cccf32344711d743cb92a676a0643a6ab3674ddc60ed49f17ea1bc8e3f58e2
+  languageName: node
+  linkType: hard
+
 "zustand@npm:^4.3.1":
   version: 4.3.5
   resolution: "zustand@npm:4.3.5"
@@ -21661,22 +21668,5 @@ __metadata:
     react:
       optional: true
   checksum: 166099ecadd870e5e0f51b5b443b71145149447b2bfe557d73254891dd0fe603d55c93e560649a7c31a30b4a180dd6d4f4d90463636fd54c3393ace3b68dbc67
-  languageName: node
-  linkType: hard
-
-"zustand@npm:^4.3.5":
-  version: 4.3.7
-  resolution: "zustand@npm:4.3.7"
-  dependencies:
-    use-sync-external-store: 1.2.0
-  peerDependencies:
-    immer: ">=9.0"
-    react: ">=16.8"
-  peerDependenciesMeta:
-    immer:
-      optional: true
-    react:
-      optional: true
-  checksum: 355b414ba4830b6106bcb888077c5f90f40ed649e4127e337eff4fb4ea90e88bf5cccf32344711d743cb92a676a0643a6ab3674ddc60ed49f17ea1bc8e3f58e2
   languageName: node
   linkType: hard
