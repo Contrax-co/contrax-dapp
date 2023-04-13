@@ -12,6 +12,9 @@ import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import useFarmApy from "src/hooks/farms/useFarmApy";
 import { DropDownView } from "./components/DropDownView/DropDownView";
 import { DeprecatedChip } from "./components/Chip/DeprecatedChip";
+import { useAppDispatch } from "src/state";
+import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
+import { FarmTransactionType } from "src/types/enums";
 
 interface Props {
     farm: Farm;
@@ -27,9 +30,11 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const farmData = farmDetails[farm.id];
     const isLoading = isFarmLoading || isApyLoading;
     const key = uuid();
+    const dispatch = useAppDispatch();
 
     const handleClick = () => {
         setDropDown((prev) => !prev);
+        dispatch(setFarmDetailInputOptions({ transactionType: FarmTransactionType.Deposit, currencySymbol: "USDC" }));
         if (farm) setOpenedFarm(openedFarm === farm.id ? undefined : farm.id);
     };
 

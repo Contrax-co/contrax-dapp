@@ -20,7 +20,7 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
     const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
 
-    const { formattedSupplies } = useTotalSupplies();
+    const { formattedSupplies, totalSupplies } = useTotalSupplies();
 
     const {
         prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
@@ -210,7 +210,7 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
                                 <p className={`detailed_unstaked_pairs`}>
                                     {(
                                         (Number(farmData?.withdrawableAmounts[0].amount) /
-                                            formattedSupplies[farm.vault_addr]!) *
+                                            (formattedSupplies[farm.vault_addr]! * lpPrice)) *
                                             100 || 0
                                     ).toFixed(2)}
                                     %
