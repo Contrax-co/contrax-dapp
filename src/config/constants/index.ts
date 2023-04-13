@@ -23,4 +23,4 @@ export const SWAPFISH_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/swapf
 export const WEB3AUTH_CLIENT_ID = process.env.REACT_APP_WEB3AUTH_CLIENT_ID;
 export const EARNINGS_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/rafay-contrax/contrax-finance-subgraph";
 export const HOP_EXCHANGE_APY_URL = "https://assets.hop.exchange/v1.1-pool-stats.json";
-export const BACKEND_BASE_URL = "https://12a8-202-47-37-103.ngrok-free.app/api/v1/transaction/";
+export const BACKEND_BASE_URL = "https://contrax-backend.herokuapp.com/api/v1/transaction/";
