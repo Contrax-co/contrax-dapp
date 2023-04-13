@@ -88,7 +88,7 @@ export const useDetailInput = (farm: Farm) => {
     const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
         // check for eth balance greater than gas fee
-        // if (isBalanceTooLow()) return;
+        if (isBalanceTooLow()) return;
         // if enough balance than proceed transaction
         if (type === FarmTransactionType.Deposit) {
             if (depositable?.tokenAddress === farm.lp_address) {
