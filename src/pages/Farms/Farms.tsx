@@ -21,7 +21,7 @@ function Farms() {
     const { lightMode } = useApp();
     const { farms } = useFarms();
     const [tab, setTab] = useState(1);
-    const { networkId } = useWallet();
+    const { networkId, currentWallet } = useWallet();
     const { apys } = useFarmApys();
     const { farmDetails } = useFarmDetails();
     const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
@@ -114,8 +114,10 @@ function Farms() {
                 </p>
                 <p
                     onClick={() => {
-                        setSortedBuy(FarmTableColumns.Deposited);
-                        setDecOrder((prev) => !prev);
+                        if (currentWallet) {
+                            setSortedBuy(FarmTableColumns.Deposited);
+                            setDecOrder((prev) => !prev);
+                        }
                     }}
                     className={`header_deposite`}
                 >

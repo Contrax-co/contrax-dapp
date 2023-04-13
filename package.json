@@ -22,7 +22,7 @@
     "@types/uuid": "^9.0.1",
     "@uniswap/sdk-core": "^3.1.1",
     "@uniswap/v3-sdk": "^3.9.0",
-    "@uniswap/widgets": "^2.51.1",
+    "@uniswap/widgets": "2.42.2",
     "@web3auth/base": "^5.1.0",
     "@web3auth/core": "^4.6.0",
     "@web3auth/no-modal": "^5.1.0",
