@@ -4,7 +4,7 @@ import { StateInterface } from "./types";
 const initialState: StateInterface = {
     theme: "light",
     supportChat: true,
-    sponsoredGas: false,
+    sponsoredGas: true,
     connectorId: "",
 };
 

@@ -88,7 +88,7 @@ const useWaleltSigner = () => {
         };
 
         setupSigner();
-    }, [_signer, connectorId]);
+    }, [_signer, sponsoredGas, web3AuthConnectorId, connectorId]);
     return signer;
 };
 

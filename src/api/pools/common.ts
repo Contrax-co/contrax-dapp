@@ -47,7 +47,6 @@ export const zapInBase: ZapInBaseFn = async ({
         if (token !== constants.AddressZero) {
             notiId = notifyLoading(loadingMessages.approvingZapping());
             const response = await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
-            console.log({ response });
             if (!response.status) throw new Error("Error approving vault!");
             dismissNotify(notiId);
         }
