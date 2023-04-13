@@ -72,6 +72,11 @@ export const zapInBase: ZapInBaseFn = async ({
                 });
                 const gasToRemove = gasLimit.mul(gasPrice).mul(3);
                 if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
+                if (amountInWei.lte(0)) {
+                    notifyError(errorMessages.insufficientGas());
+                    notiId && dismissNotify(notiId);
+                    return;
+                }
             }
             //#endregion
 
