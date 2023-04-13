@@ -1,5 +1,5 @@
 import json from "src/config/constants/pools.json";
-import { utils } from "ethers";
+import { Contract, Signer, Wallet, providers, constants, ethers, utils, BytesLike } from "ethers";
 import { getEarnings } from "src/api/farms";
 import useWallet from "src/hooks/useWallet";
 import { getPricesByTime } from "src/api/token";
@@ -16,18 +16,30 @@ import {
     twitchWallet,
     twitterWallet,
 } from "@zerodevapp/wagmi/rainbowkit";
-import { useAccount, useConnect, useDisconnect, useSwitchNetwork } from "wagmi";
+import { erc20ABI, useAccount, useConnect, useDisconnect, useSwitchNetwork } from "wagmi";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
+import { TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { ExternallyOwnedAccount } from "@ethersproject/abstract-signer";
+import { Deferrable, SigningKey } from "ethers/lib/utils.js";
+import { GasSponsoredSigner } from "src/utils/gasSponsoredSigner";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const { connectAsync } = useConnect();
     const { connector } = useAccount();
+    const { provider, signer, getPkey } = useWallet();
     const { switchNetworkAsync } = useSwitchNetwork();
     const { disconnectAsync } = useDisconnect();
     const addRecentTransaction = useAddRecentTransaction();
 
-    console.log(connector);
+    // web3authProvider
+    const handleTransaction = async () => {
+        const _signer = new GasSponsoredSigner(await getPkey(), provider);
+        const contract = new Contract("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", erc20ABI, _signer);
+        const tx = await contract.approve("0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8", constants.MaxUint256);
+        console.log("tx", tx);
+    };
+
     const fn = async () => {
         // const mainnetProjectId = "a20aa1ab-79b0-435d-92b9-dad4442af747";
         // await disconnectAsync();
@@ -129,6 +141,13 @@ const Test = () => {
                 }}
             >
                 dismiss
+            </button>
+            <button
+                onClick={() => {
+                    handleTransaction();
+                }}
+            >
+                Approve Transaction
             </button>
         </div>
     );

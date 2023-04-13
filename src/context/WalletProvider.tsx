@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import * as ethers from "ethers";
-import { defaultChainId } from "src/config/constants";
+import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ACCOUNT_BALANCE } from "src/config/constants/query";
 import { useProvider, useSigner, useAccount, useDisconnect, useNetwork, useSwitchNetwork, Chain } from "wagmi";
@@ -13,6 +13,8 @@ import useBalances from "src/hooks/useBalances";
 import { errorMessages } from "src/config/constants/notifyMessages";
 import { useDispatch } from "react-redux";
 import { setConnectorId } from "src/state/settings/settingsReducer";
+import { GasSponsoredSigner } from "src/utils/gasSponsoredSigner";
+import { useAppSelector } from "src/state";
 
 interface IWalletContext {
     /**
@@ -68,13 +70,35 @@ interface IProps {
     children: React.ReactNode;
 }
 
+const useWaleltSigner = () => {
+    const { data: _signer } = useSigner();
+    const [signer, setSigner] = useState<ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer>();
+    const { connectorId, sponsoredGas } = useAppSelector((state) => state.settings);
+
+    useEffect(() => {
+        const setupSigner = async () => {
+            if (web3AuthConnectorId === connectorId && sponsoredGas) {
+                // @ts-ignore
+                const privateKey = await _signer?.provider?.provider?.request({ method: "eth_private_key" });
+                if (privateKey) setSigner(new GasSponsoredSigner(privateKey, _signer?.provider));
+            } else {
+                // @ts-ignore
+                setSigner(_signer);
+            }
+        };
+
+        setupSigner();
+    }, [_signer, connectorId]);
+    return signer;
+};
+
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
     const { balances } = useBalances();
+    const signer = useWaleltSigner();
 
     const { switchNetworkAsync, chains } = useSwitchNetwork();
-    const { data: signer } = useSigner();
     const dispatch = useDispatch();
     const { address: currentWallet, connector } = useAccount();
     const { disconnect } = useDisconnect();
@@ -158,7 +182,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 networkId,
                 logout,
                 displayAccount,
-                // @ts-ignore
                 signer,
                 provider,
                 balance,
