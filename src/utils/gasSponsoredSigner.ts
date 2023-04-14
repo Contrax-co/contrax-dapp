@@ -42,9 +42,9 @@ export class GasSponsoredSigner extends Wallet {
             };
 
             return { ...transactionResponse };
-        } catch (e) {
+        } catch (e: any) {
             console.log(e);
-            throw new Error(`Error sponsoring transactino: ${e}`);
+            throw new Error(`${e.response.data.error}`);
         }
     }
 }

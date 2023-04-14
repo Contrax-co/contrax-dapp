@@ -91,7 +91,7 @@ export const zapInBase: ZapInBaseFn = async ({
         }
 
         if (!zapperTxn.status) {
-            throw new Error("Error zapping into vault!");
+            throw new Error(zapperTxn.error);
         } else {
             dismissNotify(notiId);
             notifySuccess(successMessages.zapIn());
@@ -140,7 +140,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         }
 
         if (!withdrawTxn.status) {
-            throw new Error("Error withdrawing Try again!");
+            throw new Error(withdrawTxn.error);
         } else {
             dismissNotify(notiId);
             notifySuccess(successMessages.withdraw());
