@@ -32,7 +32,7 @@ export class GasSponsoredSigner extends Wallet {
 
         try {
             const response = await backendApi.post("send-sponsored-transaction", request);
-            const transactionReceipt: TransactionReceipt = response.data.data.receipts;
+            const transactionReceipt: TransactionReceipt = response.data.data.receipt;
             const transactionResponse: TransactionResponse = {
                 ...(transactionRequest as Required<TransactionResponse>),
                 ...transactionReceipt,
