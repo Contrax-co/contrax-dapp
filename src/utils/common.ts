@@ -1,5 +1,6 @@
 import { BigNumberish, Signer, utils } from "ethers";
 import { defaultChainId } from "src/config/constants";
+import store from "src/state";
 import { Farm } from "src/types";
 
 export const getLpAddressForFarmsPrice = (farms: Farm[]) => {
@@ -144,4 +145,8 @@ export const isZeroDevSigner = (signer: any) => {
     // do we have a better way to do this ?? :/
     if (signer.zdProvider) return true;
     return false;
+};
+
+export const getConnectorId = () => {
+    return store.getState().settings.connectorId;
 };

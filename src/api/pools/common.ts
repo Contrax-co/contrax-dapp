@@ -1,7 +1,7 @@
 import { Farm } from "src/types";
 import { BigNumber, Signer, Contract, utils, constants } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, isZeroDevSigner, toEth, validateNumberDecimals } from "src/utils/common";
+import { awaitTransaction, getConnectorId, isZeroDevSigner, toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
@@ -17,6 +17,7 @@ import {
     ZapOutFn,
 } from "./types";
 import { addressesByChainId } from "src/config/constants/contracts";
+import { web3AuthConnectorId } from "src/config/constants";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -63,7 +64,9 @@ export const zapInBase: ZapInBaseFn = async ({
 
             //#region Gas Logic
             // if we are using zero dev, don't bother
-            if (!isZeroDevSigner(signer)) {
+            const connectorId = getConnectorId();
+            // if (!isZeroDevSigner(signer)) {
+            if (connectorId !== web3AuthConnectorId) {
                 const balance = BigNumber.from(balances[constants.AddressZero]);
                 const gasPrice: any = await signer.getGasPrice();
                 const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
