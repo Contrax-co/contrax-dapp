@@ -25,12 +25,13 @@ export const useTransferToken = (token: Token, handleClose: Function) => {
         e.preventDefault();
         const id = notifyLoading(loadingMessages.transferingTokens());
         try {
-            await transfer({
+            const res = await transfer({
                 tokenAddress: token.address,
                 to: reciverAddress,
                 amount: getAmountInWei(),
                 max,
             });
+            if (res?.error) throw new Error(res.error);
             notifySuccess(successMessages.tokenTransfered());
         } catch (error: any) {
             console.log(error);
