@@ -1,7 +1,14 @@
 import { Farm } from "src/types";
 import { BigNumber, Signer, Contract, utils, constants } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, getConnectorId, isZeroDevSigner, toEth, validateNumberDecimals } from "src/utils/common";
+import {
+    awaitTransaction,
+    getConnectorId,
+    isZeroDevSigner,
+    subtractGas,
+    toEth,
+    validateNumberDecimals,
+} from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
@@ -18,6 +25,7 @@ import {
 } from "./types";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { web3AuthConnectorId } from "src/config/constants";
+import { backendApi, isGasSponsored } from "..";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -65,19 +73,18 @@ export const zapInBase: ZapInBaseFn = async ({
             //#region Gas Logic
             // if we are using zero dev, don't bother
             const connectorId = getConnectorId();
-            // if (!isZeroDevSigner(signer)) {
-            if (connectorId !== web3AuthConnectorId) {
+            if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
                 const balance = BigNumber.from(balances[constants.AddressZero]);
-                const gasPrice: any = await signer.getGasPrice();
-                const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
-                    value: balance,
-                });
-                const gasToRemove = gasLimit.mul(gasPrice).mul(3);
-                if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
-                if (amountInWei.lte(0)) {
-                    notifyError(errorMessages.insufficientGas());
+                if (
+                    !(await subtractGas(
+                        amountInWei,
+                        signer,
+                        zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
+                            value: balance,
+                        })
+                    ))
+                ) {
                     notiId && dismissNotify(notiId);
-                    return;
                 }
             }
             //#endregion

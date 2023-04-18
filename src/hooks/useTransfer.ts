@@ -8,7 +8,10 @@ import useConstants from "./useConstants";
 import { BigNumber, Contract, constants } from "ethers";
 import useBalances from "./useBalances";
 import { errorMessages } from "src/config/constants/notifyMessages";
-import { awaitTransaction } from "src/utils/common";
+import { awaitTransaction, getConnectorId, subtractGas } from "src/utils/common";
+import { notifyError } from "src/api/notify";
+import { web3AuthConnectorId } from "src/config/constants";
+import { isGasSponsored } from "src/api";
 
 const useTransfer = () => {
     const { signer, currentWallet } = useWallet();
@@ -16,22 +19,30 @@ const useTransfer = () => {
     const { ethBalance } = useBalances();
 
     const _transferEth = async ({ to, amount, max }: { to: string; amount: BigNumber; max?: boolean }) => {
-        if (max) {
-            // TOOD: don't calculate gas for zero dev wallet
-            const gasPrice = await signer?.getGasPrice();
-            if (!gasPrice) return;
-            amount = ethBalance.sub(gasPrice.mul(21000).mul(1000));
-            if (amount.lte(0)) throw { message: errorMessages.insufficientGas().message };
+        if (!signer) return;
+        if (max) amount = ethBalance;
+        if (getConnectorId() !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
+            if (
+                !(await subtractGas(
+                    amount,
+                    signer,
+                    signer.estimateGas({
+                        to,
+                        value: amount,
+                    }),
+                    false
+                ))
+            ) {
+                throw { message: errorMessages.insufficientGas().message };
+            }
         }
-        const transactionConfig = await prepareSendTransaction({
-            request: {
+
+        const response = await awaitTransaction(
+            signer?.sendTransaction({
                 to,
                 value: amount,
-            },
-            signer,
-        });
-
-        const response = await awaitTransaction(sendTransaction(transactionConfig));
+            })
+        );
         return response;
     };
 

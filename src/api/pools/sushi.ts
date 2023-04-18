@@ -112,7 +112,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 depositTxn = await vaultContract.deposit(amountInWei);
             }
             dismissNotify(notiId);
-            notifyLoading(loadingMessages.depositing(depositTxn.bundleTransactionHash), {
+            notifyLoading(loadingMessages.depositing(depositTxn.transactionHash), {
                 id: notiId,
                 // buttons: [
                 //     {

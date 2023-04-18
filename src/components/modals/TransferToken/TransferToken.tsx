@@ -20,12 +20,12 @@ export const TransferToken: FC<IProps> = ({ token, handleClose }) => {
         showInUsd,
         amount,
         setAmount,
-        reciverAddress,
-        setReciverAddress,
         setMax,
         handleSubmit,
         handleMaxClick,
         handleToggleShowInUsdc,
+        receiverAddress,
+        setReceiverAddress,
     } = useTransferToken(token, handleClose);
 
     return (
@@ -42,8 +42,8 @@ export const TransferToken: FC<IProps> = ({ token, handleClose }) => {
                             id="reciverAddress"
                             placeholder="Reciver Address"
                             required
-                            value={reciverAddress}
-                            onChange={(e) => setReciverAddress(e.target.value)}
+                            value={receiverAddress}
+                            onChange={(e) => setReceiverAddress(e.target.value)}
                         />
                     </div>
                 </div>
@@ -80,7 +80,7 @@ export const TransferToken: FC<IProps> = ({ token, handleClose }) => {
                     disabled={
                         isLoading ||
                         Number(amount) <= 0 ||
-                        !reciverAddress ||
+                        !receiverAddress ||
                         (showInUsd ? Number(amount) > Number(token.usdBalance) : Number(amount) > Number(token.balance))
                     }
                 >

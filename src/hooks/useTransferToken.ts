@@ -10,7 +10,7 @@ import { errorMessages, loadingMessages, successMessages } from "src/config/cons
 export const useTransferToken = (token: Token, handleClose: Function) => {
     const { reloadBalances } = useBalances();
     const { prices } = usePriceOfTokens();
-    const [reciverAddress, setReciverAddress] = useState<string>("");
+    const [receiverAddress, setReceiverAddress] = useState<string>("");
     const [amount, setAmount] = useState("");
     const [showInUsd, toggleShowInUsd] = useState<boolean>(true);
     const { transfer, isLoading } = useTransfer();
@@ -27,7 +27,7 @@ export const useTransferToken = (token: Token, handleClose: Function) => {
         try {
             const res = await transfer({
                 tokenAddress: token.address,
-                to: reciverAddress,
+                to: receiverAddress,
                 amount: getAmountInWei(),
                 max,
             });
@@ -62,8 +62,8 @@ export const useTransferToken = (token: Token, handleClose: Function) => {
         showInUsd,
         amount,
         setAmount,
-        reciverAddress,
-        setReciverAddress,
+        receiverAddress,
+        setReceiverAddress,
         setMax,
         handleSubmit,
         handleMaxClick,

@@ -1,5 +1,8 @@
-import { BigNumberish, Signer, utils } from "ethers";
+import { Provider } from "@ethersproject/abstract-provider";
+import { BigNumber, BigNumberish, Signer, constants, utils } from "ethers";
+import { notifyError } from "src/api/notify";
 import { defaultChainId } from "src/config/constants";
+import { errorMessages } from "src/config/constants/notifyMessages";
 import store from "src/state";
 import { Farm } from "src/types";
 
@@ -149,4 +152,22 @@ export const isZeroDevSigner = (signer: any) => {
 
 export const getConnectorId = () => {
     return store.getState().settings.connectorId;
+};
+
+export const subtractGas = async (
+    amountInWei: BigNumber,
+    signerOrProvider: Signer | Provider,
+    estimatedTx: Promise<BigNumber>,
+    showError: boolean = true
+) => {
+    const balance = BigNumber.from(store.getState().balances.balances[constants.AddressZero]);
+    const gasPrice = await signerOrProvider.getGasPrice();
+    const gasLimit = await estimatedTx;
+    const gasToRemove = gasLimit.mul(gasPrice).mul(2);
+    if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
+    if (amountInWei.lte(0)) {
+        showError && notifyError(errorMessages.insufficientGas());
+        return false;
+    }
+    return true;
 };
