@@ -86,14 +86,14 @@ function Dashboard() {
                                 onClick={() => setOpenQrCodeModal(true)}
                             />
                             {sponsoredGas ? (
-                                <TbGasStationOff
+                                <TbGasStation
                                     color={lightMode ? "var(--color_grey)" : "#ffffff"}
                                     cursor="pointer"
                                     size={23}
                                     onClick={handleGasToggle}
                                 />
                             ) : (
-                                <TbGasStation
+                                <TbGasStationOff
                                     color={lightMode ? "var(--color_grey)" : "#ffffff"}
                                     cursor="pointer"
                                     size={23}
