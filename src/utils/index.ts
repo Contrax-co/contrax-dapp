@@ -9,7 +9,7 @@ export const copyToClipboard = (text: string, cb: Function | null = null) => {
     }, 1000);
 };
 
-export const getTokenListForUniswap = (farms: Farm[]) => {
+export const getTokenListForUniswapDeprecated = (farms: Farm[]) => {
     const tokenList: TokenInfo[] = [];
     for (let i = 0; i < farms.length; i++) {
         const farm = farms[i];

@@ -1,14 +1,17 @@
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
-import { getNetworkName, toEth } from "src/utils/common";
-import { Contract, providers, BigNumber, Signer, constants, ethers } from "ethers";
+import { awaitTransaction, getNetworkName } from "src/utils/common";
+import { Contract, providers, BigNumber, Signer, constants } from "ethers";
 import { erc20ABI } from "wagmi";
-import { providers as multicallProviders } from "@0xsequence/multicall";
 import { utils } from "ethers/lib/ethers";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 export const getPrice = async (tokenAddress: string, chainId: number) => {
     try {
-        const res = await axios.get(coinsLamaPriceByChainId[chainId] + tokenAddress);
+        const res = await axios.get(coinsLamaPriceByChainId[chainId] + tokenAddress, {
+            cache: true,
+        });
+
         const prices = JSON.stringify(res.data);
         const parse = JSON.parse(prices);
 
@@ -21,14 +24,95 @@ export const getPrice = async (tokenAddress: string, chainId: number) => {
     }
 };
 
+export const getPricesByTime = async (
+    addTime: { address: string; timestamp: number; price?: number }[],
+    chainId: number
+) => {
+    try {
+        if (addTime.length === 0) return undefined;
+        addTime = addTime.sort((a, b) => a.timestamp - b.timestamp);
+        const obj = addTime.reduce(
+            (acc, { address, timestamp }) => {
+                if (acc[`${getNetworkName(chainId)}:${address}`]) {
+                    acc[`${getNetworkName(chainId)}:${address}`].push(timestamp);
+                } else {
+                    acc[`${getNetworkName(chainId)}:${address}`] = [timestamp];
+                }
+                return acc;
+            },
+            {} as {
+                [key: string]: number[];
+            }
+        );
+
+        let prices: {
+            [key: string]: {
+                timestamp: number;
+                price: number;
+                confidence: number;
+            }[];
+        } = {};
+
+        const res = await axios.get(
+            `https://coins.llama.fi/batchHistorical?coins=${encodeURIComponent(JSON.stringify(obj))}&searchWidth=12h`,
+            {
+                cache: false,
+            }
+        );
+
+        const coins = JSON.parse(JSON.stringify(res.data)).coins;
+
+        Object.entries(coins).forEach(([key, value]) => {
+            // @ts-ignore
+            prices[key.split(":")[1].toLowerCase()] = value.prices;
+        });
+        console.log(JSON.parse(JSON.stringify(addTime)), JSON.parse(JSON.stringify(prices)));
+        addTime = addTime.map((item, i) => {
+            console.log("inm", i);
+            return { ...item, price: prices[item.address].pop()!.price };
+        });
+
+        return addTime;
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+};
+
+export const getPriceByTime = async (address: string, timestamp: number, chainId: number) => {
+    try {
+        const res = await axios.get(
+            `${coinsLamaPriceByChainId[0]}/historical/${timestamp}/${getNetworkName(chainId)}:${address}`,
+            {
+                cache: true,
+            }
+        );
+
+        const prices = JSON.stringify(res.data);
+        const parse = JSON.parse(prices);
+
+        const token = parse[`coins`][`${getNetworkName(chainId)}:${address}`];
+        const price = token ? (token[`price`] as number) : 0;
+        return { price, timestamp };
+    } catch (error) {
+        console.error(error);
+        return { price: 0, timestamp };
+    }
+};
+
 export const getBalance = async (
     tokenAddress: string,
     address: string,
-    provider: providers.Provider | Signer
+    multicallProvider: MulticallProvider | providers.Provider
 ): Promise<BigNumber> => {
     try {
-        const contract = new Contract(tokenAddress, ["function balanceOf(address) view returns (uint)"], provider);
-        const balance = await contract.balanceOf(address);
+        const contract = new Contract(
+            tokenAddress,
+            ["function balanceOf(address) view returns (uint)"],
+            multicallProvider
+        );
+        const balancePromise = contract.balanceOf(address);
+        const balance = await balancePromise;
         return balance;
     } catch (error) {
         console.error(error);
@@ -39,7 +123,7 @@ export const getBalance = async (
 export const approveErc20 = async (
     contractAddress: string,
     spender: string,
-    amount: BigNumber,
+    amount: BigNumber | string,
     currentWallet: string,
     signer: Signer
 ) => {
@@ -47,10 +131,12 @@ export const approveErc20 = async (
     // check allowance
     const allowance = await contract.allowance(currentWallet, spender);
     // if allowance is lower than amount, approve
-    if (amount.gt(allowance)) {
+    if (BigNumber.from(amount).gt(allowance)) {
         // approve
-        await (await contract.approve(spender, constants.MaxUint256)).wait();
+        return await awaitTransaction(contract.approve(spender, constants.MaxUint256));
     }
+    // if already approved just return status as true
+    return { status: true };
 };
 
 export const getLpPriceDepreached = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
@@ -111,14 +197,13 @@ export const getLpPriceDepreached = async (lpAddress: string, provider: provider
     }
 };
 
-export const getLpPrice = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
+export const getLpPrice = async (lpAddress: string, multicallProvider: MulticallProvider, chainId: number) => {
     try {
         // if lp price are available on api, use that
         let price = await getPrice(lpAddress, chainId);
         if (price !== 0) return price;
 
         // else calculate price from lp contract
-        const multicallProvider = new multicallProviders.MulticallProvider(provider);
 
         // get lp info
         const lpContract = new Contract(

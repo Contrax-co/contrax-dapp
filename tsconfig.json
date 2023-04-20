@@ -16,7 +16,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "baseUrl": ".",
-    "plugins": [{ "name": "typescript-plugin-css-modules" }]
+    "plugins": [{ "name": "typescript-plugin-css-modules" }],
+    "types": ["src/decs2.d.ts"]
   }, 
-  "include": ["src"]
+  "include": ["src", "public/service-worker.ts", "public/service-worker.js"]
 }

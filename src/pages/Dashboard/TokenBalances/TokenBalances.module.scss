@@ -7,7 +7,7 @@
 }
 
 .tokenCard{
-    max-width: 300px;
+    max-width: 340px;
     width: 100%;
     display: grid;
     grid-template-columns: max-content 1fr max-content;
@@ -26,7 +26,7 @@
     }
 }
 .tokenCard:hover{
-    border-color: $color_primary;
+    border-color: var(--color_primary);
     grid-template-columns: max-content 1fr max-content max-content;
     position: relative;
     padding-right: 40px;
@@ -41,7 +41,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: $color_primary;
+        color: var(--color_white);
+        background-color: var(--color_primary);
         border-top-right-radius: 16px;
         border-bottom-right-radius: 16px;
         font-size: 20px;
@@ -61,6 +62,11 @@
     width: 35px;
     height: 35px;
 }
+.tokenLogo2{
+    width: 35px;
+    height: 35px;
+    margin-left: -10px;
+}
 
 .name{
     font-size: 16px;
@@ -70,7 +76,7 @@
     font-size: 12px;
     font-weight: 400;
     margin-left: 4px;
-    color: $color_primary;
+    color: var(--color_primary);
 }
 .balance {
     font-size: 12px;

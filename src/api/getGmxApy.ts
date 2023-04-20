@@ -8,6 +8,7 @@ import { Token as UniToken } from "@uniswap/sdk-core";
 import { Pool } from "@uniswap/v3-sdk";
 import { Apys } from "src/types";
 import { calcCompoundingApy } from "src/utils/common";
+import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 const addresses = {
     bnGmxAddress: "0x35247165119B69A40edD5304969560D0ef486921",
@@ -157,8 +158,8 @@ interface ProcessedData {
     gmxAprTotalWithBoost: BigNumber;
     gmxAprForNativeTokenWithBoost: BigNumber;
 }
-export const SECONDS_PER_YEAR = 31536000;
-export const BASIS_POINTS_DIVISOR = 10000;
+const SECONDS_PER_YEAR = 31536000;
+const BASIS_POINTS_DIVISOR = 10000;
 
 function getProcessedData(
     supplyData?: { stakedGmxTracker: BigNumber },
@@ -211,64 +212,72 @@ function getProcessedData(
 
     return data;
 }
-export const getGmxApyArbitrum = async (provider?: providers.Provider, currentWallet?: string): Promise<Apys> => {
-    if (!provider) return;
-    if (!currentWallet) {
-        currentWallet = Wallet.createRandom().address;
-    }
-    const reader = new Contract(addresses.readerAddress, ReaderV2, provider);
-    const rewardReader = new Contract(addresses.rewardReaderAddress, RewardReader, provider);
-    const vault = new Contract(addresses.vaultAddress, Vault, provider);
-    const uniPool = new Contract(addresses.UniswapGmxEthPool, UniPool, provider);
-    const walletBalances = await reader.getTokenBalancesWithSupplies(currentWallet, walletTokens);
-    const depositBalances = await rewardReader.getDepositBalances(
-        currentWallet,
-        depositTokens,
-        rewardTrackersForDepositBalances
-    );
-    const stakingInfo = await rewardReader.getStakingInfo(currentWallet, rewardTrackersForStakingInfo);
-    const nativeTokenPrice = await vault.getMinPrice(addresses.nativeTokenAddress);
-    const uniPoolSlot0 = await uniPool.slot0();
-    const ethAddress = addresses.WETH;
-    const ethPrice = await vault.getMinPrice(ethAddress);
-
-    const getGmxPrice = () => {
-        if (uniPoolSlot0 && ethPrice) {
-            const tokenA = new UniToken(ARBITRUM, ethAddress, 18, "SYMBOL", "NAME");
-
-            const gmxAddress = addresses.GMX;
-            const tokenB = new UniToken(ARBITRUM, gmxAddress, 18, "SYMBOL", "NAME");
-
-            const pool = new Pool(
-                tokenA, // tokenA
-                tokenB, // tokenB
-                10000, // fee
-                uniPoolSlot0.sqrtPriceX96, // sqrtRatioX96
-                1, // liquidity
-                uniPoolSlot0.tick, // tickCurrent
-                []
-            );
-
-            const poolTokenPrice = pool.priceOf(tokenB).toSignificant(6);
-            const poolTokenPriceAmount = utils.parseUnits(poolTokenPrice, 18);
-            return poolTokenPriceAmount?.mul(ethPrice).div(expandDecimals(1, 18));
+export const getGmxApyArbitrum = async (provider?: MulticallProvider, currentWallet?: string): Promise<Apys> => {
+    try {
+        if (!provider) return;
+        if (!currentWallet) {
+            currentWallet = Wallet.createRandom().address;
         }
-    };
-    const gmxPrice = getGmxPrice();
-    const { supplyData } = getBalanceAndSupplyData(walletBalances);
-    const depositBalanceData = getDepositBalanceData(depositBalances);
-    const stakingData = getStakingData(stakingInfo);
-    // @ts-ignore
-    const processedData = getProcessedData(supplyData, depositBalanceData, stakingData, nativeTokenPrice, gmxPrice);
-    const APR = Number(processedData?.gmxAprTotalWithBoost?.toString()) / 100;
-    const ETH_APR = Number(processedData?.gmxAprForNativeTokenWithBoost?.toString()) / 100;
-    const esGMX_APR = Number(processedData?.gmxAprForEsGmx?.toString()) / 100;
-    const compounding = calcCompoundingApy(APR);
-    const res = {
-        apy: APR + compounding,
-        compounding,
-        feeApr: 0,
-        rewardsApr: APR,
-    };
-    return res;
+        const ethAddress = addresses.WETH;
+        const reader = new Contract(addresses.readerAddress, ReaderV2, provider);
+        const rewardReader = new Contract(addresses.rewardReaderAddress, RewardReader, provider);
+        const vault = new Contract(addresses.vaultAddress, Vault, provider);
+        const uniPool = new Contract(addresses.UniswapGmxEthPool, UniPool, provider);
+        const [walletBalances, depositBalances, stakingInfo, nativeTokenPrice, uniPoolSlot0, ethPrice] =
+            await Promise.all([
+                reader.getTokenBalancesWithSupplies(currentWallet, walletTokens),
+                rewardReader.getDepositBalances(currentWallet, depositTokens, rewardTrackersForDepositBalances),
+                rewardReader.getStakingInfo(currentWallet, rewardTrackersForStakingInfo),
+                vault.getMinPrice(addresses.nativeTokenAddress),
+                uniPool.slot0(),
+                vault.getMinPrice(ethAddress),
+            ]);
+
+        const getGmxPrice = () => {
+            if (uniPoolSlot0 && ethPrice) {
+                const tokenA = new UniToken(ARBITRUM, ethAddress, 18, "SYMBOL", "NAME");
+
+                const gmxAddress = addresses.GMX;
+                const tokenB = new UniToken(ARBITRUM, gmxAddress, 18, "SYMBOL", "NAME");
+
+                const pool = new Pool(
+                    tokenA, // tokenA
+                    tokenB, // tokenB
+                    10000, // fee
+                    uniPoolSlot0.sqrtPriceX96, // sqrtRatioX96
+                    1, // liquidity
+                    uniPoolSlot0.tick, // tickCurrent
+                    []
+                );
+
+                const poolTokenPrice = pool.priceOf(tokenB).toSignificant(6);
+                const poolTokenPriceAmount = utils.parseUnits(poolTokenPrice, 18);
+                return poolTokenPriceAmount?.mul(ethPrice).div(expandDecimals(1, 18));
+            }
+        };
+        const gmxPrice = getGmxPrice();
+        const { supplyData } = getBalanceAndSupplyData(walletBalances);
+        const depositBalanceData = getDepositBalanceData(depositBalances);
+        const stakingData = getStakingData(stakingInfo);
+        // @ts-ignore
+        const processedData = getProcessedData(supplyData, depositBalanceData, stakingData, nativeTokenPrice, gmxPrice);
+        const APR = Number(processedData?.gmxAprTotalWithBoost?.toString()) / 100;
+        const ETH_APR = Number(processedData?.gmxAprForNativeTokenWithBoost?.toString()) / 100;
+        const esGMX_APR = Number(processedData?.gmxAprForEsGmx?.toString()) / 100;
+        const compounding = calcCompoundingApy(APR);
+        const res = {
+            apy: APR + compounding,
+            compounding,
+            feeApr: 0,
+            rewardsApr: APR,
+        };
+        return res;
+    } catch (error) {
+        return {
+            apy: 0,
+            compounding: 0,
+            feeApr: 0,
+            rewardsApr: 0,
+        };
+    }
 };

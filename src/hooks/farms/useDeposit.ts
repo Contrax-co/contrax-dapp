@@ -2,27 +2,27 @@ import { useMemo } from "react";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import { Farm } from "src/types";
-import useBalances from "../useBalances";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_DATA, FARM_DEPOSIT } from "src/config/constants/query";
-import useFarmsBalances from "./useFarmsBalances";
-import useFarmsTotalSupply from "./useFarmsTotalSupply";
 import farmFunctions from "src/api/pools";
 import { queryClient } from "src/config/reactQuery";
+import useBalances from "../useBalances";
+import useTotalSupplies from "../useTotalSupplies";
+import { utils } from "ethers";
+import { useDecimals } from "../useDecimals";
 
 const useDeposit = (farm: Farm) => {
-    const { signer, currentWallet, networkId: chainId, balance } = useWallet();
+    const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
+    const { reloadBalances } = useBalances();
+    const { reloadSupplies } = useTotalSupplies();
+    const { decimals } = useDecimals();
 
     const _deposit = async ({ depositAmount, max }: { depositAmount: number; max?: boolean }) => {
-        const cb = async () => {
-            await queryClient.refetchQueries({
-                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
-                type: "active",
-                exact: true,
-            });
-        };
-        await farmFunctions[farm.id].deposit({ depositAmount, currentWallet, signer, chainId, max, cb });
+        let amountInWei = utils.parseUnits(depositAmount.toString(), decimals[farm.lp_address]);
+        await farmFunctions[farm.id].deposit({ amountInWei, currentWallet, signer, chainId, max });
+        reloadBalances();
+        reloadSupplies();
     };
 
     const {

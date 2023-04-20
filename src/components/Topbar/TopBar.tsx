@@ -8,17 +8,13 @@ function TopBar({ setOpenBurgerMenu }: { setOpenBurgerMenu: Dispatch<SetStateAct
     const { lightMode } = useApp();
 
     return (
-        <div className="topbar_placement">
-            <div
-                className={`topbar_menu ${lightMode && "topbar_menu--light"}`}
+        <div className={`topbar ${lightMode && "topbar--light"}`}>
+            <ConnectButton label="Sign In/Up" />
+            <TbMenu2
+                className={`burger-icon ${lightMode && "burger-icon--light"}`}
+                size={30}
                 onClick={() => setOpenBurgerMenu((show) => !show)}
-            >
-                <TbMenu2 className="burger-icon" />
-            </div>
-            <div style={{ flex: 1 }}></div>
-            <div>
-                <ConnectButton />
-            </div>
+            />
         </div>
     );
 }

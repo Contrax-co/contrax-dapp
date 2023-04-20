@@ -3,6 +3,7 @@
 
 .backdrop {
     position: fixed;
+    z-index: 10;
     top: 0px;
     left: 0px;
     width: 100vw;
@@ -12,6 +13,7 @@
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
+    backdrop-filter: blur(3px);
 }
 .container {
     min-height: 200px;
@@ -20,13 +22,12 @@
     box-shadow: 20px 30px 25px rgb(0 0 0 / 15%);
     border-radius: 20px;
     padding: 35px 50px;
+    position: relative;
+    overflow: hidden;
     @include devices(tablet) {
         min-width: 100px;
         width: 80%;
         padding: 30px;
-    }
-    @include devices(mobile) {
-        padding: 20px;
     }
 }
 .container_light {

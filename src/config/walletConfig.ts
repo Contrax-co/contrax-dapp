@@ -1,7 +1,7 @@
 import { arbitrum, mainnet, avalanche, bsc, optimism, polygon, gnosis, fantom } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
-import { Web3AuthCore } from "@web3auth/core";
+import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -22,7 +22,6 @@ export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 const clientId = WEB3AUTH_CLIENT_ID as string;
 arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
 arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
-
 
 // Configure chains & providers with the Alchemy provider.
 // Popular providers are Alchemy (alchemy.com), Infura (infura.io), Quicknode (quicknode.com) etc.
@@ -47,7 +46,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
 );
 
 // Instantiating Web3Auth
-const web3AuthInstance = new Web3AuthCore({
+const web3AuthInstance = new Web3AuthNoModal({
     clientId,
     chainConfig: {
         chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -193,23 +192,8 @@ const connectors = connectorsForWallets([
     ...wallets,
 ]);
 export const wagmiClient = createClient({
-    autoConnect: true,
+    autoConnect: false,
     connectors,
-    // connectors: [
-    //     new Web3AuthConnector({
-    //         chains,
-    //         options: {
-    //             web3AuthInstance,
-    //         },
-    //     }),
-    //     new InjectedConnector({
-    //         chains,
-    //         options: {
-    //             name: "Injected",
-    //             shimDisconnect: true,
-    //         },
-    //     }),
-    // ],
     provider,
     webSocketProvider,
 });

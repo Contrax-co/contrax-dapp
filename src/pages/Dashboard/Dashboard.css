@@ -1,139 +1,147 @@
 .dashboard_top_bg {
-  width: 100%;
-  height: 100vh;
-  margin-top: 5px;
-  padding-bottom: 120px;
-  overflow-y: scroll;
-  overflow-x: hidden;
+    width: 100%;
+    height: 100vh;
+    padding-bottom: 120px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .dashboard_header {
-  background-image: linear-gradient(rgba(0, 154, 255, 0.5),
-      rgba(0, 154, 255, 0.1),
-      rgba(0, 154, 255, 0));
-  padding-top: 5px;
-  padding: 30px;
-  height: 20vh;
-  display: flex;
-  justify-content: space-between;
+    padding-top: 5px;
+    padding: 30px;
+    height: 20vh;
+    display: flex;
+    justify-content: space-between;
 }
 
 .dashboard_right {
-  display: block;
-  margin: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-  width: 300px;
-  border-radius: 15px;
-  color: white;
-  background-color: #012243;
+    display: block;
+    margin: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 300px;
+    border-radius: 15px;
+    color: white;
+    background-color: #012243;
 }
 
 .dashboard_right--light {
-  color: black;
-  background-color: white;
+    color: black;
+    background-color: white;
 }
 
 .dashboard_worth {
-  color: rgb(186, 185, 185);
-  font-size: 16;
+    color: rgb(186, 185, 185);
+    font-size: 16;
 }
 
 .dashboard_worth--light {
-  color: rgb(138, 136, 136);
+    color: rgb(138, 136, 136);
 }
 
 .dashboard_all_prices {
-  vertical-align: top;
-  font-weight: 700;
-  font-size: 20px;
+    vertical-align: top;
+    font-weight: 700;
+    font-size: 20px;
 }
 
 .dashboard_address_header {
-  display: flex;
-  align-items: center;
-  color: white;
+    display: flex;
+    align-items: center;
+    color: white;
 }
 
 .dashboard_address_header--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_address_header:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .dashboard_address {
-  color: white;
-  font-size: 20px;
-  font-weight: 700;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
 }
 
 .dashboard_address--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_copy {
-  height: 5px;
-  vertical-align: top;
-  display: flex;
-  align-items: center;
-  color: white;
+    height: 5px;
+    vertical-align: top;
+    display: flex;
+    align-items: center;
+    color: white;
 }
 
 .dashboard_copy:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .dashboard_copy--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_vault_title {
-  padding: 30px;
+    padding: 30px;
 }
 
 .dashboard_title {
-  font-size: 25px;
-  font-weight: 700;
-  color: white;
+    font-size: 25px;
+    font-weight: 700;
+    color: white;
 }
 
 .dashboard_title--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_wallet_title {
-  font-size: 25px;
-  font-weight: 700;
-  color: white;
+    font-size: 25px;
+    font-weight: 700;
+    color: white;
 }
 
 .dashboard_wallet_title--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_section {
-  padding: 30px;
-  padding-top: 20px;
+    padding: 30px;
+    padding-top: 20px;
 }
 
 .dashboard-key-icons {
-  display: flex;
-  gap: 16px;
+    display: flex;
+    gap: 16px;
+    padding: 10px 20px;
+    margin-top: 16px;
+    height: fit-content;
+    background: var(--background_secondary);
+    border-radius: 12px;
+    box-shadow: var(--rk-shadows-connectButton);
 }
 
 @media (max-height: 600px) {
-  .dashboard_wallet_title {
-    font-size: 20px;
-  }
+    .dashboard_wallet_title {
+        font-size: 20px;
+    }
 
-  .dashboard_address {
-    font-size: 15px;
-  }
+    .dashboard_address {
+        font-size: 15px;
+    }
 
+    .dashboard_copy {
+        height: 0px;
+    }
+}
 
-  .dashboard_copy {
-    height: 0px;
-  }
+@media (max-width: 500px) {
+    .dashboard-key-icons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
 }

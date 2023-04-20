@@ -1,5 +1,9 @@
-import { BigNumberish, utils } from "ethers";
+import { Provider } from "@ethersproject/abstract-provider";
+import { BigNumber, BigNumberish, Signer, constants, utils } from "ethers";
+import { notifyError } from "src/api/notify";
 import { defaultChainId } from "src/config/constants";
+import { errorMessages } from "src/config/constants/notifyMessages";
+import store from "src/state";
 import { Farm } from "src/types";
 
 export const getLpAddressForFarmsPrice = (farms: Farm[]) => {
@@ -22,7 +26,7 @@ export function validateNumberDecimals(value: number, decimals: number = 18) {
     return split.join(".");
 }
 
-export const noExponents = (n: number) => {
+export const noExponents = (n: number | string) => {
     var data = String(n).split(/[eE]/);
     if (data.length === 1) return data[0];
 
@@ -42,8 +46,9 @@ export const noExponents = (n: number) => {
 };
 
 export const calcCompoundingApy = (rewardsApr: number) => {
-    const period = 365 / 7; // Number of Weeks
-    const rate = rewardsApr / 100;
+    const period = 365 / 7; // Number of times compounded per year
+    const fee = 0.1; // 10% fee
+    const rate = (rewardsApr / 100) * (1 - fee);
     const apy = ((1 + rate / period) ** period - 1) * 100;
     return apy - rewardsApr;
     // return apy;
@@ -60,7 +65,10 @@ export function getNetworkName(id: number) {
     }
 }
 
-export const toWei = (value: string, decimals = 18) => {
+export const toWei = (value: string | number, decimals = 18) => {
+    value = Number(value)
+        .toFixed(decimals + 1)
+        .slice(0, -1);
     return utils.parseUnits(value, decimals);
 };
 
@@ -81,4 +89,85 @@ export const isValidNetwork = (network: string | number) => {
         if (network === defaultChainId) return true;
     }
     return false;
+};
+
+export const toPreciseNumber = (x: number | string, decimals = 3, precision = 2) => {
+    if (typeof x === "string") {
+        x = parseFloat(x);
+    }
+    if (x < 1) {
+        return x.toPrecision(precision);
+    } else {
+        return x.toFixed(decimals);
+    }
+};
+
+export const sleep = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+export const awaitTransaction = async (transaction: any) => {
+    let tx;
+    let receipt;
+    let error;
+    let status;
+    try {
+        tx = await transaction;
+        receipt = await tx.wait();
+        status = true;
+    } catch (e: any) {
+        console.info("awaitTransaction error", e);
+        // temp fix for zerodev timeout error
+        if (Error(e).message === "Error: Timed out") {
+            status = true;
+            return {
+                tx: "",
+                receipt: "",
+                error,
+                status,
+            };
+        }
+
+        if (e.reason) error = e.reason.replace("execution reverted:", "");
+        else if (e.code === 4001) error = "Transaction Denied!";
+        else if (e.code === -32000) error = "Insuficient Funds in your account for transaction";
+        else if (e.data?.code === -32000) error = "Insuficient Funds in your account for transaction";
+        else if (e.data?.message) error = e.data.message;
+        else if (Error(e).message) error = Error(e).message;
+        status = false;
+    }
+    return {
+        tx,
+        receipt,
+        error,
+        status,
+    };
+};
+
+export const isZeroDevSigner = (signer: any) => {
+    // do we have a better way to do this ?? :/
+    if (signer.zdProvider) return true;
+    return false;
+};
+
+export const getConnectorId = () => {
+    return store.getState().settings.connectorId;
+};
+
+export const subtractGas = async (
+    amountInWei: BigNumber,
+    signerOrProvider: Signer | Provider,
+    estimatedTx: Promise<BigNumber>,
+    showError: boolean = true
+) => {
+    const balance = BigNumber.from(store.getState().balances.balances[constants.AddressZero]);
+    const gasPrice = await signerOrProvider.getGasPrice();
+    const gasLimit = await estimatedTx;
+    const gasToRemove = gasLimit.mul(gasPrice).mul(2);
+    if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
+    if (amountInWei.lte(0)) {
+        showError && notifyError(errorMessages.insufficientGas());
+        return false;
+    }
+    return true;
 };

@@ -1,9 +1,9 @@
 import SidebarItem from "./SidebarItem";
 import { MdSpaceDashboard } from "react-icons/md";
-import { GiFarmTractor } from "react-icons/gi";
 import { HiDocumentText } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { FaExchangeAlt } from "react-icons/fa";
+import { ReactComponent as EarnIcon } from "src/assets/images/earn.svg";
 import logo from "src/assets/images/logo.png";
 import logo2 from "src/assets/images/logo-4x.png";
 import LightModeToggle from "src/components/LightModeToggle/LightModeToggle";
@@ -31,21 +31,21 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
             <div className="side_items">
                 <SidebarItem
                     title="Dashboard"
-                    icon={<MdSpaceDashboard />}
+                    icon={<MdSpaceDashboard size={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Home)}
                     active={pathname === RoutesPaths.Home}
                 />
 
                 <SidebarItem
-                    title="Farms"
-                    icon={<GiFarmTractor />}
+                    title="Earn"
+                    icon={<EarnIcon height={18} width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Farms)}
                     active={pathname === RoutesPaths.Farms}
                 />
 
                 <SidebarItem
                     title="Exchange"
-                    icon={<FaExchangeAlt />}
+                    icon={<FaExchangeAlt size={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Exchange)}
                     active={pathname === RoutesPaths.Exchange}
                 />
@@ -67,12 +67,12 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 <SidebarItem
                     title="User Guide"
                     onClick={() => handleNavigation("https://contrax.gitbook.io/contrax-docs/", "_blank")}
-                    icon={<HiDocumentText />}
-                    icon2={<AiOutlineExport />}
+                    icon={<HiDocumentText size={18} />}
+                    icon2={<AiOutlineExport size={12} />}
                 />
             </div>
 
-            <div>
+            <div className="sidebar_footer">
                 <LightModeToggle />
             </div>
         </div>

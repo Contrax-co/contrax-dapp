@@ -1,119 +1,63 @@
-import { useMemo } from "react";
-import { Multicall, ContractCallResults, ContractCallContext } from "ethereum-multicall";
+import { useMemo, useCallback, useEffect } from "react";
 import useWallet from "src/hooks/useWallet";
-import { useQuery } from "@tanstack/react-query";
-import { TOKEN_BALANCES } from "src/config/constants/query";
 import * as ethers from "ethers";
-import useConstants from "./useConstants";
-import erc20 from "src/assets/abis/erc20.json";
-import { isValidNetwork } from "src/utils/common";
+import useFarms from "./farms/useFarms";
+import { useAppDispatch, useAppSelector } from "src/state";
+import { fetchBalances, reset, setIsFetched } from "src/state/balances/balancesReducer";
+import { useDecimals } from "./useDecimals";
 
 /**
  * Returns balances for all tokens
  * @param data Array of objects with address and decimals
  */
-const useBalances = (data: { address: string; decimals: number }[]) => {
-    const { NETWORK_NAME } = useConstants();
-    const { provider, currentWallet } = useWallet();
-
-    const getAllBalances = async () => {
-        if (!provider || !isValidNetwork(NETWORK_NAME)) return {};
-        const multicall = new Multicall({ ethersProvider: provider, tryAggregate: true });
-        const contractCallContext: ContractCallContext[] = [];
-
-        // Create Call context with addresses of all vaults with balanceOf method
-        data.forEach((item) => {
-            const callContext: ContractCallContext = {
-                reference: item.address,
-                contractAddress: item.address,
-                abi: erc20.abi,
-                calls: [{ reference: "balance", methodName: "balanceOf", methodParameters: [currentWallet] }],
-            };
-            contractCallContext.push(callContext);
-        });
-
-        const results: ContractCallResults = await multicall.call(contractCallContext);
-        let ans: { [key: string]: ethers.BigNumber } = {};
-
-        // Organize/format data in object form with addresses as keys and balances as values
-        Object.entries(results.results).forEach(([key, value]) => {
-            ans[key] = ethers.BigNumber.from(value.callsReturnContext[0].returnValues[0].hex);
-        });
-        return ans;
-    };
-
-    const placeholderData = useMemo(() => {
-        let b: { [key: string]: ethers.BigNumber } = {};
-        data.forEach((item) => {
-            b[item.address] = ethers.BigNumber.from(0);
-        });
-        return b;
-    }, [data]);
-
+const useBalances = () => {
+    const { farms } = useFarms();
+    const { isLoading, balances, isFetched, account: oldAccount } = useAppSelector((state) => state.balances);
+    const { networkId, multicallProvider, currentWallet } = useWallet();
     const {
-        data: balancesUndefined,
-        refetch,
-        isLoading,
-        isFetching,
-        isPlaceholderData,
-    } = useQuery(
-        // Query will rerun and fetch new data whenever any of the values changes in below function
-        TOKEN_BALANCES(
-            currentWallet,
-            data.map((_) => _.address),
-            NETWORK_NAME
-        ),
-        getAllBalances,
-        {
-            // Will only run if all these are true:
-            enabled: !!provider && !!currentWallet && data.length > 0 && !!NETWORK_NAME,
+        decimals,
+        isFetched: isDecimalsFetched,
+        isLoading: isDecimalsLoading,
+        isFetching: isDecimalsFetching,
+    } = useDecimals();
+    const dispatch = useAppDispatch();
 
-            // Initial data to be returned when no query has ran
-            // Returns 0 for all the balances initially
-            placeholderData,
-        }
-    );
+    const reloadBalances = useCallback(() => {
+        if (currentWallet) dispatch(fetchBalances({ farms, multicallProvider, account: currentWallet }));
+    }, [farms, currentWallet, networkId, dispatch, decimals]);
 
-    const balances = balancesUndefined!;
     const formattedBalances = useMemo(() => {
-        let b: { [key: string]: number } = {};
+        let b: { [key: string]: number | undefined } = {};
         Object.entries(balances).map(([key, value]) => {
-            // Find decimals for each vault
-            const decimals = data.find((_) => _.address.toLowerCase() === key.toLowerCase())?.decimals;
-
             // Formalize the balance
-            const formattedBal = Number(ethers.utils.formatUnits(value, decimals));
+            if (!value) {
+                b[key] = undefined;
+                return;
+            }
+            const formattedBal = Number(ethers.utils.formatUnits(value, decimals[key]));
             b[key] = formattedBal;
             return;
         });
         return b;
-    }, [balances, data]);
+    }, [balances]);
+
+    useEffect(() => {
+        if (oldAccount && currentWallet && oldAccount !== currentWallet) {
+            dispatch(reset());
+        }
+    }, [oldAccount, currentWallet]);
+
+    const ethBalance = useMemo(() => ethers.BigNumber.from(balances[ethers.constants.AddressZero] || 0), [balances]);
 
     return {
-        /**
-         * Object with address as key and balance as value in bignumber
-         */
         balances,
-
-        /**
-         * Object with address as key and balance as value in number readable format
-         */
+        reloadBalances,
         formattedBalances,
-
-        /**
-         * Refetch balances, update state
-         */
-        refetch,
-
-        /**
-         * Is query loading, (Always returns false, if initialData is given to useQuery)
-         */
-        isLoading: isLoading || isPlaceholderData,
-
-        /**
-         * Is query fetching will return true if query is fetching in background
-         */
-        isFetching,
+        ethBalance,
+        isLoading: isLoading && !isFetched && isDecimalsFetched,
+        // isLoading: (isLoading || isDecimalsLoading) && !isFetched && !isDecimalsFetched,
+        isFetched: isFetched && isDecimalsFetched,
+        isFetching: isLoading || isDecimalsFetching,
     };
 };
 

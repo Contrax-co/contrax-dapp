@@ -1,0 +1,12 @@
+@import "../../../../styles/_mixins.scss";
+
+.description {
+    width: 100%;
+    @include devices(desktop) {
+        text-align: center;
+    }
+
+    & a {
+        color: var(--color_primary);
+    }
+}

@@ -1,6 +1,11 @@
-@import "src/styles/variables.scss";
+@import "../../styles/variables.scss";
+@import "../../styles/mixins";
 
 .darkBuy{
+    width: 400px;
+    @include devices(mobile){
+        width: 340px;
+    }
     .ywm1tje1{
         background-color: $color-black !important;
     }

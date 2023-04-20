@@ -1,0 +1,73 @@
+.deprecated_farms_icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    border-radius: 50%;
+    color: var(--color_grey);
+    background: var(--background_secondary);
+    box-shadow: var(--rk-shadows-connectButton);
+    cursor: pointer;
+}
+
+.deprecated_farms_select {
+    position: absolute;
+    top: 110%;
+    color: var(--color_text);
+    right: 0;
+    background: var(--background_secondary);
+    border-radius: 5px;
+    border-top-right-radius: 0px;
+    width: max-content;
+    padding: 8px 0px;
+    box-shadow: var(--rk-shadows-connectButton);
+    animation: scaleAnim 100ms ease-out 1 forwards;
+    transform-origin: 0 0;
+}
+
+.dotMenuContainer {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+@keyframes scaleAnim {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.deprecated_farms_select > p {
+    margin: 0px;
+    padding: 10px 12px;
+    width: 140px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.deprecated_farms_select > p:hover {
+    color: var(--color_primary);
+    font-weight: 700;
+}
+
+.checkboxRow {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 10px;
+    width: 200px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    p,
+    input {
+        margin: 0px;
+    }
+    input {
+        margin-top: 2px;
+    }
+}

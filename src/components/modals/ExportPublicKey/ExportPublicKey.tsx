@@ -23,26 +23,33 @@ export const ExportPublicKey: FC<IProps> = ({ setOpenModal }) => {
     };
 
     return (
-        <ModalLayout onClose={() => setOpenModal(false)}>
-            <div className={styles.heading}>
-                <h1>Scan Me</h1>
-            </div>
-            <p className={styles.caption}>Wallet Address</p>
-            <div className={styles.key}>
-                <p>{currentWallet}</p>
-                {copied ? (
-                    <BsCheckCircle className={styles.copyIcon} size={22} />
-                ) : (
-                    <BiCopy className={styles.copyIcon} size={22} onClick={copy} />
-                )}
+        <ModalLayout onClose={() => setOpenModal(false)} className={styles.container}>
+            <div className={styles.left}>
+                <div className={styles.heading}>
+                    <h1>Scan Me</h1>
+                </div>
+                <p className={styles.caption}>Wallet Address</p>
+                <div className={styles.key}>
+                    <p>{`${currentWallet?.substring(0, 20)}...${currentWallet?.substring(
+                        currentWallet.length - 3
+                    )}`}</p>
+                    {copied ? (
+                        <BsCheckCircle className={styles.copyIcon} size={22} />
+                    ) : (
+                        <BiCopy className={styles.copyIcon} size={22} onClick={copy} />
+                    )}
+                </div>
+                <p className={styles.extraText}>
+                    Sending cryptocurrency has never been easier. Simply scan this QR code to transfer your desired
+                    tokens to your contrax wallet.
+                </p>
             </div>
             <div className={styles.qrCode}>
                 <QRCode
                     value={currentWallet}
-                    size={256}
+                    size={200}
                     bgColor={lightMode ? "#fff" : "#012243"}
                     fgColor={lightMode ? "#000" : "#fff"}
-                    width="100%"
                 />
             </div>
         </ModalLayout>

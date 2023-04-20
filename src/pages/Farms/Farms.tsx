@@ -1,77 +1,40 @@
-import "./Farms.css";
+import { useEffect, useState } from "react";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
 import FarmRow from "src/components/FarmItem/FarmRow";
 import { Farm, FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
-import { useEffect, useMemo, useState } from "react";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
-import { useQueries, useQueryClient, QueriesObserver } from "@tanstack/react-query";
-import { FARM_DATA } from "src/config/constants/query";
-import useConstants from "src/hooks/useConstants";
-import farmFunctions from "src/api/pools";
-import { v4 as uuid } from "uuid";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
-interface FarmDataExtended extends Partial<FarmData>, Farm {
+import useFarmDetails from "src/hooks/farms/useFarmDetails";
+import { Tabs } from "src/components/Tabs/Tabs";
+import "./Farms.css";
+
+interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
     apy: number;
 }
 function Farms() {
     const { lightMode } = useApp();
     const { farms } = useFarms();
     const [tab, setTab] = useState(1);
-    const { networkId, currentWallet, provider, balanceBigNumber, balance } = useWallet();
-    const { NETWORK_NAME } = useConstants();
-    const { allFarmApys } = useFarmApys();
-    const [queries, setQueries] = useState([]);
-    const queryClient = useQueryClient();
-    // const queriesData = useMemo(
-    //     () =>
-    //         farms
-    //             .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
-    //             .map((item) => ({
-    //                 queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
-    //                 queryFn: () => farmFunctions[item.id]?.getFarmData(provider, currentWallet, balanceBigNumber),
-    //                 enabled: !!currentWallet && !!provider && !!item && !!balance,
-    //             })),
-    //     [farms, tab]
-    // );
-    // const queries = useQueries({
-    //     queries: farms
-    //         .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
-    //         .map((item) => ({
-    //             queryKey: FARM_DATA(currentWallet, NETWORK_NAME, item.id, balance),
-    //         })),
-    // });
-
-    useEffect(() => {
-        const observer = new QueriesObserver(
-            queryClient,
-            farms
-                .filter((f) => (tab === 1 ? f.token_type === "Token" : f.token_type === "LP Token"))
-                .map((farm) => ({
-                    queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
-                }))
-        );
-        const unsubscribe = observer.subscribe((results: any) => {
-            setQueries(results);
-        });
-        return () => unsubscribe();
-    }, [NETWORK_NAME, farms, tab, currentWallet, balance]);
-
+    const { networkId, currentWallet } = useWallet();
+    const { apys } = useFarmApys();
+    const { farmDetails } = useFarmDetails();
     const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
     const [openedFarm, setOpenedFarm] = useState<number | undefined>();
+    const [openDeprecatedFarm, setOpenDeprecatedFarm] = useState<boolean>(false);
 
     useEffect(() => {
         if (sortedBuy) {
             handleSort(sortedBuy);
         }
-    }, [tab, sortedBuy, allFarmApys, decOrder]);
+    }, [tab, sortedBuy, apys, decOrder]);
 
     useEffect(() => {
         setSortedBuy(undefined);
@@ -80,9 +43,9 @@ function Farms() {
     const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDataExtended, b: FarmDataExtended) =>
         (decOrder ? 1 : -1) *
         (column === FarmTableColumns.Deposited
-            ? Number(a.Max_Token_Withdraw_Balance_Dollar) < Number(b.Max_Token_Withdraw_Balance_Dollar)
+            ? Number(a.withdrawableAmounts![0].amountDollar) < Number(b.withdrawableAmounts![0].amountDollar)
                 ? -1
-                : Number(a.Max_Token_Withdraw_Balance_Dollar) > Number(b.Max_Token_Withdraw_Balance_Dollar)
+                : Number(a.withdrawableAmounts![0].amountDollar) > Number(b.withdrawableAmounts![0].amountDollar)
                 ? 1
                 : 0
             : column === FarmTableColumns.APY
@@ -95,15 +58,13 @@ function Farms() {
 
     const handleSort = (column: FarmTableColumns) => {
         const data: FarmDataExtended[] = farms.map((ele) => {
-            // @ts-ignore
-            const queryData = queries.find((item) => item.data?.ID === ele.id)?.data as FarmData | undefined;
+            const queryData = Object.values(farmDetails).find((item: FarmData) => item?.id === ele.id);
             return {
                 ...ele,
                 ...queryData,
-                apy: allFarmApys[ele.id].apy,
+                apy: apys[ele.id].apy,
             };
         });
-
         setSortedFarms(data.sort(dynamicSort(column, decOrder)));
     };
 
@@ -112,7 +73,7 @@ function Farms() {
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Farms</p>
             </div>
-            <div className="drop_buttons" style={{ padding: 0, marginBottom: 30 }}>
+            <Tabs style={{ padding: 0, marginBottom: 30 }}>
                 <PoolButton
                     variant={2}
                     onClick={() => {
@@ -131,7 +92,7 @@ function Farms() {
                     description="Dual Tokens"
                     active={tab === 2}
                 />
-            </div>
+            </Tabs>
             <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     {FarmTableColumns.Token}
@@ -153,8 +114,10 @@ function Farms() {
                 </p>
                 <p
                     onClick={() => {
-                        setSortedBuy(FarmTableColumns.Deposited);
-                        setDecOrder((prev) => !prev);
+                        if (currentWallet) {
+                            setSortedBuy(FarmTableColumns.Deposited);
+                            setDecOrder((prev) => !prev);
+                        }
                     }}
                     className={`header_deposite`}
                 >
@@ -167,28 +130,13 @@ function Farms() {
                         )
                     ) : null}
                 </p>
-                {/* <p
-                    onClick={() => {
-                        setSortedBuy(FarmTableColumns.EARNED);
-                        setDecOrder((prev) => !prev);
-                    }}
-                    className={`header_earned`}
-                >
-                    <span>{FarmTableColumns.EARNED}</span>
-                    {sortedBuy === FarmTableColumns.EARNED ? (
-                        decOrder ? (
-                            <RiArrowDownSLine fontSize={21} />
-                        ) : (
-                            <RiArrowUpSLine fontSize={21} />
-                        )
-                    ) : null}
-                </p> */}
                 <p></p>
             </div>
             {networkId === defaultChainId ? (
                 sortedFarms ? (
                     sortedFarms
                         .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
+                        .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
                         .map((farm, index) => (
                             <FarmRow
                                 key={index + "nowallet"}
@@ -200,6 +148,7 @@ function Farms() {
                 ) : (
                     farms
                         .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
+                        .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
                         .map((farm, index) => (
                             <FarmRow
                                 key={index + "nowallet"}

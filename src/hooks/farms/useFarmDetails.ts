@@ -1,33 +1,68 @@
-import { useQuery } from "@tanstack/react-query";
-import farmFunctions from "src/api/pools";
-import { FARM_DATA } from "src/config/constants/query";
-import { Farm } from "src/types";
-import useConstants from "../useConstants";
+import { useCallback, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "src/state";
 import useWallet from "../useWallet";
+import useFarms from "./useFarms";
+import { updateFarmDetails, reset, updateEarnings } from "src/state/farms/farmsReducer";
+import useBalances from "../useBalances";
+import usePriceOfTokens from "../usePriceOfTokens";
+import { useDecimals } from "../useDecimals";
+import useTotalSupplies from "../useTotalSupplies";
 
-const useFarmDetails = (farm?: Farm | number) => {
-    const { currentWallet, provider, balanceBigNumber, balance } = useWallet();
-    const { NETWORK_NAME } = useConstants();
-         
-    const {
-        data: farmData,
-        refetch,
-        isInitialLoading,
-        ...query
-    } = useQuery(
-        // @ts-ignore
-        FARM_DATA(currentWallet, NETWORK_NAME, farm.id ? farm.id : farm, balance),
-        () =>
-            currentWallet && farm && provider
-                ? // @ts-ignore
-                  farmFunctions[farm.id ? farm.id : farm]?.getFarmData(provider, currentWallet, balanceBigNumber)
-                : null,
-        {
-            enabled: !!currentWallet && !!provider && !!farm,
-        }
+const useFarmDetails = () => {
+    const { farms } = useFarms();
+    const { balances, isFetched: isBalancesFetched } = useBalances();
+    const { prices, isFetched: isPricesFetched } = usePriceOfTokens();
+    const { totalSupplies } = useTotalSupplies();
+    const { isLoading, farmDetails, isFetched, account, earnings, isLoadingEarnings } = useAppSelector(
+        (state) => state.farms
     );
-    // console.log(JSON.parse(JSON.stringify(query)), isInitialLoading, farmData);
-    return { farmData, isLoading: isInitialLoading && !farmData, refetch };
+    const { decimals } = useDecimals();
+
+    const { networkId, currentWallet, multicallProvider } = useWallet();
+    const dispatch = useAppDispatch();
+
+    const reloadFarmData = useCallback(() => {
+        if (isBalancesFetched && isPricesFetched && currentWallet) {
+            dispatch(updateFarmDetails({ farms, currentWallet, balances, prices, decimals }));
+            dispatch(
+                updateEarnings({
+                    farms,
+                    currentWallet,
+                    decimals,
+                    prices,
+                    balances,
+                    multicallProvider,
+                    totalSupplies,
+                    chainId: networkId,
+                })
+            );
+        }
+    }, [
+        farms,
+        networkId,
+        dispatch,
+        currentWallet,
+        balances,
+        prices,
+        decimals,
+        isBalancesFetched,
+        isPricesFetched,
+        multicallProvider,
+        totalSupplies,
+    ]);
+
+    useEffect(() => {
+        if (currentWallet !== account) dispatch(reset());
+    }, [account, currentWallet]);
+
+    return {
+        isLoading: isLoading && !isFetched,
+        isFetching: isLoading,
+        reloadFarmData,
+        farmDetails,
+        earnings,
+        isLoadingEarnings,
+    };
 };
 
 export default useFarmDetails;

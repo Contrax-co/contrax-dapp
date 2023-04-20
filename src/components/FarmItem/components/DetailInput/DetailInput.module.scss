@@ -1,0 +1,116 @@
+@import "../../../../styles/_mixins.scss";
+@import "../../../../styles/variables.scss";
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 30px;
+    color: $color-white;
+    gap: 20px;
+
+    @include devices(desktop) {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+    @include devices(mobile) {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+}
+.container_light {
+    color: $color-black;
+}
+
+.description {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    @include devices(desktop) {
+        justify-content: center;
+        & > div {
+            text-align: center;
+        }
+    }
+
+    & a {
+        color: var(--color_primary);
+    }
+}
+
+.inputContainer {
+    border: 0.5px solid $border-color;
+    border-radius: 10px;
+    padding: 30px;
+    padding-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    width: 100%;
+    box-sizing: border-box;
+
+    @include devices(tablet) {
+        grid-template-columns: 1fr;
+        padding: 8px;
+    }
+}
+.inputContainer_light {
+    border: 1px solid $border-color-light;
+}
+
+.inputWrapper {
+    background-color: var(--background_primary);
+    border-radius: 10px;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    & input {
+        background-color: transparent;
+        border: none;
+        color: var(--color_text);
+        padding: 5px;
+        outline: none;
+        width: 100%;
+    }
+}
+.maxContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.maxBtn {
+    color: var(--color_primary);
+    background: transparent;
+    border: 1px solid var(--color_primary);
+    border-radius: 5px;
+    outline: none;
+    padding: 2px 10px;
+    margin: 9px 0px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.maxBtn:hover {
+    color: $color_white;
+    background-color: var(--color_primary);
+}
+.maxBtn:active {
+    transform: scale(0.98);
+}
+
+.select {
+    width: 120px;
+}
+.select_light {
+    background: $color-white;
+    color: black;
+    box-shadow: none;
+    border-right: 14px solid transparent;
+    option {
+        background-color: $color-white;
+    }
+}

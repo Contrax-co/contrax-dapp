@@ -1,9 +1,16 @@
-.topbar_placement {
+.topbar {
+  width: 100%;
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
-  padding-right: 30px;
-  position: fixed;
-  right: 0;
+  justify-content: space-between;
+  padding: 16px 30px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #022b55;
+}
+
+.topbar--light {
+  border-bottom: 1px solid #d9d9d9;
 }
 
 .connect_wallet {
@@ -128,12 +135,8 @@
   display: none;
 }
 
-.topbar_menu {
-  display: none;
-}
-
 .burger-icon {
-  margin: 5px 0;
+  display: none;
 }
 
 .dropdown_hamburger_menu {
@@ -171,33 +174,14 @@
 }
 
 @media (max-width: 1024px) {
-  .topbar_placement {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    left: 0;
-    padding-top: 10px;
-    padding-right: 20px;
-    padding-left: 20px;
-    position: relative;
-  }
-
-  .topbar_menu {
+  .burger-icon {
     display: revert;
-    font-size: 50px;
     color: white;
-    top: 20px;
-    left: 20px;
-    position: fixed;
-    z-index: 1300;
-  }
-
-  .topbar_menu--light {
-    color: black;
-  }
-
-  .topbar_menu:hover {
     cursor: pointer;
+  }
+
+  .burger-icon--light {
+    color: black;
   }
 
   .connect_wallet {

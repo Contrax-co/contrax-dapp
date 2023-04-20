@@ -1,61 +1,81 @@
+import { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
-import WalletProvider from "./context/WalletProvider";
 import Farms from "src/pages/Farms/Farms";
-import CreateToken from "src/pages/CreateToken/CreateToken";
-import CreatePool from "src/pages/CreatePool/CreatePool";
 import Dashboard from "src/pages/Dashboard/Dashboard";
-import "react-tooltip/dist/react-tooltip.css";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Exchange from "./pages/Exchange/Exchange";
-import "./styles/global.scss";
-
-import { WagmiConfig } from "wagmi";
-import { wagmiClient, chains } from "./config/walletConfig";
-import "@rainbow-me/rainbowkit/styles.css";
-import { QueryClientProvider } from "@tanstack/react-query";
-
-import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
-import WalletDisclaimer from "./components/WalletDisclaimer/WalletDisclaimer";
 import Test from "./pages/Test/Test";
-import { ReactHooksWrapper, setHook } from "react-hooks-outside";
-import { useNotifications } from "reapop";
-import { queryClient } from "./config/reactQuery";
-import useApp from "./hooks/useApp";
-
-setHook("notifications", useNotifications);
+import usePriceOfTokens from "./hooks/usePriceOfTokens";
+import { useFarmApys } from "./hooks/farms/useFarmApy";
+import useBalances from "./hooks/useBalances";
+import useFarmDetails from "./hooks/farms/useFarmDetails";
+import useTotalSupplies from "./hooks/useTotalSupplies";
+import { useDecimals } from "./hooks/useDecimals";
 
 function Body() {
-    const { lightMode } = useApp();
+    const { reloadPrices } = usePriceOfTokens();
+    const { reloadApys } = useFarmApys();
+    const { reloadBalances } = useBalances();
+    const { reloadDecimals } = useDecimals();
+    const { reloadSupplies } = useTotalSupplies();
+    const { reloadFarmData } = useFarmDetails();
+
+    useEffect(() => {
+        reloadPrices();
+        // after 5 min reload prices
+        const interval = setInterval(() => {
+            reloadPrices();
+        }, 1000 * 60 * 5);
+        return () => clearInterval(interval);
+    }, [reloadPrices]);
+
+    useEffect(() => {
+        reloadApys();
+        // after 5 min reload apys
+        const interval = setInterval(() => {
+            reloadApys();
+        }, 1000 * 60 * 5);
+        return () => clearInterval(interval);
+    }, [reloadApys]);
+
+    useEffect(() => {
+        reloadBalances();
+        // after 2 min reload balances
+        const interval = setInterval(() => {
+            reloadBalances();
+        }, 1000 * 60 * 1);
+        return () => clearInterval(interval);
+    }, [reloadBalances]);
+
+    useEffect(() => {
+        reloadSupplies();
+        // after 2 min reload supplies
+        const interval = setInterval(() => {
+            reloadSupplies();
+        }, 1000 * 60 * 2);
+        return () => clearInterval(interval);
+    }, [reloadSupplies]);
+
+    useEffect(() => {
+        reloadDecimals();
+    }, [reloadDecimals]);
+
+    useEffect(() => {
+        reloadFarmData();
+    }, [reloadFarmData]);
+
     return (
-        <QueryClientProvider client={queryClient}>
-            <WagmiConfig client={wagmiClient}>
-                <RainbowKitProvider
-                    chains={chains}
-                    theme={lightMode ? lightTheme() : darkTheme()}
-                    showRecentTransactions={false}
-                    appInfo={{ appName: "Contrax", disclaimer: WalletDisclaimer }}
-                >
-                    <WalletProvider>
-                        <Router>
-                            <Routes>
-                                <Route path="/" element={<Home />}>
-                                    <Route path="" element={<Dashboard />} />
-                                    <Route path="/farms" element={<Farms />} />
-                                    <Route path="/exchange" element={<Exchange />} />
-                                    {/* <Route path="create-token" element={<CreateToken />} />
-                                    <Route path="create-pool" element={<CreatePool />} /> */}
-                                    <Route path="test" element={<Test />} />
-                                    <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
-                                </Route>
-                            </Routes>
-                        </Router>
-                        <ReactHooksWrapper />
-                    </WalletProvider>
-                    <ReactQueryDevtools />
-                </RainbowKitProvider>
-            </WagmiConfig>
-        </QueryClientProvider>
+        <Router>
+            <Routes>
+                <Route path="/" element={<Home />}>
+                    <Route path="" element={<Dashboard />} />
+                    <Route path="/farms" element={<Farms />} />
+                    <Route path="/exchange" element={<Exchange />} />
+                    <Route path="test" element={<Test />} />
+                    <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
+                </Route>
+            </Routes>
+        </Router>
     );
 }
 

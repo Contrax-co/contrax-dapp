@@ -3,31 +3,33 @@ import { Farm } from "src/types";
 import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
-import { FARM_DATA, FARM_ZAP_IN } from "src/config/constants/query";
-import useFarmsBalances from "./useFarmsBalances";
-import useFarmsTotalSupply from "./useFarmsTotalSupply";
-import { queryClient } from "src/config/reactQuery";
+import { FARM_ZAP_IN } from "src/config/constants/query";
 import farmFunctions from "src/api/pools";
+import useBalances from "../useBalances";
+import useTotalSupplies from "../useTotalSupplies";
+import { useDecimals } from "../useDecimals";
+import { utils } from "ethers";
+import { toWei } from "src/utils/common";
+import useFarmDetails from "./useFarmDetails";
 
 export interface ZapIn {
-    ethZapAmount: number;
+    zapAmount: number;
     max?: boolean;
+    token: string;
 }
 
 const useZapIn = (farm: Farm) => {
-    const { signer, currentWallet, refetchBalance, networkId: chainId, balance } = useWallet();
+    const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
+    const { reloadBalances, balances } = useBalances();
+    const { reloadSupplies } = useTotalSupplies();
+    const { decimals } = useDecimals();
 
-    const _zapIn = async ({ ethZapAmount, max }: ZapIn) => {
-        const cb = async () => {
-            refetchBalance();
-            await queryClient.refetchQueries({
-                queryKey: FARM_DATA(currentWallet, NETWORK_NAME, farm.id, balance),
-                type: "active",
-                exact: true,
-            });
-        };
-        await farmFunctions[farm.id].zapIn({ zapAmount: ethZapAmount, currentWallet, signer, chainId, max, cb });
+    const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
+        let amountInWei = toWei(zapAmount, decimals[token]);
+        await farmFunctions[farm.id].zapIn({ currentWallet, amountInWei, balances, signer, chainId, max, token });
+        reloadBalances();
+        reloadSupplies();
     };
 
     const {
