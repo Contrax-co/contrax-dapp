@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { constants, Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
 import { Balances, StateInterface, UpdateBalancesActionPayload } from "./types";
+import { incrementErrorCount } from "../error/errorReducer";
 
 const initialState: StateInterface = { balances: {}, isLoading: false, isFetched: false, account: "" };
 
@@ -36,6 +37,7 @@ export const fetchBalances = createAsyncThunk(
             checksummed[utils.getAddress(key)] = value;
         });
         thunkApi.dispatch(setAccount(account));
+        console.log("balances fetched", checksummed);
         return checksummed;
     }
 );

@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
 import { StateInterface, UpdateBalancesActionPayload, TotalSupplies } from "./types";
+import { incrementErrorCount, resetErrorCount } from "../error/errorReducer";
 
 const initialState: StateInterface = { totalSupplies: {}, isLoading: false, isFetched: false };
 
@@ -30,11 +31,10 @@ export const fetchTotalSupplies = createAsyncThunk(
             Object.entries(balances).forEach(([key, value]) => {
                 checksummed[utils.getAddress(key)] = value;
             });
-
+            thunkApi.dispatch(resetErrorCount());
             return checksummed;
         } catch (error) {
-            // console.error(error);
-            return {};
+            thunkApi.dispatch(incrementErrorCount());
         }
     }
 );

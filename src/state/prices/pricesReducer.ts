@@ -150,14 +150,11 @@ export const updatePrices = createAsyncThunk(
             Object.entries(prices).forEach(([key, value]) => {
                 checksummed[utils.getAddress(key)] = value;
             });
-            thunkApi.dispatch(resetErrorCount());
+
             return checksummed;
         } catch (error) {
             console.log("Price unable to fetch", chainId, defaultChainId);
             console.error(error);
-            if (chainId === defaultChainId) {
-                thunkApi.dispatch(incrementErrorCount());
-            }
         }
     }
 );
