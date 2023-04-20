@@ -47,31 +47,50 @@
   ],
   "navigation": [
     {
-      "group": "Getting Started",
+      "group": "Info",
       "pages": [
         "introduction",
-        "start/defi",
-        "start/wallet-setup",
-        "start/wallet-funding",
-        "start/bridge",
-        "start/quickstart"
+        "info/defi",
+        "info/dapp-faq",
+        "info/disclaimers"
       ]
     },
     {
-      "group": "Contrax DApp",
+      "group": "Getting Started",
+      "pages": [
+        "start/quickstart",
+        "start/wallet-setup",
+        {"group": "Wallet Funding",
+        "pages": [
+          "transfer/general",
+          "transfer/coinbase",
+          "transfer/binance",
+          "transfer/cryptocom",
+          "transfer/kraken"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "DApp Pages",
       "pages": [
         "contrax-dapp/dashboard",
         "contrax-dapp/farms",
-        "contrax-dapp/exchange",
-        "contrax-dapp/create-tokens",
-        "contrax-dapp/create-pools",
-        "contrax-dapp/dapp-faq"
+        {"group": "Exchange",
+        "pages": [
+          "contrax-dapp/buy",
+          "contrax-dapp/bridge",
+          "contrax-dapp/swap"
+          ]}
       ]
     },
     {
-      "group": "FAQ",
+      "group": "Smart Contracts",
       "pages": [
-        "FAQ/dapp-faq"
+        "smart-contracts/deployment-addresses", 
+        "smart-contracts/strategies",
+        "smart-contracts/vaults",
+        "smart-contracts/multisig"
       ]
     }
   ],
