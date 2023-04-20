@@ -97,6 +97,10 @@ export const zapInBase: ZapInBaseFn = async ({
         }
         // token zap
         else {
+            const tx = zapperContract.populateTransaction.zapIn(farm.vault_addr, 0, token, amountInWei);
+            console.log(tx);
+            return;
+
             zapperTxn = await awaitTransaction(zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei));
         }
 
