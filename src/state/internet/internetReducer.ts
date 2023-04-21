@@ -13,7 +13,8 @@ const internetSlice = createSlice({
             state.isOnline = true;
         },
         setOffline: (state: StateInterface) => {
-            state.isOnline = false;
+            // state.isOnline = false;
+            console.log("Offline...");
         },
     },
 });
