@@ -7139,6 +7139,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wert-io/widget-initializer@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@wert-io/widget-initializer@npm:3.1.0"
+  checksum: c97d0367931eead5cbca3b523df450f3c3a69a82699822d31d50b7cac0f4deb2e9ed30e83162686dbf88a6d13ffca24733641a230f1b395222d53dad1053e902
+  languageName: node
+  linkType: hard
+
 "@xtuc/ieee754@npm:^1.2.0":
   version: 1.2.0
   resolution: "@xtuc/ieee754@npm:1.2.0"
@@ -9271,6 +9278,7 @@ __metadata:
     "@web3auth/core": ^4.6.0
     "@web3auth/no-modal": ^5.1.0
     "@web3auth/web3auth-wagmi-connector": ^3.0.1
+    "@wert-io/widget-initializer": ^3.1.0
     "@zerodevapp/wagmi": ^1.0.19
     assert: ^2.0.0
     axios: ^1.1.3

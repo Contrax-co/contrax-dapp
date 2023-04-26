@@ -27,3 +27,4 @@ export const BACKEND_BASE_URL = "https://contrax-backend.herokuapp.com/api/v1/";
 export const TENDERLY_ACCESS_TOKEN = process.env.REACT_APP_TENDERLY_ACCESS_TOKEN;
 export const TENDERLY_PROJECT_SLUG = process.env.REACT_APP_TENDERLY_PROJECT_SLUG;
 export const TENDERLY_USER_NAME = process.env.REACT_APP_TENDERLY_USER_NAME;
+export const WERT_PARTNER_ID = process.env.REACT_APP_WERT_PARTNER_ID;

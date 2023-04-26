@@ -3,7 +3,6 @@ import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import { Bridge } from "@socket.tech/plugin";
 import { defaultChainId, RAMP_TRANSAK_API_KEY, SOCKET_API_KEY } from "src/config/constants";
-// import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
 
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
@@ -17,6 +16,8 @@ import { useSearchParams } from "react-router-dom";
 import useBalances from "src/hooks/useBalances";
 import { Tabs } from "src/components/Tabs/Tabs";
 import uniswapTokens from "./uniswapTokens.json";
+import Wert from "./Wert";
+import Transak from "./Transak";
 
 interface IProps {}
 
@@ -52,6 +53,11 @@ enum Tab {
     Buy = "Buy",
 }
 
+enum BuyTabs {
+    Transak = "Transak",
+    Wert = "Wert",
+}
+
 const Exchange: React.FC<IProps> = () => {
     const { currentWallet, connectWallet, chains, signer: wagmiSigner } = useWallet();
     const [chainId, setChainId] = React.useState<number>(defaultChainId);
@@ -62,7 +68,6 @@ const Exchange: React.FC<IProps> = () => {
     const { reloadBalances } = useBalances();
 
     const { lightMode } = useApp();
-    const containerRef = useRef<HTMLDivElement>(null);
     const [provider, setProvider] = React.useState<any>();
     const websocketProvider = useWebSocketProvider();
     const [tab, setTab] = React.useState<Tab>(Tab.Buy);
@@ -81,29 +86,6 @@ const Exchange: React.FC<IProps> = () => {
                 return params;
             });
     }, [params]);
-
-    // React.useEffect(() => {
-    //     if (tab === Tab.Buy) {
-    //         const ramp = new RampInstantSDK({
-    //             userAddress: currentWallet,
-    //             defaultAsset: "ARBITRUM_USDC",
-    //             swapAsset: "ARBITRUM_*",
-    //             fiatValue: "500",
-    //             fiatCurrency: "USD",
-    //             hostAppName: "Contrax",
-    //             hostLogoUrl: `https://${window.location.host}/logo.svg`,
-    //             hostApiKey: RAMP_SDK_HOST_API_KEY,
-    //             variant: "embedded-mobile",
-    //             containerNode: containerRef.current || undefined,
-    //         })
-    //             // @ts-ignore
-    //             .on("PURCHASE_CREATED", reloadBalances)
-    //             .show();
-    //         return () => {
-    //             ramp.close();
-    //         };
-    //     }
-    // }, [containerRef, tab, currentWallet]);
 
     const handleBridgeNetworkChange = async () => {
         try {
@@ -191,20 +173,7 @@ const Exchange: React.FC<IProps> = () => {
                 />
             </Tabs>
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
-                {tab === Tab.Buy && (
-                    <div className={styles.darkBuy}>
-                        {/* <div style={{ width: 375, height: 667 }} ref={containerRef}></div> */}
-                        <iframe
-                            height="625"
-                            title="Transak On/Off Ramp Widget"
-                            src={`https://global.transak.com/?apiKey=${RAMP_TRANSAK_API_KEY}&defaultCryptoCurrency=ETH&defaultFiatAmount=500&disableWalletAddressForm=true&network=arbitrum&walletAddress=${currentWallet}`}
-                            frameBorder={"no"}
-                            allowTransparency={true}
-                            allowFullScreen={true}
-                            style={{ display: "block", width: "100%", maxHeight: "625px", maxWidth: "500px" }}
-                        ></iframe>
-                    </div>
-                )}
+                {tab === Tab.Buy && <BuyTab />}
                 {tab === Tab.Bridge && SOCKET_API_KEY && (
                     <Bridge
                         provider={isWeb3Auth ? provider : signer?.provider}
@@ -265,3 +234,51 @@ const Exchange: React.FC<IProps> = () => {
 };
 
 export default Exchange;
+
+function BuyTab() {
+    const [params, setSearchParams] = useSearchParams();
+    const [tab, setTab] = React.useState<BuyTabs>(BuyTabs.Wert);
+
+    React.useEffect(() => {
+        let tab = params.get("buytab");
+        if (tab) setTab(tab as BuyTabs);
+        else
+            setSearchParams((params) => {
+                params.set("buytab", BuyTabs.Wert);
+                return params;
+            });
+    }, [params]);
+
+    return (
+        <div>
+            <Tabs>
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab(BuyTabs.Transak);
+                        setSearchParams((params) => {
+                            params.set("buytab", BuyTabs.Transak);
+                            return params;
+                        });
+                    }}
+                    description="Transak"
+                    active={tab === BuyTabs.Transak}
+                />
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab(BuyTabs.Wert);
+                        setSearchParams((params) => {
+                            params.set("buytab", BuyTabs.Wert);
+                            return params;
+                        });
+                    }}
+                    description="Wert"
+                    active={tab === BuyTabs.Wert}
+                />
+            </Tabs>
+            {tab === BuyTabs.Transak && <Transak />}
+            {tab === BuyTabs.Wert && <Wert />}
+        </div>
+    );
+}
