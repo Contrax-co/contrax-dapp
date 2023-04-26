@@ -4447,6 +4447,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tenderly/sdk@npm:^0.1.11":
+  version: 0.1.11
+  resolution: "@tenderly/sdk@npm:0.1.11"
+  dependencies:
+    axios: ^1.3.4
+  checksum: 89f2db234f5a647e149b8a270e5a97eb9d6eb16001fd107f95d5f4aefc0307b898c7a4b4845a97f9f03ca9c55748055c4e87dc1432ccef63930cba219dfb497d
+  languageName: node
+  linkType: hard
+
 "@testing-library/dom@npm:^8.5.0":
   version: 8.20.0
   resolution: "@testing-library/dom@npm:8.20.0"
@@ -7130,6 +7139,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wert-io/widget-initializer@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@wert-io/widget-initializer@npm:3.1.0"
+  checksum: c97d0367931eead5cbca3b523df450f3c3a69a82699822d31d50b7cac0f4deb2e9ed30e83162686dbf88a6d13ffca24733641a230f1b395222d53dad1053e902
+  languageName: node
+  linkType: hard
+
 "@xtuc/ieee754@npm:^1.2.0":
   version: 1.2.0
   resolution: "@xtuc/ieee754@npm:1.2.0"
@@ -7904,6 +7920,17 @@ __metadata:
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
   checksum: 7440edefcf8498bc3cdf39de00443e8101f249972c83b739c6e880d9d669fea9486372dbe8739e88b3bf8bb1ad15f6106693f206f078f4516fe8fd47b1c3093c
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.3.4":
+  version: 1.3.6
+  resolution: "axios@npm:1.3.6"
+  dependencies:
+    follow-redirects: ^1.15.0
+    form-data: ^4.0.0
+    proxy-from-env: ^1.1.0
+  checksum: c90497ebf738723654a6e80147dc294186ad9d7b08f95f5a22fd48f826c7e06a576229b8dff3137195ca627349a4312e00fa78e4f1c499250b9860596adef44a
   languageName: node
   linkType: hard
 
@@ -9233,6 +9260,7 @@ __metadata:
     "@socket.tech/plugin": ^1.0.3
     "@tanstack/react-query": ^4.24.10
     "@tanstack/react-query-devtools": ^4.22.0
+    "@tenderly/sdk": ^0.1.11
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
     "@testing-library/user-event": ^13.5.0
@@ -9250,6 +9278,7 @@ __metadata:
     "@web3auth/core": ^4.6.0
     "@web3auth/no-modal": ^5.1.0
     "@web3auth/web3auth-wagmi-connector": ^3.0.1
+    "@wert-io/widget-initializer": ^3.1.0
     "@zerodevapp/wagmi": ^1.0.19
     assert: ^2.0.0
     axios: ^1.1.3

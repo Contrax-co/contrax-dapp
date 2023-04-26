@@ -19,6 +19,19 @@ const arbitrumAddresses: Addresses = {
     usdtAddress: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
     swapfishMasterChef: "0x33141e87ad2DFae5FBd12Ed6e61Fa2374aAeD029",
 };
+
+const polygonAddresses: Addresses = {
+    factoryAddress: "",
+    wethAddress: "",
+    sushiAddress: "",
+    dodoMineAddress: "",
+    dodoTokenAddress: "",
+    usdcAddress: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    usdtAddress: "",
+    swapfishMasterChef: "",
+};
+
 export const addressesByChainId: { [key: number]: Addresses } = {
     0xa4b1: arbitrumAddresses,
+    137: polygonAddresses,
 };

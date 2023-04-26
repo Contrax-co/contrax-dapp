@@ -6,7 +6,7 @@ import { ACCOUNT_BALANCE } from "src/config/constants/query";
 import { useProvider, useSigner, useAccount, useDisconnect, useNetwork, useSwitchNetwork, Chain } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { notifyError } from "src/api/notify";
-import { getNetworkName, noExponents } from "src/utils/common";
+import { getConnectorId, getNetworkName, noExponents } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { setConnectorId } from "src/state/settings/settingsReducer";
 import { GasSponsoredSigner } from "src/utils/gasSponsoredSigner";
 import { useAppSelector } from "src/state";
+import { getWeb3AuthProvider } from "src/config/walletConfig";
 
 interface IWalletContext {
     /**
@@ -62,6 +63,7 @@ interface IWalletContext {
     getPkey: () => Promise<string>;
     mainnetBalance: ethers.BigNumber;
     multicallProvider: providers.MulticallProvider;
+    getWeb3AuthSigner: (chainId?: number, defaultSigner?: ethers.Signer) => Promise<ethers.ethers.Signer | undefined>;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
@@ -156,6 +158,23 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     };
 
+    const getWeb3AuthSigner = async (chainId?: number, defaultSigner?: ethers.Signer) => {
+        if (web3AuthConnectorId !== getConnectorId()) return defaultSigner || signer;
+        // @ts-ignore
+        const pkey = await getPkey();
+        const chain = chains.find((c) => c.id === chainId);
+        const _provider = await getWeb3AuthProvider({
+            chainId: chain?.id!,
+            blockExplorer: chain?.blockExplorers?.default.url!,
+            name: chain?.name!,
+            rpc: chain?.rpcUrls.public.http[0]!,
+            ticker: chain?.nativeCurrency.symbol!,
+            tickerName: chain?.nativeCurrency.name!,
+            pkey,
+        });
+        return _provider.getSigner();
+    };
+
     React.useEffect(() => {
         if (chain) {
             setNetworkId(chain.id);
@@ -191,6 +210,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 mainnetBalance,
                 getPkey,
                 multicallProvider,
+                getWeb3AuthSigner,
             }}
         >
             {children}

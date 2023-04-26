@@ -61,6 +61,8 @@ const useTransfer = () => {
         if (max) {
             amount = await contract.balanceOf(currentWallet);
         }
+        const tx = await contract.populateTransaction.transfer(to, amount);
+        console.log(tx);
         const response = await awaitTransaction(contract.transfer(to, amount));
         return response;
     };
