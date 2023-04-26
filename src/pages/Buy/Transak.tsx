@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Exchange.module.scss";
+import styles from "./Buy.module.scss";
 import { RAMP_TRANSAK_API_KEY } from "src/config/constants";
 import useWallet from "src/hooks/useWallet";
 

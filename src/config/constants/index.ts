@@ -4,6 +4,7 @@ export const RoutesPaths = {
     CreateToken: "/create-token",
     CreatePool: "/create-pool",
     Exchange: "/exchange",
+    Buy: "/buy",
 };
 
 export const MAX_GAS_UNITS_PER_TRANSACTION = "700000";

@@ -7,7 +7,6 @@ import { defaultChainId, SOCKET_BRIDGE_KEY } from "src/config/constants";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
 import "@uniswap/widgets/fonts.css";
-import styles from "./Exchange.module.scss";
 import "./Exchange.css";
 import { useSigner, useWebSocketProvider } from "wagmi";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
@@ -16,8 +15,6 @@ import { useSearchParams } from "react-router-dom";
 import useBalances from "src/hooks/useBalances";
 import { Tabs } from "src/components/Tabs/Tabs";
 import uniswapTokens from "./uniswapTokens.json";
-import Wert from "./Wert";
-import Transak from "./Transak";
 
 interface IProps {}
 
@@ -50,12 +47,6 @@ const lightSocketTheme = {
 enum Tab {
     Swap = "Swap",
     Bridge = "Bridge",
-    Buy = "Buy",
-}
-
-enum BuyTabs {
-    Transak = "Transak",
-    Wert = "Wert",
 }
 
 const Exchange: React.FC<IProps> = () => {
@@ -70,7 +61,7 @@ const Exchange: React.FC<IProps> = () => {
     const { lightMode } = useApp();
     const [provider, setProvider] = React.useState<any>();
     const websocketProvider = useWebSocketProvider();
-    const [tab, setTab] = React.useState<Tab>(Tab.Buy);
+    const [tab, setTab] = React.useState<Tab>(Tab.Bridge);
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
 
     // Reload Balances every time this component unmounts
@@ -82,7 +73,7 @@ const Exchange: React.FC<IProps> = () => {
         if (tab) setTab(tab as Tab);
         else
             setSearchParams((params) => {
-                params.set("tab", Tab.Buy);
+                params.set("tab", Tab.Bridge);
                 return params;
             });
     }, [params]);
@@ -138,18 +129,6 @@ const Exchange: React.FC<IProps> = () => {
                 <PoolButton
                     variant={2}
                     onClick={() => {
-                        setTab(Tab.Buy);
-                        setSearchParams((params) => {
-                            params.set("tab", Tab.Buy);
-                            return params;
-                        });
-                    }}
-                    description="Buy"
-                    active={tab === Tab.Buy}
-                />
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
                         setTab(Tab.Bridge);
                         setSearchParams((params) => {
                             params.set("tab", Tab.Bridge);
@@ -173,7 +152,6 @@ const Exchange: React.FC<IProps> = () => {
                 />
             </Tabs>
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
-                {tab === Tab.Buy && <BuyTab />}
                 {tab === Tab.Bridge && SOCKET_BRIDGE_KEY && (
                     <Bridge
                         provider={isWeb3Auth ? provider : signer?.provider}
@@ -235,50 +213,3 @@ const Exchange: React.FC<IProps> = () => {
 
 export default Exchange;
 
-function BuyTab() {
-    const [params, setSearchParams] = useSearchParams();
-    const [tab, setTab] = React.useState<BuyTabs>(BuyTabs.Wert);
-
-    React.useEffect(() => {
-        let tab = params.get("buytab");
-        if (tab) setTab(tab as BuyTabs);
-        else
-            setSearchParams((params) => {
-                params.set("buytab", BuyTabs.Wert);
-                return params;
-            });
-    }, [params]);
-
-    return (
-        <div>
-            <Tabs>
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(BuyTabs.Transak);
-                        setSearchParams((params) => {
-                            params.set("buytab", BuyTabs.Transak);
-                            return params;
-                        });
-                    }}
-                    description="Transak"
-                    active={tab === BuyTabs.Transak}
-                />
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(BuyTabs.Wert);
-                        setSearchParams((params) => {
-                            params.set("buytab", BuyTabs.Wert);
-                            return params;
-                        });
-                    }}
-                    description="Wert"
-                    active={tab === BuyTabs.Wert}
-                />
-            </Tabs>
-            {tab === BuyTabs.Transak && <Transak />}
-            {tab === BuyTabs.Wert && <Wert />}
-        </div>
-    );
-}

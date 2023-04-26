@@ -11,6 +11,7 @@ import useBalances from "./hooks/useBalances";
 import useFarmDetails from "./hooks/farms/useFarmDetails";
 import useTotalSupplies from "./hooks/useTotalSupplies";
 import { useDecimals } from "./hooks/useDecimals";
+import Buy from "./pages/Buy/Buy";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -71,6 +72,7 @@ function Body() {
                     <Route path="" element={<Dashboard />} />
                     <Route path="/farms" element={<Farms />} />
                     <Route path="/exchange" element={<Exchange />} />
+                    <Route path="/buy" element={<Buy />} />
                     <Route path="test" element={<Test />} />
                     <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
                 </Route>
