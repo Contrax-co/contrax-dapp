@@ -173,7 +173,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
 
 // TODO: move to tenderly and work in progress
 
-const slippageIn = async (args: ZapInArgs & { farm: Farm }) => {
+export const slippageIn = async (args: ZapInArgs & { farm: Farm }) => {
     let { amountInWei, balances, chainId, currentWallet, token, max, signer, tokenIn, farm } = args;
     const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
     const wethAddress = addressesByChainId[chainId].wethAddress;
@@ -208,13 +208,13 @@ const slippageIn = async (args: ZapInArgs & { farm: Farm }) => {
         const connectorId = getConnectorId();
         if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
             const balance = BigNumber.from(balances[constants.AddressZero]);
-            !(await subtractGas(
+            await subtractGas(
                 amountInWei,
                 signer!,
                 zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
                     value: balance,
                 })
-            ));
+            );
         }
         //#endregion
 
