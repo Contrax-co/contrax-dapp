@@ -2,19 +2,23 @@ import json from "src/config/constants/pools.json";
 import { Contract, Signer, Wallet, providers, constants, ethers, utils, BytesLike } from "ethers";
 import useWallet from "src/hooks/useWallet";
 import useNotify from "src/hooks/useNotify";
-import { erc20ABI, useAccount, useConnect, useDisconnect, useSwitchNetwork } from "wagmi";
+import { erc20ABI, useAccount, useConnect, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
 import { useAddRecentTransaction } from "@rainbow-me/rainbowkit";
 import { GasSponsoredSigner } from "src/utils/gasSponsoredSigner";
-import { tenderly, tenderlyApi } from "src/api";
+import { socketTechApi, tenderly, tenderlyApi } from "src/api";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { defaultChainId } from "src/config/constants";
 import { filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "src/api/tenderly";
 import { TenderlySimulationType } from "src/types/tenderly";
+import { approveErc20 } from "src/api/token";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
-    const { provider, signer, getPkey } = useWallet();
+    const { provider, signer, getPkey, currentWallet, getWeb3AuthSigner } = useWallet();
     const addRecentTransaction = useAddRecentTransaction();
+    const { data: polygonSigner } = useSigner({
+        chainId: 137,
+    });
 
     // web3authProvider
     const handleTransaction = async () => {
@@ -154,8 +158,38 @@ const Test = () => {
 
         console.log(filteredState);
     };
+
+    const fn3 = async () => {
+        const spendingTokensAmnt = 10;
+        let res = await socketTechApi.get("token-lists/from-token-list?fromChainId=137&toChainId=42161");
+        console.log(res.data);
+        res = await socketTechApi.get("token-lists/to-token-list?fromChainId=137&toChainId=42161");
+        console.log(res.data);
+        res = await socketTechApi.get(
+            `quote?fromChainId=137&toChainId=42161&fromTokenAddress=${addressesByChainId[137].usdcAddress}&toTokenAddress=${addressesByChainId[42161].usdcAddress}&fromAmount=${spendingTokensAmnt}&userAddress=${currentWallet}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true`
+        );
+        console.log(res.data);
+        const route = res.data.result.routes[0];
+        const approvalData = res.data.result.routes[0].userTxs[0].approvalData as {
+            allowanceTarget: string;
+            approvalTokenAddress: string;
+            minimumApprovalAmount: string;
+            owner: string;
+        };
+        const polygonSignerWeb3Auth = await getWeb3AuthSigner(137, polygonSigner as ethers.Signer);
+        console.log(polygonSignerWeb3Auth);
+        await approveErc20(
+            approvalData.approvalTokenAddress,
+            approvalData.allowanceTarget,
+            approvalData.minimumApprovalAmount,
+            currentWallet,
+            polygonSignerWeb3Auth!
+        );
+        res = await socketTechApi.post("build-tx", route);
+        console.log(res.data);
+    };
     return (
-        <div onClick={fn2} style={{ color: "red" }}>
+        <div onClick={fn3} style={{ color: "red" }}>
             Test
             <button
                 onClick={() => {

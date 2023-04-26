@@ -1,8 +1,8 @@
-import React, { useRef } from "react";
+import React from "react";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import { Bridge } from "@socket.tech/plugin";
-import { defaultChainId, RAMP_TRANSAK_API_KEY, SOCKET_API_KEY } from "src/config/constants";
+import { defaultChainId, SOCKET_BRIDGE_KEY } from "src/config/constants";
 
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
@@ -174,14 +174,14 @@ const Exchange: React.FC<IProps> = () => {
             </Tabs>
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
                 {tab === Tab.Buy && <BuyTab />}
-                {tab === Tab.Bridge && SOCKET_API_KEY && (
+                {tab === Tab.Bridge && SOCKET_BRIDGE_KEY && (
                     <Bridge
                         provider={isWeb3Auth ? provider : signer?.provider}
                         onSourceNetworkChange={(network) => {
                             setChainId(network.chainId);
                         }}
                         onBridgeSuccess={reloadBalances}
-                        API_KEY={SOCKET_API_KEY}
+                        API_KEY={SOCKET_BRIDGE_KEY}
                         defaultSourceToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
                         defaultDestToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
                         // enableSameChainSwaps
@@ -206,7 +206,7 @@ const Exchange: React.FC<IProps> = () => {
                         customize={lightMode ? lightSocketTheme : darkSocketTheme}
                     />
                 )}
-                {tab === Tab.Swap && SOCKET_API_KEY && (
+                {tab === Tab.Swap && SOCKET_BRIDGE_KEY && (
                     <SwapWidget
                         theme={
                             lightMode

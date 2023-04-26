@@ -11,6 +11,7 @@ export const defaultChainId = 42161; // Arbitrum
 export const defaultNetworkName = "arbitrum";
 export const web3AuthConnectorId = "web3auth";
 
+export const SOCKET_BRIDGE_KEY = process.env.REACT_APP_SOCKET_BRIDGE_KEY;
 export const SOCKET_API_KEY = process.env.REACT_APP_SOCKET_API_KEY;
 export const RAMP_TRANSAK_API_KEY = process.env.REACT_APP_RAMP_TRANSAK_API_KEY;
 export const ZERODEV_PROJECT_ID = process.env.REACT_APP_ZERODEV_PROJECT_ID!;
