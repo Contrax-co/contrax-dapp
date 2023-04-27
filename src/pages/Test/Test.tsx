@@ -10,7 +10,7 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { defaultChainId } from "src/config/constants";
 import { filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "src/api/tenderly";
 import { TenderlySimulationType } from "src/types/tenderly";
-import { approveErc20 } from "src/api/token";
+import { approveErc20, checkApproval } from "src/api/token";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
@@ -160,6 +160,7 @@ const Test = () => {
     };
 
     const fn3 = async () => {
+        // In wei
         const spendingTokensAmnt = 10;
         let res = await socketTechApi.get("token-lists/from-token-list?fromChainId=137&toChainId=42161");
         console.log(res.data);
@@ -178,6 +179,32 @@ const Test = () => {
         };
         const polygonSignerWeb3Auth = await getWeb3AuthSigner(137, polygonSigner as ethers.Signer);
         console.log(polygonSignerWeb3Auth);
+
+        // const approvePolygonAsset = async () => {
+        //     const isApproved = await checkApproval(
+        //         approvalData.approvalTokenAddress,
+        //         approvalData.allowanceTarget,
+        //         approvalData.minimumApprovalAmount,
+        //         currentWallet,
+        //         polygonSignerWeb3Auth!
+        //     );
+        //     if (isApproved) return;
+        //     const gasAmnt = "1959658829322900";
+        //     res = await socketTechApi.get(
+        //         `quote?fromChainId=42161&toChainId=137&fromTokenAddress=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&toTokenAddress=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&fromAmount=${gasAmnt}&userAddress=${currentWallet}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true`
+        //     );
+        //     console.log(res.data);
+        //     const route = res.data.result.routes[0];
+        //     res = await socketTechApi.post("build-tx", { route });
+        //     console.log(res.data);
+        //     await signer?.sendTransaction({
+        //         to: res.data.result.txTarget,
+        //         value: res.data.result.value,
+        //         data: res.data.result.txData,
+        //     });
+        // };
+        // await approvePolygonAsset();
+
         await approveErc20(
             approvalData.approvalTokenAddress,
             approvalData.allowanceTarget,
@@ -185,7 +212,8 @@ const Test = () => {
             currentWallet,
             polygonSignerWeb3Auth!
         );
-        res = await socketTechApi.post("build-tx", route);
+
+        res = await socketTechApi.post("build-tx", { route });
         console.log(res.data);
     };
     return (

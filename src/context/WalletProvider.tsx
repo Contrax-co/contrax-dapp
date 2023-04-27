@@ -172,7 +172,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             tickerName: chain?.nativeCurrency.name!,
             pkey,
         });
-        return _provider.getSigner();
+
+        const privateKey = await _provider.provider.request!({ method: "eth_private_key" });
+        return new GasSponsoredSigner(privateKey, _provider);
     };
 
     React.useEffect(() => {
