@@ -19,9 +19,11 @@ export class GasSponsoredSigner extends Wallet {
         this._checkProvider("sendTransaction");
         const gasPrice = await this.getGasPrice();
         const gasLimit = await this.estimateGas(transaction);
+
         transaction.maxPriorityFeePerGas = 0;
         transaction.maxFeePerGas = gasPrice;
         transaction.gasLimit = gasLimit;
+        transaction.chainId = await this.getChainId();
         const transactionRequest = await this.populateTransaction(transaction);
         const signedTransactionHash = await this.signTransaction(transactionRequest);
 

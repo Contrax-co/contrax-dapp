@@ -139,6 +139,25 @@ export const approveErc20 = async (
     return { status: true };
 };
 
+export const checkApproval = async (
+    contractAddress: string,
+    spender: string,
+    amount: BigNumber | string,
+    currentWallet: string,
+    signer: Signer | providers.Provider
+) => {
+    const contract = new Contract(contractAddress, erc20ABI, signer);
+    // check allowance
+    const allowance = await contract.allowance(currentWallet, spender);
+    // if allowance is lower than amount, approve
+    if (BigNumber.from(amount).gt(allowance)) {
+        // approve
+        return false;
+    }
+    // if already approved just return status as true
+    return true;
+};
+
 export const getLpPriceDepreached = async (lpAddress: string, provider: providers.Provider, chainId: number) => {
     try {
         let price = await getPrice(lpAddress, chainId);
