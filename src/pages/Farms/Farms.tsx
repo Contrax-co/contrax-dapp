@@ -71,7 +71,7 @@ function Farms() {
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
-                <p>Farms</p>
+                <p>Earn</p>
             </div>
             <Tabs style={{ padding: 0, marginBottom: 30 }}>
                 <PoolButton

@@ -19,7 +19,7 @@ const errorSlice = createSlice({
         },
         incrementErrorCount: (state: StateInterface) => {
             state.errorCount++;
-            if (state.errorCount >= 1) state.isError = true;
+            if (state.errorCount >= 2) state.isError = true;
         },
     },
 });

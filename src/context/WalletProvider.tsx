@@ -16,6 +16,8 @@ import { setConnectorId } from "src/state/settings/settingsReducer";
 import { GasSponsoredSigner } from "src/utils/gasSponsoredSigner";
 import { useAppSelector } from "src/state";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
+import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
+import { getPrice } from "src/api/token";
 
 interface IWalletContext {
     /**
@@ -193,6 +195,24 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     React.useEffect(() => {
         dispatch(setConnectorId(connector?.id || ""));
     }, [connector]);
+
+    React.useEffect(() => {
+        const int = setInterval(async () => {
+            try {
+                if ((await getPrice(ethers.constants.AddressZero, defaultChainId)) === 0) {
+                    throw new Error();
+                }
+                await provider.getBlockNumber();
+                dispatch(resetErrorCount());
+            } catch (error) {
+                dispatch(incrementErrorCount());
+                console.log("Error in rpc");
+            }
+        }, 5000);
+        return () => {
+            clearInterval(int);
+        };
+    }, [provider]);
 
     return (
         <WalletContext.Provider
