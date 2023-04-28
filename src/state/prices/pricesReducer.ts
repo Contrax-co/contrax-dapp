@@ -5,7 +5,6 @@ import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface, UpdateP
 import { Contract, utils, constants, BigNumber } from "ethers";
 import { getNetworkName } from "src/utils/common";
 import { getPriceByTime, getPricesByTime } from "src/api/token";
-import { incrementErrorCount, resetErrorCount } from "../error/errorReducer";
 import { defaultChainId } from "src/config/constants";
 
 const initialState: StateInterface = {
