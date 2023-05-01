@@ -27,6 +27,7 @@ export interface FarmDetails {
 
 export interface FetchFarmDetailsAction {
     farms: Farm[];
+    totalSupplies: Partial<TotalSupplies>;
     currentWallet: string;
     balances: Balances;
     prices: Prices;

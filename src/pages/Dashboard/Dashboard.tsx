@@ -4,6 +4,7 @@ import { BsCheckCircle } from "react-icons/bs";
 import { FiExternalLink, FiCopy } from "react-icons/fi";
 import "./Dashboard.css";
 import Vaults from "./JoinedVaults/Vaults";
+import PlatformTVL from "./PlatformTVL/PlatformTVL";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import { copyToClipboard } from "src/utils";
@@ -105,6 +106,12 @@ function Dashboard() {
                         </>
                     )}
                 </div>
+            </div>
+
+            <div></div>
+
+            <div className={`dashboard_tvl_section`}>
+                <PlatformTVL />
             </div>
 
             <div className={`dashboard_section`}>

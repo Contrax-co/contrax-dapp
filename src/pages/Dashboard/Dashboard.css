@@ -114,6 +114,11 @@
     padding-top: 20px;
 }
 
+.dashboard_tvl_section {
+    padding: 0 30px;
+    padding-top: 20px;
+}
+
 .dashboard-key-icons {
     display: flex;
     gap: 16px;
