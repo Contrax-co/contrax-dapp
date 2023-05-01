@@ -69,7 +69,8 @@ export type ZapOutBaseFn = (args: ZapOutArgs & { farm: Farm }) => Promise<void>;
 export type GetFarmDataProcessedFn = (
     balances: Balances,
     prices: Prices,
-    decimals: Partial<Decimals>
+    decimals: Partial<Decimals>,
+    vaultTotalSupply: string | undefined
 ) => FarmDataProcessed;
 export interface FarmFunctions {
     getProcessedFarmData: GetFarmDataProcessedFn;

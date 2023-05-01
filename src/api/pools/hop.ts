@@ -17,7 +17,7 @@ import { zapInBase, zapOutBase } from "./common";
 let hop = (farmId: number) => {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
 
-    const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals) => {
+    const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
         const ethPrice = prices[constants.AddressZero];
         const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
         const vaultTokenPrice = prices[farm.lp_address];
@@ -90,7 +90,7 @@ let hop = (farmId: number) => {
         return {
             depositableAmounts,
             withdrawableAmounts,
-            vaultBalanceFormated: toEth(vaultBalance, farm.decimals),
+            vaultBalanceFormated: (Number(toEth(vaultTotalSupply ?? 0, farm.decimals)) * vaultTokenPrice).toString(),
             id: farm.id,
         };
     };
