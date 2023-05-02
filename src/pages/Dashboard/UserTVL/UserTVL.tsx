@@ -1,20 +1,20 @@
-import "./PlatformTVL.css";
+import useApp from "src/hooks/useApp";
+import "./UserTVL.css";
 import useTVL from "src/hooks/useTVL";
 import tvlIcon from "src/assets/images/tvl-icon.png";
-import useApp from "src/hooks/useApp";
 
 interface Props {}
 
 const VaultItem: React.FC<Props> = () => {
     const { lightMode } = useApp();
-    const { platformTVL } = useTVL();
+    const { userTVL } = useTVL();
 
-    if (platformTVL === 0) return <div></div>;
+    if (userTVL === 0) return <div></div>;
 
     return (
         <div className={`tvl-container`}>
             {<img className={`tvl-image`} alt={"total value locked"} src={tvlIcon} />}
-            <p className={`tvl-value`}>${platformTVL.toFixed(0)}</p> <p className={`tvl-title`}>TVL</p>
+            <p className={`tvl-value`}>${userTVL.toFixed(0)}</p> <p className={`tvl-title`}>My TVL</p>
         </div>
     );
 };
