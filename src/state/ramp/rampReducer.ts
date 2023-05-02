@@ -19,9 +19,12 @@ const rampSlice = createSlice({
         setBridgeStatus: (state: StateInterface, action: { payload: BridgeStatus }) => {
             state.bridgeState.status = action.payload;
         },
+        setBeforeRampBalance: (state: StateInterface, action: { payload: { address: string; balance: string } }) => {
+            state.beforeRampState.balances[action.payload.address] = action.payload.balance;
+        },
     },
 });
 
-export const { setSourceTxHash, setBridgeStatus } = rampSlice.actions;
+export const { setSourceTxHash, setBridgeStatus, setBeforeRampBalance } = rampSlice.actions;
 
 export default rampSlice.reducer;

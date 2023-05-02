@@ -9,18 +9,20 @@ import { defaultChainId } from "src/config/constants";
 import { CHAIN_ID } from "src/types/enums";
 import { awaitTransaction } from "src/utils/common";
 import { useAppDispatch, useAppSelector } from "src/state";
-import { setBridgeStatus, setSourceTxHash } from "src/state/ramp/rampReducer";
+import { setBeforeRampBalance, setBridgeStatus, setSourceTxHash } from "src/state/ramp/rampReducer";
 import useNotify from "./useNotify";
 import { BridgeStatus } from "src/state/ramp/types";
+import useBalances from "./useBalances";
 
 const useBridge = () => {
-    const { getWeb3AuthSigner, currentWallet } = useWallet();
+    const { getWeb3AuthSigner, currentWallet, provider } = useWallet();
     const { notifyError } = useNotify();
+
     const { data: polygonSignerWagmi } = useSigner({
         chainId: CHAIN_ID.POLYGON,
     });
     const dispatch = useAppDispatch();
-    const { sourceTxHash } = useAppSelector((state) => state.ramp.bridgeState);
+    const { sourceTxHash, status } = useAppSelector((state) => state.ramp.bridgeState);
     const [polygonSigner, setPolygonSigner] = React.useState(polygonSignerWagmi);
 
     const polyUsdcToUsdc = async () => {
@@ -66,6 +68,21 @@ const useBridge = () => {
         }
     };
 
+    const lock = async () => {
+        if (status === BridgeStatus.APPROVING || status === BridgeStatus.PENDING) return;
+        const usdcPolygonBalance = await getBalance(
+            addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
+            currentWallet,
+            polygonSigner!
+        );
+        dispatch(
+            setBeforeRampBalance({
+                address: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
+                balance: usdcPolygonBalance.toString(),
+            })
+        );
+    };
+
     React.useEffect(() => {
         const int = setInterval(() => {
             if (sourceTxHash) {
@@ -88,7 +105,7 @@ const useBridge = () => {
         });
     }, [getWeb3AuthSigner]);
 
-    return { polyUsdcToUsdc };
+    return { polyUsdcToUsdc, lock };
 };
 
 export default useBridge;
