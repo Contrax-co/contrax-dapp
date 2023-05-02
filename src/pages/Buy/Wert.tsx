@@ -46,6 +46,18 @@ const Wert: React.FC<IProps> = () => {
     }, [currentWallet]);
 
     React.useEffect(() => {
+        if (wertWidget)
+            wertWidget.listeners = {
+                "payment-status": async (data: any) => {
+                    console.log("wert payment status", data);
+                    if (data.status === "success") {
+                        await polyUsdcToUsdc();
+                    }
+                },
+            };
+    }, [wertWidget, polyUsdcToUsdc]);
+
+    React.useEffect(() => {
         if (wertWidget) {
             wertWidget.setTheme({ theme: lightMode ? "light" : "dark" });
         }
