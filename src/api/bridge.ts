@@ -31,6 +31,26 @@ interface BuildTxResponse {
     value: string;
 }
 
+interface StatusData {
+    bridgeName: string;
+    destinationTxStatus: "PENDING" | "COMPLETED";
+    fromChainId: number;
+    isSocketTx: boolean;
+    refuel: unknown;
+    sourceTransactionHash: string;
+    sourceTxStatus: "PENDING" | "COMPLETED";
+    toChainId: number;
+    destTokenPrice?: number;
+    destinationTransactionHash?: string;
+    fromAmount?: string;
+    fromAsset?: { chainId: number; address: string; symbol: string; name: string; decimals: number };
+    recipient?: string;
+    sender?: string;
+    srcTokenPrice?: number;
+    toAmount?: string;
+    toAsset?: { chainId: number; address: string; symbol: string; name: string; decimals: number };
+}
+
 export const getFromTokenList = async (fromChainId: number, toChainId: number) => {
     const res = await socketTechApi.get(
         `token-lists/from-token-list?fromChainId=${fromChainId}&toChainId=${toChainId}`
@@ -65,19 +85,9 @@ export const buildTransaction = async (route: any) => {
     return res.data.result as BuildTxResponse | undefined;
 };
 
-export const getActiveRoutes = async (userAddress: string) => {
-    let res = await socketTechApi.get(
-        `route/active-routes/users?userAddress=${userAddress}&fromChainId=${CHAIN_ID.POLYGON}&toChainId=${
-            CHAIN_ID.ARBITRUM
-        }&fromTokenAddress=${addressesByChainId[CHAIN_ID.POLYGON].usdcAddress}&toTokenAddress=${
-            addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress
-        }`
+export const getBridgeStatus = async (sourceTxHash: string, fromChainId: number, toChainId: number) => {
+    const res = await socketTechApi.get(
+        `bridge-status?transactionHash=${sourceTxHash}&fromChainId=${fromChainId}&toChainId=${toChainId}`
     );
-    console.log(res.data.result);
-    res = await socketTechApi.get(
-        `bridge-status?transactionHash=${"0x21bfc1b318fe94d575dbb4b3797a3cf3778e0963c6b4c9909f11b8522833daa3"}&fromChainId=${
-            CHAIN_ID.POLYGON
-        }&toChainId=${CHAIN_ID.ARBITRUM}`
-    );
-    console.log(res.data);
+    return res.data.result as StatusData;
 };

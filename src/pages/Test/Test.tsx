@@ -11,7 +11,6 @@ import { defaultChainId } from "src/config/constants";
 import { filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "src/api/tenderly";
 import { TenderlySimulationType } from "src/types/tenderly";
 import { approveErc20, checkApproval } from "src/api/token";
-import { getActiveRoutes } from "src/api/bridge";
 import useBridge from "src/hooks/useBridge";
 
 const Test = () => {
@@ -168,7 +167,6 @@ const Test = () => {
     return (
         <div style={{ color: "red" }}>
             Test
-            <button onClick={() => getActiveRoutes(currentWallet)}>Active Routes</button>
             <button onClick={bridgeFn}>Bridge</button>
             <button
                 onClick={() => {
