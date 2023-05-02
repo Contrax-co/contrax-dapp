@@ -17,8 +17,8 @@ import {
 } from "src/config/constants";
 
 export const backendApi = axios.create({
-    baseURL: "http://localhost:8000/api/v1/",
-    // baseURL: BACKEND_BASE_URL,
+    // baseURL: "http://localhost:8000/api/v1/",
+    baseURL: BACKEND_BASE_URL,
 });
 
 export const isGasSponsored = async (addr: string): Promise<boolean> => {
