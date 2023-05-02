@@ -7,7 +7,7 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
 import { defaultChainId } from "src/config/constants";
 import { CHAIN_ID } from "src/types/enums";
-import { awaitTransaction } from "src/utils/common";
+import { awaitTransaction, sleep } from "src/utils/common";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { setBeforeRampBalance, setBridgeStatus, setSourceTxHash } from "src/state/ramp/rampReducer";
 import useNotify from "./useNotify";
@@ -16,7 +16,7 @@ import useBalances from "./useBalances";
 
 const useBridge = () => {
     const { getWeb3AuthSigner, currentWallet, provider } = useWallet();
-    const { notifyError, notifySuccess, notifyLoading, dismissNotify } = useNotify();
+    const { notifyError, notifySuccess, notifyLoading, dismissNotify, dismissNotifyAll } = useNotify();
 
     const { data: polygonSignerWagmi } = useSigner({
         chainId: CHAIN_ID.POLYGON,
@@ -27,6 +27,7 @@ const useBridge = () => {
 
     const polyUsdcToUsdc = async () => {
         if (!polygonSigner) return;
+        await sleep(1000);
         let notiId = notifyLoading("Loading", "initiating bridge");
         try {
             const polyUsdcBalance = await getBalance(
@@ -75,6 +76,7 @@ const useBridge = () => {
             }
             dispatch(setSourceTxHash(hash));
         } catch (error: any) {
+            dismissNotifyAll();
             console.error(error);
             notifyError("Error!", error.message);
         }
