@@ -125,7 +125,7 @@ export const useTokens = () => {
                     : toFixedFloor(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
         };
 
-        tokens.unshift(ethToken);
+        if (Number(ethToken.usdBalance) >= 0.5) tokens.unshift(ethToken);
         setTokens(tokens);
         setLpTokens(lpTokens);
     }, [farms, prices, tokenAddresses, lpAddresses, ethBalance, networkId, formattedBalances]);
