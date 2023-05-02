@@ -36,6 +36,7 @@ const Wert: React.FC<IProps> = () => {
                 address: currentWallet,
                 listeners: {
                     "payment-status": async (data: any) => {
+                        console.log("wert payment status", data);
                         if (data.status === "success") {
                             await polyUsdcToUsdc();
                         }
