@@ -1,7 +1,7 @@
-import useApp from "src/hooks/useApp";
 import "./PlatformTVL.css";
 import useTVL from "src/hooks/useTVL";
 import tvlIcon from "src/assets/images/tvl-icon.png";
+import useApp from "src/hooks/useApp";
 
 interface Props {}
 
