@@ -54,7 +54,7 @@ function App() {
                                   accentColorForeground: "white",
                               })
                     }
-                    showRecentTransactions={true}
+                    showRecentTransactions={false}
                     appInfo={{ appName: "Contrax", disclaimer: WalletDisclaimer }}
                 >
                     <WalletProvider>
