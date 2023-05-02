@@ -11,7 +11,8 @@ export enum FarmOriginPlatform {
     SwapFish = "SwapFish",
 }
 export enum FarmTableColumns {
-    Token = "TOKEN",
+    Token = "SINGLE TOKEN",
+    Dual_Token = "DUAL TOKEN",
     Deposited = "DEPOSITED",
     APY = "APY",
     EARNED = "EARNED",
@@ -20,4 +21,10 @@ export enum FarmTableColumns {
 export enum FarmType {
     normal = "Token",
     advanced = "LP Token",
+}
+
+export enum CHAIN_ID {
+    MAINNET = 1,
+    POLYGON = 137,
+    ARBITRUM = 42161,
 }

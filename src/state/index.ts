@@ -11,6 +11,7 @@ import supplyReducer from "./supply/supplyReducer";
 import decimalsReducer from "./decimals/decimalsReducer";
 import errorReducer from "./error/errorReducer";
 import internetReducer from "./internet/internetReducer";
+import rampReducer from "./ramp/rampReducer";
 
 const persistedPricesReducer = persistReducer(
     { key: "prices", version: 1, storage, blacklist: ["isFetched", "oldPrices"] },
@@ -23,6 +24,11 @@ const persistedSettingsReducer = persistReducer(
     settingsReducer
 );
 
+const persistedRampReducer = persistReducer(
+    { key: "ramp", version: 1, storage, whitelist: ["bridgeState"] },
+    rampReducer
+);
+
 const rootReducer = combineReducers({
     settings: persistedSettingsReducer,
     internet: internetReducer,
@@ -33,6 +39,7 @@ const rootReducer = combineReducers({
     balances: balancesReducer,
     decimals: persistedDecimalReducer,
     supply: supplyReducer,
+    ramp: persistedRampReducer,
 });
 
 // const persistedReducer = persistReducer(persistConfig, rootReducer);

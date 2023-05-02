@@ -7,6 +7,8 @@ import { useSearchParams } from "react-router-dom";
 import useBalances from "src/hooks/useBalances";
 import Transak from "./Transak";
 import Wert from "./Wert";
+import { useAppSelector } from "src/state";
+import useBridge from "src/hooks/useBridge";
 
 interface IProps {}
 
@@ -18,10 +20,17 @@ enum Tab {
 const Buy: React.FC<IProps> = () => {
     const [tab, setTab] = React.useState<Tab>(Tab.Wert);
     const [params, setSearchParams] = useSearchParams();
-    const { reloadBalances } = useBalances();
+    const { reloadBalances, balances } = useBalances();
+    const { lock } = useBridge();
 
     // Reload Balances every time this component unmounts
-    React.useEffect(() => reloadBalances, []);
+    React.useEffect(() => {
+        reloadBalances();
+    }, []);
+
+    React.useEffect(() => {
+        lock();
+    }, [balances]);
 
     // Check for query params regarding tab, if none, default = Buy
     React.useEffect(() => {

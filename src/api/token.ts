@@ -103,7 +103,7 @@ export const getPriceByTime = async (address: string, timestamp: number, chainId
 export const getBalance = async (
     tokenAddress: string,
     address: string,
-    multicallProvider: MulticallProvider | providers.Provider
+    multicallProvider: MulticallProvider | providers.Provider | Signer
 ): Promise<BigNumber> => {
     try {
         const contract = new Contract(

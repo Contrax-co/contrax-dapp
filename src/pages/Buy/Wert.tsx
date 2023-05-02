@@ -4,6 +4,7 @@ import { WertOptions } from "src/types";
 import { WERT_PARTNER_ID } from "src/config/constants";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
+import useBridge from "src/hooks/useBridge";
 
 interface IProps {}
 
@@ -13,6 +14,7 @@ const Wert: React.FC<IProps> = () => {
     const [wertWidget, setWertWidget] = React.useState<WertWidget | null>(null);
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
+    const { polyUsdcToUsdc } = useBridge();
 
     const initWert = (options: WertOptions) => {
         const wertWidget = new WertWidget(options);
@@ -24,12 +26,21 @@ const Wert: React.FC<IProps> = () => {
         if (WERT_PARTNER_ID)
             initWert({
                 partner_id: WERT_PARTNER_ID,
+                // partner_id: "01GX31S022ST3GB9WY9X4TNYNW",
+                // origin: "https://sandbox.wert.io",
                 container_id: WertWidgetId,
                 width: 360,
                 height: 580,
                 commodities: "USDC:Polygon",
                 lang: "en",
                 address: currentWallet,
+                listeners: {
+                    "payment-status": async (data: any) => {
+                        if (data.status === "success") {
+                            await polyUsdcToUsdc();
+                        }
+                    },
+                },
             });
     }, [currentWallet]);
 

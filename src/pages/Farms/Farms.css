@@ -16,6 +16,7 @@
     font-size: 34px;
     font-weight: bold;
     color: white;
+    margin-bottom: 0px;
 }
 
 .farm_header--light > p {
@@ -63,6 +64,7 @@
     color: white;
     font-size: 13px;
     font-weight: bold;
+    margin-top: 50px;
 }
 
 .farm_table_header_light {

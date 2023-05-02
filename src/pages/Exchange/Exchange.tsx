@@ -179,8 +179,8 @@ const Exchange: React.FC<IProps> = () => {
                         ]}
                         defaultSourceNetwork={1}
                         defaultDestNetwork={defaultChainId}
-                        sourceNetworks={[1, defaultChainId]}
-                        destNetworks={[1, defaultChainId]}
+                        sourceNetworks={[1, defaultChainId, 137]}
+                        destNetworks={[1, defaultChainId, 137]}
                         customize={lightMode ? lightSocketTheme : darkSocketTheme}
                     />
                 )}

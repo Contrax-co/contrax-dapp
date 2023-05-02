@@ -1,5 +1,6 @@
 import { arbitrum, mainnet, avalanche, bsc, optimism, polygon, gnosis, fantom } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import { infuraProvider } from "wagmi/providers/infura";
 import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
@@ -34,6 +35,9 @@ export const { chains, provider, webSocketProvider } = configureChains(
         // optimism, avalanche, gnosis, fantom, bsc
     ],
     [
+        infuraProvider({
+            apiKey: "547b7378b8c2400aafd92ef4281c732f",
+        }),
         jsonRpcProvider({
             rpc: (chain) => ({
                 http: chain.rpcUrls.default.http[0],
