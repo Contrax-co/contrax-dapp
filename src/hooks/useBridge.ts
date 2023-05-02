@@ -16,7 +16,7 @@ import useBalances from "./useBalances";
 
 const useBridge = () => {
     const { getWeb3AuthSigner, currentWallet, provider } = useWallet();
-    const { notifyError } = useNotify();
+    const { notifyError, notifySuccess, notifyLoading, dismissNotify } = useNotify();
 
     const { data: polygonSignerWagmi } = useSigner({
         chainId: CHAIN_ID.POLYGON,
@@ -27,12 +27,14 @@ const useBridge = () => {
 
     const polyUsdcToUsdc = async () => {
         if (!polygonSigner) return;
+        let notiId = notifyLoading("Loading", "initiating bridge");
         try {
             const polyUsdcBalance = await getBalance(
                 addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
                 currentWallet,
                 polygonSigner
             );
+            console.log("polyUsdcBalance", polyUsdcBalance.toString());
             dispatch(setBridgeStatus(BridgeStatus.APPROVING));
             const { route, approvalData } = await getRoute(
                 CHAIN_ID.POLYGON,
@@ -42,6 +44,9 @@ const useBridge = () => {
                 polyUsdcBalance.toString(),
                 currentWallet
             );
+            console.log("bridge route", route);
+            console.log("checking approval");
+            let notiId2 = notifyLoading("Loading", "checking approval");
             await approveErc20(
                 approvalData.approvalTokenAddress,
                 approvalData.allowanceTarget,
@@ -49,6 +54,8 @@ const useBridge = () => {
                 currentWallet,
                 polygonSigner!
             );
+            dismissNotify(notiId2);
+            console.log("approval done");
             dispatch(setBridgeStatus(BridgeStatus.PENDING));
             const buildTx = await buildTransaction(route);
             const tx = {
@@ -57,10 +64,15 @@ const useBridge = () => {
                 value: buildTx?.value,
                 chainId: buildTx?.chainId,
             };
+            console.log("sending tx", tx);
             // const routeId: string = route.routeId;
             const { tx: transaction, error } = await awaitTransaction(polygonSigner?.sendTransaction(tx));
+            dismissNotify(notiId);
             if (error) throw new Error(error);
             const hash: string = transaction.transactionHash;
+            if (hash) {
+                notifySuccess("Success!", "Transaction sent");
+            }
             dispatch(setSourceTxHash(hash));
         } catch (error: any) {
             console.error(error);
@@ -87,7 +99,9 @@ const useBridge = () => {
         const int = setInterval(() => {
             if (sourceTxHash) {
                 getBridgeStatus(sourceTxHash, CHAIN_ID.POLYGON, CHAIN_ID.ARBITRUM).then((res) => {
+                    console.log(res);
                     if (res.destinationTxStatus === "COMPLETED") {
+                        notifySuccess("Success!", "Briging completed");
                         dispatch(setSourceTxHash(""));
                         dispatch(setBridgeStatus(BridgeStatus.COMPLETED));
                     }
