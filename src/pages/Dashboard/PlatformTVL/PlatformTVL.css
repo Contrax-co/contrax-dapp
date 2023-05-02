@@ -1,6 +1,7 @@
 .tvl-container {
     width: 100%;
     display: flex;
+    color: var(--color_text);
 }
 
 .tvl-image {

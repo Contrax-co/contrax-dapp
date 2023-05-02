@@ -1,4 +1,3 @@
-import useApp from "src/hooks/useApp";
 import "./PlatformTVL.css";
 import useTVL from "src/hooks/useTVL";
 import tvlIcon from "src/assets/images/tvl-icon.png";
@@ -6,7 +5,6 @@ import tvlIcon from "src/assets/images/tvl-icon.png";
 interface Props {}
 
 const VaultItem: React.FC<Props> = () => {
-    const { lightMode } = useApp();
     const tvl = useTVL();
 
     if (tvl === 0) return <div></div>;
