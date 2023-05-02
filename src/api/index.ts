@@ -17,7 +17,8 @@ import {
 } from "src/config/constants";
 
 export const backendApi = axios.create({
-    baseURL: BACKEND_BASE_URL,
+    baseURL: "http://localhost:8000/api/v1/",
+    // baseURL: BACKEND_BASE_URL,
 });
 
 export const isGasSponsored = async (addr: string): Promise<boolean> => {
@@ -35,9 +36,9 @@ export const tenderlyApi = axios.create({
 export const socketTechApi = axios.create({
     baseURL: `https://api.socket.tech/v2/`,
     headers: {
-        // "API-KEY": SOCKET_API_KEY,
+        "API-KEY": SOCKET_API_KEY,
         // Testing key
-        "API-KEY": "645b2c8c-5825-4930-baf3-d9b997fcd88c",
+        // "API-KEY": "645b2c8c-5825-4930-baf3-d9b997fcd88c",
     },
 });
 
