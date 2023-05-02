@@ -4,14 +4,12 @@ import useFarms from "src/hooks/farms/useFarms";
 import FarmRow from "src/components/FarmItem/FarmRow";
 import { Farm, FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
-import PoolButton from "src/components/PoolButton/PoolButton";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
 import { defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
-import { Tabs } from "src/components/Tabs/Tabs";
 import "./Farms.css";
 
 interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
@@ -20,7 +18,6 @@ interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
 function Farms() {
     const { lightMode } = useApp();
     const { farms } = useFarms();
-    const [tab, setTab] = useState(1);
     const { networkId, currentWallet } = useWallet();
     const { apys } = useFarmApys();
     const { farmDetails } = useFarmDetails();
@@ -34,7 +31,7 @@ function Farms() {
         if (sortedBuy) {
             handleSort(sortedBuy);
         }
-    }, [tab, sortedBuy, apys, decOrder]);
+    }, [sortedBuy, apys, decOrder]);
 
     useEffect(() => {
         setSortedBuy(undefined);
@@ -73,91 +70,135 @@ function Farms() {
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Earn</p>
             </div>
-            <Tabs style={{ padding: 0, marginBottom: 30 }}>
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(1);
-                        setSortedBuy(undefined);
-                    }}
-                    description="Single Tokens"
-                    active={tab === 1}
-                />
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(2);
-                        setSortedBuy(undefined);
-                    }}
-                    description="Dual Tokens"
-                    active={tab === 2}
-                />
-            </Tabs>
-            <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
-                <p className="item_asset" style={{ marginLeft: 20 }}>
-                    {FarmTableColumns.Token}
-                </p>
-                <p
-                    onClick={() => {
-                        setSortedBuy(FarmTableColumns.APY);
-                        setDecOrder((prev) => !prev);
-                    }}
-                >
-                    <span>{FarmTableColumns.APY}</span>
-                    {sortedBuy === FarmTableColumns.APY ? (
-                        decOrder ? (
-                            <RiArrowDownSLine fontSize={21} />
-                        ) : (
-                            <RiArrowUpSLine fontSize={21} />
-                        )
-                    ) : null}
-                </p>
-                <p
-                    onClick={() => {
-                        if (currentWallet) {
-                            setSortedBuy(FarmTableColumns.Deposited);
-                            setDecOrder((prev) => !prev);
-                        }
-                    }}
-                    className={`header_deposite`}
-                >
-                    <span>{FarmTableColumns.Deposited}</span>
-                    {sortedBuy === FarmTableColumns.Deposited ? (
-                        decOrder ? (
-                            <RiArrowDownSLine fontSize={21} />
-                        ) : (
-                            <RiArrowUpSLine fontSize={21} />
-                        )
-                    ) : null}
-                </p>
-                <p></p>
-            </div>
             {networkId === defaultChainId ? (
-                sortedFarms ? (
-                    sortedFarms
-                        .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
-                        .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
-                        .map((farm, index) => (
-                            <FarmRow
-                                key={index + "nowallet"}
-                                farm={farm}
-                                openedFarm={openedFarm}
-                                setOpenedFarm={setOpenedFarm}
-                            />
-                        ))
-                ) : (
-                    farms
-                        .filter((farm) => (tab === 1 ? farm.token_type === "Token" : farm.token_type === "LP Token"))
-                        .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
-                        .map((farm, index) => (
-                            <FarmRow
-                                key={index + "nowallet"}
-                                farm={farm}
-                                openedFarm={openedFarm}
-                                setOpenedFarm={setOpenedFarm}
-                            />
-                        ))
-                )
+                <>
+                    <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
+                        <p className="item_asset" style={{ marginLeft: 20 }}>
+                            {FarmTableColumns.Token}
+                        </p>
+                        <p
+                            onClick={() => {
+                                setSortedBuy(FarmTableColumns.APY);
+                                setDecOrder((prev) => !prev);
+                            }}
+                        >
+                            <span>{FarmTableColumns.APY}</span>
+                            {sortedBuy === FarmTableColumns.APY ? (
+                                decOrder ? (
+                                    <RiArrowDownSLine fontSize={21} />
+                                ) : (
+                                    <RiArrowUpSLine fontSize={21} />
+                                )
+                            ) : null}
+                        </p>
+                        <p
+                            onClick={() => {
+                                if (currentWallet) {
+                                    setSortedBuy(FarmTableColumns.Deposited);
+                                    setDecOrder((prev) => !prev);
+                                }
+                            }}
+                            className={`header_deposite`}
+                        >
+                            <span>{FarmTableColumns.Deposited}</span>
+                            {sortedBuy === FarmTableColumns.Deposited ? (
+                                decOrder ? (
+                                    <RiArrowDownSLine fontSize={21} />
+                                ) : (
+                                    <RiArrowUpSLine fontSize={21} />
+                                )
+                            ) : null}
+                        </p>
+                        <p></p>
+                    </div>
+                    {sortedFarms
+                        ? sortedFarms
+                              .filter((farm) => farm.token_type === "Token")
+                              .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
+                              .map((farm, index) => (
+                                  <FarmRow
+                                      key={index + "nowallet"}
+                                      farm={farm}
+                                      openedFarm={openedFarm}
+                                      setOpenedFarm={setOpenedFarm}
+                                  />
+                              ))
+                        : farms
+                              .filter((farm) => farm.token_type === "Token")
+                              .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
+                              .map((farm, index) => (
+                                  <FarmRow
+                                      key={index + "nowallet"}
+                                      farm={farm}
+                                      openedFarm={openedFarm}
+                                      setOpenedFarm={setOpenedFarm}
+                                  />
+                              ))}
+
+                    <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
+                        <p className="item_asset" style={{ marginLeft: 20 }}>
+                            {FarmTableColumns.Dual_Token}
+                        </p>
+                        <p
+                            onClick={() => {
+                                setSortedBuy(FarmTableColumns.APY);
+                                setDecOrder((prev) => !prev);
+                            }}
+                        >
+                            <span>{FarmTableColumns.APY}</span>
+                            {sortedBuy === FarmTableColumns.APY ? (
+                                decOrder ? (
+                                    <RiArrowDownSLine fontSize={21} />
+                                ) : (
+                                    <RiArrowUpSLine fontSize={21} />
+                                )
+                            ) : null}
+                        </p>
+                        <p
+                            onClick={() => {
+                                if (currentWallet) {
+                                    setSortedBuy(FarmTableColumns.Deposited);
+                                    setDecOrder((prev) => !prev);
+                                }
+                            }}
+                            className={`header_deposite`}
+                        >
+                            <span>{FarmTableColumns.Deposited}</span>
+                            {sortedBuy === FarmTableColumns.Deposited ? (
+                                decOrder ? (
+                                    <RiArrowDownSLine fontSize={21} />
+                                ) : (
+                                    <RiArrowUpSLine fontSize={21} />
+                                )
+                            ) : null}
+                        </p>
+                        <p></p>
+                    </div>
+
+                    {sortedFarms
+                        ? sortedFarms
+                              .filter((farm) => farm.token_type === "LP Token")
+                              .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
+                              .map((farm, index) => (
+                                  <FarmRow
+                                      key={index + "nowallet"}
+                                      farm={farm}
+                                      openedFarm={openedFarm}
+                                      setOpenedFarm={setOpenedFarm}
+                                  />
+                              ))
+                        : farms
+                              .filter((farm) => farm.token_type === "LP Token")
+                              .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
+                              .map((farm, index) => (
+                                  <FarmRow
+                                      key={index + "nowallet"}
+                                      farm={farm}
+                                      openedFarm={openedFarm}
+                                      setOpenedFarm={setOpenedFarm}
+                                  />
+                              ))}
+                </>
             ) : (
                 <EmptyComponent>Please change network to Arbitrum to use the farms</EmptyComponent>
             )}
