@@ -16,7 +16,7 @@ import useBalances from "./useBalances";
 
 const useBridge = () => {
     const { getWeb3AuthSigner, currentWallet, provider } = useWallet();
-    const { notifyError, notifySuccess, notifyLoading, dismissNotify } = useNotify();
+    const { notifyError, notifySuccess, notifyLoading, dismissNotify, dismissNotifyAll } = useNotify();
 
     const { data: polygonSignerWagmi } = useSigner({
         chainId: CHAIN_ID.POLYGON,
@@ -76,6 +76,7 @@ const useBridge = () => {
             }
             dispatch(setSourceTxHash(hash));
         } catch (error: any) {
+            dismissNotifyAll();
             console.error(error);
             notifyError("Error!", error.message);
         }
