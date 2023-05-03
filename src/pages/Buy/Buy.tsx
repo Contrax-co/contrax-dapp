@@ -21,16 +21,16 @@ const Buy: React.FC<IProps> = () => {
     const [tab, setTab] = React.useState<Tab>(Tab.Wert);
     const [params, setSearchParams] = useSearchParams();
     const { reloadBalances, balances } = useBalances();
-    const { lock } = useBridge();
+    // const { lock } = useBridge();
 
     // Reload Balances every time this component unmounts
     React.useEffect(() => {
         reloadBalances();
     }, []);
 
-    React.useEffect(() => {
-        lock();
-    }, [balances]);
+    // React.useEffect(() => {
+    //     lock();
+    // }, [balances]);
 
     // Check for query params regarding tab, if none, default = Buy
     React.useEffect(() => {
