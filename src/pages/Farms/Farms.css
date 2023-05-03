@@ -25,14 +25,13 @@
     color: black;
 }
 
-.farms > p {
-    color: white;
-    font-size: 30px;
+.type_heading {
+    display: none;
+    font-size: 20px;
     font-weight: bold;
-}
-
-.farms--light > p {
-    color: var(--color_primary);
+    color: var(--color_grey);
+    text-align: center;
+    padding-right: 20px;
 }
 
 .farm__title {
@@ -64,7 +63,7 @@
     color: white;
     font-size: 13px;
     font-weight: bold;
-    margin-top: 50px;
+    margin-top: 10px;
 }
 
 .farm_table_header_light {
@@ -75,6 +74,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    text-transform: uppercase;
 }
 
 .farm_table_header span,
@@ -140,7 +140,7 @@
     }
 
     .farm_header > p {
-        font-size: 20px;
+        font-size: 24px;
     }
 
     .pools_list {
@@ -174,5 +174,9 @@
 
     .farm_table_header {
         display: none;
+    }
+
+    .type_heading {
+        display: block;
     }
 }
