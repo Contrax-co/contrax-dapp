@@ -69,17 +69,15 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
             notifyLoading({ title: "Bridging", message: "Sending bridge transaction - 3/3" }, { id: notiId });
             const { tx: transaction, error } = await awaitTransaction(polygonSigner?.sendTransaction(tx));
             if (error) throw new Error(error);
-            const hash: string = transaction.transactionHash;
-            if (hash) {
+            const sourceTxHash: string = transaction.transactionHash;
+            if (sourceTxHash) {
                 notifySuccess({ title: "Bridge!", message: "Transaction sent" });
             }
-            thunkApi.dispatch(setSourceTxHash(hash));
-            await sleep(1000);
+            thunkApi.dispatch(setSourceTxHash(sourceTxHash));
             const int = setInterval(() => {
-                const sourceTxHash = (thunkApi.getState() as StateInterface).bridgeState.sourceTxHash;
                 if (sourceTxHash) {
                     notifyLoading(
-                        { title: "Checking bridge status", message: "Please wait... est 1min" },
+                        { title: "Checking bridge status.", message: "This will take a few minutes..." },
                         { id: notiId }
                     );
                     getBridgeStatus(sourceTxHash, CHAIN_ID.POLYGON, CHAIN_ID.ARBITRUM).then((res) => {

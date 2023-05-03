@@ -111,6 +111,7 @@ function Farms() {
                         </p>
                         <p></p>
                     </div>
+                    <p className="type_heading">{FarmTableColumns.Token}s</p>
                     {sortedFarms
                         ? sortedFarms
                               .filter((farm) => farm.token_type === "Token")
@@ -174,7 +175,7 @@ function Farms() {
                         </p>
                         <p></p>
                     </div>
-
+                    <p className="type_heading">Dual Token</p>
                     {sortedFarms
                         ? sortedFarms
                               .filter((farm) => farm.token_type === "LP Token")
