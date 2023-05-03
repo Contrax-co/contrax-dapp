@@ -11,6 +11,7 @@ export interface StateInterface {
         sourceTxHash?: string;
         destTxHash?: string;
         status?: BridgeStatus;
+        isBridging?: boolean;
     };
 }
 

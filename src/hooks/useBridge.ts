@@ -3,11 +3,12 @@ import { useSigner } from "wagmi";
 import useWallet from "./useWallet";
 import { ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
-import { useAppDispatch } from "src/state";
+import { useAppDispatch, useAppSelector } from "src/state";
 import { polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
 
 const useBridge = () => {
     const { getWeb3AuthSigner, currentWallet } = useWallet();
+    const isLoading = useAppSelector((state) => state.ramp.bridgeState.isBridging);
 
     const { data: polygonSignerWagmi } = useSigner({
         chainId: CHAIN_ID.POLYGON,
@@ -41,7 +42,7 @@ const useBridge = () => {
         });
     }, [getWeb3AuthSigner]);
 
-    return { polyUsdcToUsdc };
+    return { polyUsdcToUsdc, isLoading };
 };
 
 export default useBridge;

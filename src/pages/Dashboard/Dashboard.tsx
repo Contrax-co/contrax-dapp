@@ -18,6 +18,7 @@ import SupportChatToggle from "src/components/SupportChatToggle/SupportChatToggl
 import { TbGasStation, TbGasStationOff } from "react-icons/tb";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { toggleSponsoredGas } from "src/state/settings/settingsReducer";
+import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -112,6 +113,7 @@ function Dashboard() {
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
+                <BridgeBtn />
             </div>
 
             <div className={`dashboard_section`}>

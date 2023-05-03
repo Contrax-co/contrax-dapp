@@ -9309,7 +9309,7 @@ __metadata:
     reapop: ^4.2.1
     redux: ^4.2.1
     redux-persist: ^6.0.0
-    sass: ^1.57.1
+    sass: ^1.62.1
     stream-browserify: ^3.0.0
     stream-http: ^3.2.0
     string_decoder: ^1.3.0
@@ -18612,7 +18612,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.57.1, sass@npm:^1.58.3":
+"sass@npm:^1.58.3":
   version: 1.58.3
   resolution: "sass@npm:1.58.3"
   dependencies:
@@ -18622,6 +18622,19 @@ __metadata:
   bin:
     sass: sass.js
   checksum: 35a2b98c037ef80fdc93c9b0be846e6ccc7d75596351a37ee79c397e66666d0a754c52c4696e746c0aff32327471e185343ca349e998a58340411adc9d0489a5
+  languageName: node
+  linkType: hard
+
+"sass@npm:^1.62.1":
+  version: 1.62.1
+  resolution: "sass@npm:1.62.1"
+  dependencies:
+    chokidar: ">=3.0.0 <4.0.0"
+    immutable: ^4.0.0
+    source-map-js: ">=0.6.2 <2.0.0"
+  bin:
+    sass: sass.js
+  checksum: 1b1b3584b38a63dd94156b65f13b90e3f84b170a38c3d5e3fa578b7a32a37aeb349b4926b0eaf9448d48e955e86b1ee01b13993f19611dad8068af07a607c13b
   languageName: node
   linkType: hard
 
