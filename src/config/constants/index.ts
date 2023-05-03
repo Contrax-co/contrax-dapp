@@ -1,3 +1,5 @@
+import { CHAIN_ID } from "src/types/enums";
+
 export const RoutesPaths = {
     Home: "/",
     Farms: "/farms",
@@ -8,7 +10,7 @@ export const RoutesPaths = {
 };
 
 export const MAX_GAS_UNITS_PER_TRANSACTION = "700000";
-export const defaultChainId = 42161; // Arbitrum
+export const defaultChainId = CHAIN_ID.ARBITRUM; // Arbitrum
 export const defaultNetworkName = "arbitrum";
 export const web3AuthConnectorId = "web3auth";
 
