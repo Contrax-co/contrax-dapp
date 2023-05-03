@@ -1,18 +1,23 @@
 @import "../../styles/variables.scss";
 @import "../../styles/mixins";
 
-.darkBuy{
+.darkBuy {
     width: 400px;
-    @include devices(mobile){
+    @include devices(mobile) {
         width: 340px;
     }
-    .ywm1tje1{
+    .ywm1tje1 {
         background-color: $color-black !important;
     }
 }
 
-.container{
-    width: max-content;
+.container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-flow: column;
     margin: 0 auto;
     padding-top: 20px;
+    overflow: auto;
 }
+

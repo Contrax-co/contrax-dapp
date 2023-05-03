@@ -1,0 +1,15 @@
+@import "../../styles/variables.scss";
+@import "../../styles/mixins";
+
+.usdcAmount {
+    color: white;
+    white-space: pre;
+    font-weight: 400;
+    b {
+        color: var(--color_primary);
+    }
+}
+
+.light {
+    color: black;
+}

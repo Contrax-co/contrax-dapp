@@ -8,7 +8,6 @@ const useTVL = () => {
     const [userTVL, setUserTVL] = useState(0);
 
     useEffect(() => {
-        console.log(farmDetails);
         let totalValueLockedPlatform = 0;
         let totalValueLockedUser = 0;
         Object.values(farmDetails).forEach((e: FarmDataProcessed) => {

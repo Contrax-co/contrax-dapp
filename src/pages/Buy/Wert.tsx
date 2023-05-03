@@ -5,6 +5,7 @@ import { WERT_PARTNER_ID } from "src/config/constants";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import useBridge from "src/hooks/useBridge";
+import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 
 interface IProps {}
 
@@ -66,6 +67,7 @@ const Wert: React.FC<IProps> = () => {
     return (
         <div>
             <div id={WertWidgetId}></div>
+            <BridgeBtn />
         </div>
     );
 };

@@ -9,7 +9,6 @@ import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
 import { notifySuccess } from "src/api/notify";
 import { notifyError } from "src/api/notify";
 import { dismissNotify } from "src/api/notify";
-import { v4 as uuid } from "uuid";
 
 const initialState: StateInterface = {
     onRampInProgress: false,
@@ -23,6 +22,7 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
     "ramp/polyUsdcToArbUsdc",
     async ({ polygonSigner, currentWallet }: PolyUsdcToArbUsdcArgs, thunkApi) => {
         if (!polygonSigner) return;
+        thunkApi.dispatch(setIsBridging(true));
         await sleep(1000);
         let notiId = notifyLoading({
             title: "Bridging Poly USDC to Arb USDC",
@@ -74,7 +74,7 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 notifySuccess({ title: "Bridge!", message: "Transaction sent" });
             }
             thunkApi.dispatch(setSourceTxHash(hash));
-
+            await sleep(1000);
             const int = setInterval(() => {
                 const sourceTxHash = (thunkApi.getState() as StateInterface).bridgeState.sourceTxHash;
                 if (sourceTxHash) {
@@ -91,15 +91,17 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                             thunkApi.dispatch(setBridgeStatus(BridgeStatus.COMPLETED));
                             dismissNotify(notiId);
                             clearInterval(int);
+                            thunkApi.dispatch(setIsBridging(false));
                         }
                     });
                 } else {
                     dismissNotify(notiId);
-
+                    thunkApi.dispatch(setIsBridging(false));
                     clearInterval(int);
                 }
-            }, 10000);
+            }, 5000);
         } catch (error: any) {
+            thunkApi.dispatch(setIsBridging(false));
             console.error(error);
             notifyError({ title: "Error!", message: error.message });
             dismissNotify(notiId);
@@ -120,9 +122,12 @@ const rampSlice = createSlice({
         setBeforeRampBalance: (state: StateInterface, action: { payload: { address: string; balance: string } }) => {
             state.beforeRampState.balances[action.payload.address] = action.payload.balance;
         },
+        setIsBridging: (state: StateInterface, action: { payload: boolean }) => {
+            state.bridgeState.isBridging = action.payload;
+        },
     },
 });
 
-export const { setSourceTxHash, setBridgeStatus, setBeforeRampBalance } = rampSlice.actions;
+export const { setSourceTxHash, setBridgeStatus, setBeforeRampBalance, setIsBridging } = rampSlice.actions;
 
 export default rampSlice.reducer;
