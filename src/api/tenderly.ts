@@ -28,6 +28,22 @@ const mapStateOverridesToEncodeStateRequest = (overrides: SimulationParametersOv
             .reduce((acc, curr) => ({ ...acc, ...curr })),
     };
 };
+
+export const getAllowanceStateOverride = (data: { tokenAddress: string; owner: string; spender: string }[]) => {
+    let overrides: SimulationParametersOverrides = {};
+
+    data.forEach((item) => {
+        overrides[item.tokenAddress.toLowerCase()] = {
+            state: {
+                [`_allowances[[${item.owner.toLowerCase()}][${item.spender.toLowerCase()}]]`]:
+                    "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+            },
+        };
+    });
+
+    return overrides;
+};
+
 const mapToEncodedOverrides = (stateOverrides: StateOverride): EncodedStateOverride => {
     return Object.keys(stateOverrides)
         .map((address) => address.toLowerCase())
@@ -121,17 +137,4 @@ export const simulateTransaction = async (
 
 export const simulateBalanceChange = async () => {};
 
-export const getAllowanceStateOverride = (data: { tokenAddress: string; owner: string; spender: string }[]) => {
-    let overrides: SimulationParametersOverrides = {};
 
-    data.forEach((item) => {
-        overrides[item.tokenAddress.toLowerCase()] = {
-            state: {
-                [`_allowances[[${item.owner.toLowerCase()}][${item.spender.toLowerCase()}]]`]:
-                    "115792089237316195423570985008687907853269984665640564039457584007913129639935",
-            },
-        };
-    });
-
-    return overrides;
-};
