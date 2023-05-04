@@ -84,7 +84,10 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                         console.log(res);
                         if (res.destinationTxStatus === "COMPLETED") {
                             dismissNotify(notiId);
-                            notifySuccess({ title: "Success!", message: "Briging completed" });
+                            notifySuccess(
+                                { title: "Success!", message: "Briging completed" },
+                                { dismissAfter: 0, dismissible: true }
+                            );
                             thunkApi.dispatch(setSourceTxHash(""));
                             thunkApi.dispatch(setBridgeStatus(BridgeStatus.COMPLETED));
                             dismissNotify(notiId);
