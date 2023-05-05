@@ -9,6 +9,7 @@ import Transak from "./Transak";
 import Wert from "./Wert";
 import { useAppSelector } from "src/state";
 import useBridge from "src/hooks/useBridge";
+import useAccountData from "src/hooks/useAccountData";
 
 interface IProps {}
 
@@ -21,11 +22,20 @@ const Buy: React.FC<IProps> = () => {
     const [tab, setTab] = React.useState<Tab>(Tab.Wert);
     const [params, setSearchParams] = useSearchParams();
     const { reloadBalances, balances } = useBalances();
+    const { fetchAccountData } = useAccountData();
     // const { lock } = useBridge();
 
     // Reload Balances every time this component unmounts
     React.useEffect(() => {
-        reloadBalances();
+        return () => {
+            reloadBalances();
+        };
+    }, []);
+
+    React.useEffect(() => {
+        return () => {
+            fetchAccountData();
+        };
     }, []);
 
     // React.useEffect(() => {

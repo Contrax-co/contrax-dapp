@@ -31,11 +31,7 @@ const AppProvider: React.FC<Props> = ({ children }) => {
 
     React.useEffect(() => {
         document.documentElement.setAttribute("data-lightMode", `${lightMode}`);
-    }, [lightMode]);
-
-    // dispatch(updatePrices({
-    //     chainId
-    // }))
+    }, [lightMode]);    
 
     return (
         <AppContext.Provider
