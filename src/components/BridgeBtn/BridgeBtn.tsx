@@ -1,7 +1,4 @@
 import React from "react";
-import WertWidget from "@wert-io/widget-initializer";
-import { WertOptions } from "src/types";
-import { WERT_PARTNER_ID } from "src/config/constants";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import useBridge from "src/hooks/useBridge";
@@ -9,6 +6,7 @@ import styles from "./BridgeBtn.module.scss";
 import { useBalance } from "wagmi";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
+import { TiWarningOutline } from "react-icons/ti";
 
 interface IProps {}
 
@@ -25,22 +23,28 @@ const BridgeBtn: React.FC<IProps> = () => {
     console.log(data);
 
     return Number(data?.formatted) > 0.1 ? (
-        <div style={{ gap: 20, marginTop: 10, paddingBottom: 50 }} className="center">
-            <div>
-                <h3 className={`${styles.usdcAmount} ${lightMode && styles.light}`}>
-                    Polygon USDC:
-                    <br />
-                    <b>{data?.formatted}</b>
-                </h3>
+        <div className={styles.container}>
+            <div className={styles.labeledButton}>
+                <div>
+                    <h3 className={styles.usdcAmount}>
+                        Polygon USDC:
+                        <br />
+                        <b>{data?.formatted}</b>
+                    </h3>
+                </div>
+                <button
+                    className={`custom-button ${lightMode && "custom-button-light"}`}
+                    type="submit"
+                    disabled={false}
+                    onClick={polyUsdcToUsdc}
+                >
+                    Bridge to Arbitrum
+                </button>
             </div>
-            <button
-                className={`custom-button ${lightMode && "custom-button-light"}`}
-                type="submit"
-                disabled={false}
-                onClick={polyUsdcToUsdc}
-            >
-                Bridge to Arbitrum
-            </button>
+            <p className={styles.disclaimer}>
+                <TiWarningOutline size={12} className={styles.disclaimerLogo} />
+                This action will Bridge (Transfer) all your funds from polygon to Arbitrum Network
+            </p>
         </div>
     ) : null;
 };
