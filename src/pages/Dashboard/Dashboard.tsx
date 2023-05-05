@@ -19,6 +19,7 @@ import { TbGasStation, TbGasStationOff } from "react-icons/tb";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { toggleSponsoredGas } from "src/state/settings/settingsReducer";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
+import useAccountData from "src/hooks/useAccountData";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -29,6 +30,7 @@ function Dashboard() {
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
     const dispatch = useAppDispatch();
+    const { referralLink } = useAccountData();
 
     const handleGasToggle = () => {
         dispatch(toggleSponsoredGas());
@@ -42,7 +44,7 @@ function Dashboard() {
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
             <div className={`dashboard_header ${lightMode && "dashboard_header--light"}`}>
-                <div>
+                <div className="dashboard_header_left">
                     <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet)} />
 
                     {currentWallet ? (
@@ -71,6 +73,7 @@ function Dashboard() {
                         <p className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}>No Wallet Connected</p>
                     )}
                 </div>
+
                 <div className="dashboard-key-icons">
                     <SupportChatToggle />
                     {signer && (
@@ -109,6 +112,19 @@ function Dashboard() {
                 </div>
             </div>
 
+            {currentWallet && referralLink && (
+                <div className="dashboard_referal_container">
+                    <p>Referal Link:</p>
+                    <p className="dashboard_referal_link">
+                        {referralLink}
+                        {!copied ? (
+                            <FiCopy className="dashboard_referal_icon" />
+                        ) : (
+                            <BsCheckCircle className="dashboard_referal_icon" />
+                        )}
+                    </p>
+                </div>
+            )}
             <div></div>
 
             <div className={`dashboard_tvl_section`}>
