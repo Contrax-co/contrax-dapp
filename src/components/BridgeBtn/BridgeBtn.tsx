@@ -20,7 +20,6 @@ const BridgeBtn: React.FC<IProps> = () => {
         watch: true,
         token: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress as `0x${string}`,
     });
-    console.log(data);
 
     return Number(data?.formatted) > 0.1 ? (
         <div className={styles.container}>

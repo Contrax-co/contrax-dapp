@@ -12,6 +12,7 @@ import decimalsReducer from "./decimals/decimalsReducer";
 import errorReducer from "./error/errorReducer";
 import internetReducer from "./internet/internetReducer";
 import rampReducer from "./ramp/rampReducer";
+import accountReducer from "./account/accountReducer";
 
 const persistedPricesReducer = persistReducer(
     { key: "prices", version: 1, storage, blacklist: ["isFetched", "oldPrices"] },
@@ -29,7 +30,13 @@ const persistedRampReducer = persistReducer(
     rampReducer
 );
 
+const persistedAccountReducer = persistReducer(
+    { key: "account", version: 1, storage, whitelist: ["referrerCode"] },
+    accountReducer
+);
+
 const rootReducer = combineReducers({
+    account: persistedAccountReducer,
     settings: persistedSettingsReducer,
     internet: internetReducer,
     error: errorReducer,

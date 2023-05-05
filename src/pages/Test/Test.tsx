@@ -167,6 +167,7 @@ const Test = () => {
     return (
         <div style={{ color: "red" }}>
             Test
+            <button onClick={fn2}>Simulate</button>
             <button onClick={bridgeFn}>Bridge</button>
             <button
                 onClick={() => {

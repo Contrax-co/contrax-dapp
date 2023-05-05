@@ -17,6 +17,7 @@ import useApp from "./hooks/useApp";
 import Body from "./Body";
 import { useDispatch } from "react-redux";
 import { setOffline } from "src/state/internet/internetReducer";
+import { BrowserRouter as Router } from "react-router-dom";
 
 setHook("notifications", useNotifications);
 
@@ -58,7 +59,9 @@ function App() {
                     appInfo={{ appName: "Contrax", disclaimer: WalletDisclaimer }}
                 >
                     <WalletProvider>
-                        <Body />
+                        <Router>
+                            <Body />
+                        </Router>
                         <ReactHooksWrapper />
                     </WalletProvider>
                     <ReactQueryDevtools />
