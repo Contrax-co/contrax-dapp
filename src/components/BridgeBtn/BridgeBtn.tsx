@@ -21,31 +21,35 @@ const BridgeBtn: React.FC<IProps> = () => {
         token: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress as `0x${string}`,
     });
 
-    return Number(data?.formatted) > 0.1 ? (
-        <div className={styles.container}>
-            <div className={styles.labeledButton}>
-                <div>
-                    <h3 className={styles.usdcAmount}>
-                        Polygon USDC:
-                        <br />
-                        <b>{data?.formatted}</b>
-                    </h3>
+    return (
+        <>
+            {Number(data?.formatted) > 0.1 ? (
+                <div className={styles.container}>
+                    <div className={styles.labeledButton}>
+                        <div>
+                            <h3 className={styles.usdcAmount}>
+                                Polygon USDC:
+                                <br />
+                                <b>{data?.formatted}</b>
+                            </h3>
+                        </div>
+                        <button
+                            className={`custom-button ${lightMode && "custom-button-light"}`}
+                            type="submit"
+                            disabled={false}
+                            onClick={polyUsdcToUsdc}
+                        >
+                            Bridge to Arbitrum
+                        </button>
+                    </div>
                 </div>
-                <button
-                    className={`custom-button ${lightMode && "custom-button-light"}`}
-                    type="submit"
-                    disabled={false}
-                    onClick={polyUsdcToUsdc}
-                >
-                    Bridge to Arbitrum
-                </button>
-            </div>
+            ) : null}
             <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
-                This action will Bridge (Transfer) all your funds from polygon to Arbitrum Network
+                Buying USDC on Polygon Network will Auto Bridge them to Arbitrum Network.
             </p>
-        </div>
-    ) : null;
+        </>
+    );
 };
 
 export default BridgeBtn;

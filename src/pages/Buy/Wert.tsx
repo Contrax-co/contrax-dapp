@@ -65,7 +65,7 @@ const Wert: React.FC<IProps> = () => {
     }, [lightMode, wertWidget]);
 
     return (
-        <div>
+        <div style={{ textAlign: "center" }}>
             <div id={WertWidgetId}></div>
             <BridgeBtn />
         </div>
