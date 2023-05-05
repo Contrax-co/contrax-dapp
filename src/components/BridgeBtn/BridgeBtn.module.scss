@@ -1,8 +1,23 @@
 @import "../../styles/variables.scss";
 @import "../../styles/mixins";
 
+.container {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 50px;
+    max-width: 360px;
+}
+
+.labeledButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
 .usdcAmount {
-    color: white;
+    color: var(--color_text);
     white-space: pre;
     font-weight: 400;
     b {
@@ -10,6 +25,13 @@
     }
 }
 
-.light {
-    color: black;
+.disclaimer {
+    color: var(--color_grey);
+    font-size: 12px;
+    margin: 0px;
+}
+
+.disclaimerLogo {
+    margin-right: 8px;
+    transform: translateY(1px);
 }
