@@ -14,7 +14,7 @@ const VaultItem: React.FC<Props> = () => {
         <div className={styles.tvlContainer}>
             <p className={styles.tvlHeading}>My Total Value Locked</p>
             <p className={styles.tvlValue}>
-                ${customCommify(userTVL.toFixed(0), { minimumFractionDigits: 0, showDollarSign: true })}
+                {customCommify(userTVL.toFixed(0), { minimumFractionDigits: 0, showDollarSign: true })}
             </p>
         </div>
     );
