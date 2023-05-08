@@ -1,8 +1,7 @@
-import "./UserTVL.css";
 import useTVL from "src/hooks/useTVL";
-import tvlIcon from "src/assets/images/tvl-icon.png";
 import { commify } from "ethers/lib/utils.js";
 import { customCommify } from "src/utils/common";
+import styles from "./UserTVL.module.scss";
 
 interface Props {}
 
@@ -12,12 +11,11 @@ const VaultItem: React.FC<Props> = () => {
     if (userTVL === 0) return <div></div>;
 
     return (
-        <div className={`tvl-container`}>
-            {<img className={`tvl-image`} alt={"total value locked"} src={tvlIcon} />}
-            <p className={`tvl-value`}>
-                {customCommify(userTVL.toFixed(0), { minimumFractionDigits: 0, showDollarSign: true })}
-            </p>{" "}
-            <p className={`tvl-title`}>My TVL</p>
+        <div className={styles.tvlContainer}>
+            <p className={styles.tvlHeading}>My Total Value Locked</p>
+            <p className={styles.tvlValue}>
+                ${customCommify(userTVL.toFixed(0), { minimumFractionDigits: 0, showDollarSign: true })}
+            </p>
         </div>
     );
 };
