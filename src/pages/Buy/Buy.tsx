@@ -27,12 +27,14 @@ const Buy: React.FC<IProps> = () => {
 
     // Reload Balances every time this component unmounts
     React.useEffect(() => {
+        // TODO: make request on page change
         return () => {
             reloadBalances();
         };
     }, []);
 
     React.useEffect(() => {
+        // TODO: make request on page change
         return () => {
             fetchAccountData();
         };
