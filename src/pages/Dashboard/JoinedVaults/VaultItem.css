@@ -1,17 +1,18 @@
 .vault_item {
   padding: 20px;
+  width: auto;
   border-radius: 20px;
   color: white;
   background-color: var(--background_secondary);
   height: fit-content;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 2px 18px #030d16;
+  /* box-shadow: 2px 2px 18px #030d16; */
   transition: 0.3s;
 }
 
 .vault_item--light {
-  box-shadow: 2px 2px 18px lightgrey;
+  /* box-shadow: 2px 2px 18px lightgrey; */
 }
 
 .vault_item_images {
