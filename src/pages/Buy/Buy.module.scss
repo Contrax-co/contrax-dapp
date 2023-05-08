@@ -21,3 +21,20 @@
     overflow: auto;
 }
 
+.lightText {
+    color: var(--color_grey);
+    font-size: 12px;
+}
+.disclaimer {
+    color: var(--color_grey);
+    font-size: 12px;
+    margin: 0px;
+    margin: auto;
+    width: max-content;
+    margin-bottom: 5px;
+    transform: translateY(-5px);
+}
+.disclaimerLogo {
+    margin-right: 8px;
+    transform: translateY(1px);
+}

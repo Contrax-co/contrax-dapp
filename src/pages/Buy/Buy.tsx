@@ -10,6 +10,7 @@ import Wert from "./Wert";
 import { useAppSelector } from "src/state";
 import useBridge from "src/hooks/useBridge";
 import useAccountData from "src/hooks/useAccountData";
+import { TiWarningOutline } from "react-icons/ti";
 
 interface IProps {}
 
@@ -40,10 +41,6 @@ const Buy: React.FC<IProps> = () => {
         };
     }, []);
 
-    // React.useEffect(() => {
-    //     lock();
-    // }, [balances]);
-
     // Check for query params regarding tab, if none, default = Buy
     React.useEffect(() => {
         let tab = params.get("tab");
@@ -57,6 +54,11 @@ const Buy: React.FC<IProps> = () => {
 
     return (
         <div className={styles.container}>
+            <h5>Fund Your Account</h5>
+            <p>
+                Limited Promotion! New Buyers get <b>$5</b> in USDC
+            </p>
+
             <Tabs>
                 <PoolButton
                     variant={2}

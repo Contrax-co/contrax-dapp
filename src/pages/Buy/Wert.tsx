@@ -6,6 +6,8 @@ import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import useBridge from "src/hooks/useBridge";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
+import styles from "./Buy.module.scss";
+import { TiWarningOutline } from "react-icons/ti";
 
 interface IProps {}
 
@@ -65,9 +67,19 @@ const Wert: React.FC<IProps> = () => {
     }, [lightMode, wertWidget]);
 
     return (
-        <div style={{ textAlign: "center" }}>
+        <div style={{ width: 360 }}>
+            <p className={styles.disclaimer}>
+                <TiWarningOutline size={12} className={styles.disclaimerLogo} />
+                USDC is auto-bridged to arbitrum on purchase*
+            </p>
             <div id={WertWidgetId}></div>
             <BridgeBtn />
+            <p className={styles.lightText} style={{ textAlign: "justify" }}>
+                Bridging puts your tokens on the right network for Contrax. It occurs automatically for social wallets
+                and can take up to 15 minutes, and may be slightly different than purchased amount. For Non social login
+                wallets, please allow a few minutes for Polygon USDC to arrive, and then bridge it to Arbitrum in one
+                click on the dashboard, and will need a few cents of MATIC on the Polygon network.
+            </p>
         </div>
     );
 };

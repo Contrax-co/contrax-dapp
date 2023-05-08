@@ -52,10 +52,10 @@ function Body() {
 
     useEffect(() => {
         reloadBalances();
-        // after 2 min reload balances
+        // after 30 s reload balances
         const interval = setInterval(() => {
             reloadBalances();
-        }, 1000 * 60 * 1);
+        }, 1000 * 60 * 0.5);
         return () => clearInterval(interval);
     }, [reloadBalances]);
 

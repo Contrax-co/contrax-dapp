@@ -135,6 +135,8 @@
     font-size: 25px;
     font-weight: 700;
     color: white;
+    margin-block-end: 1em;
+    margin-block-start: 1em;
 }
 
 .dashboard_wallet_title--light {
