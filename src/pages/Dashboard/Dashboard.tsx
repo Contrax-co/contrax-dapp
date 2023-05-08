@@ -20,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "src/state";
 import { toggleSponsoredGas } from "src/state/settings/settingsReducer";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import useAccountData from "src/hooks/useAccountData";
+import ReferralLink from "src/components/ReferralLink/ReferralLink";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -30,7 +31,6 @@ function Dashboard() {
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
     const dispatch = useAppDispatch();
-    const { referralLink } = useAccountData();
 
     const handleGasToggle = () => {
         dispatch(toggleSponsoredGas());
@@ -112,19 +112,7 @@ function Dashboard() {
                 </div>
             </div>
 
-            {currentWallet && referralLink && (
-                <div className="dashboard_referal_container">
-                    <p>Referal Link:</p>
-                    <p className="dashboard_referal_link">
-                        {referralLink}
-                        {!copied ? (
-                            <FiCopy className="dashboard_referal_icon" />
-                        ) : (
-                            <BsCheckCircle className="dashboard_referal_icon" />
-                        )}
-                    </p>
-                </div>
-            )}
+            <ReferralLink />
             <div></div>
 
             <div className={`dashboard_tvl_section`}>

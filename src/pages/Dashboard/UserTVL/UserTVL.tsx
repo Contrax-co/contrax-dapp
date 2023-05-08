@@ -11,8 +11,8 @@ const VaultItem: React.FC<Props> = () => {
     if (userTVL === 0) return <div></div>;
 
     return (
-        <div className={styles.tvlContainer}>
-            <p className={styles.tvlHeading}>My Total Value Locked</p>
+        <div className={`colorContainer ${styles.tvlContainer}`}>
+            <p className={styles.tvlHeading}>My Total Value Staked</p>
             <p className={styles.tvlValue}>
                 {customCommify(userTVL.toFixed(0), { minimumFractionDigits: 0, showDollarSign: true })}
             </p>

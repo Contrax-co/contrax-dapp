@@ -1,9 +1,9 @@
 @import "./_mixins.scss";
 
-.center{
+.center {
     display: flex;
     justify-content: center;
-    align-items: center
+    align-items: center;
 }
 
 .custom-button {
@@ -47,23 +47,46 @@
     transform: scale(0.95);
 }
 
-a{
+.outlinedContainer {
+    background: var(--background_secondary);
+    width: max-content;
+    border-radius: 16px;
+    border: 2px solid var(--color_primary);
+    color: var(--color_text);
+    padding: 16px 20px;
+}
+
+.colorContainer {
+    background: var(--color_primary);
+    color: white;
+    width: max-content;
+    border-radius: 16px;
+    padding: 16px 20px;
+}
+
+a {
     color: inherit;
 }
 
-p,h5,h6,h4,h3,h2,h1{
+p,
+h5,
+h6,
+h4,
+h3,
+h2,
+h1 {
     margin-block-end: 0;
     margin-block-start: 0;
     line-height: normal;
 }
-h4{
-    font-size: 1.75em
+h4 {
+    font-size: 1.75em;
 }
-h5{
-    font-size: 1.5em
+h5 {
+    font-size: 1.5em;
 }
-h6{
-    font-size: 1.25em
+h6 {
+    font-size: 1.25em;
 }
 
 select {
@@ -100,6 +123,6 @@ select {
     z-index: 99 !important;
 }
 
-::placeholder{
-  color: #979797
+::placeholder {
+    color: #979797;
 }
