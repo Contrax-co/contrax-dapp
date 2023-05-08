@@ -13,9 +13,18 @@ const ethAddress = constants.AddressZero;
 const tokenBalDecimalPlaces = 3;
 const usdBalDecimalPlaces = 2;
 
+export enum UIStateEnum {
+    "SHOW_TOKENS" = "SHOW_TOKENS",
+    "SHOW_TOKENS_LP" = "SHOW_TOKENS_LP",
+    "SHOW_TOKENS_TOKENS" = "SHOW_TOKENS_TOKENS",
+    "LOADING" = "LOADING",
+    "NO_TOKENS" = "NO_TOKENS",
+    "CONNECT_WALLET" = "CONNECT_WALLET",
+}
+
 export const useTokens = () => {
     const { farms } = useFarms();
-    const { balance: ethBalance, networkId } = useWallet();
+    const { balance: ethBalance, networkId, currentWallet } = useWallet();
     const [tokens, setTokens] = useState<Token[]>([]);
     const [lpTokens, setLpTokens] = useState<Token[]>([]);
     const { decimals } = useDecimals();
@@ -130,5 +139,28 @@ export const useTokens = () => {
         setLpTokens(lpTokens);
     }, [farms, prices, tokenAddresses, lpAddresses, ethBalance, networkId, formattedBalances]);
 
-    return { tokens, lpTokens, isLoading: isLoadingBalances || isLoadingPrices };
+    const UIState = useMemo(() => {
+        let STATE: UIStateEnum = UIStateEnum.CONNECT_WALLET;
+        const isLoading = isLoadingBalances || isLoadingPrices;
+        const hasTokens = tokens?.some((token) => Number(token.usdBalance) > 0.01);
+        const hasLpTokens = lpTokens?.some((token) => Number(token.usdBalance) > 0.01);
+        if (hasTokens || hasLpTokens) {
+            STATE = UIStateEnum.SHOW_TOKENS;
+            if (!hasTokens) STATE = UIStateEnum.SHOW_TOKENS_LP;
+            if (!hasLpTokens) STATE = UIStateEnum.SHOW_TOKENS_TOKENS;
+        } else {
+            if (currentWallet) {
+                if (isLoading) {
+                    STATE = UIStateEnum.LOADING;
+                } else {
+                    STATE = UIStateEnum.NO_TOKENS;
+                }
+            } else {
+                STATE = UIStateEnum.CONNECT_WALLET;
+            }
+        }
+        return STATE;
+    }, [tokens, lpTokens, isLoadingBalances, isLoadingPrices, currentWallet]);
+
+    return { tokens, lpTokens, isLoading: isLoadingBalances || isLoadingPrices, UIState };
 };
