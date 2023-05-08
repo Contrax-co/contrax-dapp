@@ -58,6 +58,9 @@ const Buy: React.FC<IProps> = () => {
             <p>
                 Limited Promotion! New Buyers get <b>$5</b> in USDC
             </p>
+            <small>
+               Note: If Wert isn't supported for you, use Transk
+            </small>
 
             <Tabs>
                 <PoolButton

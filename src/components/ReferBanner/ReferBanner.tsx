@@ -23,13 +23,13 @@ const ReferBanner: React.FC<IProps> = ({ style }) => {
             <Bg1 className={styles.bg} />
             <div className={styles.textContainer}>
                 <h4 style={{ color: "white" }}>
-                    Refer Your Friends
-                    <br />& Earn Rewards!
+                    Get $5 for Buying
+                    <br />& $5 per Friend!
                 </h4>
                 <p className={styles.para}>
-                    Whenever you refer somebody, you both will get $5 reward.
+                    Instantly get $5 in USDC when you buy on Contrax.
                     <br />
-                    Buy any asset from our platform, and enable your referral code to earn rewards.
+                    Once you do, you'll get a referral link to give them $5 and get $5 for every referral!
                 </p>
             </div>
             {/* <Bg /> */}
