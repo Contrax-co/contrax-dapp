@@ -22,8 +22,8 @@ const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
         watch: true,
         token: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress as `0x${string}`,
     });
-    // Number(data?.formatted) > 0.1
-    return true ? (
+
+    return Number(data?.formatted) > 0.1 ? (
         <div className={`outlinedContainer ${styles.container}`}>
             <div className={styles.labeledButton}>
                 <div>

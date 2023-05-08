@@ -21,6 +21,7 @@ import { toggleSponsoredGas } from "src/state/settings/settingsReducer";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import useAccountData from "src/hooks/useAccountData";
 import ReferralLink from "src/components/ReferralLink/ReferralLink";
+import ReferBanner from "src/components/ReferBanner/ReferBanner";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -119,7 +120,7 @@ function Dashboard() {
                 <UserTVL />
                 <BridgeBtn />
             </div>
-            {/* <div className="outlinedContainer" style={{ marginLeft: 30, marginTop: 20 }}></div> */}
+            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
 
             <div className={`dashboard_section outlinedContainer`}>
                 <TokenBalances />
