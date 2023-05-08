@@ -1,0 +1,60 @@
+@import "./../../styles/mixins";
+
+.container {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    position: relative;
+    min-height: 140px;
+    overflow: hidden;
+    width: calc(100% - 60px);
+    background: url(./polygon.png);
+    background-size: cover;
+    @include devices(xlMobile) {
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+}
+.bg {
+    position: absolute;
+    height: 100%;
+    width: auto;
+    @include devices(tablet) {
+        left: -30px;
+        transform: translateX(-100px);
+    }
+}
+.logo {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 100px;
+}
+.textContainer {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    z-index: 1;
+    height: 100%;
+    // justify-content: space-between;
+    padding-left: 40px;
+    h4,
+    p,
+    div {
+        z-index: 1;
+    }
+    .para {
+        padding-left: 10%;
+
+        @include devices(tablet) {
+            padding-left: 10px;
+        }
+    }
+    @include devices(tablet) {
+        padding-left: 10px;
+    }
+    @include devices(xlMobile) {
+        flex-flow: column;
+        // justify-content: center;
+    }
+}

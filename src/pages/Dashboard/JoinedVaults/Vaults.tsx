@@ -17,7 +17,7 @@ const Vaults: React.FC<Props> = () => {
 
     return currentWallet ? (
         <div
-            className={styles.vaults_container}
+            className={`${styles.vaults_container}`}
             style={networkId === defaultChainId && !isLoading && vaults.length > 0 ? undefined : { display: "block" }}
         >
             {!isLoading ? (

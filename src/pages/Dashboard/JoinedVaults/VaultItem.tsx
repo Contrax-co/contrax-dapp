@@ -26,7 +26,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
     return (
         <div className={`vaults`}>
             <div>
-                <div className={`vault_item ${lightMode && "vault_item--light"}`}>
+                <div className={`outlinedContainer vault_item  ${lightMode && "vault_item--light"}`}>
                     <div className={`vault_item_images`}>
                         {vault.alt1 ? <img className={`vault_item_logo1`} alt={vault.alt1} src={vault.logo1} /> : null}
 

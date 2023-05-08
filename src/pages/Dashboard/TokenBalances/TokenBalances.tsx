@@ -83,7 +83,10 @@ export const TokenBalances: FC<IProps> = () => {
             )}
             {(UIState === UIStateEnum.SHOW_TOKENS_LP || UIState === UIStateEnum.SHOW_TOKENS) && (
                 <>
-                    <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
+                    <p
+                        className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}
+                        style={{ marginTop: 20 }}
+                    >
                         Dual Token Balances
                     </p>
                     <div className={styles.container}>
@@ -99,9 +102,19 @@ export const TokenBalances: FC<IProps> = () => {
                                             : setSelectedToken(token)
                                     }
                                 >
-                                    <span>
-                                        <img className={styles.tokenLogo} src={token.logo} alt="logo" />
-                                        <img className={styles.tokenLogo2} src={token.logo2} alt="logo" />
+                                    <span style={{ display: "flex" }}>
+                                        <img
+                                            className={styles.tokenLogo}
+                                            src={token.logo}
+                                            alt="logo"
+                                            style={{ clipPath: "circle(50%)" }}
+                                        />
+                                        <img
+                                            className={styles.tokenLogo2}
+                                            src={token.logo2}
+                                            alt="logo"
+                                            style={{ clipPath: "circle(50%)" }}
+                                        />
                                     </span>
                                     <div>
                                         <p className={styles.name}>
