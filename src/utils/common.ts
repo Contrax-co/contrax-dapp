@@ -171,3 +171,22 @@ export const subtractGas = async (
     }
     return true;
 };
+
+export const customCommify = (
+    amount: number | string,
+    {
+        minimumFractionDigits,
+        showDollarSign,
+    }: { minimumFractionDigits?: number; showDollarSign?: boolean } | undefined = {}
+) => {
+    if (typeof amount === "string") amount = parseFloat(amount);
+    amount = amount
+        .toLocaleString("en-US", {
+            style: showDollarSign ? "currency" : undefined,
+            currency: showDollarSign ? "USD" : undefined,
+            minimumFractionDigits: (minimumFractionDigits ?? 2) + 1,
+        })
+        .slice(0, minimumFractionDigits === 0 ? -2 : -1);
+
+    return amount;
+};
