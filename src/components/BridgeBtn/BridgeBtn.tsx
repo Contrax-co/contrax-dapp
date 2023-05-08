@@ -8,9 +8,11 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
 import { TiWarningOutline } from "react-icons/ti";
 
-interface IProps {}
+interface IProps {
+    showDisclaimer?: boolean;
+}
 
-const BridgeBtn: React.FC<IProps> = () => {
+const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
     const { polyUsdcToUsdc, isLoading } = useBridge();

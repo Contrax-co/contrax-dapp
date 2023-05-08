@@ -10,6 +10,7 @@ import Wert from "./Wert";
 import { useAppSelector } from "src/state";
 import useBridge from "src/hooks/useBridge";
 import useAccountData from "src/hooks/useAccountData";
+import { TiWarningOutline } from "react-icons/ti";
 
 interface IProps {}
 
@@ -57,7 +58,7 @@ const Buy: React.FC<IProps> = () => {
             <p>
                 Limited Promotion! New Buyers get <b>$5</b> in USDC
             </p>
-            <p>USDC is auto-bridged to arbitrum on purchase*</p>
+
             <Tabs>
                 <PoolButton
                     variant={2}
