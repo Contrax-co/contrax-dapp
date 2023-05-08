@@ -119,6 +119,7 @@ function Dashboard() {
                 <UserTVL />
                 <BridgeBtn />
             </div>
+            {/* <div className="outlinedContainer" style={{ marginLeft: 30, marginTop: 20 }}></div> */}
 
             <div className={`dashboard_section outlinedContainer`}>
                 <TokenBalances />
