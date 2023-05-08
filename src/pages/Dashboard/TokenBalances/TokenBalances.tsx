@@ -32,7 +32,13 @@ export const TokenBalances: FC<IProps> = () => {
                 <Skeleton w={"100%"} h={150} bg={lightMode ? "#ffffff" : undefined} bRadius={20} inverted={true} />
             )}
             {UIState === UIStateEnum.NO_TOKENS && (
-                <EmptyComponent style={{ width: "100%", padding: "40px 24px" }}>You wallet is empty.</EmptyComponent>
+                <EmptyComponent
+                    link="/buy?tab=Wert"
+                    linkText="Get Started ->"
+                    style={{ width: "100%", padding: "40px 24px" }}
+                >
+                    {"Get some tokens..."}
+                </EmptyComponent>
             )}
 
             {(UIState === UIStateEnum.SHOW_TOKENS_TOKENS || UIState === UIStateEnum.SHOW_TOKENS) && (

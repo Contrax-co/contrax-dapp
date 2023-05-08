@@ -162,5 +162,5 @@ export const useTokens = () => {
         return STATE;
     }, [tokens, lpTokens, isLoadingBalances, isLoadingPrices, currentWallet]);
 
-    return { tokens, lpTokens, isLoading: isLoadingBalances || isLoadingPrices, UIState };
+    return { tokens, lpTokens, isLoading: isLoadingBalances || isLoadingPrices, UIState: UIStateEnum.NO_TOKENS };
 };
