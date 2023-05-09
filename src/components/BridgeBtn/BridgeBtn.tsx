@@ -33,11 +33,11 @@ const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
                 </div>
             </div>
             <button className={`${styles.bridgeButton}`} type="submit" disabled={false} onClick={polyUsdcToUsdc}>
-                Bridge to Arbitrum
+                Transfer to Contrax
             </button>
             <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
-                Buying USDC on Polygon Network will Auto Bridge them to Arbitrum Network.
+                This will Bridge (Transfer) all your USDC from the Polygon to Arbitrum Network
             </p>
         </div>
     ) : (

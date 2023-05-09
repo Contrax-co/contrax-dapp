@@ -7,7 +7,7 @@ export const NotSignedIn = () => {
         <div className={styles.sign_in_placeholder}>
             <WalletSvg className={styles.walletIcon} />
             <p className={styles.disclaimer}>Please Sign In</p>
-            <p className={styles.description}>Sign In to get the the full experience of Contrax</p>
+            <p className={styles.description}>Sign in or sign up to use this page</p>
             <ConnectButton label="Sign In/Up" />
         </div>
     );

@@ -71,7 +71,7 @@ function Dashboard() {
                             </div>
                         </>
                     ) : (
-                        <p className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}>No Wallet Connected</p>
+                        <p className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}>Sign In Required</p>
                     )}
                 </div>
 
