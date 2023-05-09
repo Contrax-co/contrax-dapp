@@ -21,6 +21,8 @@ import { toggleSponsoredGas } from "src/state/settings/settingsReducer";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import ReferralLink from "src/components/ReferralLink/ReferralLink";
 import ReferBanner from "src/components/ReferBanner/ReferBanner";
+import { ReactComponent as WalletSvg } from "src/assets/images/walletSvg.svg";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -115,21 +117,33 @@ function Dashboard() {
             <ReferralLink />
 
             <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
-            <div className={`dashboard_tvl_section`}>
-                <UserTVL />
-                <BridgeBtn />
-            </div>
 
-            <div className={`dashboard_section outlinedContainer`}>
-                <TokenBalances />
-            </div>
+            {currentWallet ? (
+                <>
+                    <div className={`dashboard_tvl_section`}>
+                        <UserTVL />
+                        <BridgeBtn />
+                    </div>
 
-            <div className={`dashboard_section outlinedContainer`}>
-                <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
-                    Staked Tokens
-                </p>
-                <Vaults />
-            </div>
+                    <div className={`dashboard_section outlinedContainer`}>
+                        <TokenBalances />
+                    </div>
+
+                    <div className={`dashboard_section outlinedContainer`}>
+                        <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
+                            Staked Tokens
+                        </p>
+                        <Vaults />
+                    </div>
+                </>
+            ) : (
+                <div className="sign_in_placeholder">
+                    <WalletSvg className="walletIcon" />
+                    <p className="disclaimer">Not Signed In</p>
+                    <p className="description">Sign In to get the the full experience of Contrax</p>
+                    <ConnectButton label="Sign In/Up" />
+                </div>
+            )}
         </div>
     );
 }
