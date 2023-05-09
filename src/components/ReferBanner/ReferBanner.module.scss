@@ -69,7 +69,7 @@
     .para {
         padding-left: 85px;
         margin: auto;
-        color: var(--color_black);
+        color: var(--color_text);
         font-size: 0.95em;
     }
     @include devices(tablet) {
