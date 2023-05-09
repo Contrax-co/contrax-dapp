@@ -9,7 +9,7 @@
     overflow: hidden;
     width: calc(100% - 60px);
     background: url(./polygon.png);
-    background-size: auto;
+    background-size: 100% 100%;
     @include devices(tablet) {
         min-height: 280px;
     }
@@ -43,11 +43,12 @@
 }
 .buyButton {
     color: var(--color_white);
-    padding: 8px 32px !important;
+    padding: 10px 34px !important;
     min-height: auto;
     min-width: auto;
-    font-size: 0.8em;
-    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 700;
+    border-radius: 12px;
 }
 .textContainer {
     display: flex;
@@ -69,7 +70,7 @@
     .para {
         padding-left: 85px;
         margin: auto;
-        color: var(--color_black);
+        color: var(--color_text);
         font-size: 0.95em;
     }
     @include devices(tablet) {

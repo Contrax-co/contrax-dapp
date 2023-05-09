@@ -102,7 +102,7 @@
     padding: 10px 16px;
 }
 
-.dashboard_referal_container>p {
+.dashboard_referal_container > p {
     margin: 0px;
 }
 
@@ -152,7 +152,7 @@
     margin: 0 30px;
     margin-top: 20px;
     display: grid;
-    gap:16px;
+    gap: 16px;
     grid-template-columns: repeat(auto-fit, minmax(280px, 350px));
     grid-template-rows: repeat(auto-fit, 140px);
 }
