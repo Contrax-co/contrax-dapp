@@ -11,6 +11,7 @@ import { useAppSelector } from "src/state";
 import useBridge from "src/hooks/useBridge";
 import useAccountData from "src/hooks/useAccountData";
 import { TiWarningOutline } from "react-icons/ti";
+import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
 
 interface IProps {}
 
@@ -24,6 +25,7 @@ const Buy: React.FC<IProps> = () => {
     const [params, setSearchParams] = useSearchParams();
     const { reloadBalances, balances } = useBalances();
     const { fetchAccountData } = useAccountData();
+    const { currentWallet } = useWallet();
     // const { lock } = useBridge();
 
     // Reload Balances every time this component unmounts
@@ -52,15 +54,13 @@ const Buy: React.FC<IProps> = () => {
             });
     }, [params]);
 
-    return (
+    return currentWallet ? (
         <div className={styles.container}>
             <h5>Fund Your Account</h5>
             <p>
                 Limited Promotion! New Buyers get <b>$5</b> in USDC
             </p>
-            <small>
-               Note: If Wert isn't supported for you, use Transk
-            </small>
+            <small>Note: If Wert isn't supported for you, use Transk</small>
 
             <Tabs>
                 <PoolButton
@@ -91,6 +91,8 @@ const Buy: React.FC<IProps> = () => {
             {tab === Tab.Transak && <Transak />}
             {tab === Tab.Wert && <Wert />}
         </div>
+    ) : (
+        <NotSignedIn />
     );
 };
 
