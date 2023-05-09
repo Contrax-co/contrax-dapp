@@ -11,8 +11,8 @@ export enum FarmOriginPlatform {
     SwapFish = "SwapFish",
 }
 export enum FarmTableColumns {
-    Token = "Single Token",
-    Dual_Token = "Dual Token",
+    Token = "Single Tokens",
+    Dual_Token = "Dual Tokens",
     Deposited = "Deposited",
     APY = "Apy",
     EARNED = "Earned",
