@@ -21,8 +21,6 @@ import { toggleSponsoredGas } from "src/state/settings/settingsReducer";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import ReferralLink from "src/components/ReferralLink/ReferralLink";
 import ReferBanner from "src/components/ReferBanner/ReferBanner";
-import { ReactComponent as WalletSvg } from "src/assets/images/walletSvg.svg";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
 
 function Dashboard() {
