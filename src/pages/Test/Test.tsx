@@ -12,6 +12,8 @@ import { filterStateDiff, getAllowanceStateOverride, simulateTransaction } from 
 import { TenderlySimulationType } from "src/types/tenderly";
 import { approveErc20, checkApproval } from "src/api/token";
 import useBridge from "src/hooks/useBridge";
+import useTVL from "src/hooks/useTVL";
+import { commify } from "ethers/lib/utils.js";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
@@ -21,6 +23,8 @@ const Test = () => {
     const { data: polygonSigner } = useSigner({
         chainId: 137,
     });
+
+    const { platformTVL } = useTVL();
 
     // web3authProvider
     const handleTransaction = async () => {
@@ -246,6 +250,8 @@ const Test = () => {
             >
                 Approve Transaction
             </button>
+            <br />
+            <h1>Platform TVL: ${commify(platformTVL.toFixed(0))}</h1>
         </div>
     );
 };

@@ -40,7 +40,9 @@ const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
                 This will Bridge (Transfer) all your USDC from the Polygon to Arbitrum Network
             </p>
         </div>
-    ) : null;
+    ) : (
+        <div></div>
+    );
 };
 
 export default BridgeBtn;
