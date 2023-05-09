@@ -37,7 +37,7 @@ function Home() {
                 </div>
             </div>
             {!isOnline && <InternetConnectionModal />}
-            {isError && isOnline && <Maintainance />}
+            {/* {isError && isOnline && <Maintainance />} */}
         </div>
     );
 }

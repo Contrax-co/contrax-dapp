@@ -1,16 +1,29 @@
 @import "../../../styles/variables";
+@import "../../../styles/mixins";
 
 .container {
-    display: flex;
+    display: grid;
     gap: 16px;
     margin-top: 20px;
-    flex-wrap: wrap;
-    // grid-template-columns: repeat(auto-fit, minmax(250px, 400px));
-
+    // flex-wrap: wrap;
+    // grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(250px, 400px));
+    @include devices(desktop) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    @include devices(tablet) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    @include devices(xlMobile) {
+        grid-template-columns: repeat(1, 1fr);
+    }
+    @include devices(mobile) {
+        grid-template-columns: repeat(1, 1fr);
+    }
 }
 
 .tokenCard {
-    max-width: 340px;
+    // max-width: 400px;
     width: 100%;
     display: grid;
     grid-template-columns: max-content 1fr max-content;
