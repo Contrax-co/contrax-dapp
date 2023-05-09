@@ -19,7 +19,6 @@ import { TbGasStation, TbGasStationOff } from "react-icons/tb";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { toggleSponsoredGas } from "src/state/settings/settingsReducer";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
-import useAccountData from "src/hooks/useAccountData";
 import ReferralLink from "src/components/ReferralLink/ReferralLink";
 import ReferBanner from "src/components/ReferBanner/ReferBanner";
 
@@ -114,13 +113,12 @@ function Dashboard() {
             </div>
 
             <ReferralLink />
-            <div></div>
 
+            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
                 <BridgeBtn />
             </div>
-            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
 
             <div className={`dashboard_section outlinedContainer`}>
                 <TokenBalances />
