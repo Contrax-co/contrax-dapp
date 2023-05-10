@@ -8,7 +8,7 @@ interface Props {}
 const VaultItem: React.FC<Props> = () => {
     const { userTVL } = useTVL();
 
-    if (userTVL === 0) return <div></div>;
+    if (userTVL === 0) return null;
 
     return (
         <div className={`colorContainer ${styles.tvlContainer}`}>
