@@ -1,6 +1,5 @@
 import React from "react";
 import useWallet from "src/hooks/useWallet";
-import useApp from "src/hooks/useApp";
 import useBridge from "src/hooks/useBridge";
 import styles from "./BridgeBtn.module.scss";
 import { useBalance } from "wagmi";
@@ -14,8 +13,7 @@ interface IProps {
 
 const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
     const { currentWallet } = useWallet();
-    const { lightMode } = useApp();
-    const { polyUsdcToUsdc, isLoading } = useBridge();
+    const { polyUsdcToUsdc } = useBridge();
     const { data } = useBalance({
         address: currentWallet as `0x${string}`,
         chainId: CHAIN_ID.POLYGON,
