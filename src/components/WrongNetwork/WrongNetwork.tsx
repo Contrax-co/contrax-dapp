@@ -12,7 +12,7 @@ export const WrongNetwork = () => {
             <p className={styles.disclaimer}>Not on Arbitrum</p>
             <p className={styles.description}>Please Change Your network to Arbitrum to use Contrax.</p>
             <button className="custom-button" disabled={isLoading} onClick={() => switchNetwork?.(CHAIN_ID.ARBITRUM)}>
-                {isLoading ? "Switching..." : "Switch toArbitrum"}
+                {isLoading ? "Switching..." : "Switch to Arbitrum"}
             </button>
         </div>
     );
