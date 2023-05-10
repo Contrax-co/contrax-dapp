@@ -22,19 +22,19 @@ const useTransfer = () => {
         if (!signer) return;
         if (max) amount = ethBalance;
         if (getConnectorId() !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-            if (
-                !(await subtractGas(
-                    amount,
-                    signer,
-                    signer.estimateGas({
-                        to,
-                        value: amount,
-                    }),
-                    false
-                ))
-            ) {
+            const afterGasCut = await subtractGas(
+                amount,
+                signer,
+                signer.estimateGas({
+                    to,
+                    value: amount,
+                }),
+                false
+            );
+            if (!afterGasCut) {
                 throw { message: errorMessages.insufficientGas().message };
             }
+            amount = afterGasCut;
         }
 
         const response = await awaitTransaction(

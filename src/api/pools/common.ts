@@ -78,17 +78,18 @@ export const zapInBase: ZapInBaseFn = async ({
             const connectorId = getConnectorId();
             if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
                 const balance = BigNumber.from(balances[constants.AddressZero]);
-                if (
-                    !(await subtractGas(
-                        amountInWei,
-                        signer,
-                        zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
-                            value: balance,
-                        })
-                    ))
-                ) {
+                const afterGasCut = await subtractGas(
+                    amountInWei,
+                    signer,
+                    zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
+                        value: balance,
+                    })
+                );
+                if (!afterGasCut) {
                     notiId && dismissNotify(notiId);
+                    return;
                 }
+                amountInWei = afterGasCut;
             }
             //#endregion
 
@@ -206,13 +207,15 @@ export const slippageIn = async (args: ZapInArgs & { farm: Farm }) => {
         const connectorId = getConnectorId();
         if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
             const balance = BigNumber.from(balances[constants.AddressZero]);
-            await subtractGas(
+            const afterGasCut = await subtractGas(
                 amountInWei,
                 signer!,
                 zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
                     value: balance,
                 })
             );
+            if (!afterGasCut) return;
+            amountInWei = afterGasCut;
         }
         //#endregion
 

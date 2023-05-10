@@ -31,6 +31,7 @@ export const noExponents = (n: number | string) => {
     if (data.length === 1) return data[0];
 
     var z = "",
+        // @ts-ignore
         sign = n < 0 ? "-" : "",
         str = data[0].replace(".", ""),
         mag = Number(data[1]) + 1;
@@ -167,9 +168,9 @@ export const subtractGas = async (
     if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
     if (amountInWei.lte(0)) {
         showError && notifyError(errorMessages.insufficientGas());
-        return false;
+        return undefined;
     }
-    return true;
+    return amountInWei;
 };
 
 export const customCommify = (
