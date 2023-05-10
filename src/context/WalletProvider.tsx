@@ -70,6 +70,7 @@ interface IWalletContext {
     getPkey: () => Promise<string>;
     multicallProvider: providers.MulticallProvider;
     getWeb3AuthSigner: (chainId?: number, defaultSigner?: ethers.Signer) => Promise<ethers.ethers.Signer | undefined>;
+    isWeb3AuthWallet: boolean;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
@@ -224,6 +225,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 getPkey,
                 multicallProvider,
                 getWeb3AuthSigner,
+                isWeb3AuthWallet: web3AuthConnectorId === getConnectorId(),
             }}
         >
             {children}
