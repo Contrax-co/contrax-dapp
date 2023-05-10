@@ -22,11 +22,13 @@ import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import ReferralLink from "src/components/ReferralLink/ReferralLink";
 import ReferBanner from "src/components/ReferBanner/ReferBanner";
 import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
+import { CHAIN_ID } from "src/types/enums";
+import { WrongNetwork } from "src/components/WrongNetwork/WrongNetwork";
 
 function Dashboard() {
     const { lightMode } = useApp();
     const { sponsoredGas } = useAppSelector((state) => state.settings);
-    const { currentWallet, displayAccount, signer } = useWallet();
+    const { currentWallet, displayAccount, signer, networkId } = useWallet();
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
@@ -118,23 +120,27 @@ function Dashboard() {
             <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
 
             {currentWallet ? (
-                <>
-                    <div className={`dashboard_tvl_section`}>
-                        <UserTVL />
-                        <BridgeBtn />
-                    </div>
+                networkId === CHAIN_ID.ARBITRUM ? (
+                    <>
+                        <div className={`dashboard_tvl_section`}>
+                            <UserTVL />
+                            <BridgeBtn />
+                        </div>
 
-                    <div className={`dashboard_section outlinedContainer`}>
-                        <TokenBalances />
-                    </div>
+                        <div className={`dashboard_section outlinedContainer`}>
+                            <TokenBalances />
+                        </div>
 
-                    <div className={`dashboard_section outlinedContainer`}>
-                        <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
-                            Staked Tokens
-                        </p>
-                        <Vaults />
-                    </div>
-                </>
+                        <div className={`dashboard_section outlinedContainer`}>
+                            <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
+                                Staked Tokens
+                            </p>
+                            <Vaults />
+                        </div>
+                    </>
+                ) : (
+                    <WrongNetwork />
+                )
             ) : (
                 <NotSignedIn />
             )}

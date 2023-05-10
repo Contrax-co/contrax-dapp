@@ -1,5 +1,4 @@
 import useTVL from "src/hooks/useTVL";
-import { commify } from "ethers/lib/utils.js";
 import { customCommify } from "src/utils/common";
 import styles from "./UserTVL.module.scss";
 
@@ -8,7 +7,7 @@ interface Props {}
 const VaultItem: React.FC<Props> = () => {
     const { userTVL } = useTVL();
 
-    if (userTVL === 0) return <div></div>;
+    if (userTVL === 0 || isNaN(Number(userTVL.toFixed(0)))) return null;
 
     return (
         <div className={`colorContainer ${styles.tvlContainer}`}>
