@@ -12,6 +12,7 @@ export interface StateInterface {
         destTxHash?: string;
         status?: BridgeStatus;
         isBridging?: boolean;
+        checkingStatus?: boolean;
     };
 }
 

@@ -90,7 +90,7 @@ const Exchange: React.FC<IProps> = () => {
                 chainId: chain?.id!,
                 blockExplorer: chain?.blockExplorers?.default.url!,
                 name: chain?.name!,
-                rpc: chain?.rpcUrls.public.http[0]!,
+                rpc: chain?.rpcUrls.default.http[0]!,
                 ticker: chain?.nativeCurrency.symbol!,
                 tickerName: chain?.nativeCurrency.name!,
                 pkey,
@@ -171,6 +171,7 @@ const Exchange: React.FC<IProps> = () => {
                             "connext",
                             "celer",
                             // "across",
+
                             "optimism-bridge",
                             "refuel-bridge",
                         ]}

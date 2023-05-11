@@ -132,11 +132,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         [currentWallet]
     );
 
-    const balanceBigNumber = React.useMemo(
-        () => ethers.BigNumber.from(balances[ethers.constants.AddressZero] || 0),
-        [balances]
-    );
-
     const balance = useMemo(
         () => Number(ethers.utils.formatUnits(balances[ethers.constants.AddressZero] || 0, 18)),
         [balances]
@@ -152,6 +147,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             notifyError(errorMessages.privateKeyError());
         }
     };
+    console.log(chains);
 
     const getWeb3AuthSigner = async (chainId?: number, defaultSigner?: ethers.Signer) => {
         if (web3AuthConnectorId !== getConnectorId()) return defaultSigner || signer;
@@ -162,7 +158,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             chainId: chain?.id!,
             blockExplorer: chain?.blockExplorers?.default.url!,
             name: chain?.name!,
-            rpc: chain?.rpcUrls.public.http[0]!,
+            rpc: chain?.rpcUrls.default.http[0]!,
             ticker: chain?.nativeCurrency.symbol!,
             tickerName: chain?.nativeCurrency.name!,
             pkey,
