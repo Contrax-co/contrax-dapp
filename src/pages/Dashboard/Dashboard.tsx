@@ -77,7 +77,7 @@ function Dashboard() {
                     )}
                 </div>
 
-                <div className="dashboard-key-icons">
+                <div className="dashboard-key-icons" style={currentWallet ? {} : { display: "flex" }}>
                     <SupportChatToggle />
                     {signer && (
                         <>
