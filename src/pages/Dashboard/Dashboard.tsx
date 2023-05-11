@@ -119,14 +119,13 @@ function Dashboard() {
 
             <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
 
+            <div className={`dashboard_tvl_section`}>
+                <UserTVL />
+                <BridgeBtn />
+            </div>
             {currentWallet ? (
                 networkId === CHAIN_ID.ARBITRUM ? (
                     <>
-                        <div className={`dashboard_tvl_section`}>
-                            <UserTVL />
-                            <BridgeBtn />
-                        </div>
-
                         <div className={`dashboard_section outlinedContainer`}>
                             <TokenBalances />
                         </div>
