@@ -13,7 +13,7 @@ interface IProps {
 
 const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
     const { currentWallet } = useWallet();
-    const { polyUsdcToUsdc } = useBridge();
+    const { polyUsdcToUsdc, isLoading } = useBridge();
     const { data } = useBalance({
         address: currentWallet as `0x${string}`,
         chainId: CHAIN_ID.POLYGON,
@@ -30,8 +30,13 @@ const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
                     </h3>
                 </div>
             </div>
-            <button className={`${styles.bridgeButton}`} type="submit" disabled={false} onClick={polyUsdcToUsdc}>
-                Transfer to Contrax
+            <button
+                className={`custom-button ${styles.bridgeButton}`}
+                type="submit"
+                disabled={isLoading}
+                onClick={polyUsdcToUsdc}
+            >
+                {isLoading ? "Transfering..." : "Transfer to Contrax"}
             </button>
             <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
