@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useSigner } from "wagmi";
 import useWallet from "./useWallet";
 import { ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
 import { useAppDispatch, useAppSelector } from "src/state";
-import { polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
+import { checkBridgeStatus, polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
 
 const useBridge = () => {
     const { getWeb3AuthSigner, currentWallet } = useWallet();
     const isLoading = useAppSelector((state) => state.ramp.bridgeState.isBridging);
+    const checkingStatus = useAppSelector((state) => state.ramp.bridgeState.checkingStatus);
 
     const { data: polygonSignerWagmi } = useSigner({
         chainId: CHAIN_ID.POLYGON,
@@ -19,6 +20,10 @@ const useBridge = () => {
     const polyUsdcToUsdc = async () => {
         if (!polygonSigner) return;
         dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner }));
+    };
+
+    const isBridgePending = () => {
+        if (!checkingStatus) dispatch(checkBridgeStatus());
     };
 
     // const lock = async () => {
@@ -42,7 +47,7 @@ const useBridge = () => {
         });
     }, [getWeb3AuthSigner]);
 
-    return { polyUsdcToUsdc, isLoading };
+    return { polyUsdcToUsdc, isLoading, isBridgePending };
 };
 
 export default useBridge;

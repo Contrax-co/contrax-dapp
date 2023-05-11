@@ -26,7 +26,7 @@ const persistedSettingsReducer = persistReducer(
 );
 
 const persistedRampReducer = persistReducer(
-    { key: "ramp", version: 1, storage, whitelist: ["bridgeState"] },
+    { key: "ramp", version: 1, storage, whitelist: ["bridgeState.sourceTxHash"] },
     rampReducer
 );
 

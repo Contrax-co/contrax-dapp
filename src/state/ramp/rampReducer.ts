@@ -9,6 +9,7 @@ import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
 import { notifySuccess } from "src/api/notify";
 import { notifyError } from "src/api/notify";
 import { dismissNotify } from "src/api/notify";
+import { v4 as uuid } from "uuid";
 
 const initialState: StateInterface = {
     onRampInProgress: false,
@@ -18,9 +19,47 @@ const initialState: StateInterface = {
     bridgeState: {},
 };
 
+export const checkBridgeStatus = createAsyncThunk("ramp/checkBridgeStatus", async (_, thunkApi) => {
+    const notiId = uuid();
+    const int = setInterval(() => {
+        const { ramp } = thunkApi.getState() as any;
+        const sourceTxHash = ramp.bridgeState.sourceTxHash;
+
+        if (sourceTxHash) {
+            thunkApi.dispatch(setBridgeStatus(BridgeStatus.PENDING));
+            notifyLoading(
+                { title: "Checking bridge status.", message: "This will take a few minutes..." },
+                { id: notiId }
+            );
+            getBridgeStatus(sourceTxHash, CHAIN_ID.POLYGON, CHAIN_ID.ARBITRUM).then((res) => {
+                console.log(res);
+                if (res.destinationTxStatus === "COMPLETED") {
+                    dismissNotify(notiId);
+                    notifySuccess(
+                        { title: "Success!", message: "Briging completed" },
+                        { dismissAfter: 0, dismissible: true }
+                    );
+                    thunkApi.dispatch(setSourceTxHash(""));
+                    thunkApi.dispatch(setBridgeStatus(BridgeStatus.COMPLETED));
+                    dismissNotify(notiId);
+                    clearInterval(int);
+                    thunkApi.dispatch(setIsBridging(false));
+                    thunkApi.dispatch(setCheckBridgeStatus(false));
+                }
+            });
+        } else {
+            dismissNotify(notiId);
+            thunkApi.dispatch(setIsBridging(false));
+            clearInterval(int);
+        }
+    }, 5000);
+    return int;
+});
+
 export const polyUsdcToArbUsdc = createAsyncThunk(
     "ramp/polyUsdcToArbUsdc",
     async ({ polygonSigner, currentWallet }: PolyUsdcToArbUsdcArgs, thunkApi) => {
+        console.log(polygonSigner);
         if (!polygonSigner) return;
         thunkApi.dispatch(setIsBridging(true));
         await sleep(1000);
@@ -63,6 +102,7 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 data: buildTx?.txData,
                 value: buildTx?.value,
                 chainId: buildTx?.chainId,
+                gasLimit: 1000000,
             };
             console.log("sending tx", tx);
             // const routeId: string = route.routeId;
@@ -74,33 +114,8 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 notifySuccess({ title: "Bridge!", message: "Transaction sent" });
             }
             thunkApi.dispatch(setSourceTxHash(sourceTxHash));
-            const int = setInterval(() => {
-                if (sourceTxHash) {
-                    notifyLoading(
-                        { title: "Checking bridge status.", message: "This will take a few minutes..." },
-                        { id: notiId }
-                    );
-                    getBridgeStatus(sourceTxHash, CHAIN_ID.POLYGON, CHAIN_ID.ARBITRUM).then((res) => {
-                        console.log(res);
-                        if (res.destinationTxStatus === "COMPLETED") {
-                            dismissNotify(notiId);
-                            notifySuccess(
-                                { title: "Success!", message: "Briging completed" },
-                                { dismissAfter: 0, dismissible: true }
-                            );
-                            thunkApi.dispatch(setSourceTxHash(""));
-                            thunkApi.dispatch(setBridgeStatus(BridgeStatus.COMPLETED));
-                            dismissNotify(notiId);
-                            clearInterval(int);
-                            thunkApi.dispatch(setIsBridging(false));
-                        }
-                    });
-                } else {
-                    dismissNotify(notiId);
-                    thunkApi.dispatch(setIsBridging(false));
-                    clearInterval(int);
-                }
-            }, 5000);
+            thunkApi.dispatch(checkBridgeStatus());
+            dismissNotify(notiId);
         } catch (error: any) {
             thunkApi.dispatch(setIsBridging(false));
             console.error(error);
@@ -126,9 +141,18 @@ const rampSlice = createSlice({
         setIsBridging: (state: StateInterface, action: { payload: boolean }) => {
             state.bridgeState.isBridging = action.payload;
         },
+        setCheckBridgeStatus: (state: StateInterface, action: { payload: boolean }) => {
+            state.bridgeState.checkingStatus = action.payload;
+        },
+    },
+    extraReducers(builder) {
+        builder.addCase(checkBridgeStatus.pending, (state: StateInterface) => {
+            state.bridgeState.checkingStatus = true;
+        });
     },
 });
 
-export const { setSourceTxHash, setBridgeStatus, setBeforeRampBalance, setIsBridging } = rampSlice.actions;
+export const { setSourceTxHash, setBridgeStatus, setBeforeRampBalance, setIsBridging, setCheckBridgeStatus } =
+    rampSlice.actions;
 
 export default rampSlice.reducer;

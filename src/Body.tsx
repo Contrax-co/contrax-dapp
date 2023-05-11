@@ -13,6 +13,7 @@ import useTotalSupplies from "./hooks/useTotalSupplies";
 import { useDecimals } from "./hooks/useDecimals";
 import Buy from "./pages/Buy/Buy";
 import useAccountData from "./hooks/useAccountData";
+import useBridge from "./hooks/useBridge";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -22,6 +23,11 @@ function Body() {
     const { reloadSupplies } = useTotalSupplies();
     const { reloadFarmData } = useFarmDetails();
     const { fetchAccountData } = useAccountData();
+    const { isBridgePending } = useBridge();
+
+    useEffect(() => {
+        isBridgePending();
+    }, []);
 
     useEffect(() => {
         fetchAccountData();
