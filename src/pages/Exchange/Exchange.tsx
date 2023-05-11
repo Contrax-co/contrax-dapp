@@ -5,16 +5,14 @@ import { Bridge } from "@socket.tech/plugin";
 import { defaultChainId, SOCKET_BRIDGE_KEY } from "src/config/constants";
 
 import PoolButton from "src/components/PoolButton/PoolButton";
-import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
 import "@uniswap/widgets/fonts.css";
 import "./Exchange.css";
-import { useSigner, useWebSocketProvider } from "wagmi";
+import { useSigner } from "wagmi";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
-import useFarms from "src/hooks/farms/useFarms";
 import { useSearchParams } from "react-router-dom";
 import useBalances from "src/hooks/useBalances";
 import { Tabs } from "src/components/Tabs/Tabs";
-import uniswapTokens from "./uniswapTokens.json";
+import Swap from "./Swap";
 
 interface IProps {}
 
@@ -50,7 +48,7 @@ enum Tab {
 }
 
 const Exchange: React.FC<IProps> = () => {
-    const { currentWallet, connectWallet, chains, signer: wagmiSigner } = useWallet();
+    const { currentWallet, chains } = useWallet();
     const [chainId, setChainId] = React.useState<number>(defaultChainId);
     const { data: signer } = useSigner({
         chainId,
@@ -60,7 +58,6 @@ const Exchange: React.FC<IProps> = () => {
 
     const { lightMode } = useApp();
     const [provider, setProvider] = React.useState<any>();
-    const websocketProvider = useWebSocketProvider();
     const [tab, setTab] = React.useState<Tab>(Tab.Bridge);
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
 
@@ -93,7 +90,7 @@ const Exchange: React.FC<IProps> = () => {
                 chainId: chain?.id!,
                 blockExplorer: chain?.blockExplorers?.default.url!,
                 name: chain?.name!,
-                rpc: chain?.rpcUrls.public.http[0]!,
+                rpc: chain?.rpcUrls.default.http[0]!,
                 ticker: chain?.nativeCurrency.symbol!,
                 tickerName: chain?.nativeCurrency.name!,
                 pkey,
@@ -174,6 +171,7 @@ const Exchange: React.FC<IProps> = () => {
                             "connext",
                             "celer",
                             // "across",
+
                             "optimism-bridge",
                             "refuel-bridge",
                         ]}
@@ -184,32 +182,10 @@ const Exchange: React.FC<IProps> = () => {
                         customize={lightMode ? lightSocketTheme : darkSocketTheme}
                     />
                 )}
-                {tab === Tab.Swap && SOCKET_BRIDGE_KEY && (
-                    <SwapWidget
-                        theme={
-                            lightMode
-                                ? {
-                                      ...lightTheme,
-                                      //   accent: "#08a7c7",
-                                      //   accentSoft: "#63cce0",
-                                      accent: "#63cce0",
-                                      accentSoft: "#dcf9ff",
-                                      networkDefaultShadow: "rgba(99, 204, 224,0.1)",
-                                  }
-                                : { ...darkTheme, accent: "#63cce0", accentSoft: "#dcf9ff" }
-                        }
-                        // @ts-ignore
-                        provider={websocketProvider || wagmiSigner?.provider}
-                        onConnectWalletClick={connectWallet}
-                        onTxSuccess={reloadBalances}
-                        tokenList={uniswapTokens}
-                        permit2={true}
-                    />
-                )}
+                {tab === Tab.Swap && <Swap />}
             </div>
         </div>
     );
 };
 
 export default Exchange;
-

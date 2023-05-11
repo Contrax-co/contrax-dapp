@@ -16,6 +16,8 @@ const useNotify = () => {
             title,
             message,
             status: "error",
+            dismissible: true,
+            dismissAfter: 0,
         });
     }, []);
 

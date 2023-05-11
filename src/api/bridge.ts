@@ -74,8 +74,9 @@ export const getRoute = async (
     const res = await socketTechApi.get(
         `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true`
     );
-    const route = res.data.result.routes[0] as any;
-    const approvalData = res.data.result.routes[0].userTxs[0].approvalData as ApprovalData;
+    const routes = res.data.result.routes as any[];
+    const route = routes.find((route) => route.usedBridgeNames[0] !== "connext");
+    const approvalData = route.userTxs[0].approvalData as ApprovalData;
 
     return { route, approvalData };
 };

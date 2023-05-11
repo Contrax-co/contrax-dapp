@@ -12,12 +12,15 @@ export const notifySuccess = (successMessage: NotifyMessage, options?: Partial<N
     });
 };
 
-export const notifyError = (errorMessage: NotifyMessage) => {
+export const notifyError = (errorMessage: NotifyMessage, options?: Partial<Notification>) => {
     const { notify } = getHook("notifications");
     notify({
         title: errorMessage.title,
         message: errorMessage.message,
         status: "error",
+        dismissible: true,
+        dismissAfter: 0,
+        ...options,
     });
 };
 
