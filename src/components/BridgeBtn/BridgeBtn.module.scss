@@ -38,8 +38,7 @@
 }
 
 .bridgeButton {
-    @include button();
-    padding: 0;
+    padding: 0 !important;
     min-height: 40px;
     min-width: 178px;
 }
