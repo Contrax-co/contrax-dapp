@@ -10,7 +10,7 @@ import { createClient, configureChains } from "wagmi";
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import { WEB3AUTH_CLIENT_ID } from "./constants";
+import { INFURA_KEY, WEB3AUTH_CLIENT_ID } from "./constants";
 import googleIcon from "./../assets/images/google-logo.svg";
 import facebookIcon from "./../assets/images/facebook-icon.svg";
 import discordIcon from "./../assets/images/discordapp-icon.svg";
@@ -35,9 +35,9 @@ export const { chains, provider, webSocketProvider } = configureChains(
         // optimism, avalanche, gnosis, fantom, bsc
     ],
     [
-        // infuraProvider({
-        //     apiKey: "547b7378b8c2400aafd92ef4281c732f",
-        // }),
+        infuraProvider({
+            apiKey: INFURA_KEY as string,
+        }),
         jsonRpcProvider({
             rpc: (chain) => ({
                 http: chain.rpcUrls.default.http[0],
