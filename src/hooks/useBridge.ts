@@ -5,15 +5,18 @@ import { ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { checkBridgeStatus, polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
+import { web3AuthConnectorId } from "src/config/constants";
+import { getConnectorId } from "src/utils/common";
 
 const useBridge = () => {
-    const { getWeb3AuthSigner, currentWallet } = useWallet();
+    const { getWeb3AuthSigner, currentWallet, switchNetworkAsync, networkId } = useWallet();
     const isLoading = useAppSelector((state) => state.ramp.bridgeState.isBridging);
     const checkingStatus = useAppSelector((state) => state.ramp.bridgeState.checkingStatus);
 
     const { data: polygonSignerWagmi } = useSigner({
         chainId: CHAIN_ID.POLYGON,
     });
+
     const dispatch = useAppDispatch();
     const [polygonSigner, setPolygonSigner] = React.useState(polygonSignerWagmi);
 
@@ -26,28 +29,20 @@ const useBridge = () => {
         if (!checkingStatus) dispatch(checkBridgeStatus());
     };
 
-    // const lock = async () => {
-    //     if (status === BridgeStatus.APPROVING || status === BridgeStatus.PENDING) return;
-    //     const usdcPolygonBalance = await getBalance(
-    //         addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
-    //         currentWallet,
-    //         polygonSigner!
-    //     );
-    //     dispatch(
-    //         setBeforeRampBalance({
-    //             address: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
-    //             balance: usdcPolygonBalance.toString(),
-    //         })
-    //     );
-    // };
-
     React.useEffect(() => {
         getWeb3AuthSigner(CHAIN_ID.POLYGON, polygonSigner as ethers.Signer).then((res) => {
             setPolygonSigner(res);
         });
     }, [getWeb3AuthSigner]);
 
-    return { polyUsdcToUsdc, isLoading, isBridgePending };
+    const wrongNetwork = React.useMemo(() => {
+        if (networkId !== CHAIN_ID.POLYGON && getConnectorId() !== web3AuthConnectorId) {
+            return true;
+        }
+        return false;
+    }, [networkId, switchNetworkAsync]);
+
+    return { polyUsdcToUsdc, isLoading, isBridgePending, wrongNetwork };
 };
 
 export default useBridge;
