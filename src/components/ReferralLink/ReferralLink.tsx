@@ -23,15 +23,11 @@ const ReferralLink: React.FC<IProps> = () => {
 
     if (currentWallet && referralLink)
         return (
-            <div className="dashboard_referal_container outlinedContainer">
-                <p>Referal Link:</p>
-                <p className="dashboard_referal_link" onClick={copy}>
-                    {referralLink}
-                    {!copied ? (
-                        <FiCopy className="dashboard_referal_icon" />
-                    ) : (
-                        <BsCheckCircle className="dashboard_referal_icon" />
-                    )}
+            <div className={`outlinedContainer ${styles.container}`}>
+                <p className={styles.heading}>Referal Link:</p>
+                <p className={styles.link} onClick={copy}>
+                    <span className={styles.text}>{referralLink}</span>
+                    {!copied ? <FiCopy className={styles.icon} /> : <BsCheckCircle className={styles.icon} />}
                 </p>
             </div>
         );
