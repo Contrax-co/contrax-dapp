@@ -42,7 +42,7 @@ const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
                         : polyUsdcToUsdc
                 }
             >
-                {isLoading ? "Transfering..." : wrongNetwork ? "Switch Network" : "Transfer to Contrax"}
+                {isLoading ? "Transferring..." : wrongNetwork ? "Transfer to Contrax" : "Transfer to Contrax"}
             </button>
             <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
