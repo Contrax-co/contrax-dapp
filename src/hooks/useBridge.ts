@@ -40,7 +40,7 @@ const useBridge = () => {
             return true;
         }
         return false;
-    }, [networkId, switchNetworkAsync]);
+    }, [networkId, switchNetworkAsync, getConnectorId()]);
 
     return { polyUsdcToUsdc, isLoading, isBridgePending, wrongNetwork };
 };
