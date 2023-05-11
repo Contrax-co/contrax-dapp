@@ -147,7 +147,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             notifyError(errorMessages.privateKeyError());
         }
     };
-    console.log(chains);
 
     const getWeb3AuthSigner = async (chainId?: number, defaultSigner?: ethers.Signer) => {
         if (web3AuthConnectorId !== getConnectorId()) return defaultSigner || signer;
