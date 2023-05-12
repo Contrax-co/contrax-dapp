@@ -10,6 +10,7 @@ import { notifySuccess } from "src/api/notify";
 import { notifyError } from "src/api/notify";
 import { dismissNotify } from "src/api/notify";
 import { v4 as uuid } from "uuid";
+import { RootState } from "..";
 
 const initialState: StateInterface = {
     onRampInProgress: false,
@@ -17,14 +18,15 @@ const initialState: StateInterface = {
         balances: {},
     },
     bridgeState: {},
+    socketSourceTxHash: "",
 };
 
 export const checkBridgeStatus = createAsyncThunk("ramp/checkBridgeStatus", async (_, thunkApi) => {
     const notiId = uuid();
     const int = setInterval(() => {
-        const { ramp } = thunkApi.getState() as any;
-        const sourceTxHash = ramp.bridgeState.sourceTxHash;
-
+        const { ramp } = thunkApi.getState() as RootState;
+        const sourceTxHash = ramp.socketSourceTxHash;
+        console.log("sourceTxHash", sourceTxHash);
         if (sourceTxHash) {
             thunkApi.dispatch(setBridgeStatus(BridgeStatus.PENDING));
             notifyLoading(
@@ -59,7 +61,6 @@ export const checkBridgeStatus = createAsyncThunk("ramp/checkBridgeStatus", asyn
 export const polyUsdcToArbUsdc = createAsyncThunk(
     "ramp/polyUsdcToArbUsdc",
     async ({ polygonSigner, currentWallet }: PolyUsdcToArbUsdcArgs, thunkApi) => {
-        console.log(polygonSigner);
         if (!polygonSigner) return;
         thunkApi.dispatch(setIsBridging(true));
         await sleep(1000);
@@ -73,7 +74,6 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 currentWallet,
                 polygonSigner
             );
-            console.log("polyUsdcBalance", polyUsdcBalance.toString());
             thunkApi.dispatch(setBridgeStatus(BridgeStatus.APPROVING));
             const { route, approvalData } = await getRoute(
                 CHAIN_ID.POLYGON,
@@ -83,8 +83,6 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 polyUsdcBalance.toString(),
                 currentWallet
             );
-            console.log("bridge route", route);
-            console.log("checking approval");
             notifyLoading({ title: "Bridging", message: "Approving Polygon USDC - 1/3" }, { id: notiId });
             await approveErc20(
                 approvalData.approvalTokenAddress,
@@ -104,12 +102,11 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 chainId: buildTx?.chainId,
                 gasLimit: 1000000,
             };
-            console.log("sending tx", tx);
-            // const routeId: string = route.routeId;
             notifyLoading({ title: "Bridging", message: "Sending bridge transaction - 3/3" }, { id: notiId });
             const { tx: transaction, error } = await awaitTransaction(polygonSigner?.sendTransaction(tx));
+            console.log(transaction, error);
             if (error) throw new Error(error);
-            const sourceTxHash: string = transaction.transactionHash;
+            const sourceTxHash: string = transaction.transactionHash || transaction.hash;
             if (sourceTxHash) {
                 notifySuccess({ title: "Bridge!", message: "Transaction sent" });
             }
@@ -130,7 +127,7 @@ const rampSlice = createSlice({
     initialState: initialState,
     reducers: {
         setSourceTxHash: (state: StateInterface, action: { payload: string }) => {
-            state.bridgeState.sourceTxHash = action.payload;
+            state.socketSourceTxHash = action.payload;
         },
         setBridgeStatus: (state: StateInterface, action: { payload: BridgeStatus }) => {
             state.bridgeState.status = action.payload;

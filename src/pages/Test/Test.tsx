@@ -14,25 +14,19 @@ import { approveErc20, checkApproval } from "src/api/token";
 import useBridge from "src/hooks/useBridge";
 import useTVL from "src/hooks/useTVL";
 import { commify } from "ethers/lib/utils.js";
+import { useAppDispatch } from "src/state";
+import { setSourceTxHash } from "src/state/ramp/rampReducer";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
-    const { provider, signer, getPkey, currentWallet, getWeb3AuthSigner } = useWallet();
     const addRecentTransaction = useAddRecentTransaction();
     const { polyUsdcToUsdc } = useBridge();
-    const { data: polygonSigner } = useSigner({
-        chainId: 137,
-    });
+    const dispatch = useAppDispatch();
 
     const { platformTVL } = useTVL();
 
     // web3authProvider
-    const handleTransaction = async () => {
-        const _signer = new GasSponsoredSigner(await getPkey(), provider);
-        const contract = new Contract("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", erc20ABI, _signer);
-        const tx = await contract.approve("0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8", constants.MaxUint256);
-        console.log("tx", tx);
-    };
+    const handleTransaction = async () => {};
 
     const fn = async () => {
         // const blockNumber = await provider.getBlockNumber();
@@ -171,6 +165,13 @@ const Test = () => {
     return (
         <div style={{ color: "red" }}>
             Test
+            <button
+                onClick={() =>
+                    dispatch(setSourceTxHash("0xb31a3b7e617367def8fe92af3ca09c80080bd62db5eed87e6cc21da44bf79159"))
+                }
+            >
+                SetBridgeTxHash
+            </button>
             <button onClick={fn2}>Simulate</button>
             <button onClick={bridgeFn}>Bridge</button>
             <button
