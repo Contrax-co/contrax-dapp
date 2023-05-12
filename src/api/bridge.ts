@@ -72,10 +72,16 @@ export const getRoute = async (
     userAddress: string
 ) => {
     const res = await socketTechApi.get(
-        `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true`
+        `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true&excludeBridges=stargate&excludeBridges=connext`
     );
     const routes = res.data.result.routes as any[];
-    const route = routes.find((route) => route.usedBridgeNames[0] !== "connext");
+    const route =
+        // routes.find((route) => route.usedBridgeNames[0] !== "connext" && route.usedBridgeNames[0] !== "hop") ||
+        // routes.find((route) => route.usedBridgeNames[0] !== "connext") ||
+        routes[0];
+    console.log("Available bridge routes: ", routes);
+    console.log("Selected bridge route: ", route);
+    if (!route) throw new Error("No bridge route found, Use Exchange instead");
     const approvalData = route.userTxs[0].approvalData as ApprovalData;
 
     return { route, approvalData };
