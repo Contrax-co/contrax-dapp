@@ -75,8 +75,14 @@ export const getRoute = async (
         `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true`
     );
     const routes = res.data.result.routes as any[];
-    const route = routes.find((route) => route.usedBridgeNames[0] !== "connext");
+    const route =
+        routes.find((route) => route.usedBridgeNames[0] !== "connext" && route.usedBridgeNames[0] !== "hop") ||
+        routes.find((route) => route.usedBridgeNames[0] !== "connext") ||
+        routes[0];
+    console.log("Available bridge routes: ", routes);
+    console.log("Selected bridge route: ", route);
     const approvalData = route.userTxs[0].approvalData as ApprovalData;
+    if (!route) throw new Error("No bridge route found");
 
     return { route, approvalData };
 };

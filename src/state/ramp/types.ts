@@ -8,12 +8,12 @@ export interface StateInterface {
         };
     };
     bridgeState: {
-        sourceTxHash?: string;
         destTxHash?: string;
         status?: BridgeStatus;
         isBridging?: boolean;
         checkingStatus?: boolean;
     };
+    socketSourceTxHash?: string;
 }
 
 export enum BridgeStatus {
