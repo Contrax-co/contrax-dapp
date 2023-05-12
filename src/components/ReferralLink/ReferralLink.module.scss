@@ -6,7 +6,7 @@
     align-items: center;
     margin-left: 30px;
     padding: 10px 16px;
-    width: calc(100% - 92px);
+    max-width: calc(100% - 92px);
     @include devices(xlMobile) {
         flex-direction: column;
         align-items: flex-start;
