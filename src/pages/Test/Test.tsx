@@ -16,13 +16,18 @@ import useTVL from "src/hooks/useTVL";
 import { commify } from "ethers/lib/utils.js";
 import { useAppDispatch } from "src/state";
 import { setSourceTxHash } from "src/state/ramp/rampReducer";
+import { getRoute } from "src/api/bridge";
+import { CHAIN_ID } from "src/types/enums";
+import { toWei } from "src/utils/common";
+import { useDecimals } from "src/hooks/useDecimals";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const addRecentTransaction = useAddRecentTransaction();
     const { polyUsdcToUsdc } = useBridge();
     const dispatch = useAppDispatch();
-
+    const { currentWallet } = useWallet();
+    const { decimals } = useDecimals();
     const { platformTVL } = useTVL();
 
     // web3authProvider
@@ -158,6 +163,16 @@ const Test = () => {
 
         console.log(filteredState);
     };
+    const testRouteBridge = async () => {
+        await getRoute(
+            CHAIN_ID.POLYGON,
+            CHAIN_ID.ARBITRUM,
+            addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
+            addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress,
+            toWei("1", decimals[addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress]).toString(),
+            "0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8"
+        );
+    };
 
     const bridgeFn = async () => {
         await polyUsdcToUsdc();
@@ -174,17 +189,6 @@ const Test = () => {
             </button>
             <button onClick={fn2}>Simulate</button>
             <button onClick={bridgeFn}>Bridge</button>
-            <button
-                onClick={() => {
-                    addRecentTransaction({
-                        hash: "0x272cc8bb28c988f9c73fa2f96dea48aae0f19d8a7e39d16a1d78248cae797a50",
-                        description: "Approving Zapping!",
-                        confirmations: 100,
-                    });
-                }}
-            >
-                Add Tran
-            </button>
             <button
                 onClick={() => {
                     notifySuccess("Approving Zapping!", "Please wait...a sadasfas fsa fsafsafsaf saf");
@@ -244,13 +248,7 @@ const Test = () => {
             >
                 dismiss
             </button>
-            <button
-                onClick={() => {
-                    handleTransaction();
-                }}
-            >
-                Approve Transaction
-            </button>
+            <button onClick={testRouteBridge}>get route</button>
             <br />
             <h1>Platform TVL: ${commify(platformTVL.toFixed(0))}</h1>
         </div>
