@@ -25,4 +25,5 @@ export enum BridgeStatus {
 export interface PolyUsdcToArbUsdcArgs {
     polygonSigner: Signer;
     currentWallet: string;
+    refechBalance: Function;
 }

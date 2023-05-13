@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { useSigner } from "wagmi";
+import React from "react";
+import { useBalance, useSigner } from "wagmi";
 import useWallet from "./useWallet";
 import { ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
@@ -7,9 +7,17 @@ import { useAppDispatch, useAppSelector } from "src/state";
 import { checkBridgeStatus, polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
 import { web3AuthConnectorId } from "src/config/constants";
 import { getConnectorId } from "src/utils/common";
+import { addressesByChainId } from "src/config/constants/contracts";
 
 const useBridge = () => {
     const { getWeb3AuthSigner, currentWallet, switchNetworkAsync, networkId } = useWallet();
+    const { data, refetch } = useBalance({
+        address: currentWallet as `0x${string}`,
+        chainId: CHAIN_ID.POLYGON,
+        watch: true,
+        cacheTime: 5,
+        token: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress as `0x${string}`,
+    });
     const isLoading = useAppSelector((state) => state.ramp.bridgeState.isBridging);
     const checkingStatus = useAppSelector((state) => state.ramp.bridgeState.checkingStatus);
 
@@ -22,7 +30,7 @@ const useBridge = () => {
 
     const polyUsdcToUsdc = async () => {
         if (!polygonSigner) return;
-        dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner }));
+        dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner, refechBalance: refetch }));
     };
 
     const isBridgePending = () => {
@@ -42,7 +50,7 @@ const useBridge = () => {
         return false;
     }, [networkId, switchNetworkAsync, getConnectorId()]);
 
-    return { polyUsdcToUsdc, isLoading, isBridgePending, wrongNetwork };
+    return { polyUsdcToUsdc, isLoading, isBridgePending, wrongNetwork, polygonUsdcBalance: data?.formatted };
 };
 
 export default useBridge;
