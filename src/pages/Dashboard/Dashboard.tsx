@@ -24,6 +24,7 @@ import ReferBanner from "src/components/ReferBanner/ReferBanner";
 import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
 import { CHAIN_ID } from "src/types/enums";
 import { WrongNetwork } from "src/components/WrongNetwork/WrongNetwork";
+import ReferralEarning from "./ReferralEarning/ReferralEarning";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -121,6 +122,7 @@ function Dashboard() {
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
+                <ReferralEarning />
                 <BridgeBtn />
             </div>
             {currentWallet ? (

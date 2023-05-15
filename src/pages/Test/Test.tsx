@@ -20,6 +20,7 @@ import { getRoute } from "src/api/bridge";
 import { CHAIN_ID } from "src/types/enums";
 import { toWei } from "src/utils/common";
 import { useDecimals } from "src/hooks/useDecimals";
+import { getReferalEarning } from "src/api/account";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
@@ -163,15 +164,8 @@ const Test = () => {
 
         console.log(filteredState);
     };
-    const testRouteBridge = async () => {
-        await getRoute(
-            CHAIN_ID.POLYGON,
-            CHAIN_ID.ARBITRUM,
-            addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
-            addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress,
-            toWei("1", decimals[addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress]).toString(),
-            "0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8"
-        );
+    const test = async () => {
+        await getReferalEarning(currentWallet);
     };
 
     const bridgeFn = async () => {
@@ -248,7 +242,7 @@ const Test = () => {
             >
                 dismiss
             </button>
-            <button onClick={testRouteBridge}>get route</button>
+            <button onClick={test}>Test</button>
             <br />
             <h1>Platform TVL: ${commify(platformTVL.toFixed(0))}</h1>
         </div>
