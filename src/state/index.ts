@@ -31,7 +31,7 @@ const persistedRampReducer = persistReducer(
 );
 
 const persistedAccountReducer = persistReducer(
-    { key: "account", version: 1, storage, whitelist: ["referrerCode"] },
+    { key: "account", version: 2, storage, whitelist: ["referrerCode"] },
     accountReducer
 );
 

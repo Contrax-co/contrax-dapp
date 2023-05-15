@@ -37,8 +37,6 @@ export const socketTechApi = axios.create({
     baseURL: `https://api.socket.tech/v2/`,
     headers: {
         "API-KEY": SOCKET_API_KEY,
-        // Testing key
-        // "API-KEY": "645b2c8c-5825-4930-baf3-d9b997fcd88c",
     },
 });
 

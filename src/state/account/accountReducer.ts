@@ -1,20 +1,25 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AccountResponse, StateInterface } from "./types";
-import { backendApi } from "src/api";
+import {
+    postAccountData as postAccountDataApi,
+    getAccountData as getAccountDataApi,
+    getReferalEarning as getReferalEarningApi,
+} from "src/api/account";
 
 const initialState: StateInterface = {};
 
 const getAccountData = createAsyncThunk("account/getAccountData", async (address: string, thunkApi) => {
+    console.log("in action");
     if (!address) {
         thunkApi.dispatch(reset());
         return;
     }
-    const res = await backendApi.get<{ data: AccountResponse | null }>("account/" + address);
-    if (!res.data?.data) {
+    const data = await getAccountDataApi(address);
+    if (!data) {
         thunkApi.dispatch(reset());
         return;
     }
-    const data = res.data.data;
+
     thunkApi.dispatch(setReferrerCode(""));
     if (data.referralCode) {
         thunkApi.dispatch(setReferralCode(data.referralCode));
@@ -33,20 +38,16 @@ export const addAccount = createAsyncThunk(
                 return;
             }
             // Get current account data
-            const {
-                data: { data },
-            } = await backendApi.get<{ data: AccountResponse | null }>("account/" + address);
+            const data = await getAccountDataApi(address);
 
             // if account is not exist, create new account
             if (!data) {
                 // Create
-                const res = await backendApi.post<{ data: AccountResponse | null }>("account", {
-                    address,
-                    referrer: referrerCode,
-                });
+                const res = await postAccountDataApi(address, referrerCode);
+
                 // Save
-                if (res.data.data?.address) {
-                    thunkApi.dispatch(getAccountData(res.data.data.address));
+                if (res?.address) {
+                    thunkApi.dispatch(getAccountData(res.address));
                     // remove code of person whose link used to come on site
                 }
             } else {
@@ -65,6 +66,11 @@ export const addAccount = createAsyncThunk(
     }
 );
 
+export const getReferralEarning = createAsyncThunk("account/getReferralEarning", async (address: string) => {
+    const amountInUSD = await getReferalEarningApi(address);
+    return amountInUSD;
+});
+
 const accountSlice = createSlice({
     name: "account",
     initialState: initialState,
@@ -78,9 +84,17 @@ const accountSlice = createSlice({
         setReferralCode: (state: StateInterface, action: { payload: string }) => {
             state.referralCode = action.payload;
         },
+        setReferralEarning: (state: StateInterface, action: { payload: number }) => {
+            state.referralEarning = action.payload;
+        },
         reset: (state: StateInterface) => {
             return { ...initialState, referrerCode: state.referrerCode };
         },
+    },
+    extraReducers(builder) {
+        builder.addCase(getReferralEarning.fulfilled, (state, action) => {
+            state.referralEarning = action.payload;
+        });
     },
 });
 

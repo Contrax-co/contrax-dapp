@@ -1,0 +1,17 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: auto;
+}
+
+.heading {
+    color: var(--color_primary);
+    font-size: 20px;
+    font-weight: bold;
+}
+.value {
+    color: var(--color_primary);
+    font-size: 40px;
+    font-weight: bold;
+}

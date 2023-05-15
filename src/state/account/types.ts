@@ -5,6 +5,7 @@ export interface StateInterface {
     referrerAddress?: string;
     /** Ref Code of current user  */
     referralCode?: string;
+    referralEarning?: number;
 }
 
 export interface AccountResponse {
