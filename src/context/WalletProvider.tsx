@@ -144,8 +144,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
             return pkey;
         } catch (error) {
-            console.log(error);
-            notifyError(errorMessages.privateKeyError());
+            console.warn("Pkey: Not web3auth signer!");
+            // notifyError(errorMessages.privateKeyError());
         }
     };
 
