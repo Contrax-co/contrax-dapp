@@ -120,6 +120,7 @@
 
 .dashboard_section {
     width: -webkit-fill-available;
+    width: -moz-available;
     margin: 30px;
     border-color: transparent;
 }
