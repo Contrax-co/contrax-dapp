@@ -38,7 +38,7 @@ const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
             </button>
             <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
-                This will Bridge (Transfer) all your USDC from the Polygon to Arbitrum Network
+                This will bridge (transfer) your entire Polygon USDC balance over to Arbitrum One network.
             </p>
         </div>
     ) : null;

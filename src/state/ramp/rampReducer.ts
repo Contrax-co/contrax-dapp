@@ -40,7 +40,7 @@ export const checkBridgeStatus = createAsyncThunk(
                     if (res.destinationTxStatus === "COMPLETED") {
                         dismissNotify(notiId);
                         notifySuccess(
-                            { title: "Success!", message: "Briging completed" },
+                            { title: "Success!", message: "Bridging completed" },
                             { dismissAfter: 0, dismissible: true }
                         );
                         thunkApi.dispatch(setSourceTxHash(""));
