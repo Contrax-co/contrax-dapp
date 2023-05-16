@@ -11,9 +11,9 @@ const ReferralEarning = () => {
     const referralEarning = useAppSelector((state) => state.account.referralEarning);
 
     useEffect(() => {
-        dispatch(getReferralEarning(currentWallet));
+        if (currentWallet) dispatch(getReferralEarning(currentWallet));
         const int = setInterval(async () => {
-            dispatch(getReferralEarning(currentWallet));
+            if (currentWallet) dispatch(getReferralEarning(currentWallet));
         }, 10000);
 
         return () => {
