@@ -7,7 +7,7 @@
     position: relative;
     min-height: 140px;
     overflow: hidden;
-    width: calc(100% - 60px);
+    width: calc(100% - 63px);
     background: url(./polygon.png);
     background-size: 100% 100%;
     @include devices(tablet) {
@@ -63,7 +63,7 @@
     div {
         z-index: 1;
     }
-    .heading {
+    .heading {        
         max-width: 250px;
         line-height: 1.4em;
     }
@@ -134,7 +134,7 @@
         .heading {
             max-width: 200px;
             font-size: 1.4em;
-            color: var(--color_black);
+            color: var(--color_text);
         }
         .para {
             padding-left: 0px;
