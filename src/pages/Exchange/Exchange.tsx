@@ -162,19 +162,20 @@ const Exchange: React.FC<IProps> = () => {
                         // enableSameChainSwaps
                         singleTxOnly
                         // enableRefuel
-                        includeBridges={[
-                            "polygon-bridge",
-                            "hop",
-                            "anyswap-router-v4",
-                            "hyphen",
-                            "arbitrum-bridge",
-                            "connext",
-                            "celer",
-                            // "across",
+                        // includeBridges={[
+                        //     "polygon-bridge",
+                        //     "hop",
+                        //     "anyswap-router-v4",
+                        //     "hyphen",
+                        //     "arbitrum-bridge",
+                        //     "connext",
+                        //     "celer",
+                        //     // "across",
 
-                            "optimism-bridge",
-                            "refuel-bridge",
-                        ]}
+                        //     "optimism-bridge",
+                        //     "refuel-bridge",
+                        // ]}
+                        excludeBridges={["connext"]}
                         defaultSourceNetwork={1}
                         defaultDestNetwork={defaultChainId}
                         sourceNetworks={[1, defaultChainId, 137]}
