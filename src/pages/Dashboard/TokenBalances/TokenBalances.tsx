@@ -34,8 +34,8 @@ export const TokenBalances: FC<IProps> = () => {
             {UIState === UIStateEnum.NO_TOKENS && (
                 <EmptyComponent
                     link="/buy?tab=Wert"
-                    linkText="Click Here to get USDC to stake" 
-                    style={{ width: "100%", padding: "40px 24px" }}
+                    linkText="Click Here to get USDC to stake"
+                    style={{ width: "100%", padding: "40px 0px" }}
                 >
                     {"You need USDC or ETH to enter the farms."}
                 </EmptyComponent>

@@ -111,7 +111,7 @@ function Farms() {
                         </p>
                         <p></p>
                     </div>
-                    <p className="type_heading">{FarmTableColumns.Token}s</p>
+                    <p className="type_heading">{FarmTableColumns.Token}</p>
                     {sortedFarms
                         ? sortedFarms
                               .filter((farm) => farm.token_type === "Token")
