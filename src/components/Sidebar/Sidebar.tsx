@@ -3,6 +3,7 @@ import { MdSpaceDashboard } from "react-icons/md";
 import { HiDocumentText } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { FaExchangeAlt } from "react-icons/fa";
+import { BsCurrencyExchange } from "react-icons/bs";
 import { ReactComponent as EarnIcon } from "src/assets/images/earn.svg";
 import logo from "src/assets/images/logo.png";
 import logo2 from "src/assets/images/logo-4x.png";
@@ -63,7 +64,20 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     onClick={() => handleNavigation(RoutesPaths.CreatePool)}
                     active={pathname === RoutesPaths.CreatePool}
                 /> */}
-
+                <SidebarItem
+                    title="Buy"
+                    icon={<BsCurrencyExchange size={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Buy)}
+                    active={pathname === RoutesPaths.Buy}
+                />
+                {process.env.NODE_ENV === "development" && (
+                    <SidebarItem
+                        title="Test"
+                        icon={<BsCurrencyExchange size={18} />}
+                        onClick={() => handleNavigation("/test")}
+                        active={pathname === "/test"}
+                    />
+                )}
                 <SidebarItem
                     title="User Guide"
                     onClick={() => handleNavigation("https://contrax.gitbook.io/contrax-docs/", "_blank")}

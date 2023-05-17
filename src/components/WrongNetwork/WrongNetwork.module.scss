@@ -1,0 +1,28 @@
+.sign_in_placeholder {
+    background-color: var(--background_secondary);
+    width: calc(100% - 63px);
+    height: 400px;
+    margin: 20px 30px;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.walletIcon {
+    width: 50px;
+    height: 50px;
+    color: var(--color_grey);
+    color: var(--color_primary);
+}
+.disclaimer {
+    color: var(--color_primary);
+    font-size: 20px;
+    font-weight: 600;
+}
+.description {
+    color: var(--color_grey);
+    padding: 16px 12px 20px;
+    text-align: center;
+}

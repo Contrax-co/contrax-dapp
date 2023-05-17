@@ -5,8 +5,8 @@ import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface, UpdateP
 import { Contract, utils, constants, BigNumber } from "ethers";
 import { getNetworkName } from "src/utils/common";
 import { getPriceByTime, getPricesByTime } from "src/api/token";
-import { incrementErrorCount, resetErrorCount } from "../error/errorReducer";
 import { defaultChainId } from "src/config/constants";
+import { addressesByChainId } from "src/config/constants/contracts";
 
 const initialState: StateInterface = {
     prices: {},
@@ -150,6 +150,8 @@ export const updatePrices = createAsyncThunk(
             Object.entries(prices).forEach(([key, value]) => {
                 checksummed[utils.getAddress(key)] = value;
             });
+            // USDC price hardcoded TODO: maybe change to actual price in future
+            checksummed[addressesByChainId[chainId].usdcAddress] = 1;
 
             return checksummed;
         } catch (error) {

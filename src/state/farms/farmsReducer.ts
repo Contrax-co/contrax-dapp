@@ -37,14 +37,19 @@ const initialState: StateInterface = {
 
 export const updateFarmDetails = createAsyncThunk(
     "farms/updateFarmDetails",
-    async ({ currentWallet, farms, balances, prices, decimals }: FetchFarmDetailsAction, thunkApi) => {
+    async ({ currentWallet, farms, totalSupplies, balances, prices, decimals }: FetchFarmDetailsAction, thunkApi) => {
         if (!currentWallet) return;
         try {
             const data: FarmDetails = {};
             farms.forEach((farm) => {
                 // @ts-ignore
                 if (farmFunctions[farm.id]?.getProcessedFarmData)
-                    data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(balances, prices, decimals);
+                    data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(
+                        balances,
+                        prices,
+                        decimals,
+                        totalSupplies[farm.vault_addr]
+                    );
             });
 
             return { data, currentWallet };

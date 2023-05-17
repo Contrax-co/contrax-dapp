@@ -2,21 +2,25 @@ import { getHook } from "react-hooks-outside";
 import { Notification } from "reapop";
 import { NotifyMessage } from "src/types";
 
-export const notifySuccess = (successMessage: NotifyMessage) => {
+export const notifySuccess = (successMessage: NotifyMessage, options?: Partial<Notification>) => {
     const { notify } = getHook("notifications");
     notify({
         title: successMessage.title,
         message: successMessage.message,
         status: "success",
+        ...options,
     });
 };
 
-export const notifyError = (errorMessage: NotifyMessage) => {
+export const notifyError = (errorMessage: NotifyMessage, options?: Partial<Notification>) => {
     const { notify } = getHook("notifications");
     notify({
         title: errorMessage.title,
         message: errorMessage.message,
         status: "error",
+        dismissible: true,
+        dismissAfter: 0,
+        ...options,
     });
 };
 

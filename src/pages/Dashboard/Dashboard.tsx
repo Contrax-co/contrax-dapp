@@ -4,6 +4,7 @@ import { BsCheckCircle } from "react-icons/bs";
 import { FiExternalLink, FiCopy } from "react-icons/fi";
 import "./Dashboard.css";
 import Vaults from "./JoinedVaults/Vaults";
+import UserTVL from "./UserTVL/UserTVL";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import { copyToClipboard } from "src/utils";
@@ -17,11 +18,18 @@ import SupportChatToggle from "src/components/SupportChatToggle/SupportChatToggl
 import { TbGasStation, TbGasStationOff } from "react-icons/tb";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { toggleSponsoredGas } from "src/state/settings/settingsReducer";
+import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
+import ReferralLink from "src/components/ReferralLink/ReferralLink";
+import ReferBanner from "src/components/ReferBanner/ReferBanner";
+import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
+import { CHAIN_ID } from "src/types/enums";
+import { WrongNetwork } from "src/components/WrongNetwork/WrongNetwork";
+import ReferralEarning from "./ReferralEarning/ReferralEarning";
 
 function Dashboard() {
     const { lightMode } = useApp();
     const { sponsoredGas } = useAppSelector((state) => state.settings);
-    const { currentWallet, displayAccount, signer } = useWallet();
+    const { currentWallet, displayAccount, signer, networkId } = useWallet();
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
@@ -40,7 +48,7 @@ function Dashboard() {
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
             <div className={`dashboard_header ${lightMode && "dashboard_header--light"}`}>
-                <div>
+                <div className="dashboard_header_left">
                     <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet)} />
 
                     {currentWallet ? (
@@ -66,10 +74,11 @@ function Dashboard() {
                             </div>
                         </>
                     ) : (
-                        <p className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}>No Wallet Connected</p>
+                        <p className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}>Sign In Required</p>
                     )}
                 </div>
-                <div className="dashboard-key-icons">
+
+                <div className="dashboard-key-icons" style={currentWallet ? {} : { display: "flex" }}>
                     <SupportChatToggle />
                     {signer && (
                         <>
@@ -107,16 +116,34 @@ function Dashboard() {
                 </div>
             </div>
 
-            <div className={`dashboard_section`}>
-                <TokenBalances />
-            </div>
+            <ReferralLink />
 
-            <div className={`dashboard_section`}>
-                <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
-                    Staked Tokens
-                </p>
-                <Vaults />
+            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
+
+            <div className={`dashboard_tvl_section`}>
+                <UserTVL />
+                <ReferralEarning />
+                <BridgeBtn />
             </div>
+            {currentWallet ? (
+                <>
+                    <div className={`dashboard_section outlinedContainer`}>
+                        <TokenBalances />
+                    </div>
+                    {networkId === CHAIN_ID.ARBITRUM ? (
+                        <div className={`dashboard_section outlinedContainer`}>
+                            <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
+                                Staked Tokens
+                            </p>
+                            <Vaults />
+                        </div>
+                    ) : (
+                        <WrongNetwork />
+                    )}
+                </>
+            ) : (
+                <NotSignedIn />
+            )}
         </div>
     );
 }

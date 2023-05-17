@@ -1,0 +1,41 @@
+@import "../../styles/variables.scss";
+@import "../../styles/mixins";
+
+.darkBuy {
+    width: 400px;
+    @include devices(mobile) {
+        width: 340px;
+    }
+    .ywm1tje1 {
+        background-color: $color-black !important;
+    }
+}
+
+.container {
+    width: 100%;
+    color: var(--color_text);
+    display: flex;
+    align-items: center;
+    flex-flow: column;
+    margin: 0 auto;
+    padding-top: 20px;
+    overflow: auto;
+}
+
+.lightText {
+    color: var(--color_grey);
+    font-size: 12px;
+}
+.disclaimer {
+    color: var(--color_grey);
+    font-size: 12px;
+    margin: 0px;
+    margin: auto;
+    width: max-content;
+    margin-bottom: 5px;
+    transform: translateY(-5px);
+}
+.disclaimerLogo {
+    margin-right: 8px;
+    transform: translateY(1px);
+}

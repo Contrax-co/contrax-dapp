@@ -9,9 +9,19 @@
 .dashboard_header {
     padding-top: 5px;
     padding: 30px;
-    height: 20vh;
+    /* height: 20vh; */
     display: flex;
     justify-content: space-between;
+}
+
+.dashboard_header p {
+    margin: 0px;
+}
+
+.dashboard_header_left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .dashboard_right {
@@ -70,7 +80,6 @@
 }
 
 .dashboard_copy {
-    height: 5px;
     vertical-align: top;
     display: flex;
     align-items: center;
@@ -110,8 +119,19 @@
 }
 
 .dashboard_section {
-    padding: 30px;
-    padding-top: 20px;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    margin: 30px;
+    border-color: transparent;
+}
+
+.dashboard_tvl_section {
+    margin: 0 30px;
+    margin-top: 20px;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 350px));
+    grid-template-rows: repeat(auto-fit, 140px);
 }
 
 .dashboard-key-icons {
@@ -136,6 +156,12 @@
 
     .dashboard_copy {
         height: 0px;
+    }
+}
+
+@media (max-width: 650px) {
+    .dashboard_tvl_section {
+        flex-wrap: wrap;
     }
 }
 

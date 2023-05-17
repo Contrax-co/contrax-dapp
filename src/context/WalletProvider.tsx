@@ -3,10 +3,19 @@ import * as ethers from "ethers";
 import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { ACCOUNT_BALANCE } from "src/config/constants/query";
-import { useProvider, useSigner, useAccount, useDisconnect, useNetwork, useSwitchNetwork, Chain } from "wagmi";
+import {
+    useProvider,
+    useSigner,
+    useAccount,
+    useDisconnect,
+    useNetwork,
+    useSwitchNetwork,
+    Chain,
+    useBalance,
+} from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { notifyError } from "src/api/notify";
-import { getNetworkName, noExponents } from "src/utils/common";
+import { getConnectorId, getNetworkName, noExponents } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
@@ -15,6 +24,9 @@ import { useDispatch } from "react-redux";
 import { setConnectorId } from "src/state/settings/settingsReducer";
 import { GasSponsoredSigner } from "src/utils/gasSponsoredSigner";
 import { useAppSelector } from "src/state";
+import { getWeb3AuthProvider } from "src/config/walletConfig";
+import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
+import { getPrice } from "src/api/token";
 
 interface IWalletContext {
     /**
@@ -53,15 +65,12 @@ interface IWalletContext {
      * Balance of the native eth that the user has
      */
     balance: number;
-    /**
-     * Refetches the balance of the user
-     */
-    refetchBalance: () => void;
     switchNetworkAsync: ((chainId_?: number | undefined) => Promise<Chain>) | undefined;
     chains: Chain[];
     getPkey: () => Promise<string>;
-    mainnetBalance: ethers.BigNumber;
     multicallProvider: providers.MulticallProvider;
+    getWeb3AuthSigner: (chainId?: number, defaultSigner?: ethers.Signer) => Promise<ethers.ethers.Signer | undefined>;
+    isWeb3AuthWallet: boolean;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
@@ -102,20 +111,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const dispatch = useDispatch();
     const { address: currentWallet, connector } = useAccount();
     const { disconnect } = useDisconnect();
-    const mainnetProvider = useProvider({ chainId: 1 });
     const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { openConnectModal } = useConnectModal();
-
-    const getBalance = async () => {
-        if (!provider || !currentWallet)
-            return { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) };
-        const mainnetBalance = await mainnetProvider.getBalance(currentWallet);
-        return {
-            balance: ethers.BigNumber.from(noExponents(balances[ethers.constants.AddressZero] || "")),
-            mainnetBalance,
-        };
-    };
 
     const connectWallet = async () => {
         if (openConnectModal) openConnectModal();
@@ -135,15 +133,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         [currentWallet]
     );
 
-    const {
-        data: { balance: balanceBigNumber, mainnetBalance },
-        refetch: refetchBalance,
-    } = useQuery(ACCOUNT_BALANCE(currentWallet!, currentWallet!, networkId.toString()), getBalance, {
-        enabled: !!currentWallet && !!provider && !!getNetworkName(networkId),
-        initialData: { balance: ethers.BigNumber.from(0), mainnetBalance: ethers.BigNumber.from(0) },
-        refetchInterval: 5000,
-    });
-    const balance = useMemo(() => Number(ethers.utils.formatUnits(balanceBigNumber || 0, 18)), [balanceBigNumber]);
+    const balance = useMemo(
+        () => Number(ethers.utils.formatUnits(balances[ethers.constants.AddressZero] || 0, 18)),
+        [balances]
+    );
 
     const getPkey = async () => {
         try {
@@ -151,9 +144,28 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
             return pkey;
         } catch (error) {
-            console.log(error);
-            notifyError(errorMessages.privateKeyError());
+            console.warn("Pkey: Not web3auth signer!");
+            // notifyError(errorMessages.privateKeyError());
         }
+    };
+
+    const getWeb3AuthSigner = async (chainId?: number, defaultSigner?: ethers.Signer) => {
+        if (web3AuthConnectorId !== getConnectorId()) return defaultSigner || signer;
+        // @ts-ignore
+        const pkey = await getPkey();
+        const chain = chains.find((c) => c.id === chainId);
+        const _provider = await getWeb3AuthProvider({
+            chainId: chain?.id!,
+            blockExplorer: chain?.blockExplorers?.default.url!,
+            name: chain?.name!,
+            rpc: chain?.rpcUrls.default.http[0]!,
+            ticker: chain?.nativeCurrency.symbol!,
+            tickerName: chain?.nativeCurrency.name!,
+            pkey,
+        });
+
+        const privateKey = await _provider.provider.request!({ method: "eth_private_key" });
+        return new GasSponsoredSigner(privateKey, _provider);
     };
 
     React.useEffect(() => {
@@ -173,6 +185,24 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         dispatch(setConnectorId(connector?.id || ""));
     }, [connector]);
 
+    React.useEffect(() => {
+        const int = setInterval(async () => {
+            try {
+                if ((await getPrice(ethers.constants.AddressZero, defaultChainId)) === 0) {
+                    throw new Error();
+                }
+                await provider.getBlockNumber();
+                dispatch(resetErrorCount());
+            } catch (error) {
+                dispatch(incrementErrorCount());
+                console.log("Error in rpc");
+            }
+        }, 5000);
+        return () => {
+            clearInterval(int);
+        };
+    }, [provider]);
+
     return (
         <WalletContext.Provider
             value={{
@@ -185,12 +215,12 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 signer,
                 provider,
                 balance,
-                refetchBalance,
                 switchNetworkAsync,
                 chains,
-                mainnetBalance,
                 getPkey,
                 multicallProvider,
+                getWeb3AuthSigner,
+                isWeb3AuthWallet: web3AuthConnectorId === getConnectorId(),
             }}
         >
             {children}

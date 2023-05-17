@@ -22,7 +22,7 @@ import { zapInBase, zapOutBase } from "./common";
 let sushi: DynamicFarmFunctions = function (farmId) {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
 
-    const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals) => {
+    const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
         const ethPrice = prices[constants.AddressZero];
         const lpAddress = farm.lp_address;
         const lpPrice = prices[lpAddress];
@@ -84,7 +84,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         const result = {
             depositableAmounts,
             withdrawableAmounts,
-            vaultBalanceFormated: toEth(vaultBalance, farm.decimals),
+            vaultBalanceFormated: (Number(toEth(vaultTotalSupply ?? 0)) * lpPrice).toString(),
             id: farm.id,
         };
         return result;

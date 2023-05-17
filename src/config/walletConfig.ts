@@ -1,5 +1,6 @@
 import { arbitrum, mainnet, avalanche, bsc, optimism, polygon, gnosis, fantom } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import { infuraProvider } from "wagmi/providers/infura";
 import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
@@ -9,7 +10,7 @@ import { createClient, configureChains } from "wagmi";
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import { WEB3AUTH_CLIENT_ID } from "./constants";
+import { INFURA_KEY, WEB3AUTH_CLIENT_ID } from "./constants";
 import googleIcon from "./../assets/images/google-logo.svg";
 import facebookIcon from "./../assets/images/facebook-icon.svg";
 import discordIcon from "./../assets/images/discordapp-icon.svg";
@@ -29,11 +30,14 @@ export const { chains, provider, webSocketProvider } = configureChains(
     [
         arbitrum,
         mainnet,
+        polygon,
 
-        // polygon,
         // optimism, avalanche, gnosis, fantom, bsc
     ],
     [
+        infuraProvider({
+            apiKey: INFURA_KEY as string,
+        }),
         jsonRpcProvider({
             rpc: (chain) => ({
                 http: chain.rpcUrls.default.http[0],
@@ -192,7 +196,7 @@ const connectors = connectorsForWallets([
     ...wallets,
 ]);
 export const wagmiClient = createClient({
-    autoConnect: false,
+    autoConnect: true,
     connectors,
     provider,
     webSocketProvider,

@@ -18,14 +18,17 @@ import {
     GetFarmDataProcessedFn,
     TokenAmounts,
     WithdrawFn,
+    ZapInArgs,
     ZapInBaseFn,
     ZapInFn,
     ZapOutBaseFn,
     ZapOutFn,
 } from "./types";
 import { addressesByChainId } from "src/config/constants/contracts";
-import { web3AuthConnectorId } from "src/config/constants";
+import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { backendApi, isGasSponsored } from "..";
+import { TenderlySimulateTransactionBody } from "src/types/tenderly";
+import { filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -75,17 +78,18 @@ export const zapInBase: ZapInBaseFn = async ({
             const connectorId = getConnectorId();
             if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
                 const balance = BigNumber.from(balances[constants.AddressZero]);
-                if (
-                    !(await subtractGas(
-                        amountInWei,
-                        signer,
-                        zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
-                            value: balance,
-                        })
-                    ))
-                ) {
+                const afterGasCut = await subtractGas(
+                    amountInWei,
+                    signer,
+                    zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
+                        value: balance,
+                    })
+                );
+                if (!afterGasCut) {
                     notiId && dismissNotify(notiId);
+                    return;
                 }
+                amountInWei = afterGasCut;
             }
             //#endregion
 
@@ -97,6 +101,8 @@ export const zapInBase: ZapInBaseFn = async ({
         }
         // token zap
         else {
+            const tx = zapperContract.populateTransaction.zapIn(farm.vault_addr, 0, token, amountInWei);
+
             zapperTxn = await awaitTransaction(zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei));
         }
 
@@ -162,4 +168,80 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         dismissNotify(notiId);
         notifyError(errorMessages.generalError(error.message || err.reason || err.message));
     }
+};
+
+// TODO: move to tenderly and work in progress
+
+export const slippageIn = async (args: ZapInArgs & { farm: Farm }) => {
+    let { amountInWei, balances, chainId, currentWallet, token, max, signer, tokenIn, farm } = args;
+    const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
+    const wethAddress = addressesByChainId[chainId].wethAddress;
+
+    const transaction = {} as Omit<
+        TenderlySimulateTransactionBody,
+        "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
+    >;
+    transaction.from = currentWallet;
+
+    if (max) {
+        amountInWei = balances[token] ?? "0";
+    }
+    amountInWei = BigNumber.from(amountInWei);
+    if (token !== constants.AddressZero) {
+        transaction.state_overrides = getAllowanceStateOverride([
+            {
+                tokenAddress: token,
+                owner: currentWallet,
+                spender: farm.zapper_addr,
+            },
+        ]);
+    }
+
+    if (token === constants.AddressZero) {
+        // use weth address as tokenId, but in case of some farms (e.g: hop)
+        // we need the token of liquidity pair, so use tokenIn if provided
+        token = tokenIn ?? wethAddress;
+
+        //#region Gas Logic
+        // if we are using zero dev, don't bother
+        const connectorId = getConnectorId();
+        if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
+            const balance = BigNumber.from(balances[constants.AddressZero]);
+            const afterGasCut = await subtractGas(
+                amountInWei,
+                signer!,
+                zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
+                    value: balance,
+                })
+            );
+            if (!afterGasCut) return;
+            amountInWei = afterGasCut;
+        }
+        //#endregion
+
+        zapperContract.populateTransaction.zapInETH(farm.vault_addr, 0, token, {
+            value: amountInWei,
+        });
+    }
+
+    const simulationResult = await simulateTransaction({
+        /* Standard EVM Transaction object */
+        from: currentWallet,
+        to: "0x80957FaBaC43427639a875A44156fbE35081c7f9",
+        input: "0x72f8b6cd000000000000000000000000fd3573bebdc8bf323c65edf2408fd9a8412a86940000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ff970a61a04b1ca14834a43f5de4533ebddb5cc8000000000000000000000000000000000000000000000000000000000020319d",
+
+        state_overrides: getAllowanceStateOverride([
+            {
+                tokenAddress: addressesByChainId[defaultChainId].usdcAddress,
+                owner: "0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8",
+                spender: "0x80957FaBaC43427639a875A44156fbE35081c7f9",
+            },
+        ]),
+    });
+
+    const filteredState = filterStateDiff(
+        "0xfd3573bebDc8bF323c65Edf2408Fd9a8412a8694",
+        "_balances",
+        simulationResult.stateDiffs
+    );
 };

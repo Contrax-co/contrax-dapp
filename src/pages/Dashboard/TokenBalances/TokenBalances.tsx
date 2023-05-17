@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { FC, useCallback, useState } from "react";
 import useApp from "src/hooks/useApp";
-import { useTokens } from "src/hooks/useTokens";
+import { UIStateEnum, useTokens } from "src/hooks/useTokens";
 import styles from "./TokenBalances.module.scss";
 import useWallet from "src/hooks/useWallet";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
@@ -14,8 +14,7 @@ interface IProps {}
 
 export const TokenBalances: FC<IProps> = () => {
     const { lightMode } = useApp();
-    const { tokens, lpTokens, isLoading } = useTokens();
-    const { currentWallet } = useWallet();
+    const { tokens, lpTokens, isLoading, UIState } = useTokens();
     const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
 
@@ -24,26 +23,25 @@ export const TokenBalances: FC<IProps> = () => {
     return (
         <>
             <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>Token Balances</p>
-            {!currentWallet && (
+            {UIState === UIStateEnum.CONNECT_WALLET && (
                 <EmptyComponent style={{ paddingTop: 50, paddingBottom: 50 }}>
                     Connect your wallet to view your balances
                 </EmptyComponent>
             )}
-            {currentWallet && isLoading && (
+            {UIState === UIStateEnum.LOADING && (
                 <Skeleton w={"100%"} h={150} bg={lightMode ? "#ffffff" : undefined} bRadius={20} inverted={true} />
             )}
-            {currentWallet &&
-                !isLoading &&
-                tokens &&
-                lpTokens &&
-                tokens.filter((token) => Number(token.usdBalance) > 0.01).length === 0 &&
-                lpTokens.filter((token) => Number(token.usdBalance) > 0.01).length === 0 && (
-                    <EmptyComponent style={{ width: "100%", padding: "40px 24px" }}>
-                        You wallet is empty.
-                    </EmptyComponent>
-                )}
+            {UIState === UIStateEnum.NO_TOKENS && (
+                <EmptyComponent
+                    link="/buy?tab=Wert"
+                    linkText="Click Here to get USDC to stake"
+                    style={{ width: "100%", padding: "40px 0px" }}
+                >
+                    {"You need USDC or ETH to enter the farms."}
+                </EmptyComponent>
+            )}
 
-            {currentWallet && !isLoading && tokens && (
+            {(UIState === UIStateEnum.SHOW_TOKENS_TOKENS || UIState === UIStateEnum.SHOW_TOKENS) && (
                 <div className={styles.container}>
                     {tokens
                         .filter((token) => Number(token.usdBalance) > 0.01)
@@ -83,54 +81,64 @@ export const TokenBalances: FC<IProps> = () => {
                     {selectedToken ? <TransferToken token={selectedToken} handleClose={handleCloseModal} /> : null}
                 </div>
             )}
-            {currentWallet &&
-                !isLoading &&
-                lpTokens &&
-                lpTokens.filter((t) => Number(t.usdBalance) > 0.01).length > 0 && (
-                    <>
-                        <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
-                            Dual Token Balances
-                        </p>
-                        <div className={styles.container}>
-                            {lpTokens
-                                .filter((t) => Number(t.usdBalance) > 0.01)
-                                .map((token, i) => (
-                                    <div
-                                        key={i}
-                                        className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                                        onClick={() =>
-                                            token.name === "ETH" && token.network === "Mainnet"
-                                                ? navigate("/exchange/?tab=bridge")
-                                                : setSelectedToken(token)
-                                        }
-                                    >
-                                        <span>
-                                            <img className={styles.tokenLogo} src={token.logo} alt="logo" />
-                                            <img className={styles.tokenLogo2} src={token.logo2} alt="logo" />
-                                        </span>
-                                        <div>
-                                            <p className={styles.name}>
-                                                {token.name}
-                                                {token.network ? (
-                                                    <span className={styles.networkName}>({token.network})</span>
-                                                ) : null}
-                                            </p>
-                                            <p className={styles.balance}>
-                                                {/* {token.balance && parseFloat(token.balance).toLocaleString()} */}
-                                                {/* {token.balance && token.balance} */}
-                                                {token.balance && parseFloat(token.balance) < 1
-                                                    ? token.balance
-                                                    : ethers.utils.commify(parseFloat(token.balance).toString())}
-                                            </p>
-                                        </div>
-                                        <p className={styles.usdBalance}>
-                                            ${ethers.utils.commify(parseFloat(token.usdBalance).toString())}
+            {(UIState === UIStateEnum.SHOW_TOKENS_LP || UIState === UIStateEnum.SHOW_TOKENS) && (
+                <>
+                    <p
+                        className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}
+                        style={{ marginTop: 20 }}
+                    >
+                        Dual Token Balances
+                    </p>
+                    <div className={styles.container}>
+                        {lpTokens
+                            .filter((t) => Number(t.usdBalance) > 0.01)
+                            .map((token, i) => (
+                                <div
+                                    key={i}
+                                    className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
+                                    onClick={() =>
+                                        token.name === "ETH" && token.network === "Mainnet"
+                                            ? navigate("/exchange/?tab=bridge")
+                                            : setSelectedToken(token)
+                                    }
+                                >
+                                    <span style={{ display: "flex" }}>
+                                        <img
+                                            className={styles.tokenLogo}
+                                            src={token.logo}
+                                            alt="logo"
+                                            style={{ clipPath: "circle(50%)" }}
+                                        />
+                                        <img
+                                            className={styles.tokenLogo2}
+                                            src={token.logo2}
+                                            alt="logo"
+                                            style={{ clipPath: "circle(50%)" }}
+                                        />
+                                    </span>
+                                    <div>
+                                        <p className={styles.name}>
+                                            {token.name}
+                                            {token.network ? (
+                                                <span className={styles.networkName}>({token.network})</span>
+                                            ) : null}
+                                        </p>
+                                        <p className={styles.balance}>
+                                            {/* {token.balance && parseFloat(token.balance).toLocaleString()} */}
+                                            {/* {token.balance && token.balance} */}
+                                            {token.balance && parseFloat(token.balance) < 1
+                                                ? token.balance
+                                                : ethers.utils.commify(parseFloat(token.balance).toString())}
                                         </p>
                                     </div>
-                                ))}
-                        </div>
-                    </>
-                )}
+                                    <p className={styles.usdBalance}>
+                                        ${ethers.utils.commify(parseFloat(token.usdBalance).toString())}
+                                    </p>
+                                </div>
+                            ))}
+                    </div>
+                </>
+            )}
         </>
     );
 };

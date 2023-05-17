@@ -1,22 +1,18 @@
-import React, { useRef } from "react";
+import React from "react";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
 import { Bridge } from "@socket.tech/plugin";
-import { defaultChainId, RAMP_TRANSAK_API_KEY, SOCKET_API_KEY } from "src/config/constants";
-// import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
+import { defaultChainId, SOCKET_BRIDGE_KEY } from "src/config/constants";
 
 import PoolButton from "src/components/PoolButton/PoolButton";
-import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
 import "@uniswap/widgets/fonts.css";
-import styles from "./Exchange.module.scss";
 import "./Exchange.css";
-import { useSigner, useWebSocketProvider } from "wagmi";
+import { useSigner } from "wagmi";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
-import useFarms from "src/hooks/farms/useFarms";
 import { useSearchParams } from "react-router-dom";
 import useBalances from "src/hooks/useBalances";
 import { Tabs } from "src/components/Tabs/Tabs";
-import uniswapTokens from "./uniswapTokens.json";
+import Swap from "./Swap";
 
 interface IProps {}
 
@@ -49,11 +45,10 @@ const lightSocketTheme = {
 enum Tab {
     Swap = "Swap",
     Bridge = "Bridge",
-    Buy = "Buy",
 }
 
 const Exchange: React.FC<IProps> = () => {
-    const { currentWallet, connectWallet, chains, signer: wagmiSigner } = useWallet();
+    const { currentWallet, chains } = useWallet();
     const [chainId, setChainId] = React.useState<number>(defaultChainId);
     const { data: signer } = useSigner({
         chainId,
@@ -62,10 +57,8 @@ const Exchange: React.FC<IProps> = () => {
     const { reloadBalances } = useBalances();
 
     const { lightMode } = useApp();
-    const containerRef = useRef<HTMLDivElement>(null);
     const [provider, setProvider] = React.useState<any>();
-    const websocketProvider = useWebSocketProvider();
-    const [tab, setTab] = React.useState<Tab>(Tab.Buy);
+    const [tab, setTab] = React.useState<Tab>(Tab.Bridge);
     const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
 
     // Reload Balances every time this component unmounts
@@ -77,33 +70,10 @@ const Exchange: React.FC<IProps> = () => {
         if (tab) setTab(tab as Tab);
         else
             setSearchParams((params) => {
-                params.set("tab", Tab.Buy);
+                params.set("tab", Tab.Bridge);
                 return params;
             });
     }, [params]);
-
-    // React.useEffect(() => {
-    //     if (tab === Tab.Buy) {
-    //         const ramp = new RampInstantSDK({
-    //             userAddress: currentWallet,
-    //             defaultAsset: "ARBITRUM_USDC",
-    //             swapAsset: "ARBITRUM_*",
-    //             fiatValue: "500",
-    //             fiatCurrency: "USD",
-    //             hostAppName: "Contrax",
-    //             hostLogoUrl: `https://${window.location.host}/logo.svg`,
-    //             hostApiKey: RAMP_SDK_HOST_API_KEY,
-    //             variant: "embedded-mobile",
-    //             containerNode: containerRef.current || undefined,
-    //         })
-    //             // @ts-ignore
-    //             .on("PURCHASE_CREATED", reloadBalances)
-    //             .show();
-    //         return () => {
-    //             ramp.close();
-    //         };
-    //     }
-    // }, [containerRef, tab, currentWallet]);
 
     const handleBridgeNetworkChange = async () => {
         try {
@@ -120,7 +90,7 @@ const Exchange: React.FC<IProps> = () => {
                 chainId: chain?.id!,
                 blockExplorer: chain?.blockExplorers?.default.url!,
                 name: chain?.name!,
-                rpc: chain?.rpcUrls.public.http[0]!,
+                rpc: chain?.rpcUrls.default.http[0]!,
                 ticker: chain?.nativeCurrency.symbol!,
                 tickerName: chain?.nativeCurrency.name!,
                 pkey,
@@ -156,18 +126,6 @@ const Exchange: React.FC<IProps> = () => {
                 <PoolButton
                     variant={2}
                     onClick={() => {
-                        setTab(Tab.Buy);
-                        setSearchParams((params) => {
-                            params.set("tab", Tab.Buy);
-                            return params;
-                        });
-                    }}
-                    description="Buy"
-                    active={tab === Tab.Buy}
-                />
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
                         setTab(Tab.Bridge);
                         setSearchParams((params) => {
                             params.set("tab", Tab.Bridge);
@@ -191,74 +149,41 @@ const Exchange: React.FC<IProps> = () => {
                 />
             </Tabs>
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 20 }}>
-                {tab === Tab.Buy && (
-                    <div className={styles.darkBuy}>
-                        {/* <div style={{ width: 375, height: 667 }} ref={containerRef}></div> */}
-                        <iframe
-                            height="625"
-                            title="Transak On/Off Ramp Widget"
-                            src={`https://global.transak.com/?apiKey=${RAMP_TRANSAK_API_KEY}&defaultCryptoCurrency=ETH&defaultFiatAmount=500&disableWalletAddressForm=true&network=arbitrum&walletAddress=${currentWallet}`}
-                            frameBorder={"no"}
-                            allowTransparency={true}
-                            allowFullScreen={true}
-                            style={{ display: "block", width: "100%", maxHeight: "625px", maxWidth: "500px" }}
-                        ></iframe>
-                    </div>
-                )}
-                {tab === Tab.Bridge && SOCKET_API_KEY && (
+                {tab === Tab.Bridge && SOCKET_BRIDGE_KEY && (
                     <Bridge
                         provider={isWeb3Auth ? provider : signer?.provider}
                         onSourceNetworkChange={(network) => {
                             setChainId(network.chainId);
                         }}
                         onBridgeSuccess={reloadBalances}
-                        API_KEY={SOCKET_API_KEY}
+                        API_KEY={SOCKET_BRIDGE_KEY}
                         defaultSourceToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
                         defaultDestToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
                         // enableSameChainSwaps
                         singleTxOnly
                         // enableRefuel
-                        includeBridges={[
-                            "polygon-bridge",
-                            "hop",
-                            "anyswap-router-v4",
-                            "hyphen",
-                            "arbitrum-bridge",
-                            "connext",
-                            "celer",
-                            // "across",
-                            "optimism-bridge",
-                            "refuel-bridge",
-                        ]}
+                        // includeBridges={[
+                        //     "polygon-bridge",
+                        //     "hop",
+                        //     "anyswap-router-v4",
+                        //     "hyphen",
+                        //     "arbitrum-bridge",
+                        //     "connext",
+                        //     "celer",
+                        //     // "across",
+
+                        //     "optimism-bridge",
+                        //     "refuel-bridge",
+                        // ]}
+                        excludeBridges={["connext"]}
                         defaultSourceNetwork={1}
                         defaultDestNetwork={defaultChainId}
-                        sourceNetworks={[1, defaultChainId]}
-                        destNetworks={[1, defaultChainId]}
+                        sourceNetworks={[1, defaultChainId, 137]}
+                        destNetworks={[1, defaultChainId, 137]}
                         customize={lightMode ? lightSocketTheme : darkSocketTheme}
                     />
                 )}
-                {tab === Tab.Swap && SOCKET_API_KEY && (
-                    <SwapWidget
-                        theme={
-                            lightMode
-                                ? {
-                                      ...lightTheme,
-                                      //   accent: "#08a7c7",
-                                      //   accentSoft: "#63cce0",
-                                      accent: "#63cce0",
-                                      accentSoft: "#dcf9ff",
-                                      networkDefaultShadow: "rgba(99, 204, 224,0.1)",
-                                  }
-                                : { ...darkTheme, accent: "#63cce0", accentSoft: "#dcf9ff" }
-                        }
-                        // @ts-ignore
-                        provider={websocketProvider || wagmiSigner?.provider}
-                        onConnectWalletClick={connectWallet}
-                        onTxSuccess={reloadBalances}
-                        tokenList={uniswapTokens}
-                        permit2={true}
-                    />
-                )}
+                {tab === Tab.Swap && <Swap />}
             </div>
         </div>
     );
