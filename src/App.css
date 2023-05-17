@@ -1,74 +1,85 @@
 :root {
-  /* ///// Background Colors ///// */
-  --background_primary: #001428;
-  --background_secondary: #012243;
-  --background_secondary-hover: #032a51;
-  --background_dark: #000c18;
-  --background_light: #8798ad46;
-  /* --background_primary_white: # */
+    /* ///// Background Colors ///// */
+    --background_primary: #001428;
+    --background_secondary: #012243;
+    --background_secondary-hover: #032a51;
+    --background_dark: #000c18;
+    --background_light: #8798ad46;
+    /* --background_primary_white: # */
 
-  /* ///// Colors ///// */
-  --color_primary: #009aff;
-  --color_primary: #63cce0;
-  --color_grey: #8798ad;
-  --color_white: #ffffff;
-  --color_black: #000000;
-  --color_disabled: #1d4864;
-  --color_warning: #ffcc00;
-  /* #2f6d95 */
-  --color_text: var(--color_white);
+    /* ///// Colors ///// */
+    --color_primary: #009aff;
+    --color_primary: #63cce0;
+    --color_grey: #8798ad;
+    --color_white: #ffffff;
+    --color_black: #000000;
+    --color_disabled: #1d4864;
+    --color_warning: #ffcc00;
+    /* #2f6d95 */
+    --color_text: var(--color_white);
 
-  /* ///// Border Colors ///// */
-  --border_color: #022b55;
-  --border_color-secondary: #043b71;
-  --border_color_light: #d2e8ef;
+    /* ///// Border Colors ///// */
+    --border_color: #022b55;
+    --border_color-secondary: #043b71;
+    --border_color_light: #d2e8ef;
 }
 
 [data-lightMode="true"] {
-  /* ///// Background Colors ///// */
-  --background_primary: #f5f6f9;
-  --background_secondary: #ffffff;
-  --background_secondary-hover: #fbfbfb;
-  --background_dark: #68b4c9;
-  --background_light: #8798ad46;
+    /* ///// Background Colors ///// */
+    --background_primary: #f5f6f9;
+    --background_secondary: #ffffff;
+    --background_secondary-hover: #fbfbfb;
+    --background_dark: #68b4c9;
+    --background_light: #8798ad46;
 
-  /* ///// Colors ///// */
-  --color_primary: #63cce0;
-  --color_grey: #8798ad;
-  --color_white: #ffffff;
-  --color_black: #323433;
-  --color_disabled: #b1e5ef;
-  --color_text: var(--color_black);
-  --color_warning: #ffcc00;
-  /* ///// Border Colors ///// */
-  --border_color: #d9d9d9;
-  --border_color_light: #d2e8ef;
+    /* ///// Colors ///// */
+    --color_primary: #63cce0;
+    --color_grey: #8798ad;
+    --color_white: #ffffff;
+    --color_black: #323433;
+    --color_disabled: #b1e5ef;
+    --color_text: var(--color_black);
+    --color_warning: #ffcc00;
+    /* ///// Border Colors ///// */
+    --border_color: #d9d9d9;
+    --border_color_light: #d2e8ef;
+}
+
+::-moz-selection {
+    /* Code for Firefox */
+    color: var(--color_white);
+    background: var(--color_primary);
+}
+
+::selection {
+    color: var(--color_white);
+    background: var(--color_primary);
 }
 
 .supportChat-close {
-  position: fixed;
-  bottom: 4.5em;
-  right: 1.6em;
-  z-index: 2000;
-  background-color: white;
-  color: var(--color_primary);
-  clip-path: circle(38%);
+    position: fixed;
+    bottom: 4.5em;
+    right: 1.6em;
+    z-index: 2000;
+    background-color: white;
+    color: var(--color_primary);
+    clip-path: circle(38%);
 }
 
 .chaport-container .chaport-launcher .chaport-launcher-button {
-  right: 2.5em !important;
+    right: 2.5em !important;
 }
 
 .chaport-launcher-operator-photo {
-  clip-path: circle(50%);
+    clip-path: circle(50%);
 }
 
 @media (max-width: 1024px) {
-  .chaport-container .chaport-launcher .chaport-launcher-button {
-    right: 1.5em !important;
-  }
+    .chaport-container .chaport-launcher .chaport-launcher-button {
+        right: 1.5em !important;
+    }
 
-  .supportChat-close {
-    right: 1em;
-  }
+    .supportChat-close {
+        right: 1em;
+    }
 }
