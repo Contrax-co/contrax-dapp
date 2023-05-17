@@ -126,22 +126,21 @@ function Dashboard() {
                 <BridgeBtn />
             </div>
             {currentWallet ? (
-                networkId === CHAIN_ID.ARBITRUM ? (
-                    <>
-                        <div className={`dashboard_section outlinedContainer`}>
-                            <TokenBalances />
-                        </div>
-
+                <>
+                    <div className={`dashboard_section outlinedContainer`}>
+                        <TokenBalances />
+                    </div>
+                    {networkId === CHAIN_ID.ARBITRUM ? (
                         <div className={`dashboard_section outlinedContainer`}>
                             <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
                                 Staked Tokens
                             </p>
                             <Vaults />
                         </div>
-                    </>
-                ) : (
-                    <WrongNetwork />
-                )
+                    ) : (
+                        <WrongNetwork />
+                    )}
+                </>
             ) : (
                 <NotSignedIn />
             )}
