@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import * as ethers from "ethers";
 import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
-import { ACCOUNT_BALANCE } from "src/config/constants/query";
+import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import {
     useProvider,
     useSigner,
@@ -14,12 +14,10 @@ import {
     useBalance,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { notifyError } from "src/api/notify";
-import { getConnectorId, getNetworkName, noExponents } from "src/utils/common";
+import { getConnectorId, getNetworkName } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
-import { errorMessages } from "src/config/constants/notifyMessages";
 import { useDispatch } from "react-redux";
 import { setConnectorId } from "src/state/settings/settingsReducer";
 import { GasSponsoredSigner } from "src/utils/gasSponsoredSigner";
@@ -27,6 +25,7 @@ import { useAppSelector } from "src/state";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { getPrice } from "src/api/token";
+import { CHAIN_ID } from "src/types/enums";
 
 interface IWalletContext {
     /**
@@ -71,7 +70,19 @@ interface IWalletContext {
     multicallProvider: providers.MulticallProvider;
     getWeb3AuthSigner: (chainId?: number, defaultSigner?: ethers.Signer) => Promise<ethers.ethers.Signer | undefined>;
     isWeb3AuthWallet: boolean;
+    polygonBalance?: BalanceResult;
+    mainnetBalance?: BalanceResult;
+    arbitrumBalance?: BalanceResult;
 }
+
+type BalanceResult = {
+    price: number;
+    usdAmount: number;
+    decimals?: number | undefined;
+    formatted?: string | undefined;
+    symbol?: string | undefined;
+    value?: ethers.ethers.BigNumber | undefined;
+};
 
 export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
 
@@ -101,6 +112,26 @@ const useWaleltSigner = () => {
     return signer;
 };
 
+const useNativeBalance = (currentWallet: `0x${string}` | undefined, chainId: number): BalanceResult => {
+    const { data: price } = useQuery({
+        queryKey: GET_PRICE_TOKEN(getNetworkName(chainId), ethers.constants.AddressZero),
+        queryFn: () => getPrice(ethers.constants.AddressZero, chainId),
+        refetchInterval: 60000,
+    });
+
+    const { data: bal } = useBalance({
+        address: currentWallet,
+        chainId: chainId,
+        watch: true,
+    });
+
+    return {
+        ...bal,
+        price: price || 0,
+        usdAmount: (price || 0) * Number(bal?.formatted),
+    };
+};
+
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
@@ -114,6 +145,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { openConnectModal } = useConnectModal();
+    const polygonBalance = useNativeBalance(currentWallet, CHAIN_ID.POLYGON);
+    const mainnetBalance = useNativeBalance(currentWallet, CHAIN_ID.MAINNET);
+    const arbitrumBalance = useNativeBalance(currentWallet, CHAIN_ID.ARBITRUM);
 
     const connectWallet = async () => {
         if (openConnectModal) openConnectModal();
@@ -221,6 +255,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 multicallProvider,
                 getWeb3AuthSigner,
                 isWeb3AuthWallet: web3AuthConnectorId === getConnectorId(),
+                polygonBalance,
+                mainnetBalance,
+                arbitrumBalance,
             }}
         >
             {children}

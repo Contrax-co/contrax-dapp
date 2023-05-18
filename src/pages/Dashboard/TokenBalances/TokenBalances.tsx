@@ -3,7 +3,6 @@ import { FC, useCallback, useState } from "react";
 import useApp from "src/hooks/useApp";
 import { UIStateEnum, useTokens } from "src/hooks/useTokens";
 import styles from "./TokenBalances.module.scss";
-import useWallet from "src/hooks/useWallet";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { TransferToken } from "src/components/modals/TransferToken/TransferToken";
 import { Token } from "src/types";
@@ -50,8 +49,8 @@ export const TokenBalances: FC<IProps> = () => {
                                 key={i}
                                 className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
                                 onClick={() =>
-                                    token.name === "ETH" && token.network === "Mainnet"
-                                        ? navigate("/exchange/?tab=bridge")
+                                    token.network === "Mainnet" || token.network === "Polygon"
+                                        ? navigate("/exchange/?tab=Bridge")
                                         : setSelectedToken(token)
                                 }
                             >

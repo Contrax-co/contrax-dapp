@@ -6,6 +6,13 @@ export const ACCOUNT_BALANCE = (currentWallet: string, accountAddress: string, n
     accountAddress,
 ];
 
+export const GET_PRICE_TOKEN = (networkName: string, tokenAddress: string) => [
+    "price",
+    "token",
+    networkName,
+    tokenAddress,
+];
+
 export const FARM_ZAP_IN = (currentWallet: string, networkName: string, farmId: number) => [
     "farm",
     "function",

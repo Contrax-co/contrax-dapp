@@ -27,7 +27,25 @@ const useZapIn = (farm: Farm) => {
 
     const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
         let amountInWei = toWei(zapAmount, decimals[token]);
-        await farmFunctions[farm.id].zapIn({ currentWallet, amountInWei, balances, signer, chainId, max, token });
+        await farmFunctions[farm.id].zapIn({
+            currentWallet,
+            amountInWei,
+            balances,
+            signer,
+            chainId,
+            max,
+            token,
+        });
+        // // @ts-ignore
+        // await farmFunctions[farm.id]?.zapInSlippage({
+        //     currentWallet,
+        //     amountInWei,
+        //     balances,
+        //     signer,
+        //     chainId,
+        //     max,
+        //     token,
+        // });
         reloadBalances();
         reloadSupplies();
     };

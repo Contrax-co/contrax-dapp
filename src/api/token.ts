@@ -11,7 +11,6 @@ export const getPrice = async (tokenAddress: string, chainId: number) => {
         const res = await axios.get(coinsLamaPriceByChainId[chainId] + tokenAddress, {
             cache: true,
         });
-
         const prices = JSON.stringify(res.data);
         const parse = JSON.parse(prices);
 
