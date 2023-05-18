@@ -8,13 +8,13 @@ import { blockExplorersByChainId } from "src/config/constants/urls";
 import { Balances } from "src/state/balances/types";
 import { Prices } from "src/state/prices/types";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
-import { DynamicFarmFunctions, GetFarmDataProcessedFn, TokenAmounts, ZapInFn, ZapOutFn } from "./types";
+import { DynamicFarmFunctions, FarmFunctions, GetFarmDataProcessedFn, TokenAmounts, ZapInFn, ZapOutFn } from "./types";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { Decimals } from "src/state/decimals/types";
 import { defaultChainId } from "src/config/constants";
-import { zapInBase, zapOutBase } from "./common";
+import { slippageIn, zapInBase, zapOutBase } from "./common";
 
-let hop = (farmId: number) => {
+let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
@@ -42,7 +42,6 @@ let hop = (farmId: number) => {
                 price: ethPrice,
             },
         ];
-        const multiplier = 100;
         let withdrawableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
@@ -96,10 +95,11 @@ let hop = (farmId: number) => {
     };
 
     const zapIn: ZapInFn = (props) => zapInBase({ ...props, tokenIn: farm.token1, farm });
+    const zapInSlippage: ZapInFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
 
     const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
 
-    return { zapIn, zapOut, getProcessedFarmData };
+    return { zapIn, zapOut, getProcessedFarmData, zapInSlippage };
 };
 
 export default hop;

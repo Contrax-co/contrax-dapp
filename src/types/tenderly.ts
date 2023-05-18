@@ -39,7 +39,7 @@ export interface TenderlySimulateTransactionBody {
     input: string;
     gas?: number;
     gas_price?: number;
-    value?: number;
+    value?: string;
 
     state_overrides?: SimulationParametersOverrides;
 

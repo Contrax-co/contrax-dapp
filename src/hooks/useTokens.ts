@@ -24,7 +24,14 @@ export enum UIStateEnum {
 
 export const useTokens = () => {
     const { farms } = useFarms();
-    const { balance: ethBalance, networkId, currentWallet } = useWallet();
+    const {
+        balance: ethBalance,
+        networkId,
+        currentWallet,
+        mainnetBalance,
+        polygonBalance,
+        arbitrumBalance,
+    } = useWallet();
     const [tokens, setTokens] = useState<Token[]>([]);
     const [lpTokens, setLpTokens] = useState<Token[]>([]);
     const { decimals } = useDecimals();
@@ -117,27 +124,94 @@ export const useTokens = () => {
             return obj;
         });
 
-        const ethToken: Token = {
+        // const ethToken: Token = {
+        //     address: ethAddress,
+        //     token_type: FarmType.normal,
+        //     balance:
+        //         ethBalance < 1 / 10 ** tokenBalDecimalPlaces
+        //             ? noExponents(ethBalance.toPrecision(2)).slice(0, -1)
+        //             : toFixedFloor(ethBalance, tokenBalDecimalPlaces).toString(),
+        //     decimals: 18,
+        //     logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024",
+        //     name: "ETH",
+        //     network: networkId === 1 ? "Mainnet" : "Arbitrum",
+        //     usdBalance:
+        //         ethBalance * prices[ethAddress] < 1 / 10 ** usdBalDecimalPlaces
+        //             ? noExponents((ethBalance * prices[ethAddress]).toPrecision(2)).slice(0, -1)
+        //             : toFixedFloor(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
+        // };
+        const matic: Token = {
             address: ethAddress,
             token_type: FarmType.normal,
             balance:
-                ethBalance < 1 / 10 ** tokenBalDecimalPlaces
-                    ? noExponents(ethBalance.toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(ethBalance, tokenBalDecimalPlaces).toString(),
+                Number(polygonBalance?.formatted) < 1
+                    ? noExponents(Number(polygonBalance?.formatted).toPrecision(2)).slice(0, -1)
+                    : toFixedFloor(Number(polygonBalance?.formatted), tokenBalDecimalPlaces).toString(),
+            decimals: 18,
+            logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025",
+            name: "MATIC",
+            network: "Polygon",
+            usdBalance:
+                (polygonBalance?.usdAmount &&
+                    (polygonBalance.usdAmount < 1
+                        ? noExponents((polygonBalance?.usdAmount).toPrecision(2)).slice(0, -1)
+                        : toFixedFloor(polygonBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
+                "0",
+        };
+
+        const ethMainnet: Token = {
+            address: ethAddress,
+            token_type: FarmType.normal,
+            balance:
+                Number(mainnetBalance?.formatted) < 1
+                    ? noExponents(Number(mainnetBalance?.formatted).toPrecision(2)).slice(0, -1)
+                    : toFixedFloor(Number(mainnetBalance?.formatted), tokenBalDecimalPlaces).toString(),
             decimals: 18,
             logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024",
             name: "ETH",
-            network: networkId === 1 ? "Mainnet" : "Arbitrum",
+            network: "Mainnet",
             usdBalance:
-                ethBalance * prices[ethAddress] < 1 / 10 ** usdBalDecimalPlaces
-                    ? noExponents((ethBalance * prices[ethAddress]).toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
+                (mainnetBalance?.usdAmount &&
+                    (mainnetBalance.usdAmount < 1
+                        ? noExponents((mainnetBalance?.usdAmount).toPrecision(2)).slice(0, -1)
+                        : toFixedFloor(mainnetBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
+                "0",
+        };
+        const arbBalance: Token = {
+            address: ethAddress,
+            token_type: FarmType.normal,
+            balance:
+                Number(arbitrumBalance?.formatted) < 1
+                    ? noExponents(Number(arbitrumBalance?.formatted).toPrecision(2)).slice(0, -1)
+                    : toFixedFloor(Number(arbitrumBalance?.formatted), tokenBalDecimalPlaces).toString(),
+            decimals: 18,
+            logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024",
+            name: "ETH",
+            network: "Arbitrum",
+            usdBalance:
+                (arbitrumBalance?.usdAmount &&
+                    (arbitrumBalance.usdAmount < 1
+                        ? noExponents((arbitrumBalance?.usdAmount).toPrecision(2)).slice(0, -1)
+                        : toFixedFloor(arbitrumBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
+                "0",
         };
 
-        if (Number(ethToken.usdBalance) >= 0.5) tokens.unshift(ethToken);
+        if (Number(arbBalance.usdBalance) >= 0.5) tokens.unshift(arbBalance);
+        if (Number(matic.usdBalance) >= 0.5) tokens.unshift(matic);
+        if (Number(ethMainnet.usdBalance) >= 0.5) tokens.unshift(ethMainnet);
         setTokens(tokens);
         setLpTokens(lpTokens);
-    }, [farms, prices, tokenAddresses, lpAddresses, ethBalance, networkId, formattedBalances]);
+    }, [
+        farms,
+        prices,
+        tokenAddresses,
+        lpAddresses,
+        ethBalance,
+        networkId,
+        formattedBalances,
+        polygonBalance,
+        mainnetBalance,
+    ]);
 
     const UIState = useMemo(() => {
         let STATE: UIStateEnum = UIStateEnum.CONNECT_WALLET;
