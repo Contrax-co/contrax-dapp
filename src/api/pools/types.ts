@@ -78,5 +78,6 @@ export interface FarmFunctions {
     withdraw: WithdrawFn;
     zapIn: ZapInFn;
     zapOut: ZapOutFn;
+    zapInSlippage?: ZapInFn;
 }
 export type DynamicFarmFunctions = (farmId: number) => FarmFunctions;

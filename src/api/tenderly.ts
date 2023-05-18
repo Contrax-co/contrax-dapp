@@ -109,6 +109,7 @@ export const simulateTransaction = async (
     }
 
     const res = await tenderlyApi.post("simulate", body);
+    console.log(res);
 
     let processedResponse = {
         status: res.data.simulation.status as boolean,

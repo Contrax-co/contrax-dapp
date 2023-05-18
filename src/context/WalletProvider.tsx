@@ -27,6 +27,7 @@ import { useAppSelector } from "src/state";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { getPrice } from "src/api/token";
+import { CHAIN_ID } from "src/types/enums";
 
 interface IWalletContext {
     /**
@@ -71,6 +72,8 @@ interface IWalletContext {
     multicallProvider: providers.MulticallProvider;
     getWeb3AuthSigner: (chainId?: number, defaultSigner?: ethers.Signer) => Promise<ethers.ethers.Signer | undefined>;
     isWeb3AuthWallet: boolean;
+    polygonBalance?: { decimals: number; formatted: string; symbol: string; value: ethers.BigNumber };
+    mainnetBalance?: { decimals: number; formatted: string; symbol: string; value: ethers.BigNumber };
 }
 
 export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
@@ -115,6 +118,20 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { openConnectModal } = useConnectModal();
 
+    const { data: polygonBalance } = useBalance({
+        address: currentWallet,
+        chainId: CHAIN_ID.POLYGON,
+        watch: true,
+    });
+    const { data: mainnetBalance } = useBalance({
+        address: currentWallet,
+        chainId: CHAIN_ID.MAINNET,
+        watch: true,
+    });
+    console.log({
+        polygonBalance,
+        mainnetBalance,
+    });
     const connectWallet = async () => {
         if (openConnectModal) openConnectModal();
 
@@ -221,6 +238,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 multicallProvider,
                 getWeb3AuthSigner,
                 isWeb3AuthWallet: web3AuthConnectorId === getConnectorId(),
+                polygonBalance,
+                mainnetBalance,
             }}
         >
             {children}

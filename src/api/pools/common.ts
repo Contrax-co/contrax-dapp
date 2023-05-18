@@ -172,7 +172,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
 
 // TODO: move to tenderly and work in progress
 
-export const slippageIn = async (args: ZapInArgs & { farm: Farm }) => {
+export const slippageIn: ZapInBaseFn = async (args) => {
     let { amountInWei, balances, chainId, currentWallet, token, max, signer, tokenIn, farm } = args;
     const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
     const wethAddress = addressesByChainId[chainId].wethAddress;
@@ -219,29 +219,21 @@ export const slippageIn = async (args: ZapInArgs & { farm: Farm }) => {
         }
         //#endregion
 
-        zapperContract.populateTransaction.zapInETH(farm.vault_addr, 0, token, {
+        const populated = await zapperContract.populateTransaction.zapInETH(farm.vault_addr, 0, token, {
             value: amountInWei,
         });
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+        console.log(populated);
     }
 
     const simulationResult = await simulateTransaction({
         /* Standard EVM Transaction object */
-        from: currentWallet,
-        to: "0x80957FaBaC43427639a875A44156fbE35081c7f9",
-        input: "0x72f8b6cd000000000000000000000000fd3573bebdc8bf323c65edf2408fd9a8412a86940000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ff970a61a04b1ca14834a43f5de4533ebddb5cc8000000000000000000000000000000000000000000000000000000000020319d",
-
-        state_overrides: getAllowanceStateOverride([
-            {
-                tokenAddress: addressesByChainId[defaultChainId].usdcAddress,
-                owner: "0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8",
-                spender: "0x80957FaBaC43427639a875A44156fbE35081c7f9",
-            },
-        ]),
+        ...transaction,
+        to: farm.zapper_addr,
     });
+    console.log(simulationResult);
 
-    const filteredState = filterStateDiff(
-        "0xfd3573bebDc8bF323c65Edf2408Fd9a8412a8694",
-        "_balances",
-        simulationResult.stateDiffs
-    );
+    const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
+    console.log(filteredState);
 };
