@@ -6,7 +6,7 @@ import useBalances from "./useBalances";
 import usePriceOfTokens from "./usePriceOfTokens";
 import useWallet from "./useWallet";
 import { constants, utils } from "ethers";
-import { FarmType } from "src/types/enums";
+import { CHAIN_ID, FarmType } from "src/types/enums";
 import { useDecimals } from "./useDecimals";
 
 const ethAddress = constants.AddressZero;
@@ -195,10 +195,9 @@ export const useTokens = () => {
                         : toFixedFloor(arbitrumBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
                 "0",
         };
-
-        if (Number(arbBalance.usdBalance) >= 0.5) tokens.unshift(arbBalance);
-        if (Number(matic.usdBalance) >= 0.5) tokens.unshift(matic);
-        if (Number(ethMainnet.usdBalance) >= 0.5) tokens.unshift(ethMainnet);
+        if (Number(arbBalance.usdBalance) >= 0.5 && networkId === CHAIN_ID.ARBITRUM) tokens.unshift(arbBalance);
+        if (Number(matic.usdBalance) >= 0.5 && networkId === CHAIN_ID.POLYGON) tokens.unshift(matic);
+        if (Number(ethMainnet.usdBalance) >= 0.5 && networkId === CHAIN_ID.MAINNET) tokens.unshift(ethMainnet);
         setTokens(tokens);
         setLpTokens(lpTokens);
     }, [
