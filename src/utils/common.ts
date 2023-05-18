@@ -61,6 +61,8 @@ export function getNetworkName(id: number) {
             return "arbitrum";
         case 1:
             return "ethereum";
+        case 137:
+            return "polygon";
         default:
             return "";
     }
