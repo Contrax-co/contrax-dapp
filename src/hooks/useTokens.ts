@@ -8,6 +8,8 @@ import useWallet from "./useWallet";
 import { constants, utils } from "ethers";
 import { CHAIN_ID, FarmType } from "src/types/enums";
 import { useDecimals } from "./useDecimals";
+import useBridge from "./useBridge";
+import { addressesByChainId } from "src/config/constants/contracts";
 
 const ethAddress = constants.AddressZero;
 const tokenBalDecimalPlaces = 3;
@@ -32,6 +34,7 @@ export const useTokens = () => {
         polygonBalance,
         arbitrumBalance,
     } = useWallet();
+    const { polygonUsdcBalance, usdAmount: polygonUsdAmount } = useBridge();
     const [tokens, setTokens] = useState<Token[]>([]);
     const [lpTokens, setLpTokens] = useState<Token[]>([]);
     const { decimals } = useDecimals();
@@ -195,6 +198,26 @@ export const useTokens = () => {
                         : toFixedFloor(arbitrumBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
                 "0",
         };
+
+        const polygonUsdc: Token = {
+            address: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
+            token_type: FarmType.normal,
+            balance:
+                Number(polygonUsdcBalance) < 1
+                    ? noExponents(Number(polygonUsdcBalance).toPrecision(2)).slice(0, -1)
+                    : toFixedFloor(Number(polygonUsdcBalance), tokenBalDecimalPlaces).toString(),
+            decimals: 18,
+            logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png",
+            name: "USDC",
+            network: "Polygon",
+            usdBalance:
+                (polygonUsdAmount &&
+                    (polygonUsdAmount < 1
+                        ? noExponents(polygonUsdAmount.toPrecision(2)).slice(0, -1)
+                        : toFixedFloor(polygonUsdAmount, usdBalDecimalPlaces).toString())) ||
+                "0",
+        };
+        if (Number(polygonUsdc.usdBalance) >= 0.5) tokens.unshift(polygonUsdc);
         if (Number(arbBalance.usdBalance) >= 0.5 && networkId === CHAIN_ID.ARBITRUM) tokens.unshift(arbBalance);
         if (Number(matic.usdBalance) >= 0.5 && networkId === CHAIN_ID.POLYGON) tokens.unshift(matic);
         if (Number(ethMainnet.usdBalance) >= 0.5 && networkId === CHAIN_ID.MAINNET) tokens.unshift(ethMainnet);
