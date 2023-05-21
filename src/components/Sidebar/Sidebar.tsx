@@ -38,6 +38,13 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
 
                 <SidebarItem
+                    title="Buy"
+                    icon={<BsCurrencyExchange size={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Buy)}
+                    active={pathname === RoutesPaths.Buy}
+                />
+
+                <SidebarItem
                     title="Earn"
                     icon={<EarnIcon height={18} width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Farms)}
@@ -51,25 +58,6 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     active={pathname === RoutesPaths.Exchange}
                 />
 
-                {/* <SidebarItem
-                    title="Create Token"
-                    icon={<GiToken />}
-                    onClick={() => handleNavigation(RoutesPaths.CreateToken)}
-                    active={pathname === RoutesPaths.CreateToken}
-                /> */}
-
-                {/* <SidebarItem
-                    title="Create Pool"
-                    icon={<RiFundsLine />}
-                    onClick={() => handleNavigation(RoutesPaths.CreatePool)}
-                    active={pathname === RoutesPaths.CreatePool}
-                /> */}
-                <SidebarItem
-                    title="Buy"
-                    icon={<BsCurrencyExchange size={18} />}
-                    onClick={() => handleNavigation(RoutesPaths.Buy)}
-                    active={pathname === RoutesPaths.Buy}
-                />
                 {process.env.NODE_ENV === "development" && (
                     <SidebarItem
                         title="Test"
