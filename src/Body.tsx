@@ -86,9 +86,9 @@ function Body() {
         <Routes>
             <Route path="/" element={<Home />}>
                 <Route path="" element={<Dashboard />} />
+                <Route path="/buy" element={<Buy />} />
                 <Route path="/farms" element={<Farms />} />
                 <Route path="/exchange" element={<Exchange />} />
-                <Route path="/buy" element={<Buy />} />
                 <Route path="test" element={<Test />} />
                 <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
             </Route>
