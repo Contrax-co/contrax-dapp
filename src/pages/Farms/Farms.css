@@ -31,7 +31,7 @@
     font-weight: bold;
     color: var(--color_grey);
     text-align: center;
-    padding-right: 20px;
+    padding: 12px;
 }
 
 .farm__title {

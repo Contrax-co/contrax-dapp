@@ -291,14 +291,14 @@
     }
 
     .logo {
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
         margin-left: 0px;
     }
 
     .logofirst {
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
         margin-right: -5px;
     }
 
@@ -342,7 +342,6 @@
     }
 
     .pool_name {
-        font-size: 11px;
         margin-bottom: 2px;
     }
 
