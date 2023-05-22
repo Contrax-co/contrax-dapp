@@ -61,11 +61,11 @@ export const useDetailInput = (farm: Farm) => {
             if (showInUsd) {
                 return amt / depositable.price;
             } else {
-                if (depositable?.tokenAddress === farm.lp_address) {
-                    return amt;
-                } else {
-                    return amt;
-                }
+                return amt;
+                // if (depositable?.tokenAddress === farm.lp_address) {
+                // } else {
+                //     return amt;
+                // }
             }
         } else {
             if (showInUsd) {
