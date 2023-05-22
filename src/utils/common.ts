@@ -133,8 +133,8 @@ export const awaitTransaction = async (transaction: any) => {
 
         if (e.reason) error = e.reason.replace("execution reverted:", "");
         else if (e.code === 4001) error = "Transaction Denied!";
-        else if (e.code === -32000) error = "Insuficient Funds in your account for transaction";
-        else if (e.data?.code === -32000) error = "Insuficient Funds in your account for transaction";
+        else if (e.code === -32000 || e.data?.code === -32000)
+            error = "Insuficient Funds in your account for transaction";
         else if (e.data?.message) error = e.data.message;
         else if (Error(e).message) error = Error(e).message;
         status = false;
