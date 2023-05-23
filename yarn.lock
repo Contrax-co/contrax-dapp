@@ -2664,6 +2664,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gatefi/js-sdk@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "@gatefi/js-sdk@npm:0.7.1"
+  checksum: 70166624f5e6dd4832e29f0652830a7158dd849db040bc984ca314362bf9dfed67ccba0200e3094a58a572d96403068aad1bddf0097562077ed717ccd1f38eb4
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.11.8":
   version: 0.11.8
   resolution: "@humanwhocodes/config-array@npm:0.11.8"
@@ -9254,6 +9261,7 @@ __metadata:
   dependencies:
     "@0xsequence/multicall": ^0.43.19
     "@ethersproject/abstract-provider": ^5.7.0
+    "@gatefi/js-sdk": ^0.7.1
     "@rainbow-me/rainbowkit": ^0.8.1
     "@ramp-network/ramp-instant-sdk": ^4.0.1
     "@reduxjs/toolkit": ^1.9.3
