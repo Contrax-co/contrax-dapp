@@ -37,16 +37,11 @@ const Gatefi: React.FC<IProps> = () => {
             availableCrypto: ["USDC-MATIC"],
         });
         instance.show();
-        instance.subscribe(GateFiEventTypes.onClose, (type, payload) => {
-            console.log(type, payload);
-        });
-        instance.subscribe(GateFiEventTypes.onLoad, (type, payload) => {
-            console.log("load", type, payload);
-        });
         return () => {
             instance.destroy();
         };
     }, [currentWallet]);
+
     return (
         <div style={{ width: 420 }}>
             <div id="overlay-button" style={{ width: 420, height: 680 }}></div>
