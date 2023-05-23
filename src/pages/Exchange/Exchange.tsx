@@ -13,6 +13,7 @@ import { useSearchParams } from "react-router-dom";
 import useBalances from "src/hooks/useBalances";
 import { Tabs } from "src/components/Tabs/Tabs";
 import Swap from "./Swap";
+import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
 
 interface IProps {}
 
@@ -113,7 +114,7 @@ const Exchange: React.FC<IProps> = () => {
         }
     }, [tab]);
 
-    return (
+    return currentWallet ? (
         <div
             style={{
                 padding: "20px 8px 120px 8px",
@@ -186,6 +187,8 @@ const Exchange: React.FC<IProps> = () => {
                 {tab === Tab.Swap && <Swap />}
             </div>
         </div>
+    ) : (
+        <NotSignedIn />
     );
 };
 

@@ -21,7 +21,7 @@ export const fetchApys = createAsyncThunk(
         const promises = farms.map((farm) => getApy(farm, chainId, multicallProvider));
         const res = await Promise.all(promises);
         const obj: { [farmId: number]: Apys } = {};
-        res.map((apy, index) => {
+        res.forEach((apy, index) => {
             obj[farms[index].id] = apy;
         });
         return obj;

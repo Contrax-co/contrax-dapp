@@ -7,7 +7,7 @@ interface Props {}
 const VaultItem: React.FC<Props> = () => {
     const { userTVL } = useTVL();
 
-    if (userTVL === 0 || isNaN(Number(userTVL.toFixed(0)))) return null;
+    if (userTVL === 0 || Number.isNaN(Number(userTVL.toFixed(0)))) return null;
 
     return (
         <div className={`colorContainer ${styles.tvlContainer}`}>
