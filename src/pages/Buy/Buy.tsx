@@ -12,12 +12,14 @@ import useBridge from "src/hooks/useBridge";
 import useAccountData from "src/hooks/useAccountData";
 import { TiWarningOutline } from "react-icons/ti";
 import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
+import Gatefi from "./Gatefi";
 
 interface IProps {}
 
 enum Tab {
     Wert = "Wert",
     Transak = "Transak",
+    Gatefi = "Gatefi",
 }
 
 const Buy: React.FC<IProps> = () => {
@@ -63,33 +65,24 @@ const Buy: React.FC<IProps> = () => {
             <small>Note: If Wert isn't supported for you, use Transak</small>
 
             <Tabs>
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(Tab.Wert);
-                        setSearchParams((params) => {
-                            params.set("tab", Tab.Wert);
-                            return params;
-                        });
-                    }}
-                    description="Wert"
-                    active={tab === Tab.Wert}
-                />
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(Tab.Transak);
-                        setSearchParams((params) => {
-                            params.set("tab", Tab.Transak);
-                            return params;
-                        });
-                    }}
-                    description="Transak"
-                    active={tab === Tab.Transak}
-                />
+                {Object.values(Tab).map((_tab) => (
+                    <PoolButton
+                        variant={2}
+                        onClick={() => {
+                            setTab(_tab);
+                            setSearchParams((params) => {
+                                params.set("tab", _tab);
+                                return params;
+                            });
+                        }}
+                        description={_tab}
+                        active={tab === _tab}
+                    />
+                ))}
             </Tabs>
             {tab === Tab.Transak && <Transak />}
             {tab === Tab.Wert && <Wert />}
+            {tab === Tab.Gatefi && <Gatefi />}
         </div>
     ) : (
         <NotSignedIn />

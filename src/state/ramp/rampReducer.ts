@@ -78,6 +78,7 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 currentWallet,
                 polygonSigner
             );
+            if (polyUsdcBalance.eq(0)) throw new Error("Insufficient balance");
             thunkApi.dispatch(setBridgeStatus(BridgeStatus.APPROVING));
             const { route, approvalData } = await getRoute(
                 CHAIN_ID.POLYGON,
