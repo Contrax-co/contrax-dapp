@@ -70,10 +70,15 @@ export interface Token {
     token_type: FarmType;
     logo: string;
     logo2?: string;
+    /**
+     * Formatted Balance
+     */
     balance: string;
     usdBalance: string;
     decimals: number;
     network?: string;
+    networkId: number;
+    price: number;
 }
 export interface FarmData extends FarmDataProcessed {}
 

@@ -9,7 +9,6 @@ import { errorMessages, loadingMessages, successMessages } from "src/config/cons
 
 export const useTransferToken = (token: Token, handleClose: Function) => {
     const { reloadBalances } = useBalances();
-    const { prices } = usePriceOfTokens();
     const [receiverAddress, setReceiverAddress] = useState<string>("");
     const [amount, setAmount] = useState("");
     const [showInUsd, toggleShowInUsd] = useState<boolean>(true);
@@ -17,7 +16,8 @@ export const useTransferToken = (token: Token, handleClose: Function) => {
     const [max, setMax] = useState(false);
 
     const getAmountInWei = () => {
-        let amountInEthFormat = showInUsd ? (parseFloat(amount) / prices[token.address]).toString() : amount;
+        const price = token.price;
+        let amountInEthFormat = showInUsd ? (parseFloat(amount) / price).toString() : amount;
         return toWei(amountInEthFormat, token.decimals);
     };
 
