@@ -161,9 +161,12 @@ export const subtractGas = async (
     amountInWei: BigNumber,
     signerOrProvider: Signer | Provider,
     estimatedTx: Promise<BigNumber>,
-    showError: boolean = true
+    showError: boolean = true,
+    _balance: string | BigNumber | undefined = undefined
 ) => {
-    const balance = BigNumber.from(store.getState().balances.balances[constants.AddressZero]);
+    const balance = _balance
+        ? BigNumber.from(_balance)
+        : BigNumber.from(store.getState().balances.balances[constants.AddressZero]);
     const gasPrice = await signerOrProvider.getGasPrice();
     const gasLimit = await estimatedTx;
     const gasToRemove = gasLimit.mul(gasPrice).mul(2);
