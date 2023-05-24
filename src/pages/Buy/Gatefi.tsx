@@ -12,14 +12,14 @@ interface IProps {}
 const Gatefi: React.FC<IProps> = () => {
     const { currentWallet } = useWallet();
     const [params] = useSearchParams();
-    const { polyUsdcToUsdc } = useBridge();
+    const { polyUsdcToUsdc, isLoading } = useBridge();
 
     React.useEffect(() => {
         let success = params.get("success");
-        if (Boolean(success)) {
+        if (Boolean(success) && !isLoading) {
             polyUsdcToUsdc();
         }
-    }, [params, polyUsdcToUsdc]);
+    }, [params, polyUsdcToUsdc, isLoading]);
 
     React.useEffect(() => {
         var instance = new GateFiSDK({
