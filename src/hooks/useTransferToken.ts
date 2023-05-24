@@ -18,7 +18,8 @@ export const useTransferToken = (token: Token, handleClose: Function) => {
     const getAmountInWei = () => {
         const price = token.price;
         let amountInEthFormat = showInUsd ? (parseFloat(amount) / price).toString() : amount;
-        return toWei(amountInEthFormat, token.decimals);
+        const converted = toWei(amountInEthFormat, token.decimals);
+        return converted;
     };
 
     const handleSubmit = async (e: FormEvent) => {
