@@ -10,6 +10,7 @@ import { CHAIN_ID, FarmType } from "src/types/enums";
 import { useDecimals } from "./useDecimals";
 import useBridge from "./useBridge";
 import { addressesByChainId } from "src/config/constants/contracts";
+import { defaultChainId } from "src/config/constants";
 
 const ethAddress = constants.AddressZero;
 const tokenBalDecimalPlaces = 3;
@@ -100,6 +101,8 @@ export const useTokens = () => {
                     : "0",
                 logo: isToken1 ? farm?.logo1 : farm?.logo2 || "",
                 name: isToken1 ? farm?.name1 : farm?.name2 || "",
+                price: prices[address],
+                networkId: defaultChainId,
             };
             return obj;
         });
@@ -123,6 +126,8 @@ export const useTokens = () => {
                 name: farm?.url_name!,
                 logo: farm?.logo1!,
                 logo2: farm?.logo2,
+                price: prices[address],
+                networkId: defaultChainId,
             };
             return obj;
         });
@@ -160,6 +165,8 @@ export const useTokens = () => {
                         ? noExponents((polygonBalance?.usdAmount).toPrecision(2)).slice(0, -1)
                         : toFixedFloor(polygonBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
                 "0",
+            price: polygonBalance?.price as number,
+            networkId: CHAIN_ID.POLYGON,
         };
 
         const ethMainnet: Token = {
@@ -179,6 +186,8 @@ export const useTokens = () => {
                         ? noExponents((mainnetBalance?.usdAmount).toPrecision(2)).slice(0, -1)
                         : toFixedFloor(mainnetBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
                 "0",
+            price: mainnetBalance?.price as number,
+            networkId: CHAIN_ID.MAINNET,
         };
         const arbBalance: Token = {
             address: ethAddress,
@@ -197,6 +206,8 @@ export const useTokens = () => {
                         ? noExponents((arbitrumBalance?.usdAmount).toPrecision(2)).slice(0, -1)
                         : toFixedFloor(arbitrumBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
                 "0",
+            price: arbitrumBalance?.price as number,
+            networkId: CHAIN_ID.ARBITRUM,
         };
 
         const polygonUsdc: Token = {
@@ -216,6 +227,8 @@ export const useTokens = () => {
                         ? noExponents(polygonUsdAmount.toPrecision(2)).slice(0, -1)
                         : toFixedFloor(polygonUsdAmount, usdBalDecimalPlaces).toString())) ||
                 "0",
+            price: prices[addressesByChainId[defaultChainId].usdcAddress],
+            networkId: CHAIN_ID.POLYGON,
         };
         if (Number(polygonUsdc.usdBalance) >= 0.5) tokens.unshift(polygonUsdc);
         if (Number(arbBalance.usdBalance) >= 0.5 && networkId === CHAIN_ID.ARBITRUM) tokens.unshift(arbBalance);
