@@ -5,6 +5,7 @@ import { GateFiDisplayModeEnum, GateFiEventTypes, GateFiSDK } from "@gatefi/js-s
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import { useSearchParams } from "react-router-dom";
 import useBridge from "src/hooks/useBridge";
+import { GATEFI_MERCHANT_ID } from "src/config/constants";
 
 interface IProps {}
 
@@ -22,7 +23,7 @@ const Gatefi: React.FC<IProps> = () => {
 
     React.useEffect(() => {
         var instance = new GateFiSDK({
-            merchantId: "36382c3a-cffb-4dd5-a5e5-7367c18c35ef",
+            merchantId: GATEFI_MERCHANT_ID,
             displayMode: GateFiDisplayModeEnum.Embedded,
             nodeSelector: "#overlay-button",
             walletAddress: currentWallet,
