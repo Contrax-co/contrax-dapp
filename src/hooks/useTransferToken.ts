@@ -18,6 +18,7 @@ export const useTransferToken = (token: Token, handleClose: Function) => {
     const getAmountInWei = () => {
         const price = token.price;
         let amountInEthFormat = showInUsd ? (parseFloat(amount) / price).toString() : amount;
+        console.log(amount, price, amountInEthFormat, token.decimals);
         const converted = toWei(amountInEthFormat, token.decimals);
         return converted;
     };

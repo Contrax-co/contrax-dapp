@@ -23,7 +23,6 @@ const useBridge = () => {
         address: currentWallet as `0x${string}`,
         chainId: CHAIN_ID.POLYGON,
         watch: true,
-        cacheTime: 5,
         token: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress as `0x${string}`,
     });
     const isLoading = useAppSelector((state) => state.ramp.bridgeState.isBridging);
