@@ -217,7 +217,7 @@ export const useTokens = () => {
                 Number(polygonUsdcBalance) < 1
                     ? noExponents(Number(polygonUsdcBalance).toPrecision(2)).slice(0, -1)
                     : toFixedFloor(Number(polygonUsdcBalance), tokenBalDecimalPlaces).toString(),
-            decimals: 18,
+            decimals: 6,
             logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png",
             name: "USDC",
             network: "Polygon",
@@ -227,7 +227,7 @@ export const useTokens = () => {
                         ? noExponents(polygonUsdAmount.toPrecision(2)).slice(0, -1)
                         : toFixedFloor(polygonUsdAmount, usdBalDecimalPlaces).toString())) ||
                 "0",
-            price: prices[addressesByChainId[defaultChainId].usdcAddress],
+            price: polygonUsdAmount / Number(polygonUsdcBalance),
             networkId: CHAIN_ID.POLYGON,
         };
         if (Number(polygonUsdc.usdBalance) >= 0.5) tokens.unshift(polygonUsdc);
@@ -246,6 +246,9 @@ export const useTokens = () => {
         formattedBalances,
         polygonBalance,
         mainnetBalance,
+        polygonUsdcBalance,
+        arbitrumBalance,
+        polygonUsdAmount,
     ]);
 
     const UIState = useMemo(() => {
