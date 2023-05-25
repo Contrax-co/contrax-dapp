@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+  secrets-manager: 
+    DEMO_SECRET: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:REACT_APP_TENDERLY_USER_NAME   # replace mysecretname:mysecretkey with your secret's ARN or name:key
+
+
 phases:
   install:
     runtime-versions:
@@ -13,6 +18,7 @@ phases:
       - echo Finished installing packages.
   build:
     commands:
+      - echo "DEMO_SECRET is $DEMO_SECRET"
       - echo Generating build directory for react.
       - yarn build 
       - echo Finished generating build directory.
