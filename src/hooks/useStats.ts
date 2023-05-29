@@ -5,48 +5,34 @@ import { useDecimals } from "./useDecimals";
 import { toEth } from "src/utils/common";
 import { getAddress } from "ethers/lib/utils.js";
 import useFarms from "./farms/useFarms";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { BACKEND_BASE_URL } from "src/config/constants";
 
 type userTVL = {
     id: string;
     tvl: number;
+    vaultTvls: any[];
 };
 
-export const useStats = (page: number) => {
-    const [users, setUsers] = useState<Response[]>();
-    const [userTVLs, setUserTVLs] = useState<userTVL[]>();
-    const { prices } = usePriceOfTokens();
-    const { decimals } = useDecimals();
-    const { farms } = useFarms();
+export const useStats = () => {
+    const [page, setPage] = useState(1);
 
-    useEffect(() => {
-        setUsersState(page);
-    }, [page]);
-
-    useEffect(() => {
-        if (!farms || !users) return;
-        const abc = users?.map((user) => {
-            let usdBalance = 0;
-            user.earn.forEach((vault) => {
-                const farm = farms.filter((farm) => farm.vault_addr == getAddress(vault.vaultAddress))[0];
-                let price = prices[getAddress(farm.lp_address)];
-                let decimal = decimals[vault.vaultAddress];
-                let balance = toEth(vault.userBalance, decimal);
-                usdBalance += price * Number(balance);
-            });
-            return {
-                ...user,
-                tvl: usdBalance,
-            };
-        });
-        setUserTVLs(abc);
-    }, [users, prices, decimals, farms]);
-
-    const setUsersState = async (page: number) => {
-        const users = await getUserTVLs(page);
-        setUsers(users);
+    const fetchUserTVLs = async (page: number) => {
+        return axios.get(`${BACKEND_BASE_URL}stats/tvl?page=${page}&limit=10`);
     };
 
+    const { isLoading, error, data, isFetching } = useQuery({
+        queryKey: ["stats/tvl", page],
+        queryFn: () => fetchUserTVLs(page),
+        keepPreviousData: true,
+    });
+
     return {
-        userTVLs,
+        userTVLs: data?.data.data as userTVL[],
+        page,
+        setPage,
+        isLoading: isLoading || isFetching,
+        error,
     };
 };

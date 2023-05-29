@@ -1,0 +1,92 @@
+.table {
+    width: 100%;
+    border-radius: 10px;
+    border-spacing: 0px;
+    overflow: hidden;
+    border: 1px solid var(--color_primary);
+    font-size: 16px;
+}
+
+.tableRow {
+    height: 50px;
+
+    &:nth-child(even) {
+        background-color: #63cce011;
+    }
+}
+
+.tableData {
+    padding: 8px 24px;
+    width: 50%;
+    max-width: 50%;
+    height: inherit;
+    box-sizing: border-box;
+}
+
+.tableHeader {
+    background-color: var(--color_primary);
+    color: var(--color_white);
+
+    font-weight: 700;
+}
+
+.tableBody {
+    color: var(--color_grey);
+}
+
+.tableFooter {
+    background-color: var(--color_primary);
+    color: var(--color_white);
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 24px;
+    font-weight: 600;
+    box-sizing: border-box;
+    height: inherit;
+    width: 100%;
+    min-width: 100%;
+
+    & > p {
+        cursor: pointer;
+    }
+}
+
+.addressCol {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 100%;
+    width: 100%;
+}
+
+.addressText {
+    width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.arbiscanIcon {
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 768px) {
+    .addressText {
+        width: 140px;
+    }
+    .table {
+        font-size: 14px;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .addressText {
+        width: 80px;
+    }
+    .table {
+        font-size: 14px;
+    }
+}
