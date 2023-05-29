@@ -4,7 +4,7 @@ import styles from "./UserTVL.module.scss";
 
 interface Props {}
 
-const VaultItem: React.FC<Props> = () => {
+const UserTVL: React.FC<Props> = () => {
     const { userTVL } = useTVL();
 
     if (userTVL === 0 || Number.isNaN(Number(userTVL.toFixed(0)))) return null;
@@ -19,4 +19,4 @@ const VaultItem: React.FC<Props> = () => {
     );
 };
 
-export default VaultItem;
+export default UserTVL;
