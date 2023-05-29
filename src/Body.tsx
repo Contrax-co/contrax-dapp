@@ -14,6 +14,7 @@ import { useDecimals } from "./hooks/useDecimals";
 import Buy from "./pages/Buy/Buy";
 import useAccountData from "./hooks/useAccountData";
 import useBridge from "./hooks/useBridge";
+import Stats from "./pages/Stats/Stats";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -90,6 +91,7 @@ function Body() {
                 <Route path="/farms" element={<Farms />} />
                 <Route path="/exchange" element={<Exchange />} />
                 <Route path="test" element={<Test />} />
+                <Route path="stats" element={<Stats />} />
                 <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
             </Route>
         </Routes>
