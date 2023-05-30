@@ -1,10 +1,11 @@
-import { FC } from "react";
+import { FC, MouseEventHandler } from "react";
 import styles from "./StatsTable.module.scss";
 import { useStats } from "src/hooks/useStats";
 import { customCommify } from "src/utils/common";
 import useConstants from "src/hooks/useConstants";
 import useWallet from "src/hooks/useWallet";
 import { FiExternalLink } from "react-icons/fi";
+import { BsClipboardData } from "react-icons/bs";
 
 export const StatsTable: FC = () => {
     const { userTVLs, page, setPage } = useStats();
@@ -39,7 +40,11 @@ export const StatsTable: FC = () => {
                         </tr>
                     ))
                 ) : (
-                    <EmptyTable />
+                    <tr className={styles.tableRow}>
+                        <td colSpan={2}>
+                            <EmptyTable onPrev={() => setPage((prev) => prev - 1)} />
+                        </td>
+                    </tr>
                 )}
             </tbody>
             <tfoot className={styles.tableFooter}>
@@ -47,7 +52,7 @@ export const StatsTable: FC = () => {
                     <td className={styles.tableData}></td>
                     <td className={styles.tableData + " " + styles.controls}>
                         {page > 1 && <p onClick={() => setPage((prev) => prev - 1)}>{`< Prev`}</p>}
-                        {userTVLs && userTVLs.length > 0 && (
+                        {userTVLs && userTVLs.length == 10 && (
                             <p onClick={() => setPage((prev) => prev + 1)}>{`Next >`}</p>
                         )}
                     </td>
@@ -57,6 +62,15 @@ export const StatsTable: FC = () => {
     );
 };
 
-const EmptyTable = () => {
-    return <div>EmptyTable</div>;
+const EmptyTable = ({ onPrev }: { onPrev: MouseEventHandler<HTMLButtonElement> }) => {
+    return (
+        <div className={styles.emptyTable}>
+            <BsClipboardData size={36} className={styles.icon} />
+            <p className={styles.disclaimer}>No More Data</p>
+            <p className={styles.message}>Go back to previuos page to see data</p>
+            <button className={"custom-button " + styles.button} onClick={onPrev}>
+                Prev
+            </button>
+        </div>
+    );
 };

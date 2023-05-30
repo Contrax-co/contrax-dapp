@@ -37,6 +37,10 @@
 .tableFooter {
     background-color: var(--color_primary);
     color: var(--color_white);
+
+    & > tr {
+        height: 36px;
+    }
 }
 
 .controls {
@@ -71,6 +75,32 @@
 
 .arbiscanIcon {
     cursor: pointer;
+}
+
+.emptyTable {
+    background-color: var(--background_secondary);
+    height: 400px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--color_primary);
+
+    .disclaimer {
+        font-size: 20px;
+    }
+
+    .message {
+        margin: 12px 0px;
+        color: var(--color_grey);
+    }
+
+    .button {
+        min-width: initial;
+        min-height: initial;
+        padding: 10px 30px;
+    }
 }
 
 @media only screen and (max-width: 768px) {

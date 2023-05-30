@@ -5,7 +5,9 @@ import { StatsTable } from "src/components/StatsTable/StatsTable";
 function Stats() {
     return (
         <div className={styles.container}>
-            <PlatformTVL />
+            <div className={styles.topRow}>
+                <PlatformTVL />
+            </div>
             <StatsTable />
         </div>
     );
