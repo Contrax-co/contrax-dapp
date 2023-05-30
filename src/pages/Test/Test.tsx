@@ -13,7 +13,6 @@ import { filterStateDiff, getAllowanceStateOverride, simulateTransaction } from 
 import { TenderlySimulationType } from "src/types/tenderly";
 import { approveErc20, checkApproval } from "src/api/token";
 import useBridge from "src/hooks/useBridge";
-import useTVL from "src/hooks/useTVL";
 import { commify } from "ethers/lib/utils.js";
 import { useAppDispatch } from "src/state";
 import { setSourceTxHash } from "src/state/ramp/rampReducer";
@@ -23,6 +22,7 @@ import { toWei } from "src/utils/common";
 import { useDecimals } from "src/hooks/useDecimals";
 import { getReferalEarning } from "src/api/account";
 import { getCatalogLink } from "src/api/front";
+import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
@@ -31,8 +31,11 @@ const Test = () => {
     const dispatch = useAppDispatch();
     const { currentWallet } = useWallet();
     const { decimals } = useDecimals();
-    const { platformTVL } = useTVL();
     const [url, setUrl] = useState<string>("");
+    const { platformTVL } = usePlatformTVL();
+
+    // web3authProvider
+    const handleTransaction = async () => {};
 
     const fn = async () => {
         const url = await getCatalogLink(currentWallet);

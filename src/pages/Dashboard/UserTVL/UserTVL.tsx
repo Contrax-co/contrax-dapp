@@ -1,4 +1,4 @@
-import useTVL from "src/hooks/useTVL";
+import useTVL from "src/hooks/useUserTVL";
 import { customCommify } from "src/utils/common";
 import styles from "./UserTVL.module.scss";
 
