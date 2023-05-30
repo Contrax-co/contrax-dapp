@@ -7,7 +7,7 @@ interface Props {}
 const PlatformTVL: React.FC<Props> = () => {
     const { platformTVL } = usePlatformTVL();
 
-    if (platformTVL === 0) return <div></div>;
+    if (!platformTVL) return <div></div>;
 
     return (
         <div className={`colorContainer ${styles.tvlContainer}`}>
