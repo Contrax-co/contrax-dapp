@@ -1,11 +1,11 @@
-import useTVL from "src/hooks/useTVL";
 import styles from "./PlatformTVL.module.scss";
 import { customCommify } from "src/utils/common";
+import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 
 interface Props {}
 
 const PlatformTVL: React.FC<Props> = () => {
-    const { platformTVL } = useTVL();
+    const { platformTVL } = usePlatformTVL();
 
     if (platformTVL === 0) return <div></div>;
 
