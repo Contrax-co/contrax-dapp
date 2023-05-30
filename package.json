@@ -5,6 +5,7 @@
   "dependencies": {
     "@0xsequence/multicall": "^0.43.19",
     "@ethersproject/abstract-provider": "^5.7.0",
+    "@front-finance/link": "^1.0.7",
     "@gatefi/js-sdk": "^0.7.1",
     "@rainbow-me/rainbowkit": "^0.8.1",
     "@ramp-network/ramp-instant-sdk": "^4.0.1",
