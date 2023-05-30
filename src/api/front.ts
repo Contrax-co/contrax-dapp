@@ -12,11 +12,14 @@ export const frontApi = axios.create({
 
 export const getCatalogLink = async (userAddress: string) => {
     try {
+        // let res = await frontApi.get("/api/v1/transfers/managed/networks");
+        // const {name: } = res.data.content.networks.find((net)=>net.name === "Polygon")
         const { data } = await frontApi.get("/api/v1/transfers/managed/networks");
         console.log(data);
         const brokerTypes = [
-            "binanceInternational",
             "gateIo",
+            "coinbase",
+            "binanceInternational",
             "huobi",
             "bitfinex",
             "okx",
@@ -25,29 +28,30 @@ export const getCatalogLink = async (userAddress: string) => {
             "kraken",
             "robinhood",
         ];
-        const res = await frontApi.post(
-            "/api/v1/cataloglink" +
-                `?userId=${userAddress}&enableTransfers=true&brokerType=${brokerTypes.join("&brokerType=")}`,
-            {
-                toAddresses: [
-                    {
-                        networkId: "7436e9d0-ba42-4d2b-b4c0-8e4e606b2c12",
-                        symbol: "MATIC",
-                        address: userAddress,
-                    },
-                    {
-                        networkId: "7436e9d0-ba42-4d2b-b4c0-8e4e606b2c12",
-                        symbol: "USDC",
-                        address: userAddress,
-                    },
-                    {
-                        networkId: "e3c7fdd8-b1fc-4e51-85ae-bb276e075611",
-                        symbol: "ETH",
-                        address: userAddress,
-                    },
-                ],
-            }
-        );
+
+        let url = `/api/v1/cataloglink?userId=${userAddress}&enableTransfers=true&brokerType=${brokerTypes.join(
+            "&brokerType="
+        )}`;
+        console.log(url);
+        const res = await frontApi.post(url, {
+            toAddresses: [
+                {
+                    networkId: "7436e9d0-ba42-4d2b-b4c0-8e4e606b2c12",
+                    symbol: "MATIC",
+                    address: userAddress,
+                },
+                {
+                    networkId: "7436e9d0-ba42-4d2b-b4c0-8e4e606b2c12",
+                    symbol: "USDC",
+                    address: userAddress,
+                },
+                {
+                    networkId: "e3c7fdd8-b1fc-4e51-85ae-bb276e075611",
+                    symbol: "ETH",
+                    address: userAddress,
+                },
+            ],
+        });
         console.log(res.data, res.data.content.iFrameUrl.replace("'", ""));
         return res.data.content.iFrameUrl.replace("'", "");
     } catch (error) {
