@@ -84,6 +84,7 @@ const formatHoldings = (holdings: Holdings) => {
         balance: number;
         usdAmount: number;
         networkId: string;
+        logo: string;
     }[] = [];
 
     holdings?.forEach((element) => {
@@ -98,6 +99,7 @@ const formatHoldings = (holdings: Holdings) => {
                         balance: element.availableBalance,
                         usdAmount: element.availableBalanceInFiat,
                         networkId: network.id,
+                        logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
                     });
                 } else if (network.name === "Polygon") {
                     if (element.symbol === "USDC") {
@@ -109,6 +111,7 @@ const formatHoldings = (holdings: Holdings) => {
                             balance: element.availableBalance,
                             usdAmount: element.availableBalanceInFiat,
                             networkId: network.id,
+                            logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png",
                         });
                     } else if (element.symbol === "MATIC") {
                         tokens.push({
@@ -119,6 +122,7 @@ const formatHoldings = (holdings: Holdings) => {
                             balance: element.availableBalance,
                             usdAmount: element.availableBalanceInFiat,
                             networkId: network.id,
+                            logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025",
                         });
                     }
                 }
@@ -253,4 +257,3 @@ export const executeTransfer = async (args: {
         return false;
     }
 };
-
