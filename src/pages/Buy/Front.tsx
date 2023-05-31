@@ -1,115 +1,87 @@
 import React from "react";
 import styles from "./Buy.module.scss";
-import useWallet from "src/hooks/useWallet";
-import { FrontConnection, FrontPayload, createFrontConnection } from "@front-finance/link";
-import { FRONT_CLIENT_ID } from "src/config/constants";
 import useApp from "src/hooks/useApp";
-import { getCatalogLink, getHoldings } from "src/api/front";
-import { notifySuccess } from "src/api/notify";
-import { notifyError } from "src/api/notify";
-import useBalances from "src/hooks/useBalances";
+import useFront from "src/hooks/useFront";
+import { ethers } from "ethers";
+import { ReactComponent as AlpacaSvg } from "src/assets/images/alpaca.svg";
+import { ReactComponent as BinanceSvg } from "src/assets/images/binance.svg";
+import { ReactComponent as BitstampSvg } from "src/assets/images/bitstamp.svg";
+import { ReactComponent as BittrexSvg } from "src/assets/images/bittrex.svg";
+import { ReactComponent as CoinbaseSvg } from "src/assets/images/coinbase.svg";
+import { ReactComponent as RobinhoodSvg } from "src/assets/images/robinhood.svg";
 
 interface IProps {}
 
 const Front: React.FC<IProps> = () => {
     const { lightMode } = useApp();
-    const { currentWallet } = useWallet();
-    const [frontConnection, setFrontConnection] = React.useState<FrontConnection | null>(null);
-    const [iframeLink, setIframLink] = React.useState<string>();
-    const [authData, setAuthData] = React.useState<FrontPayload>();
-    const [holdings, setHoldings] = React.useState<{ symbol: string; amount: number }[]>([]);
-    const { reloadBalances } = useBalances();
-
-    React.useEffect(() => {
-        setFrontConnection(
-            createFrontConnection({
-                clientId: FRONT_CLIENT_ID,
-                onBrokerConnected: (authData) => {
-                    console.info("[FRONT SUCCESS]", authData);
-                    const accessToken = authData.accessToken?.accountTokens[0].accessToken;
-                    if (accessToken) {
-                        setAuthData(authData);
-                        localStorage.setItem("front-auth-data", JSON.stringify(authData));
-                    } else {
-                        setAuthData(undefined);
-                        localStorage.removeItem("front-access-token");
-                    }
-                },
-                onExit: (error?: string) => {
-                    if (error) {
-                        console.error(`[FRONT ERROR] ${error}`);
-                        localStorage.removeItem("front-access-token");
-                    }
-
-                    console.info("[FRONT EXIT]");
-                },
-                onTransferFinished: (data) => {
-                    console.info("[FRONT TRANSFER SUCCESS]", data);
-                    if (data.status === "success") {
-                        notifySuccess({
-                            title: "Transfer Success",
-                            message: "it may take few minutes for tokens to be visible",
-                        });
-                    } else {
-                        notifyError({
-                            title: "Transfer Failed",
-                            message: data.errorMessage || "Something went wrong!",
-                        });
-                    }
-                    reloadBalances();
-                },
-            })
-        );
-    }, []);
-
-    React.useEffect(() => {
-        if (iframeLink) {
-            frontConnection?.openPopup(iframeLink);
-        }
-
-        return () => {
-            if (iframeLink) {
-                frontConnection?.closePopup();
-            }
-        };
-    }, [frontConnection, iframeLink]);
-
-    React.useEffect(() => {
-        const authData = localStorage.getItem("front-auth-data");
-        if (authData) {
-            setAuthData(JSON.parse(authData));
-        }
-    }, []);
-
-    React.useEffect(() => {
-        if (authData?.accessToken?.accountTokens[0].accessToken && authData?.accessToken?.brokerType) {
-            getHoldings(authData?.accessToken?.accountTokens[0].accessToken, authData?.accessToken?.brokerType).then(
-                (res) => {
-                    console.log(res);
-                    if (res?.cryptocurrencyPositions) setHoldings(res?.cryptocurrencyPositions);
-                }
-            );
-        }
-    }, [authData]);
-
-    const handleCreateConnection = async () => {
-        const url = await getCatalogLink(currentWallet);
-        setIframLink(url);
-    };
+    const { handleCreateConnection, handleTransfer, holdings, loading, authData } = useFront();
 
     return (
-        <div>
-            <button onClick={handleCreateConnection} className={`custom-button ${lightMode && "custom-button-light"}`}>
-                Create Connection
-            </button>
-
-            <div>
-                {holdings.map((holding) => (
-                    <div key={holding.symbol} className="center" style={{ gap: 50 }}>
-                        <div>{holding.symbol}</div>
-                        <div>{holding.amount}</div>
+        <div className={styles.frontContainer}>
+            <div className={styles.buttonWrapper}>
+                <div className={styles.logoWrapper}>
+                    <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
+                        <AlpacaSvg />
                     </div>
-                ))}
+                    <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
+                        <BitstampSvg />
+                    </div>
+                    <div className={styles.logoCircle}>
+                        <BinanceSvg />
+                    </div>
+                </div>
+                <button
+                    onClick={handleCreateConnection}
+                    disabled={loading}
+                    className={`custom-button ${lightMode && "custom-button-light"}`}
+                >
+                    Create Connection
+                </button>
+                <div className={styles.logoWrapper}>
+                    <div className={styles.logoCircle}>
+                        <CoinbaseSvg />
+                    </div>
+                    <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
+                        <BittrexSvg />
+                    </div>
+                    <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
+                        <RobinhoodSvg />
+                    </div>
+                </div>
+            </div>
+
+            <div className={styles.tokenBalancesContainer}>
+                <h2 className={styles.heading}>{authData?.accessToken?.brokerName || "Coinbase"} Token Balances</h2>
+                <div className={styles.tokensWrapper}>
+                    {holdings
+                        .filter((token) => Number(token.usdAmount) > 0.01)
+                        .map((token, i) => (
+                            <div
+                                key={i}
+                                className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
+                                onClick={() => {
+                                    handleTransfer(token.symbol);
+                                }}
+                            >
+                                <img className={styles.tokenLogo} src={token.logo} alt="logo" />
+                                <div>
+                                    <p className={styles.name}>{token.symbol}</p>
+                                    <p className={styles.balance}>
+                                        {ethers.utils.commify(Number(token.balance).toString())}
+                                    </p>
+                                </div>
+                                <p className={styles.usdBalance}>
+                                    {Number(token.usdAmount)
+                                        .toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            minimumFractionDigits: 3,
+                                        })
+                                        .slice(0, -1)}
+                                </p>
+                            </div>
+                        ))}
+                </div>
             </div>
         </div>
     );
