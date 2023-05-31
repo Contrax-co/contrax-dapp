@@ -17,7 +17,16 @@ const Front: React.FC<IProps> = () => {
     const [frontConnection, setFrontConnection] = React.useState<FrontConnection | null>(null);
     const [iframeLink, setIframLink] = React.useState<string>();
     const [authData, setAuthData] = React.useState<FrontPayload>();
-    const [holdings, setHoldings] = React.useState<{ symbol: string; amount: number }[]>([]);
+    const [holdings, setHoldings] = React.useState<
+        {
+            chainId: number;
+            address: string;
+            symbol: string;
+            decimals: number;
+            balance: number;
+            usdAmount: number;
+        }[]
+    >([]);
     const { reloadBalances } = useBalances();
 
     React.useEffect(() => {
@@ -83,14 +92,17 @@ const Front: React.FC<IProps> = () => {
 
     React.useEffect(() => {
         if (authData?.accessToken?.accountTokens[0].accessToken && authData?.accessToken?.brokerType) {
-            getHoldings(authData?.accessToken?.accountTokens[0].accessToken, authData?.accessToken?.brokerType).then(
-                (res) => {
-                    console.log(res);
-                    if (res?.cryptocurrencyPositions) setHoldings(res?.cryptocurrencyPositions);
-                }
-            );
+            getHoldings(
+                authData?.accessToken?.accountTokens[0].accessToken,
+                authData?.accessToken?.brokerType,
+                currentWallet
+            ).then((res) => {
+                setHoldings(res);
+            });
+        } else {
+            setHoldings([]);
         }
-    }, [authData]);
+    }, [authData, currentWallet]);
 
     const handleCreateConnection = async () => {
         const url = await getCatalogLink(currentWallet);
@@ -107,7 +119,7 @@ const Front: React.FC<IProps> = () => {
                 {holdings.map((holding) => (
                     <div key={holding.symbol} className="center" style={{ gap: 50 }}>
                         <div>{holding.symbol}</div>
-                        <div>{holding.amount}</div>
+                        <div>{holding.balance}</div>
                     </div>
                 ))}
             </div>
