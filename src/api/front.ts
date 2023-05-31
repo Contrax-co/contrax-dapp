@@ -1,8 +1,10 @@
 import axios from "axios";
-import { FRONT_API_KEY, FRONT_CLIENT_ID, FRONT_URL, isDev } from "src/config/constants";
+import { FRONT_API_KEY, FRONT_CLIENT_ID, FRONT_URL, defaultChainId, isDev } from "src/config/constants";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
 import { constants } from "ethers";
+import { TransferFinishedPayload } from "@front-finance/link";
+import { waitForTransaction } from "@wagmi/core";
 
 export const frontApi = axios.create({
     baseURL: FRONT_URL,
@@ -82,6 +84,7 @@ const formatHoldings = (holdings: Holdings) => {
         decimals: number;
         balance: number;
         usdAmount: number;
+        networkId: string;
     }[] = [];
 
     holdings?.forEach((element) => {
@@ -95,6 +98,7 @@ const formatHoldings = (holdings: Holdings) => {
                         decimals: 18,
                         balance: element.availableBalance,
                         usdAmount: element.availableBalanceInFiat,
+                        networkId: network.id,
                     });
                 } else if (network.name === "Polygon") {
                     if (element.symbol === "USDC") {
@@ -105,6 +109,7 @@ const formatHoldings = (holdings: Holdings) => {
                             decimals: 6,
                             balance: element.availableBalance,
                             usdAmount: element.availableBalanceInFiat,
+                            networkId: network.id,
                         });
                     } else if (element.symbol === "MATIC") {
                         tokens.push({
@@ -114,6 +119,7 @@ const formatHoldings = (holdings: Holdings) => {
                             decimals: 18,
                             balance: element.availableBalance,
                             usdAmount: element.availableBalanceInFiat,
+                            networkId: network.id,
                         });
                     }
                 }
@@ -123,7 +129,7 @@ const formatHoldings = (holdings: Holdings) => {
     return tokens;
 };
 
-export const getHoldings = async (fromAuthToken: string, fromType: string, userAddress:string) => {
+export const getHoldings = async (fromAuthToken: string, fromType: string, userAddress: string) => {
     try {
         const res = await frontApi.post("/api/v1/transfers/managed/configure", {
             fromAuthToken,
@@ -157,3 +163,96 @@ export const getHoldings = async (fromAuthToken: string, fromType: string, userA
         return [];
     }
 };
+
+export const executeTransfer = async (args: {
+    fromAuthToken: string;
+    fromType: string;
+    networkId: string;
+    symbol: string;
+    toAddress: string;
+    amount: number;
+}) => {
+    try {
+        const res = await frontApi.post<{
+            content: {
+                status: string;
+                previewResult?: {
+                    previewId: string;
+                    previewExpiresIn: number;
+                    fromAddress: string;
+                    toAddress: string;
+                    symbol: string;
+                    amount: number;
+                    amountInFiat: number;
+                    totalEstimatedAmountInFiat: number;
+                    networkId: string;
+                    institutionTransferFee: {
+                        fee: number;
+                        feeCurrency: string;
+                        feeInFiat: number;
+                    };
+                    estimatedNetworkGasFee: {
+                        fee: number;
+                        feeCurrency: string;
+                        feeInFiat: number;
+                    };
+                };
+            };
+        }>("/api/v1/transfers/managed/preview", args);
+        if (!res.data.content.previewResult) {
+            throw new Error("No preview result");
+        }
+        const res2 = await frontApi.post<{
+            content: {
+                status: string;
+                executeTransferResult: {
+                    transferId: string;
+                    status: "succeeded" | string;
+                    statusDetails: "In progress" | string;
+                    fromAddress: string;
+                    toAddress: string;
+                    symbol: string;
+                    networkName: string;
+                    networkId: string;
+                    hash: string;
+                    amount: number;
+                    amountInFiat: number;
+                    totalAmountInFiat: number;
+                    completedConfirmations: number;
+                    institutionTransferFee: {
+                        fee: number;
+                        feeCurrency: string;
+                        feeInFiat: number;
+                    };
+                    networkGasFee: {
+                        fee: number;
+                        feeCurrency: string;
+                        feeInFiat: number;
+                    };
+                };
+            };
+        }>("/api/v1/transfers/managed/execute", {
+            fromAuthToken: args.fromAuthToken,
+            fromType: args.fromType,
+            previewId: res.data.content.previewResult?.previewId,
+        });
+        if (!res2.data.content.executeTransferResult.hash) {
+            throw new Error("Transaction Error!");
+        }
+
+        const res3 = await waitForTransaction({
+            chainId: defaultChainId,
+            hash: res2.data.content.executeTransferResult.hash as `0x${string}`,
+        });
+
+        if (res3.status) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        return false;
+    }
+};
+
+export const checkTransferStatus = async (transactionId: string, authToken: string, type: string) => {};
