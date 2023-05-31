@@ -160,6 +160,7 @@ export const getHoldings = async (fromAuthToken: string, fromType: string, userA
             holdings: Holdings;
         };
 
+        console.log("holdings", content);
         return formatHoldings(content.holdings);
     } catch (error) {
         console.error(error);
