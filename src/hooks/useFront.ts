@@ -23,6 +23,7 @@ const useFront = () => {
             networkId: string;
             balance: number;
             usdAmount: number;
+            logo: string;
         }[]
     >([]);
 
