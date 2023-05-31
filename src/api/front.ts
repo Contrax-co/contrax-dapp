@@ -3,7 +3,6 @@ import { FRONT_API_KEY, FRONT_CLIENT_ID, FRONT_URL, defaultChainId, isDev } from
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
 import { constants } from "ethers";
-import { TransferFinishedPayload } from "@front-finance/link";
 import { waitForTransaction } from "@wagmi/core";
 
 export const frontApi = axios.create({
@@ -54,7 +53,7 @@ export const getCatalogLink = async (userAddress: string) => {
                 },
             ],
         });
-        return res.data.content.iFrameUrl.replace("'", "");
+        return res.data.content.iFrameUrl;
     } catch (error) {
         console.error(error);
     }
@@ -255,4 +254,3 @@ export const executeTransfer = async (args: {
     }
 };
 
-export const checkTransferStatus = async (transactionId: string, authToken: string, type: string) => {};
