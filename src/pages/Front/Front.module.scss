@@ -10,6 +10,11 @@
     align-items: center;
     gap: 40px;
 
+    .heading {
+        color: var(--color_text);
+        text-align: center;
+    }
+
     .buttonWrapper {
         display: flex;
         align-items: center;

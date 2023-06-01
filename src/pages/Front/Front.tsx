@@ -18,7 +18,10 @@ const Front: React.FC<IProps> = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.heading}></div>
+            <div className={styles.heading}>
+                <h5>Access All you Wallets</h5>
+                <p>Transfer your funds from any of your wallet of Defi Universe into Contrax</p>
+            </div>
             <div className={styles.buttonWrapper}>
                 <div className={styles.logoWrapper}>
                     <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
