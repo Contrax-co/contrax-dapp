@@ -2,11 +2,12 @@ import { CHAIN_ID } from "src/types/enums";
 
 export const RoutesPaths = {
     Home: "/",
-    Farms: "/farms",
-    CreateToken: "/create-token",
-    CreatePool: "/create-pool",
-    Exchange: "/exchange",
-    Buy: "/buy",
+    Farms: "farms",
+    Exchange: "exchange",
+    Buy: "buy",
+    Front: "front",
+    Stats: "stats",
+    Test: "Test",
 };
 
 export const MAX_GAS_UNITS_PER_TRANSACTION = "700000";

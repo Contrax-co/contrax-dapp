@@ -1,3 +1,6 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
 .table {
     width: 100%;
     border-radius: 10px;
@@ -21,13 +24,30 @@
     max-width: 50%;
     height: inherit;
     box-sizing: border-box;
+
+    @include devices(mobile) {
+        padding: 8px 12px;
+    }
 }
 
 .tableHeader {
     background-color: var(--color_primary);
     color: var(--color_white);
-
     font-weight: 700;
+
+    .columnHeading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+
+        .transitionDelay {
+            transition-duration: 0.3s;
+        }
+        .rotate {
+            transform: rotate(-180deg);
+        }
+    }
 }
 
 .tableBody {
@@ -41,20 +61,48 @@
     & > tr {
         height: 36px;
     }
+
+    .onlyMobile {
+        display: none;
+        @include devices(mobile) {
+            display: block;
+        }
+    }
+    .onlyDesktop {
+        display: block;
+        @include devices(mobile) {
+            display: none;
+        }
+    }
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+
+    input {
+        padding: 2px 4px;
+        border-radius: 4px;
+        border: none;
+        outline: none;
+        width: 100px;
+    }
 }
 
 .controls {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 24px;
-    font-weight: 600;
+    gap: 8px;
     box-sizing: border-box;
     height: inherit;
     width: 100%;
     min-width: 100%;
+    font-size: 14px;
 
-    & > p {
+    .pageChangeArrow {
         cursor: pointer;
     }
 }

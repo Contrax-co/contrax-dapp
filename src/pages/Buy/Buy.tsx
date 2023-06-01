@@ -7,13 +7,9 @@ import { useSearchParams } from "react-router-dom";
 import useBalances from "src/hooks/useBalances";
 import Transak from "./Transak";
 import Wert from "./Wert";
-import { useAppSelector } from "src/state";
-import useBridge from "src/hooks/useBridge";
 import useAccountData from "src/hooks/useAccountData";
-import { TiWarningOutline } from "react-icons/ti";
 import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
 import Gatefi from "./Gatefi";
-import Front from "./Front";
 
 interface IProps {}
 
@@ -21,7 +17,6 @@ enum Tab {
     Wert = "Wert",
     Transak = "Transak",
     Gatefi = "Gatefi",
-    Front = "Front",
 }
 
 const Buy: React.FC<IProps> = () => {
@@ -86,7 +81,6 @@ const Buy: React.FC<IProps> = () => {
             {tab === Tab.Transak && <Transak />}
             {tab === Tab.Wert && <Wert />}
             {tab === Tab.Gatefi && <Gatefi />}
-            {tab === Tab.Front && <Front />}
         </div>
     ) : (
         <NotSignedIn />

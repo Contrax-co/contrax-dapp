@@ -1,32 +1,64 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BACKEND_BASE_URL } from "src/config/constants";
+import { TableColumns } from "src/types/enums";
+import { Order, UserTVL } from "src/types";
 
-type userTVL = {
-    id: string;
-    tvl: number;
-    vaultTvls: any[];
-};
+interface ResponseData {
+    data: UserTVL[];
+    hasPrevPage: number;
+    hasNextPage: number;
+    totalPages: number;
+    totalDocs: number;
+    limit: number;
+}
 
 export const useStats = () => {
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState<number>(1);
+    const [sortBy, setSortBy] = useState<TableColumns>();
+    const [order, setOrder] = useState<"" | "-">("");
+    const [search, setSearch] = useState("");
 
-    const fetchUserTVLs = useCallback(async (page: number) => {
-        return axios.get(`${BACKEND_BASE_URL}stats/tvl?page=${page}&limit=10`);
-    }, []);
+    const fetchUserTVLs = useCallback(
+        async (page: number, sortBy: TableColumns | undefined, order: Order, search: string) => {
+            return axios.get<ResponseData>(
+                `${BACKEND_BASE_URL}stats/tvl?page=${page}&limit=10&sort=${
+                    order + sortBy?.toLowerCase()
+                }&address=${search}`
+            );
+        },
+        []
+    );
 
     const { isLoading, error, data, isFetching } = useQuery({
-        queryKey: ["stats/tvl", page],
-        queryFn: () => fetchUserTVLs(page),
+        queryKey: ["stats/tvl", page, sortBy, order, search],
+        queryFn: () => fetchUserTVLs(page, sortBy, order, search),
         keepPreviousData: true,
     });
 
+    useEffect(() => {
+        console.log(data);
+
+        return () => {};
+    }, [data]);
+
     return {
-        userTVLs: data?.data.data as userTVL[],
+        userTVLs: data?.data.data,
+        hasPrevPage: data?.data.hasPrevPage,
+        hasNextPage: data?.data.hasNextPage,
+        totalPages: data?.data.totalPages,
+        totalDocs: data?.data.totalDocs,
+        limit: data?.data.limit,
         page,
         setPage,
+        sortBy,
+        setSortBy,
+        order,
+        setOrder,
+        search,
+        setSearch,
         isLoading: isLoading || isFetching,
-        error,
+        error: error as string,
     };
 };

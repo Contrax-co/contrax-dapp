@@ -1,9 +1,10 @@
 .container {
     color: var(--color_text);
-    padding: 30px;
+    padding: 30px 30px 80px 30px;
     display: flex;
     flex-direction: column;
     gap: 24px;
+    overflow-y: auto;
 }
 
 .topRow {

@@ -4,7 +4,10 @@ import { HiDocumentText } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { FaExchangeAlt } from "react-icons/fa";
 import { BsCurrencyExchange } from "react-icons/bs";
+import { ImStatsDots } from "react-icons/im";
+import { IoIosFlask } from "react-icons/io";
 import { ReactComponent as EarnIcon } from "src/assets/images/earn.svg";
+import { ReactComponent as FrontIcon } from "src/assets/images/front.svg";
 import logo from "src/assets/images/logo.png";
 import logo2 from "src/assets/images/logo-4x.png";
 import LightModeToggle from "src/components/LightModeToggle/LightModeToggle";
@@ -58,13 +61,28 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     active={pathname === RoutesPaths.Exchange}
                 />
 
+                <SidebarItem
+                    title="Front"
+                    icon={<FrontIcon width={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Front)}
+                    active={pathname === RoutesPaths.Front}
+                />
+
                 {process.env.NODE_ENV === "development" && (
-                    <SidebarItem
-                        title="Test"
-                        icon={<BsCurrencyExchange size={18} />}
-                        onClick={() => handleNavigation("/test")}
-                        active={pathname === "/test"}
-                    />
+                    <>
+                        <SidebarItem
+                            title="Stats"
+                            icon={<ImStatsDots size={18} />}
+                            onClick={() => handleNavigation(RoutesPaths.Stats)}
+                            active={pathname === RoutesPaths.Stats}
+                        />
+                        <SidebarItem
+                            title="Test"
+                            icon={<IoIosFlask size={18} />}
+                            onClick={() => handleNavigation(RoutesPaths.Test)}
+                            active={pathname === RoutesPaths.Test}
+                        />
+                    </>
                 )}
                 <SidebarItem
                     title="User Guide"
