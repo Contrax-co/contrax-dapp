@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Buy.module.scss";
+import styles from "./Front.module.scss";
 import useApp from "src/hooks/useApp";
 import useFront from "src/hooks/useFront";
 import { ethers } from "ethers";
@@ -17,14 +17,15 @@ const Front: React.FC<IProps> = () => {
     const { handleCreateConnection, handleTransfer, holdings, loading, authData } = useFront();
 
     return (
-        <div className={styles.frontContainer}>
+        <div className={styles.container}>
+            <div className={styles.heading}></div>
             <div className={styles.buttonWrapper}>
                 <div className={styles.logoWrapper}>
                     <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
                         <AlpacaSvg />
                     </div>
                     <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
-                        <BitstampSvg />
+                        <BitstampSvg color={lightMode ? "#003b2f" : "#00ff9c"} />
                     </div>
                     <div className={styles.logoCircle}>
                         <BinanceSvg />
@@ -35,7 +36,7 @@ const Front: React.FC<IProps> = () => {
                     disabled={loading}
                     className={`custom-button ${lightMode && "custom-button-light"}`}
                 >
-                    Create Connection
+                    {authData?.accessToken ? "Change Connection" : "Create Connection"}
                 </button>
                 <div className={styles.logoWrapper}>
                     <div className={styles.logoCircle}>
@@ -50,39 +51,41 @@ const Front: React.FC<IProps> = () => {
                 </div>
             </div>
 
-            <div className={styles.tokenBalancesContainer}>
-                <h2 className={styles.heading}>{authData?.accessToken?.brokerName || "Coinbase"} Token Balances</h2>
-                <div className={styles.tokensWrapper}>
-                    {holdings
-                        .filter((token) => Number(token.usdAmount) > 0.01)
-                        .map((token, i) => (
-                            <div
-                                key={i}
-                                className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                                onClick={() => {
-                                    handleTransfer(token.symbol);
-                                }}
-                            >
-                                <img className={styles.tokenLogo} src={token.logo} alt="logo" />
-                                <div>
-                                    <p className={styles.name}>{token.symbol}</p>
-                                    <p className={styles.balance}>
-                                        {ethers.utils.commify(Number(token.balance).toString())}
+            {authData?.accessToken && (
+                <div className={styles.tokenBalancesContainer}>
+                    <h2 className={styles.balanceHeading}>{authData?.accessToken?.brokerName} Token Balances</h2>
+                    <div className={styles.tokensWrapper}>
+                        {holdings
+                            .filter((token) => Number(token.usdAmount) > 0.01)
+                            .map((token, i) => (
+                                <div
+                                    key={i}
+                                    className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
+                                    onClick={() => {
+                                        handleTransfer(token.symbol);
+                                    }}
+                                >
+                                    <img className={styles.tokenLogo} src={token.logo} alt="logo" />
+                                    <div>
+                                        <p className={styles.name}>{token.symbol}</p>
+                                        <p className={styles.balance}>
+                                            {ethers.utils.commify(Number(token.balance).toString())}
+                                        </p>
+                                    </div>
+                                    <p className={styles.usdBalance}>
+                                        {Number(token.usdAmount)
+                                            .toLocaleString("en-US", {
+                                                style: "currency",
+                                                currency: "USD",
+                                                minimumFractionDigits: 3,
+                                            })
+                                            .slice(0, -1)}
                                     </p>
                                 </div>
-                                <p className={styles.usdBalance}>
-                                    {Number(token.usdAmount)
-                                        .toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                            minimumFractionDigits: 3,
-                                        })
-                                        .slice(0, -1)}
-                                </p>
-                            </div>
-                        ))}
+                            ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
