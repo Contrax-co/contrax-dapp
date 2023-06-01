@@ -15,6 +15,8 @@ import Buy from "./pages/Buy/Buy";
 import useAccountData from "./hooks/useAccountData";
 import useBridge from "./hooks/useBridge";
 import Stats from "./pages/Stats/Stats";
+import Front from "./pages/Front/Front";
+import { RoutesPaths } from "./config/constants";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -85,13 +87,14 @@ function Body() {
 
     return (
         <Routes>
-            <Route path="/" element={<Home />}>
+            <Route path={RoutesPaths.Home} element={<Home />}>
                 <Route path="" element={<Dashboard />} />
-                <Route path="/buy" element={<Buy />} />
-                <Route path="/farms" element={<Farms />} />
-                <Route path="/exchange" element={<Exchange />} />
-                <Route path="test" element={<Test />} />
-                <Route path="stats" element={<Stats />} />
+                <Route path={RoutesPaths.Buy} element={<Buy />} />
+                <Route path={RoutesPaths.Farms} element={<Farms />} />
+                <Route path={RoutesPaths.Exchange} element={<Exchange />} />
+                <Route path={RoutesPaths.Front} element={<Front />} />
+                <Route path={RoutesPaths.Test} element={<Test />} />
+                <Route path={RoutesPaths.Stats} element={<Stats />} />
                 <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
             </Route>
         </Routes>
