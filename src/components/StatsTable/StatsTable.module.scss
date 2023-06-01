@@ -1,3 +1,6 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
 .table {
     width: 100%;
     border-radius: 10px;
@@ -21,6 +24,10 @@
     max-width: 50%;
     height: inherit;
     box-sizing: border-box;
+
+    @include devices(mobile) {
+        padding: 8px 12px;
+    }
 }
 
 .tableHeader {
@@ -54,6 +61,34 @@
     & > tr {
         height: 36px;
     }
+
+    .onlyMobile {
+        display: none;
+        @include devices(mobile) {
+            display: block;
+        }
+    }
+    .onlyDesktop {
+        display: block;
+        @include devices(mobile) {
+            display: none;
+        }
+    }
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+
+    input {
+        padding: 2px 4px;
+        border-radius: 4px;
+        border: none;
+        outline: none;
+        width: 100px;
+    }
 }
 
 .controls {
@@ -66,7 +101,6 @@
     width: 100%;
     min-width: 100%;
     font-size: 14px;
-    padding: 8px 16px;
 
     .pageChangeArrow {
         cursor: pointer;

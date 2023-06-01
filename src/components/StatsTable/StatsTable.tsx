@@ -1,4 +1,4 @@
-import { FC, MouseEventHandler } from "react";
+import { FC } from "react";
 import styles from "./StatsTable.module.scss";
 import { useStats } from "src/hooks/useStats";
 import { customCommify } from "src/utils/common";
@@ -7,11 +7,24 @@ import useWallet from "src/hooks/useWallet";
 import { FiExternalLink } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { TableColumns } from "src/types/enums";
-import { FaArrowDown, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaArrowDown, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import { BiSearch } from "react-icons/bi";
 
 export const StatsTable: FC = () => {
-    const { userTVLs, page, setPage, hasNextPage, hasPrevPage, totalPages, sortBy, setSortBy, order, setOrder } =
-        useStats();
+    const {
+        userTVLs,
+        page,
+        setPage,
+        hasNextPage,
+        hasPrevPage,
+        totalPages,
+        sortBy,
+        setSortBy,
+        order,
+        setOrder,
+        search,
+        setSearch,
+    } = useStats();
     const { BLOCK_EXPLORER_URL } = useConstants();
     const { currentWallet } = useWallet();
 
@@ -72,14 +85,31 @@ export const StatsTable: FC = () => {
                 ) : (
                     <tr className={styles.tableRow}>
                         <td colSpan={2}>
-                            <EmptyTable onPrev={() => setPage((prev) => prev - 1)} />
+                            <EmptyTable />
                         </td>
                     </tr>
                 )}
             </tbody>
             <tfoot className={styles.tableFooter}>
                 <tr className={styles.tableRow}>
-                    <td className={styles.tableData}></td>
+                    <td className={styles.tableData}>
+                        <div className={styles.searchBox}>
+                            <FaSearch className={styles.onlyMobile} />
+                            <label htmlFor="searchBox" className={styles.onlyDesktop}>
+                                Search:
+                            </label>
+                            <input
+                                id="searchBox"
+                                name="searchBox"
+                                type="text"
+                                value={search}
+                                onChange={(e) => {
+                                    setPage(1);
+                                    setSearch(e.target.value);
+                                }}
+                            />
+                        </div>
+                    </td>
                     <td className={styles.tableData + " " + styles.controls}>
                         {hasPrevPage && (
                             <FaArrowLeft
@@ -103,15 +133,12 @@ export const StatsTable: FC = () => {
     );
 };
 
-const EmptyTable = ({ onPrev }: { onPrev: MouseEventHandler<HTMLButtonElement> }) => {
+const EmptyTable = () => {
     return (
         <div className={styles.emptyTable}>
             <BsClipboardData size={36} className={styles.icon} />
             <p className={styles.disclaimer}>No Data Available</p>
             <p className={styles.message}>Change the filter setting to see data.</p>
-            {/* <button className={"custom-button " + styles.button} onClick={onPrev}>
-                Prev
-            </button> */}
         </div>
     );
 };

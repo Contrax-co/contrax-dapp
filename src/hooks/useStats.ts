@@ -18,16 +18,22 @@ export const useStats = () => {
     const [page, setPage] = useState<number>(1);
     const [sortBy, setSortBy] = useState<TableColumns>();
     const [order, setOrder] = useState<"" | "-">("");
+    const [search, setSearch] = useState("");
 
-    const fetchUserTVLs = useCallback(async (page: number, sortBy: TableColumns | undefined, order: Order) => {
-        return axios.get<ResponseData>(
-            `${BACKEND_BASE_URL}stats/tvl?page=${page}&limit=10&sort=${order + sortBy?.toLowerCase()}`
-        );
-    }, []);
+    const fetchUserTVLs = useCallback(
+        async (page: number, sortBy: TableColumns | undefined, order: Order, search: string) => {
+            return axios.get<ResponseData>(
+                `${BACKEND_BASE_URL}stats/tvl?page=${page}&limit=10&sort=${
+                    order + sortBy?.toLowerCase()
+                }&address=${search}`
+            );
+        },
+        []
+    );
 
     const { isLoading, error, data, isFetching } = useQuery({
-        queryKey: ["stats/tvl", page, sortBy, order],
-        queryFn: () => fetchUserTVLs(page, sortBy, order),
+        queryKey: ["stats/tvl", page, sortBy, order, search],
+        queryFn: () => fetchUserTVLs(page, sortBy, order, search),
         keepPreviousData: true,
     });
 
@@ -50,6 +56,8 @@ export const useStats = () => {
         setSortBy,
         order,
         setOrder,
+        search,
+        setSearch,
         isLoading: isLoading || isFetching,
         error: error as string,
     };
