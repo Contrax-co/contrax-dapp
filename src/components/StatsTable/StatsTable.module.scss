@@ -26,8 +26,21 @@
 .tableHeader {
     background-color: var(--color_primary);
     color: var(--color_white);
-
     font-weight: 700;
+
+    .columnHeading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+
+        .transitionDelay {
+            transition-duration: 0.3s;
+        }
+        .rotate {
+            transform: rotate(-180deg);
+        }
+    }
 }
 
 .tableBody {
@@ -47,14 +60,15 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 24px;
-    font-weight: 600;
+    gap: 8px;
     box-sizing: border-box;
     height: inherit;
     width: 100%;
     min-width: 100%;
+    font-size: 14px;
+    padding: 8px 16px;
 
-    & > p {
+    .pageChangeArrow {
         cursor: pointer;
     }
 }

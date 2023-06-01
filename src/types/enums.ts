@@ -28,3 +28,8 @@ export enum CHAIN_ID {
     POLYGON = 137,
     ARBITRUM = 42161,
 }
+
+export enum TableColumns {
+    Address = "Address",
+    TVL = "TVL",
+}

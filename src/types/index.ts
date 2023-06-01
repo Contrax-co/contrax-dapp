@@ -112,6 +112,25 @@ export interface LoadingMessages {
     transferingTokens: () => NotifyMessage;
 }
 
+export interface UserTVL {
+    id: string;
+    tvl: number;
+    address: string;
+    createdAt: string;
+    updatedAt: string;
+    vaultTvls: UserVVL[];
+}
+
+export interface UserVVL {
+    price: number;
+    usdAmount: number;
+    userBalance: string;
+    vaultAddress: string;
+    _id: string;
+}
+
+export type Order = "" | "-";
+
 export interface WertOptions {
     /**
      * Provided when you register as a partner.
