@@ -1,20 +1,21 @@
-import { useEffect, useState } from "react";
-import { FarmDataProcessed } from "src/api/pools/types";
-import { useAppSelector } from "src/state";
+import { useQuery } from "@tanstack/react-query";
+import { fetchUserTVL } from "src/api/userTVL";
+import useWallet from "./useWallet";
 
-const useTVL = () => {
-    const { farmDetails } = useAppSelector((state) => state.farms);
-    const [userTVL, setUserTVL] = useState(0);
+const useUserTVL = () => {
+    const { currentWallet } = useWallet();
 
-    useEffect(() => {
-        let totalValueLockedUser = 0;
-        Object.values(farmDetails).forEach((e: FarmDataProcessed) => {
-            totalValueLockedUser += Number(e.withdrawableAmounts[0].amountDollar);
-        });
-        setUserTVL(totalValueLockedUser);
-    }, [farmDetails]);
+    const { isLoading, error, data, isFetching } = useQuery({
+        queryKey: ["stats/tvl/address", currentWallet],
+        queryFn: () => fetchUserTVL(currentWallet),
+        keepPreviousData: true,
+    });
 
-    return { userTVL };
+    return {
+        ...data?.data.data,
+        isLoading: isLoading || isFetching,
+        error,
+    };
 };
 
-export default useTVL;
+export default useUserTVL;

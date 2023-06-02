@@ -112,21 +112,38 @@ export interface LoadingMessages {
     transferingTokens: () => NotifyMessage;
 }
 
-export interface UserTVL {
+export interface Referrer {
     id: string;
-    tvl: number;
+    _id: string;
     address: string;
     createdAt: string;
     updatedAt: string;
+    __v: number;
+}
+
+export interface UserTVL {
+    id: string;
+    _id: string;
+    address: string;
+    createdAt: string;
+    updatedAt: string;
+    earnedTrax: number;
+    totalEarnedTrax: number;
+    earnedTraxByReferral: number;
+    totalEarnedTraxByReferral: number;
+    referrer: Referrer;
+    traxCalculatedTimestamp: string;
+    tvl: number;
     vaultTvls: UserVVL[];
 }
 
 export interface UserVVL {
-    price: number;
-    usdAmount: number;
-    userBalance: string;
-    vaultAddress: string;
+    id: string;
     _id: string;
+    vaultAddress: string;
+    userBalance: string;
+    usdAmount: number;
+    price: number;
 }
 
 export type Order = "" | "-";
