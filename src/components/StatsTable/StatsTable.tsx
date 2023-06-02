@@ -3,12 +3,10 @@ import styles from "./StatsTable.module.scss";
 import { useStats } from "src/hooks/useStats";
 import { customCommify } from "src/utils/common";
 import useConstants from "src/hooks/useConstants";
-import useWallet from "src/hooks/useWallet";
 import { FiExternalLink } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { TableColumns } from "src/types/enums";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
-import { BiSearch } from "react-icons/bi";
 
 export const StatsTable: FC = () => {
     const {
@@ -26,7 +24,6 @@ export const StatsTable: FC = () => {
         setSearch,
     } = useStats();
     const { BLOCK_EXPLORER_URL } = useConstants();
-    const { currentWallet } = useWallet();
 
     const handleSorting = (column: TableColumns) => {
         if (column === sortBy) {
