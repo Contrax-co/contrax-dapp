@@ -5,11 +5,15 @@ import { TableColumns } from "src/types/enums";
 
 interface ResponseDataType {
     data: UserTVL[];
+    limit: number;
+    page: number;
     hasPrevPage: number;
     hasNextPage: number;
     totalPages: number;
     totalDocs: number;
-    limit: number;
+    meanTvl: number;
+    medianTvl: number;
+    modeTvl: number;
     status: boolean;
 }
 

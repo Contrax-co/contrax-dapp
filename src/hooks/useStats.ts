@@ -16,13 +16,8 @@ export const useStats = () => {
     });
 
     return {
+        ...data?.data,
         userTVLs: data?.data.data,
-        hasPrevPage: data?.data.hasPrevPage,
-        hasNextPage: data?.data.hasNextPage,
-        totalPages: data?.data.totalPages,
-        totalDocs: data?.data.totalDocs,
-        limit: data?.data.limit,
-        page,
         setPage,
         sortBy,
         setSortBy,
