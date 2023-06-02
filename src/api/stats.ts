@@ -10,6 +10,7 @@ interface ResponseDataType {
     totalPages: number;
     totalDocs: number;
     limit: number;
+    status: boolean;
 }
 
 export const fetchUserTVLs = async (page: number, sortBy: TableColumns | undefined, order: Order, search: string) => {
