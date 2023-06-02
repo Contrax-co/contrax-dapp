@@ -1,4 +1,3 @@
-import useTVL from "src/hooks/useUserTVL";
 import { customCommify } from "src/utils/common";
 import styles from "./TraxEarning.module.scss";
 import { useAppSelector } from "src/state";
