@@ -10,9 +10,9 @@ const UserTVL: React.FC<Props> = () => {
     if (userTVL < 1 || Number.isNaN(Number(userTVL.toFixed(0)))) return null;
 
     return (
-        <div className={`colorContainer ${styles.tvlContainer}`}>
-            <p className={styles.tvlHeading}>My Total Value Staked</p>
-            <p className={styles.tvlValue}>
+        <div className={`colorContainer ${styles.container}`}>
+            <p className={styles.heading}>My Total Value Staked</p>
+            <p className={styles.value}>
                 {customCommify(userTVL.toFixed(0), { minimumFractionDigits: 0, showDollarSign: true })}
             </p>
         </div>
