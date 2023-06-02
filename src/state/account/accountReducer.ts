@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AccountResponse, StateInterface } from "./types";
+import { StateInterface } from "./types";
 import {
     postAccountData as postAccountDataApi,
     getAccountData as getAccountDataApi,
@@ -59,6 +59,21 @@ export const addAccount = createAsyncThunk(
                 if (data.referralCode) {
                     thunkApi.dispatch(setReferralCode(data.referralCode));
                 }
+                if (data.earnedTrax) {
+                    thunkApi.dispatch(setEarnedTrax(data.earnedTrax));
+                }
+                if (data.earnedTraxByReferral) {
+                    thunkApi.dispatch(setEarnedTraxByReferral(data.earnedTraxByReferral));
+                }
+                if (data.totalEarnedTrax) {
+                    thunkApi.dispatch(setTotalEarnedTrax(data.totalEarnedTrax));
+                }
+                if (data.totalEarnedTraxByReferral) {
+                    thunkApi.dispatch(setTotalEarnedTraxByReferral(data.totalEarnedTraxByReferral));
+                }
+                if (data.traxCalculatedTimestamp) {
+                    thunkApi.dispatch(setTraxCalculatedTimestamp(data.traxCalculatedTimestamp));
+                }
             }
         } catch (error) {
             console.log("Cannot create new account");
@@ -87,6 +102,21 @@ const accountSlice = createSlice({
         setReferralEarning: (state: StateInterface, action: { payload: number }) => {
             state.referralEarning = action.payload;
         },
+        setEarnedTrax: (state: StateInterface, action: { payload: number }) => {
+            state.earnedTrax = action.payload;
+        },
+        setEarnedTraxByReferral: (state: StateInterface, action: { payload: number }) => {
+            state.earnedTraxByReferral = action.payload;
+        },
+        setTotalEarnedTrax: (state: StateInterface, action: { payload: number }) => {
+            state.totalEarnedTrax = action.payload;
+        },
+        setTotalEarnedTraxByReferral: (state: StateInterface, action: { payload: number }) => {
+            state.totalEarnedTraxByReferral = action.payload;
+        },
+        setTraxCalculatedTimestamp: (state: StateInterface, action: { payload: number }) => {
+            state.traxCalculatedTimestamp = action.payload;
+        },
         reset: (state: StateInterface) => {
             return { ...initialState, referrerCode: state.referrerCode };
         },
@@ -98,6 +128,17 @@ const accountSlice = createSlice({
     },
 });
 
-export const { setRefAddress, setReferrerCode, reset, setReferralCode } = accountSlice.actions;
+export const {
+    setRefAddress,
+    setReferrerCode,
+    reset,
+    setReferralCode,
+    setEarnedTrax,
+    setEarnedTraxByReferral,
+    setTotalEarnedTrax,
+    setTotalEarnedTraxByReferral,
+    setTraxCalculatedTimestamp,
+    setReferralEarning,
+} = accountSlice.actions;
 
 export default accountSlice.reducer;

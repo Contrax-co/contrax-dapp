@@ -8,6 +8,10 @@
     overflow: hidden;
     border: 1px solid var(--color_primary);
     font-size: 16px;
+
+    @include devices(tablet) {
+        font-size: 14px;
+    }
 }
 
 .tableRow {
@@ -116,9 +120,54 @@
 }
 
 .addressText {
-    width: 250px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    position: relative;
+    display: none;
+    font-family: monospace;
+
+    &.onlyExtraLargeScreen {
+        display: block;
+    }
+    @include devices(desktop) {
+        &.onlyExtraLargeScreen {
+            display: none;
+        }
+        &.onlyLargeScreen {
+            display: block;
+        }
+    }
+    @include devices(tablet) {
+        &.onlyLargeScreen {
+            display: none;
+        }
+        &.onlyTablet {
+            display: block;
+        }
+    }
+    @include devices(mobile) {
+        &.onlyTablet {
+            display: none;
+        }
+        &.onlyMobile {
+            display: block;
+        }
+    }
+
+    .tooltip {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: var(--color_primary);
+        color: var(--color_white);
+        font-size: 12px;
+        padding: 2px 4px;
+        border-radius: 6px;
+    }
+    &:hover {
+        .tooltip {
+            display: block;
+        }
+    }
 }
 
 .arbiscanIcon {
@@ -148,23 +197,5 @@
         min-width: initial;
         min-height: initial;
         padding: 10px 30px;
-    }
-}
-
-@media only screen and (max-width: 768px) {
-    .addressText {
-        width: 140px;
-    }
-    .table {
-        font-size: 14px;
-    }
-}
-
-@media only screen and (max-width: 500px) {
-    .addressText {
-        width: 80px;
-    }
-    .table {
-        font-size: 14px;
     }
 }

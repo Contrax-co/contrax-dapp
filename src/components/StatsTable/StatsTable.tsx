@@ -3,12 +3,10 @@ import styles from "./StatsTable.module.scss";
 import { useStats } from "src/hooks/useStats";
 import { customCommify } from "src/utils/common";
 import useConstants from "src/hooks/useConstants";
-import useWallet from "src/hooks/useWallet";
 import { FiExternalLink } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { TableColumns } from "src/types/enums";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
-import { BiSearch } from "react-icons/bi";
 
 export const StatsTable: FC = () => {
     const {
@@ -26,7 +24,6 @@ export const StatsTable: FC = () => {
         setSearch,
     } = useStats();
     const { BLOCK_EXPLORER_URL } = useConstants();
-    const { currentWallet } = useWallet();
 
     const handleSorting = (column: TableColumns) => {
         if (column === sortBy) {
@@ -68,13 +65,23 @@ export const StatsTable: FC = () => {
                     userTVLs.map(({ id, address, tvl }) => (
                         <tr key={id} className={styles.tableRow}>
                             <td className={styles.tableData + " " + styles.addressCol}>
-                                <p className={styles.addressText}>{address}</p>
+                                <p className={styles.addressText + " " + styles.onlyExtraLargeScreen}>{address}</p>
+                                <p className={styles.addressText + " " + styles.onlyLargeScreen}>
+                                    {`${address?.substring(0, 12)}...${address?.substring(address.length - 12)}`}{" "}
+                                    <div className={styles.tooltip}>{address}</div>
+                                </p>
+                                <p className={styles.addressText + " " + styles.onlyTablet}>
+                                    {`${address?.substring(0, 8)}...${address?.substring(address.length - 8)}`}{" "}
+                                    <div className={styles.tooltip}>{address}</div>
+                                </p>
+                                <p className={styles.addressText + " " + styles.onlyMobile}>
+                                    {`${address?.substring(0, 6)}...${address?.substring(address.length - 4)}`}{" "}
+                                    <div className={styles.tooltip}>{address}</div>
+                                </p>
                                 <FiExternalLink
                                     size={16}
                                     className={styles.arbiscanIcon}
-                                    onClick={() =>
-                                        window.open(`${BLOCK_EXPLORER_URL}/address/${currentWallet}`, "_blank")
-                                    }
+                                    onClick={() => window.open(`${BLOCK_EXPLORER_URL}/address/${address}`, "_blank")}
                                 />
                             </td>
                             <td className={styles.tableData}>

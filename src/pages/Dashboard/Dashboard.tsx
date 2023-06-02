@@ -25,6 +25,8 @@ import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
 import { CHAIN_ID } from "src/types/enums";
 import { WrongNetwork } from "src/components/WrongNetwork/WrongNetwork";
 import ReferralEarning from "./ReferralEarning/ReferralEarning";
+import { TraxEarning } from "./TraxEarning/TraxEarning";
+import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -122,6 +124,8 @@ function Dashboard() {
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
+                <TraxEarning />
+                <TraxReferralEarning />
                 <ReferralEarning />
                 <BridgeBtn />
             </div>
