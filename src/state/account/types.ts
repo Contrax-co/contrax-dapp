@@ -6,15 +6,26 @@ export interface StateInterface {
     /** Ref Code of current user  */
     referralCode?: string;
     referralEarning?: number;
+    earnedTrax?: number;
+    earnedTraxByReferral?: number;
+    totalEarnedTrax?: number;
+    totalEarnedTraxByReferral?: number;
+    traxCalculatedTimestamp?: number;
 }
 
 export interface AccountResponse {
+    _id: string;
+    id: string;
     address: string;
     createdAt: string;
-    id: string;
-    referralCode?: string;
     updatedAt: string;
-    _id: string;
+    earnedTrax: number;
+    earnedTraxByReferral: number;
+    totalEarnedTrax: number;
+    totalEarnedTraxByReferral: number;
+    traxCalculatedTimestamp: number;
+    tvl: number;
+    referralCode?: string;
     referrer?: {
         _id: string;
         address: string;
