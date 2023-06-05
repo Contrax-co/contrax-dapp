@@ -56,9 +56,7 @@ const Front: React.FC<IProps> = () => {
                     </div>
                 </div>
             </div>
-            <div>
-                <iframe src={iframeLink} style={{ width: 380, height: 700 }}></iframe>
-            </div>
+            <div>{/* <iframe src={iframeLink} style={{ width: 380, height: 700 }}></iframe> */}</div>
 
             {/* {authData?.accessToken && (
                 <div className={styles.tokenBalancesContainer}>
