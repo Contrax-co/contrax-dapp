@@ -12,7 +12,7 @@ export const TraxReferralEarning: React.FC<Props> = () => {
 
     return (
         <div className={`outlinedContainer ${styles.container}`}>
-            <p className={styles.heading}>TRAX Earning By Referral</p>
+            <p className={styles.heading}>TRAX from Referrals</p>
             <p className={styles.value}>
                 {customCommify(earnedTraxByReferral, { minimumFractionDigits: 3, showDollarSign: false })}
             </p>
