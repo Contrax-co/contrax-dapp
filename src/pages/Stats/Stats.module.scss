@@ -1,6 +1,6 @@
 .container {
     color: var(--color_text);
-    padding: 30px 30px 80px 30px;
+    padding: 30px 30px 120px 30px;
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -11,5 +11,5 @@
     display: grid;
     gap: 16px;
     grid-template-columns: repeat(auto-fit, minmax(280px, 350px));
-    grid-template-rows: repeat(auto-fit, 140px);
+    grid-template-rows: 140px;
 }
