@@ -102,7 +102,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
                     <div className={styles.property}>
                         <div className={styles.title}>
-                            <p>Your Stake</p>
+                            <p>APY</p>
                         </div>
                         <div className={styles.value}>
                             <p>
