@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./Buy.module.scss";
 import useWallet from "src/hooks/useWallet";
-import { GateFiDisplayModeEnum, GateFiEventTypes, GateFiSDK, TGateFiStylesScheme } from "@gatefi/js-sdk";
+import { GateFiDisplayModeEnum, GateFiSDK } from "@gatefi/js-sdk";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import { useSearchParams } from "react-router-dom";
 import useBridge from "src/hooks/useBridge";
@@ -25,7 +25,7 @@ const Gatefi: React.FC<IProps> = () => {
     }, [params, polyUsdcToUsdc, isLoading]);
 
     React.useEffect(() => {
-        let intance = new GateFiSDK({
+        let instance = new GateFiSDK({
             merchantId: GATEFI_MERCHANT_ID,
             displayMode: GateFiDisplayModeEnum.Embedded,
             nodeSelector: "#overlay-button",
@@ -43,9 +43,9 @@ const Gatefi: React.FC<IProps> = () => {
                 type: lightMode ? "light" : "dark",
             },
         });
-        setGateFiInstance(intance);
+        setGateFiInstance(instance);
         return () => {
-            intance.destroy();
+            instance.destroy();
         };
     }, [currentWallet]);
 
