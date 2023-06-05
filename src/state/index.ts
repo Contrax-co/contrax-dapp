@@ -15,7 +15,12 @@ import rampReducer from "./ramp/rampReducer";
 import accountReducer from "./account/accountReducer";
 
 const persistedPricesReducer = persistReducer(
-    { key: "prices", version: 1, storage, blacklist: ["isFetched", "oldPrices"] },
+    {
+        key: "prices",
+        version: 2,
+        storage,
+        blacklist: ["isFetched", "oldPrices", "isLoadedOldPrices", "isFetchingOldPrices", "isLoading"],
+    },
     pricesReducer
 );
 

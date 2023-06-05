@@ -65,7 +65,11 @@ const useFront = () => {
                     const accessToken = authData.accessToken?.accountTokens[0].accessToken;
                     if (accessToken) {
                         setAuthData(authData);
-                        localStorage.setItem("front-auth-data", JSON.stringify(authData));
+                        let expiresAt = 0;
+                        if (authData.accessToken?.expiresInSeconds) {
+                            expiresAt = Date.now() + authData.accessToken.expiresInSeconds * 1000;
+                        }
+                        localStorage.setItem("front-auth-data", JSON.stringify({ ...authData, expiresAt }));
                     } else {
                         setAuthData(undefined);
                         localStorage.removeItem("front-access-token");
@@ -112,8 +116,13 @@ const useFront = () => {
 
     useEffect(() => {
         const authData = localStorage.getItem("front-auth-data");
-        if (authData) {
+        const isExpired =
+            authData && JSON.parse(authData).expiresAt ? JSON.parse(authData).expiresAt < Date.now() : false;
+        if (authData && !isExpired) {
             setAuthData(JSON.parse(authData));
+        } else {
+            setAuthData(undefined);
+            localStorage.removeItem("front-auth-data");
         }
     }, []);
 

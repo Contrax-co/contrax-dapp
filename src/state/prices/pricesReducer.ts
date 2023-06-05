@@ -13,7 +13,8 @@ const initialState: StateInterface = {
     isLoading: false,
     isFetched: false,
     oldPrices: {},
-    isLoadingOldPrices: false,
+    isFetchingOldPrices: false,
+    isLoadedOldPrices: false,
 };
 
 const lpAbi = [
@@ -282,13 +283,14 @@ const pricesSlice = createSlice({
             state.isLoading = true;
         });
         builder.addCase(getPricesOfLpByTimestamp.pending, (state) => {
-            state.isLoadingOldPrices = true;
+            state.isFetchingOldPrices = true;
         });
         builder.addCase(getPricesOfLpByTimestamp.fulfilled, (state) => {
-            state.isLoadingOldPrices = false;
+            state.isFetchingOldPrices = false;
+            state.isLoadedOldPrices = true;
         });
         builder.addCase(getPricesOfLpByTimestamp.rejected, (state) => {
-            state.isLoadingOldPrices = false;
+            state.isFetchingOldPrices = false;
         });
     },
 });
