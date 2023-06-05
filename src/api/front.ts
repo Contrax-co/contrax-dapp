@@ -30,7 +30,7 @@ export const getCatalogLink = async (userAddress: string) => {
             "kraken",
             "robinhood",
         ];
-        let url = `/api/v1/cataloglink?userId=${userAddress}`;
+        let url = `/api/v1/cataloglink?userId=${userAddress}&enableTransfers=true`;
         if (isDev) {
             url += `&brokerType=${brokerTypes.join("&brokerType=")}`;
         }

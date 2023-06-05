@@ -115,15 +115,14 @@ const useFront = (mfa?: string) => {
     }, []);
 
     useEffect(() => {
-        if (iframeLink) {
-            frontConnection?.openPopup(iframeLink);
-        }
-
-        return () => {
-            if (iframeLink) {
-                frontConnection?.closePopup();
-            }
-        };
+        // if (iframeLink) {
+        //     frontConnection?.openPopup(iframeLink);
+        // }
+        // return () => {
+        //     if (iframeLink) {
+        //         frontConnection?.closePopup();
+        //     }
+        // };
     }, [frontConnection, iframeLink]);
 
     useEffect(() => {
@@ -152,7 +151,7 @@ const useFront = (mfa?: string) => {
         }
     }, [authData, currentWallet]);
 
-    return { loading, mfaRequired, handleTransfer, holdings, handleCreateConnection, authData };
+    return { loading, mfaRequired, handleTransfer, holdings, handleCreateConnection, authData, iframeLink };
 };
 
 export default useFront;
