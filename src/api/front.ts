@@ -59,109 +59,69 @@ export const getCatalogLink = async (userAddress: string) => {
     }
 };
 
-type Holdings = [
-    {
-        symbol: string;
-        availableBalance: number;
-        availableBalanceInFiat: number;
-        eligibleForTransfer: boolean;
-        networks: {
-            name: string;
-            id: string;
-            eligibleForTransfer: boolean;
-            toAddress: string;
-        }[];
-        ineligibilityReason?: string;
-    }
-];
-
-const formatHoldings = (holdings: Holdings) => {
+const formatHoldings = (holdings: { symbol: string; amount: number }[]) => {
     const tokens: {
         chainId: number;
         address: string;
         symbol: string;
         decimals: number;
         balance: number;
-        usdAmount: number;
-        networkId: string;
         logo: string;
     }[] = [];
 
     holdings?.forEach((element) => {
-        element.networks.forEach((network) => {
-            if (network.eligibleForTransfer) {
-                if (network.name === "Ethereum") {
-                    tokens.push({
-                        chainId: CHAIN_ID.MAINNET,
-                        address: constants.AddressZero,
-                        symbol: "ETH",
-                        decimals: 18,
-                        balance: element.availableBalance,
-                        usdAmount: element.availableBalanceInFiat,
-                        networkId: network.id,
-                        logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
-                    });
-                } else if (network.name === "Polygon") {
-                    if (element.symbol === "USDC") {
-                        tokens.push({
-                            chainId: CHAIN_ID.POLYGON,
-                            address: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
-                            symbol: "USDC",
-                            decimals: 6,
-                            balance: element.availableBalance,
-                            usdAmount: element.availableBalanceInFiat,
-                            networkId: network.id,
-                            logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png",
-                        });
-                    } else if (element.symbol === "MATIC") {
-                        tokens.push({
-                            chainId: CHAIN_ID.POLYGON,
-                            address: constants.AddressZero,
-                            symbol: "MATIC",
-                            decimals: 18,
-                            balance: element.availableBalance,
-                            usdAmount: element.availableBalanceInFiat,
-                            networkId: network.id,
-                            logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025",
-                        });
-                    }
-                }
-            }
-        });
+        switch (element.symbol) {
+            case "ETH":
+                tokens.push({
+                    chainId: CHAIN_ID.MAINNET,
+                    address: constants.AddressZero,
+                    symbol: "ETH",
+                    decimals: 18,
+                    balance: element.amount,
+                    logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
+                });
+                break;
+            case "USDC":
+                tokens.push({
+                    chainId: CHAIN_ID.POLYGON,
+                    address: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
+                    symbol: "USDC",
+                    decimals: 6,
+                    balance: element.amount,
+                    logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png",
+                });
+                break;
+            case "MATIC":
+                tokens.push({
+                    chainId: CHAIN_ID.POLYGON,
+                    address: constants.AddressZero,
+                    symbol: "MATIC",
+                    decimals: 18,
+                    balance: element.amount,
+                    logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025",
+                });
+                break;
+        }
     });
     return tokens;
 };
 
-export const getHoldings = async (fromAuthToken: string, fromType: string, userAddress: string) => {
+export const getHoldings = async (authToken: string, type: string, userAddress: string) => {
     try {
-        const res = await frontApi.post("/api/v1/transfers/managed/configure", {
-            fromAuthToken,
-            fromType,
-            toAddresses: [
-                {
-                    networkId: "7436e9d0-ba42-4d2b-b4c0-8e4e606b2c12",
-                    symbol: "MATIC",
-                    address: userAddress,
-                },
-                {
-                    networkId: "7436e9d0-ba42-4d2b-b4c0-8e4e606b2c12",
-                    symbol: "USDC",
-                    address: userAddress,
-                },
-                {
-                    networkId: "e3c7fdd8-b1fc-4e51-85ae-bb276e075611",
-                    symbol: "ETH",
-                    address: userAddress,
-                },
-            ],
+        const res = await frontApi.post("/api/v1/holdings/get", {
+            authToken,
+            type,
         });
         const content = res.data.content as {
             status: string;
-            holdings: Holdings;
+            cryptocurrencyPositions: {
+                symbol: string;
+                amount: number;
+            }[];
         };
 
         console.log("holdings", content);
-        return formatHoldings(content.holdings);
+        return formatHoldings(content.cryptocurrencyPositions);
     } catch (error) {
         console.error(error);
         return [];
@@ -169,92 +129,51 @@ export const getHoldings = async (fromAuthToken: string, fromType: string, userA
 };
 
 export const executeTransfer = async (args: {
-    fromAuthToken: string;
-    fromType: string;
-    networkId: string;
-    symbol: string;
-    toAddress: string;
+    authToken: string;
+    data: string;
+    targetAddress: string;
     amount: number;
+    fee: number;
+    chain: string;
+    symbol: string;
+    type: string;
+    mfaCode?: string;
+    chainId: number;
 }) => {
+    type Response = {
+        content: {
+            transaction?: {
+                hash: string;
+            };
+            status?: string;
+        };
+    };
     try {
-        const res = await frontApi.post<{
-            content: {
-                status: string;
-                previewResult?: {
-                    previewId: string;
-                    previewExpiresIn: number;
-                    fromAddress: string;
-                    toAddress: string;
-                    symbol: string;
-                    amount: number;
-                    amountInFiat: number;
-                    totalEstimatedAmountInFiat: number;
-                    networkId: string;
-                    institutionTransferFee: {
-                        fee: number;
-                        feeCurrency: string;
-                        feeInFiat: number;
-                    };
-                    estimatedNetworkGasFee: {
-                        fee: number;
-                        feeCurrency: string;
-                        feeInFiat: number;
-                    };
-                };
+        const res = await frontApi.post<Response>("/api/v1/transfers", args);
+
+        if (res.data.content.status === "mfaRequired") {
+            return {
+                status: "mfaRequired",
             };
-        }>("/api/v1/transfers/managed/preview", args);
-        if (!res.data.content.previewResult) {
-            throw new Error("No preview result");
         }
-        const res2 = await frontApi.post<{
-            content: {
-                status: string;
-                executeTransferResult: {
-                    transferId: string;
-                    status: "succeeded" | string;
-                    statusDetails: "In progress" | string;
-                    fromAddress: string;
-                    toAddress: string;
-                    symbol: string;
-                    networkName: string;
-                    networkId: string;
-                    hash: string;
-                    amount: number;
-                    amountInFiat: number;
-                    totalAmountInFiat: number;
-                    completedConfirmations: number;
-                    institutionTransferFee: {
-                        fee: number;
-                        feeCurrency: string;
-                        feeInFiat: number;
-                    };
-                    networkGasFee: {
-                        fee: number;
-                        feeCurrency: string;
-                        feeInFiat: number;
-                    };
-                };
+
+        if (!res.data.content.transaction?.hash) {
+            return {
+                status: "failed",
             };
-        }>("/api/v1/transfers/managed/execute", {
-            fromAuthToken: args.fromAuthToken,
-            fromType: args.fromType,
-            previewId: res.data.content.previewResult?.previewId,
-        });
-        if (!res2.data.content.executeTransferResult.hash) {
-            throw new Error("Transaction Error!");
         }
 
         const res3 = await waitForTransaction({
-            chainId: defaultChainId,
-            hash: res2.data.content.executeTransferResult.hash as `0x${string}`,
+            chainId: args.chainId,
+            hash: res.data.content.transaction.hash as `0x${string}`,
         });
 
         if (res3.status) {
-            return true;
+            return { status: "success" };
         } else {
-            return false;
+            return { status: "failed" };
         }
     } catch (error) {
-        return false;
+        return { status: "failed" };
     }
 };

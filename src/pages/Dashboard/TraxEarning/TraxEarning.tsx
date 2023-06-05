@@ -10,8 +10,8 @@ export const TraxEarning: React.FC<Props> = () => {
     if (!earnedTrax || earnedTrax < 0.001 || Number.isNaN(Number(earnedTrax.toFixed(0)))) return null;
 
     return (
-        <div className={`colorContainer ${styles.container}`}>
-            <p className={styles.heading}>TRAX Earning</p>
+        <div className={`outlinedContainer ${styles.container}`}>
+            <p className={styles.heading}>TRAX from Staking</p>
             <p className={styles.value}>
                 {customCommify(earnedTrax, { minimumFractionDigits: 3, showDollarSign: false })}
             </p>

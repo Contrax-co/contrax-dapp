@@ -11,8 +11,8 @@ export const TraxReferralEarning: React.FC<Props> = () => {
         return null;
 
     return (
-        <div className={`colorContainer ${styles.container}`}>
-            <p className={styles.heading}>TRAX Earning By Referral</p>
+        <div className={`outlinedContainer ${styles.container}`}>
+            <p className={styles.heading}>TRAX from Referrals</p>
             <p className={styles.value}>
                 {customCommify(earnedTraxByReferral, { minimumFractionDigits: 3, showDollarSign: false })}
             </p>

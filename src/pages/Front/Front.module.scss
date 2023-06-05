@@ -156,3 +156,22 @@
         }
     }
 }
+
+
+.inputWrapper {
+    background-color: var(--background_primary);
+    border-radius: 10px;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    & input {
+        background-color: transparent;
+        border: none;
+        color: var(--color_text);
+        padding: 5px;
+        outline: none;
+        width: 100%;
+    }
+}
