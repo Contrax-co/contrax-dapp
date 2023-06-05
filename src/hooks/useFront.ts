@@ -7,7 +7,7 @@ import useBalances from "src/hooks/useBalances";
 import { notifyError } from "src/api/notify";
 import { FRONT_CLIENT_ID } from "src/config/constants";
 
-const useFront = () => {
+const useFront = (mfa?: string) => {
     const { currentWallet } = useWallet();
     const [loading, setLoading] = useState(false);
     const [frontConnection, setFrontConnection] = useState<FrontConnection | null>(null);
@@ -20,30 +20,42 @@ const useFront = () => {
             address: string;
             symbol: string;
             decimals: number;
-            networkId: string;
             balance: number;
-            usdAmount: number;
             logo: string;
         }[]
     >([]);
+    const [mfaRequired, setMfaRequired] = useState(false);
+    const [transferSymbol, setTransferSymbol] = useState("");
 
-    const handleTransfer = async (symbol: string) => {
+    const handleTransfer = async (symbol: string = transferSymbol) => {
+        if (!symbol) return;
         const holding = holdings.find((holding) => holding.symbol === symbol);
         if (!authData?.accessToken || !holding) return;
         const args = {
-            fromAuthToken: authData.accessToken.accountTokens[0].accessToken,
-            fromType: authData.accessToken.brokerType,
-            networkId: holding.networkId,
+            authToken: authData.accessToken.accountTokens[0].accessToken,
+            data: "Transfer",
+            type: authData.accessToken.brokerType,
+            fee: 0,
+            chain: holding.chainId === 1 ? "ETH" : "POLYGON",
             symbol,
-            toAddress: currentWallet,
+            targetAddress: currentWallet,
+            chainId: holding.chainId,
             amount: holding.balance,
+            mfaCode: mfa,
         };
         setLoading(true);
         const notiId = notifyLoading({ title: "Transfer", message: "Transfer in progress" });
-        const status = await executeTransfer(args);
-        if (status) notifySuccess({ title: "Success", message: "Transfer Success" });
+        const { status } = await executeTransfer({ ...args });
+        if (status === "success") notifySuccess({ title: "Success", message: "Transfer Success" });
         else {
-            notifyError({ title: "Failed", message: "Transfer Failed" });
+            notifyError({ title: "Failed", message: status });
+        }
+        if (status === "mfaRequired") {
+            setTransferSymbol(symbol);
+            setMfaRequired(true);
+        } else {
+            setMfaRequired(false);
+            setTransferSymbol("");
         }
         dismissNotify(notiId);
         setLoading(false);
@@ -140,7 +152,7 @@ const useFront = () => {
         }
     }, [authData, currentWallet]);
 
-    return { loading, handleTransfer, holdings, handleCreateConnection, authData };
+    return { loading, mfaRequired, handleTransfer, holdings, handleCreateConnection, authData };
 };
 
 export default useFront;

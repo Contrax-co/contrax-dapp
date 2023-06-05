@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./Front.module.scss";
 import useApp from "src/hooks/useApp";
 import useFront from "src/hooks/useFront";
@@ -9,12 +9,14 @@ import { ReactComponent as BitstampSvg } from "src/assets/images/bitstamp.svg";
 import { ReactComponent as BittrexSvg } from "src/assets/images/bittrex.svg";
 import { ReactComponent as CoinbaseSvg } from "src/assets/images/coinbase.svg";
 import { ReactComponent as RobinhoodSvg } from "src/assets/images/robinhood.svg";
+import Mfa from "./Mfa";
 
 interface IProps {}
 
 const Front: React.FC<IProps> = () => {
     const { lightMode } = useApp();
-    const { handleCreateConnection, handleTransfer, holdings, loading, authData } = useFront();
+    const [mfa, setMfa] = useState("");
+    const { handleCreateConnection, handleTransfer, holdings, loading, authData, mfaRequired } = useFront(mfa);
 
     return (
         <div className={styles.container}>
@@ -58,37 +60,36 @@ const Front: React.FC<IProps> = () => {
                 <div className={styles.tokenBalancesContainer}>
                     <h2 className={styles.balanceHeading}>{authData?.accessToken?.brokerName} Token Balances</h2>
                     <div className={styles.tokensWrapper}>
-                        {holdings
-                            .filter((token) => Number(token.usdAmount) > 0.01)
-                            .map((token, i) => (
-                                <div
-                                    key={i}
-                                    className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                                    onClick={() => {
-                                        handleTransfer(token.symbol);
-                                    }}
-                                >
-                                    <img className={styles.tokenLogo} src={token.logo} alt="logo" />
-                                    <div>
-                                        <p className={styles.name}>{token.symbol}</p>
-                                        <p className={styles.balance}>
-                                            {ethers.utils.commify(Number(token.balance).toString())}
-                                        </p>
-                                    </div>
-                                    <p className={styles.usdBalance}>
-                                        {Number(token.usdAmount)
-                                            .toLocaleString("en-US", {
-                                                style: "currency",
-                                                currency: "USD",
-                                                minimumFractionDigits: 3,
-                                            })
-                                            .slice(0, -1)}
+                        {holdings.map((token, i) => (
+                            <div
+                                key={i}
+                                className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
+                                onClick={() => {
+                                    handleTransfer(token.symbol);
+                                }}
+                            >
+                                <img className={styles.tokenLogo} src={token.logo} alt="logo" />
+                                <div>
+                                    <p className={styles.name}>{token.symbol}</p>
+                                    <p className={styles.balance}>
+                                        {ethers.utils.commify(Number(token.balance).toString())}
                                     </p>
                                 </div>
-                            ))}
+                                {/* <p className={styles.usdBalance}>
+                                    {Number(token.usdAmount)
+                                        .toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            minimumFractionDigits: 3,
+                                        })
+                                        .slice(0, -1)}
+                                </p> */}
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}
+            {mfaRequired && <Mfa setMfa={setMfa} loading={loading} handleTransfer={handleTransfer} />}
         </div>
     );
 };
