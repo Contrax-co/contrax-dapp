@@ -9,6 +9,7 @@
     flex-direction: column;
     align-items: center;
     gap: 40px;
+    overflow: auto;
 
     .heading {
         color: var(--color_text);

@@ -16,7 +16,8 @@ interface IProps {}
 const Front: React.FC<IProps> = () => {
     const { lightMode } = useApp();
     const [mfa, setMfa] = useState("");
-    const { handleCreateConnection, handleTransfer, holdings, loading, authData, mfaRequired } = useFront(mfa);
+    const { handleCreateConnection, handleTransfer, holdings, loading, authData, mfaRequired, iframeLink } =
+        useFront(mfa);
 
     return (
         <div className={styles.container}>
@@ -55,8 +56,11 @@ const Front: React.FC<IProps> = () => {
                     </div>
                 </div>
             </div>
+            <div>
+                <iframe src={iframeLink} style={{ width: 380, height: 700 }}></iframe>
+            </div>
 
-            {authData?.accessToken && (
+            {/* {authData?.accessToken && (
                 <div className={styles.tokenBalancesContainer}>
                     <h2 className={styles.balanceHeading}>{authData?.accessToken?.brokerName} Token Balances</h2>
                     <div className={styles.tokensWrapper}>
@@ -75,7 +79,7 @@ const Front: React.FC<IProps> = () => {
                                         {ethers.utils.commify(Number(token.balance).toString())}
                                     </p>
                                 </div>
-                                {/* <p className={styles.usdBalance}>
+                                <p className={styles.usdBalance}>
                                     {Number(token.usdAmount)
                                         .toLocaleString("en-US", {
                                             style: "currency",
@@ -83,13 +87,13 @@ const Front: React.FC<IProps> = () => {
                                             minimumFractionDigits: 3,
                                         })
                                         .slice(0, -1)}
-                                </p> */}
+                                </p>
                             </div>
                         ))}
                     </div>
                 </div>
-            )}
-            {mfaRequired && <Mfa setMfa={setMfa} loading={loading} handleTransfer={handleTransfer} />}
+            )} */}
+            {/* {mfaRequired && <Mfa setMfa={setMfa} loading={loading} handleTransfer={handleTransfer} />} */}
         </div>
     );
 };
