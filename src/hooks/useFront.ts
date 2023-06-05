@@ -74,23 +74,23 @@ const useFront = (mfa?: string) => {
                 clientId: FRONT_CLIENT_ID,
                 onBrokerConnected: (authData) => {
                     console.info("[FRONT SUCCESS]", authData);
-                    const accessToken = authData.accessToken?.accountTokens[0].accessToken;
-                    if (accessToken) {
-                        setAuthData(authData);
-                        let expiresAt = 0;
-                        if (authData.accessToken?.expiresInSeconds) {
-                            expiresAt = Date.now() + authData.accessToken.expiresInSeconds * 1000;
-                        }
-                        localStorage.setItem("front-auth-data", JSON.stringify({ ...authData, expiresAt }));
-                    } else {
-                        setAuthData(undefined);
-                        localStorage.removeItem("front-access-token");
-                    }
+                    // const accessToken = authData.accessToken?.accountTokens[0].accessToken;
+                    // if (accessToken) {
+                    //     setAuthData(authData);
+                    //     let expiresAt = 0;
+                    //     if (authData.accessToken?.expiresInSeconds) {
+                    //         expiresAt = Date.now() + authData.accessToken.expiresInSeconds * 1000;
+                    //     }
+                    //     localStorage.setItem("front-auth-data", JSON.stringify({ ...authData, expiresAt }));
+                    // } else {
+                    //     setAuthData(undefined);
+                    //     localStorage.removeItem("front-access-token");
+                    // }
                 },
                 onExit: (error?: string) => {
                     if (error) {
                         console.error(`[FRONT ERROR] ${error}`);
-                        localStorage.removeItem("front-access-token");
+                        // localStorage.removeItem("front-access-token");
                     }
 
                     console.info("[FRONT EXIT]");
@@ -115,41 +115,42 @@ const useFront = (mfa?: string) => {
     }, []);
 
     useEffect(() => {
-        // if (iframeLink) {
-        //     frontConnection?.openPopup(iframeLink);
-        // }
-        // return () => {
-        //     if (iframeLink) {
-        //         frontConnection?.closePopup();
-        //     }
-        // };
+        if (iframeLink) {
+            frontConnection?.openPopup(iframeLink);
+            // frontConnection?.openLink()
+        }
+        return () => {
+            if (iframeLink) {
+                frontConnection?.closePopup();
+            }
+        };
     }, [frontConnection, iframeLink]);
 
-    useEffect(() => {
-        const authData = localStorage.getItem("front-auth-data");
-        const isExpired =
-            authData && JSON.parse(authData).expiresAt ? JSON.parse(authData).expiresAt < Date.now() : false;
-        if (authData && !isExpired) {
-            setAuthData(JSON.parse(authData));
-        } else {
-            setAuthData(undefined);
-            localStorage.removeItem("front-auth-data");
-        }
-    }, []);
+    // useEffect(() => {
+    //     const authData = localStorage.getItem("front-auth-data");
+    //     const isExpired =
+    //         authData && JSON.parse(authData).expiresAt ? JSON.parse(authData).expiresAt < Date.now() : false;
+    //     if (authData && !isExpired) {
+    //         setAuthData(JSON.parse(authData));
+    //     } else {
+    //         setAuthData(undefined);
+    //         localStorage.removeItem("front-auth-data");
+    //     }
+    // }, []);
 
-    useEffect(() => {
-        if (authData?.accessToken?.accountTokens[0].accessToken && authData?.accessToken?.brokerType) {
-            getHoldings(
-                authData?.accessToken?.accountTokens[0].accessToken,
-                authData?.accessToken?.brokerType,
-                currentWallet
-            ).then((res) => {
-                setHoldings(res);
-            });
-        } else {
-            setHoldings([]);
-        }
-    }, [authData, currentWallet]);
+    // useEffect(() => {
+    //     if (authData?.accessToken?.accountTokens[0].accessToken && authData?.accessToken?.brokerType) {
+    //         getHoldings(
+    //             authData?.accessToken?.accountTokens[0].accessToken,
+    //             authData?.accessToken?.brokerType,
+    //             currentWallet
+    //         ).then((res) => {
+    //             setHoldings(res);
+    //         });
+    //     } else {
+    //         setHoldings([]);
+    //     }
+    // }, [authData, currentWallet]);
 
     return { loading, mfaRequired, handleTransfer, holdings, handleCreateConnection, authData, iframeLink };
 };
