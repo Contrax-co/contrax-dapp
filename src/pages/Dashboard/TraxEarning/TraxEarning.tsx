@@ -11,7 +11,7 @@ export const TraxEarning: React.FC<Props> = () => {
 
     return (
         <div className={`outlinedContainer ${styles.container}`}>
-            <p className={styles.heading}>TRAX Earning</p>
+            <p className={styles.heading}>TRAX from Staking</p>
             <p className={styles.value}>
                 {customCommify(earnedTrax, { minimumFractionDigits: 3, showDollarSign: false })}
             </p>
