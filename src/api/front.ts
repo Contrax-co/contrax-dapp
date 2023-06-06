@@ -48,6 +48,11 @@ export const getCatalogLink = async (userAddress: string) => {
                 },
                 {
                     networkId: "e3c7fdd8-b1fc-4e51-85ae-bb276e075611",
+                    symbol: "USDC",
+                    address: userAddress,
+                },
+                {
+                    networkId: "e3c7fdd8-b1fc-4e51-85ae-bb276e075611",
                     symbol: "ETH",
                     address: userAddress,
                 },
