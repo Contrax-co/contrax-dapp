@@ -3,7 +3,8 @@ import { CHAIN_ID } from "src/types/enums";
 export const RoutesPaths = {
     Home: "/",
     Farms: "farms",
-    Exchange: "exchange",
+    Swap: "swap",
+    Bridge: "bridge",
     Buy: "buy",
     Front: "front",
     Stats: "stats",

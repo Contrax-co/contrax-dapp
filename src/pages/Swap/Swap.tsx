@@ -1,10 +1,11 @@
 import React from "react";
 import uniswapTokens from "./uniswapTokens.json";
-import { useWebSocketProvider } from "wagmi";
 import useWallet from "src/hooks/useWallet";
 import useBalances from "src/hooks/useBalances";
 import useApp from "src/hooks/useApp";
 import { SwapWidget, darkTheme, lightTheme, TokenInfo } from "@uniswap/widgets";
+import "@uniswap/widgets/fonts.css";
+import "./Swap.css";
 
 interface IProps {}
 
@@ -12,6 +13,8 @@ const Swap: React.FC<IProps> = () => {
     const { connectWallet, signer: wagmiSigner } = useWallet();
     const { reloadBalances } = useBalances();
     const { lightMode } = useApp();
+
+    React.useEffect(() => reloadBalances, []);
 
     return (
         <SwapWidget
