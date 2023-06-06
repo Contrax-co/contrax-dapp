@@ -1,8 +1,9 @@
 import SidebarItem from "./SidebarItem";
-import { MdSpaceDashboard } from "react-icons/md";
+import { MdSpaceDashboard, MdTransform } from "react-icons/md";
 import { HiDocumentText } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { FaExchangeAlt } from "react-icons/fa";
+// import { TbTransformFilled, T } from "react-icons/tb";
 import { BsCurrencyExchange } from "react-icons/bs";
 import { ImStatsDots } from "react-icons/im";
 import { IoIosFlask } from "react-icons/io";
@@ -62,7 +63,7 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
                 <SidebarItem
                     title="Bridge"
-                    icon={<FaExchangeAlt size={18} />}
+                    icon={<MdTransform size={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Bridge)}
                     active={pathname === RoutesPaths.Bridge}
                 />
@@ -78,7 +79,7 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     <>
                         <SidebarItem
                             title="Stats"
-                            icon={<ImStatsDots size={18} />}
+                            icon={<ImStatsDots size={15} />}
                             onClick={() => handleNavigation(RoutesPaths.Stats)}
                             active={pathname === RoutesPaths.Stats}
                         />

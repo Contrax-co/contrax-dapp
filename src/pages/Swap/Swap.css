@@ -1,3 +1,13 @@
+.SwapContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px 80px 120px 80px;
+    box-sizing: border-box;
+}
+
 .Column-sc-1ul9eki-0 {
     min-width: unset !important;
     min-height: unset !important;
@@ -7,6 +17,6 @@
     height: auto !important;
 }
 
-.Dialog__Modal-sc-c8nkza-3>div {
+.Dialog__Modal-sc-c8nkza-3 > div {
     min-width: auto !important;
 }

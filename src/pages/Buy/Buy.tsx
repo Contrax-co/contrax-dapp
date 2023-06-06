@@ -1,5 +1,4 @@
 import React from "react";
-import useWallet from "src/hooks/useWallet";
 import styles from "./Buy.module.scss";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { Tabs } from "src/components/Tabs/Tabs";
@@ -8,7 +7,6 @@ import useBalances from "src/hooks/useBalances";
 import Transak from "./Transak";
 import Wert from "./Wert";
 import useAccountData from "src/hooks/useAccountData";
-import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
 import Gatefi from "./Gatefi";
 
 interface IProps {}
@@ -24,7 +22,6 @@ const Buy: React.FC<IProps> = () => {
     const [params, setSearchParams] = useSearchParams();
     const { reloadBalances, balances } = useBalances();
     const { fetchAccountData } = useAccountData();
-    const { currentWallet } = useWallet();
     // const { lock } = useBridge();
 
     // Reload Balances every time this component unmounts
@@ -53,7 +50,7 @@ const Buy: React.FC<IProps> = () => {
             });
     }, [params]);
 
-    return currentWallet ? (
+    return (
         <div className={styles.container}>
             <h5>Fund Your Account</h5>
             <p>
@@ -82,8 +79,6 @@ const Buy: React.FC<IProps> = () => {
             {tab === Tab.Wert && <Wert />}
             {tab === Tab.Gatefi && <Gatefi />}
         </div>
-    ) : (
-        <NotSignedIn />
     );
 };
 

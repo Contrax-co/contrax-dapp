@@ -18,6 +18,7 @@ import Front from "./pages/Front/Front";
 import { RoutesPaths } from "./config/constants";
 import Swap from "./pages/Swap/Swap";
 import Bridge from "./pages/Bridge/Bridge";
+import { SignInRequiredWrapper } from "./components/SignInRequiredWrapper/SignInRequiredWrapper";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -90,11 +91,39 @@ function Body() {
         <Routes>
             <Route path={RoutesPaths.Home} element={<Home />}>
                 <Route path="" element={<Dashboard />} />
-                <Route path={RoutesPaths.Buy} element={<Buy />} />
+                <Route
+                    path={RoutesPaths.Buy}
+                    element={
+                        <SignInRequiredWrapper>
+                            <Buy />
+                        </SignInRequiredWrapper>
+                    }
+                />
                 <Route path={RoutesPaths.Farms} element={<Farms />} />
-                <Route path={RoutesPaths.Swap} element={<Swap />} />
-                <Route path={RoutesPaths.Bridge} element={<Bridge />} />
-                <Route path={RoutesPaths.Front} element={<Front />} />
+                <Route
+                    path={RoutesPaths.Swap}
+                    element={
+                        <SignInRequiredWrapper>
+                            <Swap />
+                        </SignInRequiredWrapper>
+                    }
+                />
+                <Route
+                    path={RoutesPaths.Bridge}
+                    element={
+                        <SignInRequiredWrapper>
+                            <Bridge />
+                        </SignInRequiredWrapper>
+                    }
+                />
+                <Route
+                    path={RoutesPaths.Front}
+                    element={
+                        <SignInRequiredWrapper>
+                            <Front />
+                        </SignInRequiredWrapper>
+                    }
+                />
                 <Route path={RoutesPaths.Test} element={<Test />} />
                 <Route path={RoutesPaths.Stats} element={<Stats />} />
                 <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
