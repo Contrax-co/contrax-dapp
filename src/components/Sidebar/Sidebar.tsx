@@ -79,7 +79,7 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     <>
                         <SidebarItem
                             title="Stats"
-                            icon={<ImStatsDots size={18} />}
+                            icon={<ImStatsDots size={15} />}
                             onClick={() => handleNavigation(RoutesPaths.Stats)}
                             active={pathname === RoutesPaths.Stats}
                         />
