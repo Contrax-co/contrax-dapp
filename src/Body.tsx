@@ -3,7 +3,6 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Farms from "src/pages/Farms/Farms";
 import Dashboard from "src/pages/Dashboard/Dashboard";
-import Exchange from "./pages/Exchange/Exchange";
 import Test from "./pages/Test/Test";
 import usePriceOfTokens from "./hooks/usePriceOfTokens";
 import { useFarmApys } from "./hooks/farms/useFarmApy";
@@ -17,6 +16,8 @@ import useBridge from "./hooks/useBridge";
 import Stats from "./pages/Stats/Stats";
 import Front from "./pages/Front/Front";
 import { RoutesPaths } from "./config/constants";
+import Swap from "./pages/Swap/Swap";
+import Bridge from "./pages/Bridge/Bridge";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -91,7 +92,8 @@ function Body() {
                 <Route path="" element={<Dashboard />} />
                 <Route path={RoutesPaths.Buy} element={<Buy />} />
                 <Route path={RoutesPaths.Farms} element={<Farms />} />
-                <Route path={RoutesPaths.Exchange} element={<Exchange />} />
+                <Route path={RoutesPaths.Swap} element={<Swap />} />
+                <Route path={RoutesPaths.Bridge} element={<Bridge />} />
                 <Route path={RoutesPaths.Front} element={<Front />} />
                 <Route path={RoutesPaths.Test} element={<Test />} />
                 <Route path={RoutesPaths.Stats} element={<Stats />} />

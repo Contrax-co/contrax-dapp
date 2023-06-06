@@ -55,10 +55,16 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
 
                 <SidebarItem
-                    title="Exchange"
+                    title="Swap"
                     icon={<FaExchangeAlt size={18} />}
-                    onClick={() => handleNavigation(RoutesPaths.Exchange)}
-                    active={pathname === RoutesPaths.Exchange}
+                    onClick={() => handleNavigation(RoutesPaths.Swap)}
+                    active={pathname === RoutesPaths.Swap}
+                />
+                <SidebarItem
+                    title="Bridge"
+                    icon={<FaExchangeAlt size={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Bridge)}
+                    active={pathname === RoutesPaths.Bridge}
                 />
 
                 <SidebarItem
