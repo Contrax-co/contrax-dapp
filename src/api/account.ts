@@ -13,7 +13,8 @@ export const getAccountData = async (address: string) => {
     const {
         data: { data },
     } = await backendApi.get<{ data: AccountResponse | null }>("account/" + address);
-    return data;
+    if (data?.address) return data;
+    else return undefined;
 };
 
 /**
