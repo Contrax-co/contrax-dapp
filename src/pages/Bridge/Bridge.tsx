@@ -84,38 +84,40 @@ const Bridge = () => {
     if (!SOCKET_BRIDGE_KEY) return null;
     else
         return (
-            <SocketBridge
-                provider={isWeb3Auth ? provider : signer?.provider}
-                onSourceNetworkChange={(network) => {
-                    setChainId(network.chainId);
-                }}
-                onBridgeSuccess={reloadBalances}
-                API_KEY={SOCKET_BRIDGE_KEY}
-                defaultSourceToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
-                defaultDestToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
-                // enableSameChainSwaps
-                singleTxOnly
-                // enableRefuel
-                // includeBridges={[
-                //     "polygon-bridge",
-                //     "hop",
-                //     "anyswap-router-v4",
-                //     "hyphen",
-                //     "arbitrum-bridge",
-                //     "connext",
-                //     "celer",
-                //     // "across",
+            <div className="BridgeContainer">
+                <SocketBridge
+                    provider={isWeb3Auth ? provider : signer?.provider}
+                    onSourceNetworkChange={(network) => {
+                        setChainId(network.chainId);
+                    }}
+                    onBridgeSuccess={reloadBalances}
+                    API_KEY={SOCKET_BRIDGE_KEY}
+                    defaultSourceToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+                    defaultDestToken={"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+                    // enableSameChainSwaps
+                    singleTxOnly
+                    // enableRefuel
+                    // includeBridges={[
+                    //     "polygon-bridge",
+                    //     "hop",
+                    //     "anyswap-router-v4",
+                    //     "hyphen",
+                    //     "arbitrum-bridge",
+                    //     "connext",
+                    //     "celer",
+                    //     // "across",
 
-                //     "optimism-bridge",
-                //     "refuel-bridge",
-                // ]}
-                excludeBridges={["connext"]}
-                defaultSourceNetwork={1}
-                defaultDestNetwork={defaultChainId}
-                sourceNetworks={[1, defaultChainId, 137]}
-                destNetworks={[1, defaultChainId, 137]}
-                customize={lightMode ? lightSocketTheme : darkSocketTheme}
-            />
+                    //     "optimism-bridge",
+                    //     "refuel-bridge",
+                    // ]}
+                    excludeBridges={["connext"]}
+                    defaultSourceNetwork={1}
+                    defaultDestNetwork={defaultChainId}
+                    sourceNetworks={[1, defaultChainId, 137]}
+                    destNetworks={[1, defaultChainId, 137]}
+                    customize={lightMode ? lightSocketTheme : darkSocketTheme}
+                />
+            </div>
         );
 };
 
