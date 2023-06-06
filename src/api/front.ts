@@ -37,6 +37,11 @@ export const getCatalogLink = async (userAddress: string) => {
         const res = await frontApi.post(url, {
             toAddresses: [
                 {
+                    networkId: "e3c7fdd8-b1fc-4e51-85ae-bb276e075611",
+                    symbol: "ETH",
+                    address: userAddress,
+                },
+                {
                     networkId: "7436e9d0-ba42-4d2b-b4c0-8e4e606b2c12",
                     symbol: "MATIC",
                     address: userAddress,
@@ -44,16 +49,6 @@ export const getCatalogLink = async (userAddress: string) => {
                 {
                     networkId: "7436e9d0-ba42-4d2b-b4c0-8e4e606b2c12",
                     symbol: "USDC",
-                    address: userAddress,
-                },
-                {
-                    networkId: "e3c7fdd8-b1fc-4e51-85ae-bb276e075611",
-                    symbol: "USDC",
-                    address: userAddress,
-                },
-                {
-                    networkId: "e3c7fdd8-b1fc-4e51-85ae-bb276e075611",
-                    symbol: "ETH",
                     address: userAddress,
                 },
             ],
