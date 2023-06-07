@@ -32,4 +32,5 @@ export enum CHAIN_ID {
 export enum TableColumns {
     Address = "Address",
     TVL = "TVL",
+    Referrer = "Referrer",
 }
