@@ -66,7 +66,6 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
     "ramp/polyUsdcToArbUsdc",
     async ({ polygonSigner, currentWallet, refechBalance }: PolyUsdcToArbUsdcArgs, thunkApi) => {
         if (!polygonSigner) return;
-        thunkApi.dispatch(setIsBridging(true));
         await sleep(1000);
         let notiId = notifyLoading({
             title: "Bridging Poly USDC to Arb USDC",
@@ -119,7 +118,6 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
             thunkApi.dispatch(checkBridgeStatus({ refechBalance }));
             dismissNotify(notiId);
         } catch (error: any) {
-            thunkApi.dispatch(setIsBridging(false));
             console.error(error);
             notifyError({ title: "Error!", message: error.message });
             dismissNotify(notiId);
@@ -150,6 +148,15 @@ const rampSlice = createSlice({
     extraReducers(builder) {
         builder.addCase(checkBridgeStatus.pending, (state: StateInterface) => {
             state.bridgeState.checkingStatus = true;
+        });
+        builder.addCase(polyUsdcToArbUsdc.pending, (state: StateInterface) => {
+            state.bridgeState.isBridging = true;
+        });
+        builder.addCase(polyUsdcToArbUsdc.fulfilled, (state: StateInterface) => {
+            state.bridgeState.isBridging = false;
+        });
+        builder.addCase(polyUsdcToArbUsdc.rejected, (state: StateInterface) => {
+            state.bridgeState.isBridging = false;
         });
     },
 });

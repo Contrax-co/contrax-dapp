@@ -10,6 +10,9 @@ export interface StateInterface {
     bridgeState: {
         destTxHash?: string;
         status?: BridgeStatus;
+        /**
+         * True for any bridging thunk in progress
+         */
         isBridging?: boolean;
         checkingStatus?: boolean;
     };
