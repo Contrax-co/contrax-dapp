@@ -14,15 +14,15 @@ const Gatefi: React.FC<IProps> = () => {
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
     const [params] = useSearchParams();
-    const { polyUsdcToUsdc, isLoading } = useBridge();
+    const { polyUsdcToUsdc, isLoading, usdAmount } = useBridge();
     const [gateFiInstance, setGateFiInstance] = useState<GateFiSDK>();
 
     React.useEffect(() => {
         let success = params.get("success");
-        if (Boolean(success) && !isLoading) {
+        if (Boolean(success) && !isLoading && usdAmount > 5) {
             polyUsdcToUsdc();
         }
-    }, [params, polyUsdcToUsdc, isLoading]);
+    }, [params, polyUsdcToUsdc, isLoading, usdAmount]);
 
     React.useEffect(() => {
         let instance = new GateFiSDK({
