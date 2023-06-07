@@ -92,6 +92,14 @@ function Body() {
             <Route path={RoutesPaths.Home} element={<Home />}>
                 <Route path="" element={<Dashboard />} />
                 <Route
+                    path={RoutesPaths.Deposit}
+                    element={
+                        <SignInRequiredWrapper>
+                            <Front />
+                        </SignInRequiredWrapper>
+                    }
+                />
+                <Route
                     path={RoutesPaths.Buy}
                     element={
                         <SignInRequiredWrapper>
@@ -113,14 +121,6 @@ function Body() {
                     element={
                         <SignInRequiredWrapper>
                             <Bridge />
-                        </SignInRequiredWrapper>
-                    }
-                />
-                <Route
-                    path={RoutesPaths.Front}
-                    element={
-                        <SignInRequiredWrapper>
-                            <Front />
                         </SignInRequiredWrapper>
                     }
                 />
