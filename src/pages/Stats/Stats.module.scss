@@ -1,10 +1,10 @@
 .container {
     color: var(--color_text);
     padding: 30px 30px 120px 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
     overflow-y: auto;
+    & > div {
+        margin-bottom: 24px;
+    }
 }
 
 .topRow {

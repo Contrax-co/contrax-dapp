@@ -1,6 +1,11 @@
 @import "../../styles/variables";
 @import "../../styles/mixins";
 
+.container {
+    width: 100%;
+    overflow-x: auto;
+}
+
 .table {
     width: 100%;
     border-radius: 10px;
@@ -8,6 +13,7 @@
     overflow: hidden;
     border: 1px solid var(--color_primary);
     font-size: 16px;
+    color: var(--color_grey);
 
     @include devices(tablet) {
         font-size: 14px;
@@ -24,26 +30,25 @@
 
 .tableData {
     padding: 8px 24px;
-    width: 50%;
-    max-width: 50%;
     height: inherit;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
     @include devices(mobile) {
         padding: 8px 12px;
     }
 }
 
-.tableHeader {
+.header {
     background-color: var(--color_primary);
     color: var(--color_white);
     font-weight: 700;
 
-    .columnHeading {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    .heading {
         cursor: pointer;
+        height: 50px;
 
         .transitionDelay {
             transition-duration: 0.3s;
@@ -54,17 +59,10 @@
     }
 }
 
-.tableBody {
-    color: var(--color_grey);
-}
-
-.tableFooter {
+.footer {
     background-color: var(--color_primary);
     color: var(--color_white);
-
-    & > tr {
-        height: 36px;
-    }
+    height: 36px;
 
     .onlyMobile {
         display: none;
@@ -125,14 +123,14 @@
     font-family: monospace;
 
     &.onlyExtraLargeScreen {
-        display: block;
+        display: inline-block;
     }
     @include devices(desktop) {
         &.onlyExtraLargeScreen {
             display: none;
         }
         &.onlyLargeScreen {
-            display: block;
+            display: inline-block;
         }
     }
     @include devices(tablet) {
@@ -140,7 +138,7 @@
             display: none;
         }
         &.onlyTablet {
-            display: block;
+            display: inline-block;
         }
     }
     @include devices(mobile) {
@@ -148,7 +146,7 @@
             display: none;
         }
         &.onlyMobile {
-            display: block;
+            display: inline-block;
         }
     }
 
@@ -165,7 +163,7 @@
     }
     &:hover {
         .tooltip {
-            display: block;
+            display: inline-block;
         }
     }
 }
