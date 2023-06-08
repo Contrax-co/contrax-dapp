@@ -112,6 +112,26 @@ export interface LoadingMessages {
     transferingTokens: () => NotifyMessage;
 }
 
+export interface AccountInfo {
+    _id: string;
+    address: string;
+    referralCode?: string;
+    referrer?: AccountInfo;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface AccountDetails extends UserTVL {
+    _id: string;
+    accountInfo: AccountInfo;
+    earnedTrax: string;
+    earnedTraxByReferral: number;
+    traxCalculatedTimeStamp: number;
+    totalEarnedTrax: number;
+    totalEarnedTraxByReferral: number;
+    tvl: number;
+}
+
 export interface UserTVL {
     id: string;
     tvl: number;

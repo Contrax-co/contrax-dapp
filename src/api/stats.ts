@@ -1,10 +1,10 @@
 import axios from "axios";
 import { BACKEND_BASE_URL } from "src/config/constants";
-import { Order, UserTVL } from "src/types";
+import { Order, AccountDetails } from "src/types";
 import { TableColumns } from "src/types/enums";
 
 interface ResponseDataType {
-    data: UserTVL[];
+    data: AccountDetails[];
     limit: number;
     page: number;
     hasPrevPage: number;
