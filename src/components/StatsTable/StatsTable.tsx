@@ -52,17 +52,8 @@ export const StatsTable: FC = () => {
                             </div>
                         </th>
                         <th>
-                            <div
-                                className={styles.tableData + " " + styles.heading}
-                                onClick={() => handleSorting(TableColumns.Referrer)}
-                            >
+                            <div className={styles.tableData + " " + styles.heading} style={{ cursor: "initial" }}>
                                 REFERRER
-                                {sortBy === TableColumns.Referrer && (
-                                    <FaArrowDown
-                                        size={14}
-                                        className={`${styles.transitionDelay} ${order === "" ? "" : styles.rotate}`}
-                                    />
-                                )}
                             </div>
                         </th>
                         <th>
