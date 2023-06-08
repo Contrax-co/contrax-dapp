@@ -108,41 +108,41 @@ export const StatsTable: FC = () => {
                                     {accountInfo && accountInfo.referrer ? (
                                         <div className={styles.tableData + " " + styles.addressCol}>
                                             <p className={styles.addressText + " " + styles.onlyExtraLargeScreen}>
-                                                {accountInfo.address}
+                                                {accountInfo.referrer.address}
                                             </p>
                                             <p className={styles.addressText + " " + styles.onlyLargeScreen}>
-                                                {`${accountInfo.address?.substring(
+                                                {`${accountInfo.referrer.address?.substring(
                                                     0,
                                                     12
-                                                )}...${accountInfo.address?.substring(
-                                                    accountInfo.address.length - 12
+                                                )}...${accountInfo.referrer.address?.substring(
+                                                    accountInfo.referrer.address.length - 12
                                                 )}`}{" "}
                                                 <span className={styles.tooltip}>{address}</span>
                                             </p>
                                             <p className={styles.addressText + " " + styles.onlyTablet}>
-                                                {`${accountInfo.address?.substring(
+                                                {`${accountInfo.referrer.address?.substring(
                                                     0,
                                                     8
-                                                )}...${accountInfo.address?.substring(
-                                                    accountInfo.address.length - 8
+                                                )}...${accountInfo.referrer.address?.substring(
+                                                    accountInfo.referrer.address.length - 8
                                                 )}`}{" "}
-                                                <span className={styles.tooltip}>{accountInfo.address}</span>
+                                                <span className={styles.tooltip}>{accountInfo.referrer.address}</span>
                                             </p>
                                             <p className={styles.addressText + " " + styles.onlyMobile}>
-                                                {`${accountInfo.address?.substring(
+                                                {`${accountInfo.referrer.address?.substring(
                                                     0,
                                                     5
-                                                )}...${accountInfo.address?.substring(
-                                                    accountInfo.address.length - 3
+                                                )}...${accountInfo.referrer.address?.substring(
+                                                    accountInfo.referrer.address.length - 3
                                                 )}`}{" "}
-                                                <span className={styles.tooltip}>{accountInfo.address}</span>
+                                                <span className={styles.tooltip}>{accountInfo.referrer.address}</span>
                                             </p>
                                             <FiExternalLink
                                                 size={16}
                                                 className={styles.arbiscanIcon}
                                                 onClick={() =>
                                                     window.open(
-                                                        `${BLOCK_EXPLORER_URL}/address/${accountInfo.address}`,
+                                                        `${BLOCK_EXPLORER_URL}/address/${accountInfo.referrer?.address}`,
                                                         "_blank"
                                                     )
                                                 }
