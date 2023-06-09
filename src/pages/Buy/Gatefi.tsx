@@ -13,16 +13,21 @@ interface IProps {}
 const Gatefi: React.FC<IProps> = () => {
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
-    const [params] = useSearchParams();
     const { polyUsdcToUsdc, isLoading, usdAmount } = useBridge();
     const [gateFiInstance, setGateFiInstance] = useState<GateFiSDK>();
+    const [initialUsdAmount, setInitialUsdAmount] = useState(usdAmount);
 
     React.useEffect(() => {
-        let success = params.get("success");
-        if (Boolean(success) && !isLoading && usdAmount > 5) {
-            polyUsdcToUsdc();
-        }
-    }, [params, polyUsdcToUsdc, isLoading, usdAmount]);
+        const int = setInterval(() => {
+            if (usdAmount !== initialUsdAmount && !isLoading && usdAmount > 5) {
+                polyUsdcToUsdc();
+                setInitialUsdAmount(usdAmount);
+                clearInterval(int);
+            }
+        }, 1000);
+
+        return () => clearInterval(int);
+    }, [initialUsdAmount, polyUsdcToUsdc, isLoading, usdAmount]);
 
     React.useEffect(() => {
         let instance = new GateFiSDK({
@@ -30,7 +35,6 @@ const Gatefi: React.FC<IProps> = () => {
             displayMode: GateFiDisplayModeEnum.Embedded,
             nodeSelector: "#overlay-button",
             walletAddress: currentWallet,
-            successUrl: `${window.location.href}&success=true`,
             defaultFiat: {
                 currency: "USD",
                 amount: "500",
