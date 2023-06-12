@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { BridgeStatus, PolyUsdcToArbUsdcArgs, StateInterface } from "./types";
+import { BridgeChainInfo, BridgeDirection, BridgeStatus, PolyUsdcToArbUsdcArgs, StateInterface } from "./types";
 import { notifyLoading } from "src/api/notify";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { awaitTransaction, sleep } from "src/utils/common";
@@ -13,29 +13,29 @@ import { v4 as uuid } from "uuid";
 import { RootState } from "..";
 
 const initialState: StateInterface = {
-    onRampInProgress: false,
-    beforeRampState: {
-        balances: {},
+    bridgeStates: {
+        [BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC]: {
+            isBridging: false,
+        },
     },
-    bridgeState: {},
-    socketSourceTxHash: "",
 };
 
 export const checkBridgeStatus = createAsyncThunk(
     "ramp/checkBridgeStatus",
-    async (args: { refechBalance?: Function } | undefined, thunkApi) => {
+    async (args: { refechBalance?: Function; direction: BridgeDirection }, thunkApi) => {
         const notiId = uuid();
         const int = setInterval(() => {
             const { ramp } = thunkApi.getState() as RootState;
-            const sourceTxHash = ramp.socketSourceTxHash;
-            console.log("sourceTxHash", sourceTxHash);
+            const sourceTxHash = ramp.bridgeStates[args.direction].socketSourceTxHash;
             if (sourceTxHash) {
-                thunkApi.dispatch(setBridgeStatus(BridgeStatus.PENDING));
+                thunkApi.dispatch(setBridgeStatus({ status: BridgeStatus.PENDING, direction: args.direction }));
                 notifyLoading(
                     { title: "Checking bridge status.", message: "This will take a few minutes..." },
                     { id: notiId }
                 );
-                getBridgeStatus(sourceTxHash, CHAIN_ID.POLYGON, CHAIN_ID.ARBITRUM).then((res) => {
+                const sourceChain = BridgeChainInfo[args.direction].sourceChainId;
+                const dstChain = BridgeChainInfo[args.direction].dstChainId;
+                getBridgeStatus(sourceTxHash, sourceChain, dstChain).then((res) => {
                     console.log(res);
                     if (res.destinationTxStatus === "COMPLETED") {
                         dismissNotify(notiId);
@@ -43,18 +43,20 @@ export const checkBridgeStatus = createAsyncThunk(
                             { title: "Success!", message: "Bridging completed" },
                             { dismissAfter: 0, dismissible: true }
                         );
-                        thunkApi.dispatch(setSourceTxHash(""));
-                        thunkApi.dispatch(setBridgeStatus(BridgeStatus.COMPLETED));
+                        thunkApi.dispatch(setSourceTxHash({ hash: "", direction: args.direction }));
+                        thunkApi.dispatch(
+                            setBridgeStatus({ status: BridgeStatus.COMPLETED, direction: args.direction })
+                        );
                         dismissNotify(notiId);
                         clearInterval(int);
-                        thunkApi.dispatch(setIsBridging(false));
-                        thunkApi.dispatch(setCheckBridgeStatus(false));
+                        thunkApi.dispatch(setIsBridging({ value: false, direction: args.direction }));
+                        thunkApi.dispatch(setCheckBridgeStatus({ value: false, direction: args.direction }));
                         args?.refechBalance && args.refechBalance();
                     }
                 });
             } else {
                 dismissNotify(notiId);
-                thunkApi.dispatch(setIsBridging(false));
+                thunkApi.dispatch(setIsBridging({ value: false, direction: args.direction }));
                 clearInterval(int);
             }
         }, 5000);
@@ -64,7 +66,7 @@ export const checkBridgeStatus = createAsyncThunk(
 
 export const polyUsdcToArbUsdc = createAsyncThunk(
     "ramp/polyUsdcToArbUsdc",
-    async ({ polygonSigner, currentWallet, refechBalance }: PolyUsdcToArbUsdcArgs, thunkApi) => {
+    async ({ polygonSigner, currentWallet, refechBalance, direction }: PolyUsdcToArbUsdcArgs, thunkApi) => {
         if (!polygonSigner) return;
         await sleep(1000);
         let notiId = notifyLoading({
@@ -73,20 +75,22 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
         });
         try {
             const polyUsdcBalance = await getBalance(
-                addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
+                BridgeChainInfo[direction].sourceAddress,
                 currentWallet,
                 polygonSigner
             );
             if (polyUsdcBalance.eq(0)) throw new Error("Insufficient balance");
-            thunkApi.dispatch(setBridgeStatus(BridgeStatus.APPROVING));
+            thunkApi.dispatch(setBridgeStatus({ status: BridgeStatus.APPROVING, direction }));
+            console.log("getting route");
             const { route, approvalData } = await getRoute(
-                CHAIN_ID.POLYGON,
-                CHAIN_ID.ARBITRUM,
-                addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
-                addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress,
+                BridgeChainInfo[direction].sourceChainId,
+                BridgeChainInfo[direction].dstChainId,
+                BridgeChainInfo[direction].sourceAddress,
+                BridgeChainInfo[direction].dstAddress,
                 polyUsdcBalance.toString(),
                 currentWallet
             );
+            console.log("got route");
             notifyLoading({ title: "Bridging", message: "Approving Polygon USDC - 1/3" }, { id: notiId });
             await approveErc20(
                 approvalData.approvalTokenAddress,
@@ -96,7 +100,7 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 polygonSigner!
             );
             console.log("approval done");
-            thunkApi.dispatch(setBridgeStatus(BridgeStatus.PENDING));
+            thunkApi.dispatch(setBridgeStatus({ status: BridgeStatus.PENDING, direction }));
             notifyLoading({ title: "Bridging", message: "Creating transaction - 2/3" }, { id: notiId });
             const buildTx = await buildTransaction(route);
             const tx = {
@@ -114,8 +118,8 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
             if (sourceTxHash) {
                 notifySuccess({ title: "Bridge!", message: "Transaction sent" });
             }
-            thunkApi.dispatch(setSourceTxHash(sourceTxHash));
-            thunkApi.dispatch(checkBridgeStatus({ refechBalance }));
+            thunkApi.dispatch(setSourceTxHash({ hash: sourceTxHash, direction }));
+            thunkApi.dispatch(checkBridgeStatus({ refechBalance, direction }));
             dismissNotify(notiId);
         } catch (error: any) {
             console.error(error);
@@ -129,39 +133,43 @@ const rampSlice = createSlice({
     name: "ramp",
     initialState: initialState,
     reducers: {
-        setSourceTxHash: (state: StateInterface, action: { payload: string }) => {
-            state.socketSourceTxHash = action.payload;
+        setSourceTxHash: (state: StateInterface, action: { payload: { hash: string; direction: BridgeDirection } }) => {
+            state.bridgeStates[action.payload.direction].socketSourceTxHash = action.payload.hash;
         },
-        setBridgeStatus: (state: StateInterface, action: { payload: BridgeStatus }) => {
-            state.bridgeState.status = action.payload;
+        setBridgeStatus: (
+            state: StateInterface,
+            action: { payload: { status: BridgeStatus; direction: BridgeDirection } }
+        ) => {
+            state.bridgeStates[action.payload.direction].status = action.payload.status;
         },
-        setBeforeRampBalance: (state: StateInterface, action: { payload: { address: string; balance: string } }) => {
-            state.beforeRampState.balances[action.payload.address] = action.payload.balance;
+
+        setIsBridging: (state: StateInterface, action: { payload: { value: boolean; direction: BridgeDirection } }) => {
+            state.bridgeStates[action.payload.direction].isBridging = action.payload.value;
         },
-        setIsBridging: (state: StateInterface, action: { payload: boolean }) => {
-            state.bridgeState.isBridging = action.payload;
-        },
-        setCheckBridgeStatus: (state: StateInterface, action: { payload: boolean }) => {
-            state.bridgeState.checkingStatus = action.payload;
+        setCheckBridgeStatus: (
+            state: StateInterface,
+            action: { payload: { value: boolean; direction: BridgeDirection } }
+        ) => {
+            state.bridgeStates[action.payload.direction].checkingStatus = action.payload.value;
         },
     },
     extraReducers(builder) {
-        builder.addCase(checkBridgeStatus.pending, (state: StateInterface) => {
-            state.bridgeState.checkingStatus = true;
+        builder.addCase(checkBridgeStatus.pending, (state: StateInterface, action) => {
+            state.bridgeStates[action.meta.arg.direction].checkingStatus = true;
         });
-        builder.addCase(polyUsdcToArbUsdc.pending, (state: StateInterface) => {
-            state.bridgeState.isBridging = true;
+        builder.addCase(polyUsdcToArbUsdc.pending, (state: StateInterface, action) => {
+            state.bridgeStates[action.meta.arg.direction].isBridging = true;
         });
-        builder.addCase(polyUsdcToArbUsdc.fulfilled, (state: StateInterface) => {
-            state.bridgeState.isBridging = false;
+        builder.addCase(polyUsdcToArbUsdc.fulfilled, (state: StateInterface, action) => {
+            state.bridgeStates[action.meta.arg.direction].isBridging = false;
         });
-        builder.addCase(polyUsdcToArbUsdc.rejected, (state: StateInterface) => {
-            state.bridgeState.isBridging = false;
+        builder.addCase(polyUsdcToArbUsdc.rejected, (state: StateInterface, action) => {
+            console.log(action.meta);
+            state.bridgeStates[action.meta.arg.direction].isBridging = false;
         });
     },
 });
 
-export const { setSourceTxHash, setBridgeStatus, setBeforeRampBalance, setIsBridging, setCheckBridgeStatus } =
-    rampSlice.actions;
+export const { setSourceTxHash, setBridgeStatus, setIsBridging, setCheckBridgeStatus } = rampSlice.actions;
 
 export default rampSlice.reducer;

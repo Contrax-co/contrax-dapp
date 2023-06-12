@@ -1,6 +1,6 @@
 import React from "react";
 import { useBalance, useSigner } from "wagmi";
-import useWallet from "./useWallet";
+import useWallet from "../useWallet";
 import { ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
 import { useAppDispatch, useAppSelector } from "src/state";
@@ -11,8 +11,9 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import { useQuery } from "@tanstack/react-query";
 import { getPrice } from "src/api/token";
+import { BridgeDirection } from "src/state/ramp/types";
 
-const useBridge = () => {
+const useBridge = (direction: BridgeDirection) => {
     const { getWeb3AuthSigner, currentWallet, switchNetworkAsync, networkId } = useWallet();
     const { data: price } = useQuery({
         queryKey: GET_PRICE_TOKEN(getNetworkName(CHAIN_ID.POLYGON), addressesByChainId[CHAIN_ID.POLYGON].usdcAddress),
@@ -25,8 +26,8 @@ const useBridge = () => {
         watch: true,
         token: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress as `0x${string}`,
     });
-    const isLoading = useAppSelector((state) => state.ramp.bridgeState.isBridging);
-    const checkingStatus = useAppSelector((state) => state.ramp.bridgeState.checkingStatus);
+    const isLoading = useAppSelector((state) => state.ramp.bridgeStates[direction].isBridging);
+    const checkingStatus = useAppSelector((state) => state.ramp.bridgeStates[direction].checkingStatus);
 
     const { data: polygonSignerWagmi } = useSigner({
         chainId: CHAIN_ID.POLYGON,
@@ -37,11 +38,11 @@ const useBridge = () => {
 
     const polyUsdcToUsdc = async () => {
         if (!polygonSigner) return;
-        dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner, refechBalance: refetch }));
+        dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner, refechBalance: refetch, direction }));
     };
 
     const isBridgePending = () => {
-        if (!checkingStatus) dispatch(checkBridgeStatus());
+        if (!checkingStatus) dispatch(checkBridgeStatus({ direction }));
     };
 
     React.useEffect(() => {

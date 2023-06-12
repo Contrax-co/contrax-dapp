@@ -12,7 +12,7 @@ import { defaultChainId } from "src/config/constants";
 import { filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "src/api/tenderly";
 import { TenderlySimulationType } from "src/types/tenderly";
 import { approveErc20, checkApproval } from "src/api/token";
-import useBridge from "src/hooks/useBridge";
+import useBridge from "src/hooks/bridge/useBridge";
 import { commify } from "ethers/lib/utils.js";
 import { useAppDispatch } from "src/state";
 import { setSourceTxHash } from "src/state/ramp/rampReducer";
@@ -27,7 +27,6 @@ import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const addRecentTransaction = useAddRecentTransaction();
-    const { polyUsdcToUsdc } = useBridge();
     const dispatch = useAppDispatch();
     const { currentWallet } = useWallet();
     const { decimals } = useDecimals();
