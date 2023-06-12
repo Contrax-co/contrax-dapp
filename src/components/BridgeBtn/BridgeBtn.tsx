@@ -1,9 +1,10 @@
 import React from "react";
 import useWallet from "src/hooks/useWallet";
-import useBridge from "src/hooks/useBridge";
+import useBridge from "src/hooks/bridge/useBridge";
 import styles from "./BridgeBtn.module.scss";
 import { CHAIN_ID } from "src/types/enums";
 import { TiWarningOutline } from "react-icons/ti";
+import { BridgeDirection } from "src/state/ramp/types";
 
 interface IProps {
     showDisclaimer?: boolean;
@@ -11,7 +12,9 @@ interface IProps {
 
 const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
     const { switchNetworkAsync } = useWallet();
-    const { polyUsdcToUsdc, isLoading, wrongNetwork, polygonUsdcBalance } = useBridge();
+    const { polyUsdcToUsdc, isLoading, wrongNetwork, polygonUsdcBalance } = useBridge(
+        BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC
+    );
 
     return Number(polygonUsdcBalance) > 0.1 ? (
         <div className={`outlinedContainer ${styles.container}`}>

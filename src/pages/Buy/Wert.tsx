@@ -4,10 +4,11 @@ import { WertOptions } from "src/types";
 import { WERT_PARTNER_ID } from "src/config/constants";
 import useWallet from "src/hooks/useWallet";
 import useApp from "src/hooks/useApp";
-import useBridge from "src/hooks/useBridge";
+import useBridge from "src/hooks/bridge/useBridge";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import styles from "./Buy.module.scss";
 import { TiWarningOutline } from "react-icons/ti";
+import { BridgeDirection } from "src/state/ramp/types";
 
 interface IProps {}
 
@@ -17,7 +18,7 @@ const Wert: React.FC<IProps> = () => {
     const [wertWidget, setWertWidget] = React.useState<WertWidget | null>(null);
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
-    const { polyUsdcToUsdc } = useBridge();
+    const { polyUsdcToUsdc } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
 
     const initWert = (options: WertOptions) => {
         const wertWidget = new WertWidget(options);

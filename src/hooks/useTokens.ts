@@ -8,9 +8,10 @@ import useWallet from "./useWallet";
 import { constants, utils } from "ethers";
 import { CHAIN_ID, FarmType } from "src/types/enums";
 import { useDecimals } from "./useDecimals";
-import useBridge from "./useBridge";
+import useBridge from "./bridge/useBridge";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { defaultChainId } from "src/config/constants";
+import { BridgeDirection } from "src/state/ramp/types";
 
 const ethAddress = constants.AddressZero;
 const tokenBalDecimalPlaces = 3;
@@ -35,7 +36,9 @@ export const useTokens = () => {
         polygonBalance,
         arbitrumBalance,
     } = useWallet();
-    const { polygonUsdcBalance, usdAmount: polygonUsdAmount } = useBridge();
+    const { polygonUsdcBalance, usdAmount: polygonUsdAmount } = useBridge(
+        BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC
+    );
     const [tokens, setTokens] = useState<Token[]>([]);
     const [lpTokens, setLpTokens] = useState<Token[]>([]);
     const { decimals } = useDecimals();

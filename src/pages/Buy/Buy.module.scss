@@ -36,7 +36,17 @@
     margin-bottom: 5px;
     transform: translateY(-5px);
 }
+
 .disclaimerLogo {
     margin-right: 8px;
     transform: translateY(1px);
+}
+
+.gatefiWrapper {
+    width: 360px;
+    height: 680px; 
+    padding-bottom: 16px;
+    iframe {
+        width: 360px !important;
+    }
 }

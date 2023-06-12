@@ -120,8 +120,6 @@ function Dashboard() {
 
             <ReferralLink />
 
-            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
-
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
                 <TraxEarning />
@@ -129,6 +127,7 @@ function Dashboard() {
                 <ReferralEarning />
                 <BridgeBtn />
             </div>
+            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
             {currentWallet ? (
                 <>
                     <div className={`dashboard_section outlinedContainer`}>
