@@ -18,21 +18,17 @@ const Gatefi: React.FC<IProps> = () => {
     const [initialUsdAmount, setInitialUsdAmount] = useState(usdAmount);
 
     React.useEffect(() => {
-        const int = setInterval(() => {
-            if (usdAmount !== initialUsdAmount && !isLoading && usdAmount > 5) {
-                polyUsdcToUsdc();
-                setInitialUsdAmount(usdAmount);
-                clearInterval(int);
-            }
-        }, 1000);
-
-        return () => clearInterval(int);
+        if (usdAmount !== initialUsdAmount && !isLoading && usdAmount > 1) {
+            polyUsdcToUsdc();
+            setInitialUsdAmount(usdAmount);
+        }
     }, [initialUsdAmount, polyUsdcToUsdc, isLoading, usdAmount]);
 
     React.useEffect(() => {
         let instance = new GateFiSDK({
             merchantId: GATEFI_MERCHANT_ID,
             displayMode: GateFiDisplayModeEnum.Embedded,
+
             nodeSelector: "#overlay-button",
             walletAddress: currentWallet,
             defaultFiat: {
@@ -60,8 +56,8 @@ const Gatefi: React.FC<IProps> = () => {
     }, [lightMode]);
 
     return (
-        <div style={{ width: 420 }}>
-            <div id="overlay-button" style={{ width: 420, height: 680, paddingBottom: 16 }}></div>
+        <div style={{ width: 360 }}>
+            <div id="overlay-button" className={styles.gatefiWrapper}></div>
             <BridgeBtn />
             <p className={styles.lightText} style={{ textAlign: "justify", paddingBottom: 50 }}>
                 Bridging puts your tokens on the right network for Contrax. If you logged in using a social account, you

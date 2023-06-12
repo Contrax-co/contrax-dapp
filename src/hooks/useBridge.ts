@@ -50,6 +50,16 @@ const useBridge = () => {
         });
     }, [getWeb3AuthSigner]);
 
+    React.useEffect(() => {
+        const int = setInterval(() => {
+            refetch();
+        }, 10000);
+
+        return () => {
+            clearInterval(int);
+        };
+    }, []);
+
     const wrongNetwork = React.useMemo(() => {
         if (networkId !== CHAIN_ID.POLYGON && getConnectorId() !== web3AuthConnectorId) {
             return true;
