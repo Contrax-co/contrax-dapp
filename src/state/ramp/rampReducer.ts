@@ -17,6 +17,9 @@ const initialState: StateInterface = {
         [BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC]: {
             isBridging: false,
         },
+        [BridgeDirection.ETH_POLYGON_TO_ARBITRUM_ETH]: {
+            isBridging: false,
+        },
     },
 };
 

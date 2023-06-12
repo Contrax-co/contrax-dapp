@@ -1,7 +1,7 @@
 import React from "react";
 import { useBalance, useSigner } from "wagmi";
 import useWallet from "../useWallet";
-import { ethers } from "ethers";
+import { constants, ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { checkBridgeStatus, polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
@@ -11,26 +11,32 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import { useQuery } from "@tanstack/react-query";
 import { getPrice } from "src/api/token";
-import { BridgeDirection } from "src/state/ramp/types";
+import { BridgeChainInfo, BridgeDirection } from "src/state/ramp/types";
 
 const useBridge = (direction: BridgeDirection) => {
     const { getWeb3AuthSigner, currentWallet, switchNetworkAsync, networkId } = useWallet();
     const { data: price } = useQuery({
-        queryKey: GET_PRICE_TOKEN(getNetworkName(CHAIN_ID.POLYGON), addressesByChainId[CHAIN_ID.POLYGON].usdcAddress),
-        queryFn: () => getPrice(addressesByChainId[CHAIN_ID.POLYGON].usdcAddress, CHAIN_ID.POLYGON),
+        queryKey: GET_PRICE_TOKEN(
+            getNetworkName(BridgeChainInfo[direction].sourceChainId),
+            BridgeChainInfo[direction].sourceAddress
+        ),
+        queryFn: () => getPrice(BridgeChainInfo[direction].sourceAddress, BridgeChainInfo[direction].sourceChainId),
         refetchInterval: 60000,
     });
     const { data, refetch } = useBalance({
         address: currentWallet as `0x${string}`,
-        chainId: CHAIN_ID.POLYGON,
+        chainId: BridgeChainInfo[direction].sourceChainId,
         watch: true,
-        token: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress as `0x${string}`,
+        token:
+            BridgeChainInfo[direction].sourceAddress !== constants.AddressZero
+                ? (BridgeChainInfo[direction].sourceAddress as `0x${string}`)
+                : undefined,
     });
     const isLoading = useAppSelector((state) => state.ramp.bridgeStates[direction].isBridging);
     const checkingStatus = useAppSelector((state) => state.ramp.bridgeStates[direction].checkingStatus);
 
     const { data: polygonSignerWagmi } = useSigner({
-        chainId: CHAIN_ID.POLYGON,
+        chainId: BridgeChainInfo[direction].sourceChainId,
     });
 
     const dispatch = useAppDispatch();

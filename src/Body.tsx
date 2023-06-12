@@ -30,9 +30,11 @@ function Body() {
     const { reloadFarmData } = useFarmDetails();
     const { fetchAccountData } = useAccountData();
     const { isBridgePending } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
+    const { isBridgePending: isBridgePendingEth } = useBridge(BridgeDirection.ETH_POLYGON_TO_ARBITRUM_ETH);
 
     useEffect(() => {
         isBridgePending();
+        isBridgePendingEth();
     }, []);
 
     useEffect(() => {
