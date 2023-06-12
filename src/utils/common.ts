@@ -169,7 +169,7 @@ export const subtractGas = async (
         : BigNumber.from(store.getState().balances.balances[constants.AddressZero]);
     const gasPrice = await signerOrProvider.getGasPrice();
     const gasLimit = await estimatedTx;
-    const gasToRemove = gasLimit.mul(gasPrice).mul(2);
+    const gasToRemove = gasLimit.mul(gasPrice).mul(3);
     if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
     if (amountInWei.lte(0)) {
         showError && notifyError(errorMessages.insufficientGas());
