@@ -110,7 +110,7 @@ const Bridge = () => {
                     //     "optimism-bridge",
                     //     "refuel-bridge",
                     // ]}
-                    excludeBridges={["connext"]}
+                    // excludeBridges={[]}
                     defaultSourceNetwork={1}
                     defaultDestNetwork={defaultChainId}
                     sourceNetworks={[1, defaultChainId, 137]}
