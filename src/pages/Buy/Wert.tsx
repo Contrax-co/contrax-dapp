@@ -18,7 +18,7 @@ const Wert: React.FC<IProps> = () => {
     const [wertWidget, setWertWidget] = React.useState<WertWidget | null>(null);
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
-    const { polyUsdcToUsdc } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
+    const { startBridging } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
 
     const initWert = (options: WertOptions) => {
         const wertWidget = new WertWidget(options);
@@ -42,7 +42,7 @@ const Wert: React.FC<IProps> = () => {
                     "payment-status": async (data: any) => {
                         console.log("wert payment status", data);
                         if (data.status === "success") {
-                            await polyUsdcToUsdc();
+                            await startBridging();
                         }
                     },
                 },
@@ -55,11 +55,11 @@ const Wert: React.FC<IProps> = () => {
                 "payment-status": async (data: any) => {
                     console.log("wert payment status", data);
                     if (data.status === "success") {
-                        await polyUsdcToUsdc();
+                        await startBridging();
                     }
                 },
             };
-    }, [wertWidget, polyUsdcToUsdc]);
+    }, [wertWidget, startBridging]);
 
     React.useEffect(() => {
         if (wertWidget) {

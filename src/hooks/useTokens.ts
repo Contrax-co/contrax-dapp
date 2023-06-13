@@ -36,7 +36,7 @@ export const useTokens = () => {
         polygonBalance,
         arbitrumBalance,
     } = useWallet();
-    const { polygonUsdcBalance, usdAmount: polygonUsdAmount } = useBridge(
+    const { formattedBalance: polygonUsdcBalance, usdAmount: polygonUsdAmount } = useBridge(
         BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC
     );
     const [tokens, setTokens] = useState<Token[]>([]);

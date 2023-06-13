@@ -14,16 +14,16 @@ interface IProps {}
 const Gatefi: React.FC<IProps> = () => {
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
-    const { polyUsdcToUsdc, isLoading, usdAmount } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
+    const { startBridging, isLoading, usdAmount } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
     const [gateFiInstance, setGateFiInstance] = useState<GateFiSDK>();
     const [initialUsdAmount, setInitialUsdAmount] = useState(usdAmount);
 
     React.useEffect(() => {
         if (usdAmount !== initialUsdAmount && !isLoading && usdAmount > 1) {
-            polyUsdcToUsdc();
+            startBridging();
             setInitialUsdAmount(usdAmount);
         }
-    }, [initialUsdAmount, polyUsdcToUsdc, isLoading, usdAmount]);
+    }, [initialUsdAmount, startBridging, isLoading, usdAmount]);
 
     React.useEffect(() => {
         let instance = new GateFiSDK({

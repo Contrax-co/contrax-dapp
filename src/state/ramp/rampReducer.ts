@@ -11,6 +11,7 @@ import { notifyError } from "src/api/notify";
 import { dismissNotify } from "src/api/notify";
 import { v4 as uuid } from "uuid";
 import { RootState } from "..";
+import { constants } from "ethers";
 
 const initialState: StateInterface = {
     bridgeStates: {
@@ -73,7 +74,7 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
         if (!polygonSigner) return;
         await sleep(1000);
         let notiId = notifyLoading({
-            title: "Bridging Poly USDC to Arb USDC",
+            title: `Bridging Poly ${BridgeChainInfo[direction].sourceName} to Arb ${BridgeChainInfo[direction].dstName}`,
             message: "Getting bridge route data...",
         });
         try {
@@ -88,12 +89,16 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
             const { route, approvalData } = await getRoute(
                 BridgeChainInfo[direction].sourceChainId,
                 BridgeChainInfo[direction].dstChainId,
-                BridgeChainInfo[direction].sourceAddress,
-                BridgeChainInfo[direction].dstAddress,
+                BridgeChainInfo[direction].sourceAddress === constants.AddressZero
+                    ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+                    : BridgeChainInfo[direction].sourceAddress,
+                BridgeChainInfo[direction].dstAddress === constants.AddressZero
+                    ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+                    : BridgeChainInfo[direction].dstAddress,
                 polyUsdcBalance.toString(),
                 currentWallet
             );
-            console.log("got route");
+            console.log("got route", route);
             notifyLoading({ title: "Bridging", message: "Approving Polygon USDC - 1/3" }, { id: notiId });
             await approveErc20(
                 approvalData.approvalTokenAddress,
