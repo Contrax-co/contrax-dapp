@@ -12,7 +12,6 @@ function Stats() {
             <div className={styles.topRow}>
                 <PlatformTVL />
                 <StatsCard heading="Mean TVL" value={meanTvl} />
-                <StatsCard heading="Median TVL" value={medianTvl} />
                 <StatsCard heading="Active Users" value={activeUsers} />
             </div>
             <StatsTable />
