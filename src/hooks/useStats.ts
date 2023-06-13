@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TableColumns } from "src/types/enums";
-import { fetchUserTVLs } from "src/api/stats";
+import { fetchCountActiveUsers, fetchUserTVLs } from "src/api/stats";
 
 export const useStats = () => {
     const [page, setPage] = useState<number>(1);
@@ -15,12 +15,18 @@ export const useStats = () => {
         keepPreviousData: true,
     });
 
+    const { data: activeUsers } = useQuery({
+        queryKey: ["stats/count/active-users", page, sortBy, order, search],
+        queryFn: () => fetchCountActiveUsers(),
+    });
+
     return {
         ...data?.data,
         userTVLs: data?.data.data,
         setPage,
         sortBy,
         setSortBy,
+        activeUsers,
         order,
         setOrder,
         search,

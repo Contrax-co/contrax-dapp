@@ -22,3 +22,8 @@ export const fetchUserTVLs = async (page: number, sortBy: TableColumns | undefin
         `${BACKEND_BASE_URL}stats/tvl?page=${page}&limit=10&sort=${order + sortBy?.toLowerCase()}&address=${search}`
     );
 };
+
+export const fetchCountActiveUsers = async () => {
+    const res = await axios.get<{ data: { activeUsers: number } }>(`${BACKEND_BASE_URL}stats/count/active-users`);
+    return res.data.data.activeUsers;
+};
