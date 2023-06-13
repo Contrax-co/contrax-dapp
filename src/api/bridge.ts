@@ -84,7 +84,7 @@ export const getRoute = async (
         routes[0];
     console.log("Available bridge routes: ", routes);
     console.log("Selected bridge route: ", route);
-    if (!route) throw new Error("No bridge route found, Use Exchange instead");
+    if (!route) throw new Error("Please bridge 10 USDC or more!");
     const approvalData = route.userTxs[0].approvalData as ApprovalData;
 
     return { route, approvalData };
