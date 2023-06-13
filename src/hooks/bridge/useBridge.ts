@@ -6,7 +6,7 @@ import { CHAIN_ID } from "src/types/enums";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { checkBridgeStatus, polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
 import { web3AuthConnectorId } from "src/config/constants";
-import { getConnectorId, getNetworkName } from "src/utils/common";
+import { customCommify, getConnectorId, getNetworkName, toEth } from "src/utils/common";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import { useQuery } from "@tanstack/react-query";
@@ -42,7 +42,7 @@ const useBridge = (direction: BridgeDirection) => {
     const dispatch = useAppDispatch();
     const [polygonSigner, setPolygonSigner] = React.useState(polygonSignerWagmi);
 
-    const polyUsdcToUsdc = async () => {
+    const startBridging = async () => {
         if (!polygonSigner) return;
         dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner, refechBalance: refetch, direction }));
     };
@@ -78,7 +78,14 @@ const useBridge = (direction: BridgeDirection) => {
         return Number(data?.formatted) * (price || 0);
     }, [price, data]);
 
-    return { polyUsdcToUsdc, isLoading, isBridgePending, wrongNetwork, polygonUsdcBalance: data?.formatted, usdAmount };
+    return {
+        startBridging,
+        isLoading,
+        isBridgePending,
+        wrongNetwork,
+        formattedBalance: customCommify(toEth(data?.value || "0", data?.decimals)),
+        usdAmount,
+    };
 };
 
 export default useBridge;

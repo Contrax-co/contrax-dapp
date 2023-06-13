@@ -1,0 +1,45 @@
+@import "../../styles/variables.scss";
+@import "../../styles/mixins";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    gap: 5px;
+}
+
+.labeledButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.usdcAmount {
+    color: var(--color_text);
+    white-space: pre;
+    font-weight: 400;
+    b {
+        color: var(--color_primary);
+    }
+}
+
+.disclaimer {
+    color: var(--color_grey);
+    font-size: 12px;
+    margin: 0px;
+    text-align: center;
+    line-height: 15px;
+}
+
+.disclaimerLogo {
+    margin-right: 8px;
+    transform: translateY(1px);
+}
+
+.bridgeButton {
+    padding: 0 !important;
+    min-height: 40px;
+    min-width: 178px;
+    cursor: pointer;
+}

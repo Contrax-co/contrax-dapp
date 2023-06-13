@@ -1,7 +1,7 @@
 import React from "react";
 import useWallet from "src/hooks/useWallet";
 import useBridge from "src/hooks/bridge/useBridge";
-import styles from "./BridgeBtn.module.scss";
+import styles from "./BridgeEthBtn.module.scss";
 import { CHAIN_ID } from "src/types/enums";
 import { TiWarningOutline } from "react-icons/ti";
 import { BridgeDirection } from "src/state/ramp/types";
@@ -10,10 +10,10 @@ interface IProps {
     showDisclaimer?: boolean;
 }
 
-const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
+const BridgeEthBtn: React.FC<IProps> = ({ showDisclaimer }) => {
     const { switchNetworkAsync } = useWallet();
     const { startBridging, isLoading, wrongNetwork, formattedBalance } = useBridge(
-        BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC
+        BridgeDirection.ETH_POLYGON_TO_ARBITRUM_ETH
     );
 
     return Number(formattedBalance) > 0.1 ? (
@@ -21,7 +21,7 @@ const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
             <div className={styles.labeledButton}>
                 <div>
                     <h3 className={styles.usdcAmount}>
-                        Polygon USDC: <b>{formattedBalance}</b>
+                        Polygon ETH: <b>{formattedBalance}</b>
                     </h3>
                 </div>
             </div>
@@ -41,10 +41,10 @@ const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
             </button>
             <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
-                This will bridge (transfer) your entire Polygon USDC balance over to Arbitrum One network.
+                This will bridge (transfer) your entire Polygon ETH balance over to Arbitrum One network.
             </p>
         </div>
     ) : null;
 };
 
-export default BridgeBtn;
+export default BridgeEthBtn;

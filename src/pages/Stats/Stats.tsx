@@ -6,14 +6,13 @@ import { StatsCard } from "src/components/StatsCard/StatsCard";
 import { MyReferrals } from "src/components/MyReferrals/MyReferrals";
 
 function Stats() {
-    const { meanTvl, medianTvl, modeTvl } = useStats();
+    const { meanTvl, medianTvl, activeUsers } = useStats();
     return (
         <div className={styles.container}>
             <div className={styles.topRow}>
                 <PlatformTVL />
                 <StatsCard heading="Mean TVL" value={meanTvl} />
-                <StatsCard heading="Median TVL" value={medianTvl} />
-                <StatsCard heading="Mode TVL" value={modeTvl} />
+                <StatsCard heading="Active Users" value={activeUsers} />
             </div>
             <StatsTable />
             <MyReferrals />

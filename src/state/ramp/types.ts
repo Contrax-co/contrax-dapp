@@ -45,6 +45,8 @@ export const BridgeChainInfo = {
         dstChainId: CHAIN_ID.ARBITRUM,
         sourceAddress: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
         dstAddress: addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress,
+        sourceName: "USDC",
+        dstName: "USDC",
     },
     [BridgeDirection.ETH_POLYGON_TO_ARBITRUM_ETH]: {
         sourceChain: "POLYGON",
@@ -53,5 +55,7 @@ export const BridgeChainInfo = {
         dstChainId: CHAIN_ID.ARBITRUM,
         sourceAddress: constants.AddressZero,
         dstAddress: constants.AddressZero,
+        sourceName: "ETH",
+        dstName: "ETH",
     },
 };
