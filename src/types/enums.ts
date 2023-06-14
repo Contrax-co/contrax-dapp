@@ -29,8 +29,15 @@ export enum CHAIN_ID {
     ARBITRUM = 42161,
 }
 
-export enum TableColumns {
+export enum UsersTableColumns {
     Address = "Address",
     TVL = "TVL",
     Referrer = "Referrer",
+}
+
+export enum VaultsTableColumns {
+    Address = "Address",
+    DepositedTvl = "Deposited Tvl",
+    AverageDeposits = "Average Deposits",
+    NoOfDeposits = "No of Deposits",
 }

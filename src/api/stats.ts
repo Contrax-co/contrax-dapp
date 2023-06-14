@@ -1,9 +1,9 @@
 import axios from "axios";
 import { BACKEND_BASE_URL } from "src/config/constants";
 import { Order, AccountDetails } from "src/types";
-import { TableColumns } from "src/types/enums";
+import { UsersTableColumns } from "src/types/enums";
 
-interface ResponseDataType {
+interface UserStatsResponse {
     data: AccountDetails[];
     limit: number;
     page: number;
@@ -17,8 +17,28 @@ interface ResponseDataType {
     status: boolean;
 }
 
-export const fetchUserTVLs = async (page: number, sortBy: TableColumns | undefined, order: Order, search: string) => {
-    return axios.get<ResponseDataType>(
+interface VaultStatsResponse {
+    data: {
+        vaults: VaultStats[];
+    };
+    status: boolean;
+}
+
+interface VaultStats {
+    address: string;
+    averageDeposit: number;
+    depositedTvl: number;
+    numberOfDeposits: number;
+    _id: string;
+}
+
+export const fetchUserTVLs = async (
+    page: number,
+    sortBy: UsersTableColumns | undefined,
+    order: Order,
+    search: string
+) => {
+    return axios.get<UserStatsResponse>(
         `${BACKEND_BASE_URL}stats/tvl?page=${page}&limit=10&sort=${order + sortBy?.toLowerCase()}&address=${search}`
     );
 };
@@ -26,4 +46,9 @@ export const fetchUserTVLs = async (page: number, sortBy: TableColumns | undefin
 export const fetchCountActiveUsers = async () => {
     const res = await axios.get<{ data: { activeUsers: number } }>(`${BACKEND_BASE_URL}stats/count/active-users`);
     return res.data.data.activeUsers;
+};
+
+export const fetchVaultStats = async () => {
+    const res = await axios.get<VaultStatsResponse>(`${BACKEND_BASE_URL}stats/tvl/vaults`);
+    return res.data.data.vaults;
 };
