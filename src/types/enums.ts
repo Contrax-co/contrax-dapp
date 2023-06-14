@@ -38,6 +38,6 @@ export enum UsersTableColumns {
 export enum VaultsTableColumns {
     Address = "Address",
     DepositedTvl = "Deposited Tvl",
-    AverageTvl = "Average Tvl",
+    AverageDeposits = "Average Deposits",
     NoOfDeposits = "No of Deposits",
 }

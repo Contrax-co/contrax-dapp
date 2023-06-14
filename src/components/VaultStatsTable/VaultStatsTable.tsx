@@ -21,7 +21,7 @@ export const VaultStatsTable = () => {
                             <div className={styles.tableData + " " + styles.heading}>DEPOSITED TVL</div>
                         </th>
                         <th>
-                            <div className={styles.tableData + " " + styles.heading}>AVERAGE TVL</div>
+                            <div className={styles.tableData + " " + styles.heading}>AVERAGE DEPOSITS</div>
                         </th>
                         <th>
                             <div className={styles.tableData + " " + styles.heading}>NO OF DEPOSITS</div>
