@@ -22,7 +22,7 @@ const BridgeEthBtn: React.FC<IProps> = ({ showDisclaimer }) => {
             <div className={styles.labeledButton}>
                 <div>
                     <h3 className={styles.usdcAmount}>
-                        Polygon ETH: <b>{customCommify(usdAmount)}</b>
+                        Polygon ETH: <b>${customCommify(usdAmount)}</b>
                     </h3>
                 </div>
             </div>
