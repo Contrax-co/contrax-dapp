@@ -7,7 +7,7 @@ import {
 } from "@tenderly/sdk";
 import { tenderlyApi } from ".";
 import { FilteredStateDiff, SimulationResponse, TenderlySimulateTransactionBody } from "src/types/tenderly";
-import { BigNumber } from "ethers";
+import { BigNumber, utils } from "ethers";
 
 // #region Utility functions
 const mapStateOverridesToEncodeStateRequest = (overrides: SimulationParametersOverrides): EncodeStateRequest => {
@@ -109,7 +109,6 @@ export const simulateTransaction = async (
     }
 
     const res = await tenderlyApi.post("simulate", body);
-    console.log(res);
 
     let processedResponse = {
         status: res.data.simulation.status as boolean,

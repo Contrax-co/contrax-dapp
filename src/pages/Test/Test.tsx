@@ -37,14 +37,16 @@ const Test = () => {
     const handleTransaction = async () => {};
 
     const fn = async () => {
-        const url = await getCatalogLink(currentWallet);
-        setUrl(url);
+        // tenderly.simulator.simulateTransaction({
+        //   transaction:{
+        //   }
+        // })
     };
 
     return (
         <div style={{ color: "red" }}>
             Test
-            <button onClick={fn}>Front Catalog</button>
+            <button onClick={fn}>Tenderly simulate</button>
             <button
                 onClick={() => {
                     notifySuccess("Approving Zapping!", "Please wait...a sadasfas fsa fsafsafsaf saf");

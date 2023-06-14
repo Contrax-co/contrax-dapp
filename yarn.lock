@@ -4463,12 +4463,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tenderly/sdk@npm:^0.1.11":
-  version: 0.1.11
-  resolution: "@tenderly/sdk@npm:0.1.11"
+"@tenderly/sdk@npm:^0.1.14":
+  version: 0.1.14
+  resolution: "@tenderly/sdk@npm:0.1.14"
   dependencies:
     axios: ^1.3.4
-  checksum: 89f2db234f5a647e149b8a270e5a97eb9d6eb16001fd107f95d5f4aefc0307b898c7a4b4845a97f9f03ca9c55748055c4e87dc1432ccef63930cba219dfb497d
+  checksum: c62489277fd22c5c64458fbfcdf2535982dd98c4e2bafbcf3cd74df0747446f92ac034ec697136d76294d00d48e75708684912f82645c9af692678bc1d270099
   languageName: node
   linkType: hard
 
@@ -9278,7 +9278,7 @@ __metadata:
     "@socket.tech/plugin": ^1.0.3
     "@tanstack/react-query": ^4.24.10
     "@tanstack/react-query-devtools": ^4.22.0
-    "@tenderly/sdk": ^0.1.11
+    "@tenderly/sdk": ^0.1.14
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
     "@testing-library/user-event": ^13.5.0
