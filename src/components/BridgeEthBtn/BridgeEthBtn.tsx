@@ -5,6 +5,7 @@ import styles from "./BridgeEthBtn.module.scss";
 import { CHAIN_ID } from "src/types/enums";
 import { TiWarningOutline } from "react-icons/ti";
 import { BridgeDirection } from "src/state/ramp/types";
+import { customCommify } from "src/utils/common";
 
 interface IProps {
     showDisclaimer?: boolean;
@@ -12,16 +13,16 @@ interface IProps {
 
 const BridgeEthBtn: React.FC<IProps> = ({ showDisclaimer }) => {
     const { switchNetworkAsync } = useWallet();
-    const { startBridging, isLoading, wrongNetwork, formattedBalance } = useBridge(
+    const { startBridging, isLoading, wrongNetwork, usdAmount } = useBridge(
         BridgeDirection.ETH_POLYGON_TO_ARBITRUM_ETH
     );
 
-    return Number(formattedBalance) > 0.1 ? (
+    return usdAmount > 0.1 ? (
         <div className={`outlinedContainer ${styles.container}`}>
             <div className={styles.labeledButton}>
                 <div>
                     <h3 className={styles.usdcAmount}>
-                        Polygon ETH: <b>{formattedBalance}</b>
+                        Polygon ETH: <b>{customCommify(usdAmount)}</b>
                     </h3>
                 </div>
             </div>
