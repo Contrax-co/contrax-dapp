@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { TableColumns } from "src/types/enums";
-import { fetchCountActiveUsers, fetchUserTVLs } from "src/api/stats";
+import { UsersTableColumns } from "src/types/enums";
+import { fetchCountActiveUsers, fetchUserTVLs, fetchVaultStats } from "src/api/stats";
 
 export const useStats = () => {
     const [page, setPage] = useState<number>(1);
-    const [sortBy, setSortBy] = useState<TableColumns>();
+    const [sortBy, setSortBy] = useState<UsersTableColumns>();
     const [order, setOrder] = useState<"" | "-">("");
     const [search, setSearch] = useState("");
 
@@ -16,13 +16,19 @@ export const useStats = () => {
     });
 
     const { data: activeUsers } = useQuery({
-        queryKey: ["stats/count/active-users", page, sortBy, order, search],
+        queryKey: ["stats/count/active-users"],
         queryFn: () => fetchCountActiveUsers(),
+    });
+
+    const { data: vaultStats } = useQuery({
+        queryKey: ["stats/tvl/vaults"],
+        queryFn: () => fetchVaultStats(),
     });
 
     return {
         ...data?.data,
         userTVLs: data?.data.data,
+        vaultStats,
         setPage,
         sortBy,
         setSortBy,

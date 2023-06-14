@@ -5,7 +5,7 @@ import { customCommify } from "src/utils/common";
 import useConstants from "src/hooks/useConstants";
 import { FiExternalLink } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
-import { TableColumns } from "src/types/enums";
+import { UsersTableColumns } from "src/types/enums";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 
 export const UserStatsTable: FC = () => {
@@ -25,7 +25,7 @@ export const UserStatsTable: FC = () => {
     } = useStats();
     const { BLOCK_EXPLORER_URL } = useConstants();
 
-    const handleSorting = (column: TableColumns) => {
+    const handleSorting = (column: UsersTableColumns) => {
         if (column === sortBy) {
             if (order === "") setOrder("-");
             else setOrder("");
@@ -34,16 +34,17 @@ export const UserStatsTable: FC = () => {
 
     return (
         <div className={styles.container}>
+            <h1>Users Stats</h1>
             <table className={styles.table}>
                 <thead>
                     <tr className={styles.header}>
                         <th>
                             <div
                                 className={styles.tableData + " " + styles.heading}
-                                onClick={() => handleSorting(TableColumns.Address)}
+                                onClick={() => handleSorting(UsersTableColumns.Address)}
                             >
                                 ADDRESS
-                                {sortBy === TableColumns.Address && (
+                                {sortBy === UsersTableColumns.Address && (
                                     <FaArrowDown
                                         size={14}
                                         className={`${styles.transitionDelay} ${order === "" ? "" : styles.rotate}`}
@@ -59,10 +60,10 @@ export const UserStatsTable: FC = () => {
                         <th>
                             <div
                                 className={styles.tableData + " " + styles.heading}
-                                onClick={() => handleSorting(TableColumns.TVL)}
+                                onClick={() => handleSorting(UsersTableColumns.TVL)}
                             >
                                 TVL
-                                {sortBy === TableColumns.TVL && (
+                                {sortBy === UsersTableColumns.TVL && (
                                     <FaArrowDown
                                         size={14}
                                         className={`${styles.transitionDelay} ${order === "" ? "" : styles.rotate}`}
