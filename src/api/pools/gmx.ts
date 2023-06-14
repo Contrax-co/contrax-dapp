@@ -6,10 +6,18 @@ import { toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
-import { DepositFn, GetFarmDataProcessedFn, TokenAmounts, WithdrawFn, ZapInFn, ZapOutFn } from "./types";
+import {
+    DepositFn,
+    GetFarmDataProcessedFn,
+    SlippageInBaseFn,
+    TokenAmounts,
+    WithdrawFn,
+    ZapInFn,
+    ZapOutFn,
+} from "./types";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { defaultChainId } from "src/config/constants";
-import { zapInBase, zapOutBase } from "./common";
+import { slippageIn, zapInBase, zapOutBase } from "./common";
 
 const farm = pools.find((farm) => farm.id === 5) as Farm;
 
@@ -88,6 +96,8 @@ export const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, d
 };
 
 export const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
+export const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
+
 export const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
 
 export const deposit: DepositFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {

@@ -32,6 +32,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         handleSubmit,
         handleToggleShowInUsdc,
         isLoadingFarm,
+        slippage,
         isLoadingTransaction,
     } = useDetailInput(farm);
     const { farmDetails } = useFarmDetails();
@@ -122,6 +123,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                         : "Withdraw"
                     : "Enter Amount"}
             </button>
+            <p className={styles.slippage}>{slippage && !isNaN(slippage) && `Slippage: ${slippage.toFixed(2)}%`}</p>
         </form>
     );
 };

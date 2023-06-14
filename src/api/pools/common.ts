@@ -16,6 +16,7 @@ import {
     DepositFn,
     DynamicFarmFunctions,
     GetFarmDataProcessedFn,
+    SlippageInBaseFn,
     TokenAmounts,
     WithdrawFn,
     ZapInArgs,
@@ -172,7 +173,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
 
 // TODO: move to tenderly and work in progress
 
-export const slippageIn: ZapInBaseFn = async (args) => {
+export const slippageIn: SlippageInBaseFn = async (args) => {
     let { amountInWei, balances, chainId, currentWallet, token, max, signer, tokenIn, farm } = args;
     const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
     const wethAddress = addressesByChainId[chainId].wethAddress;
@@ -214,7 +215,7 @@ export const slippageIn: ZapInBaseFn = async (args) => {
                     value: balance,
                 })
             );
-            if (!afterGasCut) return;
+            if (!afterGasCut) throw new Error("Error subtracting gas");
             amountInWei = afterGasCut;
         }
         //#endregion
@@ -222,9 +223,13 @@ export const slippageIn: ZapInBaseFn = async (args) => {
         const populated = await zapperContract.populateTransaction.zapInETH(farm.vault_addr, 0, token, {
             value: amountInWei,
         });
+
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
-        console.log(populated);
+    } else {
+        const populated = await zapperContract.populateTransaction.zapIn(farm.vault_addr, 0, token, amountInWei);
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
     }
 
     const simulationResult = await simulateTransaction({
@@ -232,8 +237,12 @@ export const slippageIn: ZapInBaseFn = async (args) => {
         ...transaction,
         to: farm.zapper_addr,
     });
-    console.log(simulationResult);
 
     const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
     console.log(filteredState);
+    const difference = BigNumber.from(filteredState.afterChange[args.currentWallet.toLowerCase()]).sub(
+        BigNumber.from(filteredState.original[args.currentWallet.toLowerCase()])
+    );
+
+    return difference;
 };

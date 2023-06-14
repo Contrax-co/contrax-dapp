@@ -11,13 +11,14 @@ import {
     DepositFn,
     DynamicFarmFunctions,
     GetFarmDataProcessedFn,
+    SlippageInBaseFn,
     TokenAmounts,
     WithdrawFn,
     ZapInFn,
     ZapOutFn,
 } from "./types";
 import { defaultChainId } from "src/config/constants";
-import { zapInBase, zapOutBase } from "./common";
+import { slippageIn, zapInBase, zapOutBase } from "./common";
 
 let sushi: DynamicFarmFunctions = function (farmId) {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
@@ -183,10 +184,11 @@ let sushi: DynamicFarmFunctions = function (farmId) {
     };
 
     const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
+    const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
 
     const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
 
-    return { getProcessedFarmData, deposit, withdraw, zapIn, zapOut };
+    return { getProcessedFarmData, deposit, withdraw, zapIn, zapOut, zapInSlippage };
 };
 
 export default sushi;
