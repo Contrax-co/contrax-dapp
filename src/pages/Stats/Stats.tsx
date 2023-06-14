@@ -1,6 +1,6 @@
 import styles from "./Stats.module.scss";
 import PlatformTVL from "../Dashboard/PlatformTVL/PlatformTVL";
-import { StatsTable } from "src/components/StatsTable/StatsTable";
+import { UserStatsTable } from "src/components/UserStatsTable/UserStatsTable";
 import { useStats } from "src/hooks/useStats";
 import { StatsCard } from "src/components/StatsCard/StatsCard";
 import { MyReferrals } from "src/components/MyReferrals/MyReferrals";
@@ -14,7 +14,7 @@ function Stats() {
                 <StatsCard heading="Mean TVL" value={meanTvl} />
                 <StatsCard heading="Active Users" value={activeUsers} />
             </div>
-            <StatsTable />
+            <UserStatsTable />
             <MyReferrals />
         </div>
     );

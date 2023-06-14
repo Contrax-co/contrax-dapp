@@ -1,5 +1,5 @@
 import { FC } from "react";
-import styles from "./StatsTable.module.scss";
+import styles from "./UserStatsTable.module.scss";
 import { useStats } from "src/hooks/useStats";
 import { customCommify } from "src/utils/common";
 import useConstants from "src/hooks/useConstants";
@@ -8,7 +8,7 @@ import { BsClipboardData } from "react-icons/bs";
 import { TableColumns } from "src/types/enums";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 
-export const StatsTable: FC = () => {
+export const UserStatsTable: FC = () => {
     const {
         userTVLs,
         page,
