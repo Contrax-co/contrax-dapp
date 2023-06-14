@@ -71,9 +71,6 @@ export const getRoute = async (
     fromAmount: string,
     userAddress: string
 ) => {
-    console.log(
-        await socketTechApi.get(`token-lists/from-token-list?fromChainId=${fromChainId}&toChainId=${toChainId}`)
-    );
     const res = await socketTechApi.get(
         `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true&excludeBridges=stargate`
     );

@@ -1,4 +1,4 @@
-import { Signer, constants } from "ethers";
+import { Signer, constants, ethers } from "ethers";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
 
@@ -53,7 +53,7 @@ export const BridgeChainInfo = {
         destinationChain: "ARBITRUM",
         sourceChainId: CHAIN_ID.POLYGON,
         dstChainId: CHAIN_ID.ARBITRUM,
-        sourceAddress: constants.AddressZero,
+        sourceAddress: ethers.utils.getAddress("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"),
         dstAddress: constants.AddressZero,
         sourceName: "ETH",
         dstName: "ETH",
