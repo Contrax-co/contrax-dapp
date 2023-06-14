@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useDeposit from "src/hooks/farms/useDeposit";
 import useWithdraw from "src/hooks/farms/useWithdraw";
 import useZapIn from "src/hooks/farms/useZapIn";
@@ -14,6 +14,7 @@ import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 
 export const useDetailInput = (farm: Farm) => {
     const [amount, setAmount] = useState("");
+    const [slippage, setSlippage] = useState<number>();
     const [max, setMax] = useState(false);
     const {
         transactionType: type,
@@ -28,7 +29,7 @@ export const useDetailInput = (farm: Farm) => {
 
     const { isBalanceTooLow } = useEstimateGasFee();
     const { prices } = usePriceOfTokens();
-    const { isLoading: isZapping, zapInAsync } = useZapIn(farm);
+    const { isLoading: isZapping, zapInAsync, slippageZapIn } = useZapIn(farm);
     const { isLoading: isDepositing, depositAsync } = useDeposit(farm);
     const { isLoading: isZappingOut, zapOutAsync } = useZapOut(farm);
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
@@ -108,6 +109,33 @@ export const useDetailInput = (farm: Farm) => {
         setMax(false);
     };
 
+    const fetchSlippage = async () => {
+        try {
+            const amnt = getTokenAmount();
+            if (amnt === 0) return;
+            let _slippage = NaN;
+            if (type === FarmTransactionType.Deposit) {
+                if (depositable?.tokenAddress === farm.lp_address) {
+                    // await depositAsync({ depositAmount: amnt, max });
+                } else {
+                    _slippage = (await slippageZapIn({ zapAmount: amnt, max, token: depositable?.tokenAddress! }))
+                        .slippage;
+                }
+            } else {
+                if (withdrawable?.tokenAddress === farm.lp_address) {
+                    // await withdrawAsync({ withdrawAmount: amnt, max });
+                } else {
+                    // await zapOutAsync({ withdrawAmt: amnt, max, token: withdrawable?.tokenAddress! });
+                }
+            }
+            if (_slippage) setSlippage(_slippage);
+            else setSlippage(undefined);
+        } catch (err) {
+            console.log(`%cError Slippage: ${err}`, "color: magenta;");
+            setSlippage(undefined);
+        }
+    };
+
     useEffect(() => {
         if (max) setAmount(maxBalance.toString());
     }, [max, maxBalance, showInUsd]);
@@ -127,9 +155,21 @@ export const useDetailInput = (farm: Farm) => {
         setMax(false);
     }, [currencySymbol, farmData]);
 
+    useEffect(() => {
+        console.log("%cAmount changed", "color: lightgreen;");
+        const int = setTimeout(() => {
+            console.log("%cFetching slippage", "color: lightgreen;");
+            fetchSlippage();
+        }, 2000);
+        return () => {
+            clearTimeout(int);
+        };
+    }, [max, amount, type, depositable?.tokenAddress, withdrawable?.tokenAddress]);
+
     return {
         type,
         amount,
+        slippage,
         showInUsd,
         currentWallet,
         maxBalance,
