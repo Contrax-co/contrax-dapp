@@ -6,7 +6,13 @@ import {
     StateOverride,
 } from "@tenderly/sdk";
 import { tenderlyApi } from ".";
-import { FilteredStateDiff, SimulationResponse, TenderlySimulateTransactionBody } from "src/types/tenderly";
+import {
+    AssetChanges,
+    BalanceDiffs,
+    FilteredStateDiff,
+    SimulationResponse,
+    TenderlySimulateTransactionBody,
+} from "src/types/tenderly";
 import { BigNumber, utils } from "ethers";
 
 // #region Utility functions
@@ -76,6 +82,31 @@ export const filterStateDiff = (
     contractAddress = contractAddress.toLowerCase();
     return state_diffs.filter((item: any) => item.address === contractAddress && item.name === variableName)[0];
 };
+
+export const filterAssetChanges = (tokenAddress: string, walletAddress: string, assetChanges: AssetChanges[]) => {
+    let added = BigInt(0);
+    let subtracted = BigInt(0);
+
+    assetChanges.forEach((item) => {
+        if (item.token_info.contract_address.toLowerCase() === tokenAddress.toLowerCase()) {
+            if (item.from.toLowerCase() === walletAddress.toLowerCase()) {
+                subtracted += BigInt(item.raw_amount);
+            }
+            if (item.to.toLowerCase() === walletAddress.toLowerCase()) {
+                added += BigInt(item.raw_amount);
+            }
+        }
+    });
+
+    return { added, subtracted };
+};
+
+export const filterBalanceChanges = (walletAddress: string, balanceChanges: BalanceDiffs[]) => {
+    const change = balanceChanges.find((item) => item.address.toLowerCase() === walletAddress.toLowerCase());
+
+    return { before: change?.original, after: change?.dirty };
+};
+
 // #endregion Utility functions
 
 export const simulateTransaction = async (
@@ -109,7 +140,6 @@ export const simulateTransaction = async (
     }
 
     const res = await tenderlyApi.post("simulate", body);
-
     let processedResponse = {
         status: res.data.simulation.status as boolean,
         value: BigNumber.from(res.data.transaction.value + "0"),
@@ -130,11 +160,11 @@ export const simulateTransaction = async (
             afterChange: item?.dirty,
             address: item?.address,
         })),
+        assetChanges: res.data.transaction.transaction_info.asset_changes,
+        balanceDiff: res.data.transaction.transaction_info.balance_diff,
     };
 
     return processedResponse;
 };
 
 export const simulateBalanceChange = async () => {};
-
-

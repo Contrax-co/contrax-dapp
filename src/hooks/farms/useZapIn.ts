@@ -8,9 +8,7 @@ import farmFunctions from "src/api/pools";
 import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
 import { useDecimals } from "../useDecimals";
-import { utils } from "ethers";
 import { toWei } from "src/utils/common";
-import useFarmDetails from "./useFarmDetails";
 import usePriceOfTokens from "../usePriceOfTokens";
 import { toEth } from "./../../utils/common";
 
@@ -39,16 +37,7 @@ const useZapIn = (farm: Farm) => {
             max,
             token,
         });
-        //  @ts-ignore
-        // await farmFunctions[farm.id]?.zapInSlippage({
-        //     currentWallet,
-        //     amountInWei,
-        //     balances,
-        //     signer,
-        //     chainId,
-        //     max,
-        //     token,
-        // });
+
         reloadBalances();
         reloadSupplies();
     };

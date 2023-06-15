@@ -13,6 +13,7 @@ import {
     FarmFunctions,
     GetFarmDataProcessedFn,
     SlippageInBaseFn,
+    SlippageOutBaseFn,
     TokenAmounts,
     ZapInFn,
     ZapOutFn,
@@ -20,7 +21,7 @@ import {
 import { addressesByChainId } from "src/config/constants/contracts";
 import { Decimals } from "src/state/decimals/types";
 import { defaultChainId } from "src/config/constants";
-import { slippageIn, zapInBase, zapOutBase } from "./common";
+import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
 
 let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
@@ -106,8 +107,9 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
     const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
 
     const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
+    const zapOutSlippage: SlippageOutBaseFn = (props) => slippageOut({ ...props, farm });
 
-    return { zapIn, zapOut, getProcessedFarmData, zapInSlippage };
+    return { zapIn, zapOut, getProcessedFarmData, zapInSlippage, zapOutSlippage };
 };
 
 export default hop;

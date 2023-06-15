@@ -32,7 +32,7 @@ export const useDetailInput = (farm: Farm) => {
     const { prices } = usePriceOfTokens();
     const { isLoading: isZapping, zapInAsync, slippageZapIn } = useZapIn(farm);
     const { isLoading: isDepositing, depositAsync } = useDeposit(farm);
-    const { isLoading: isZappingOut, zapOutAsync } = useZapOut(farm);
+    const { isLoading: isZappingOut, zapOutAsync, slippageZapOut } = useZapOut(farm);
     const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
     const { farmDetails, isLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
@@ -119,14 +119,14 @@ export const useDetailInput = (farm: Farm) => {
                     // await depositAsync({ depositAmount: amnt, max });
                 } else {
                     const res = await slippageZapIn({ zapAmount: amnt, max, token: depositable?.tokenAddress! });
-                    console.log(res);
                     _slippage = res.slippage;
                 }
             } else {
                 if (withdrawable?.tokenAddress === farm.lp_address) {
                     // await withdrawAsync({ withdrawAmount: amnt, max });
                 } else {
-                    // await zapOutAsync({ withdrawAmt: amnt, max, token: withdrawable?.tokenAddress! });
+                    const res = await slippageZapOut({ withdrawAmt: amnt, max, token: withdrawable?.tokenAddress! });
+                    _slippage = res.slippage;
                 }
             }
             if (_slippage.toString()) setSlippage(_slippage);
@@ -176,7 +176,7 @@ export const useDetailInput = (farm: Farm) => {
         return () => {
             clearTimeout(int);
         };
-    }, [max, amount, type, depositable?.tokenAddress, withdrawable?.tokenAddress]);
+    }, [max, amount, showInUsd, type, depositable?.tokenAddress, withdrawable?.tokenAddress]);
 
     return {
         type,

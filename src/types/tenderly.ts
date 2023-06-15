@@ -60,6 +60,33 @@ export interface FilteredStateDiff {
     address: string;
 }
 
+export interface AssetChanges {
+    amount: string;
+    dollar_value: string;
+    from: string;
+    raw_amount: string;
+    to: string;
+    type: string;
+    token_info: {
+        contract_address: string;
+        decimals: number;
+        dollar_value: string;
+        logo: string;
+        name: string;
+        standard: string;
+        symbol: string;
+        type: string;
+    };
+}
+
+export interface BalanceDiffs {
+    address: string;
+    dirty: string;
+    is_miner: boolean;
+    original: string;
+}
+
+
 export interface SimulationResponse {
     status: boolean;
     value: BigNumber;
@@ -74,4 +101,6 @@ export interface SimulationResponse {
         }[];
     }[];
     stateDiffs: FilteredStateDiff[];
+    assetChanges: AssetChanges[];
+    balanceDiff: BalanceDiffs[];
 }
