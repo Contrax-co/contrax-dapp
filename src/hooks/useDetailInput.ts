@@ -15,6 +15,7 @@ import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 export const useDetailInput = (farm: Farm) => {
     const [amount, setAmount] = useState("");
     const [slippage, setSlippage] = useState<number>();
+    const [fetchingSlippage, setFetchingSlippage] = useState(false);
     const [max, setMax] = useState(false);
     const {
         transactionType: type,
@@ -112,14 +113,14 @@ export const useDetailInput = (farm: Farm) => {
     const fetchSlippage = async () => {
         try {
             const amnt = getTokenAmount();
-            if (amnt === 0) return;
             let _slippage = NaN;
             if (type === FarmTransactionType.Deposit) {
                 if (depositable?.tokenAddress === farm.lp_address) {
                     // await depositAsync({ depositAmount: amnt, max });
                 } else {
-                    _slippage = (await slippageZapIn({ zapAmount: amnt, max, token: depositable?.tokenAddress! }))
-                        .slippage;
+                    const res = await slippageZapIn({ zapAmount: amnt, max, token: depositable?.tokenAddress! });
+                    console.log(res);
+                    _slippage = res.slippage;
                 }
             } else {
                 if (withdrawable?.tokenAddress === farm.lp_address) {
@@ -128,7 +129,7 @@ export const useDetailInput = (farm: Farm) => {
                     // await zapOutAsync({ withdrawAmt: amnt, max, token: withdrawable?.tokenAddress! });
                 }
             }
-            if (_slippage) setSlippage(_slippage);
+            if (_slippage.toString()) setSlippage(_slippage);
             else setSlippage(undefined);
         } catch (err) {
             console.log(`%cError Slippage: ${err}`, "color: magenta;");
@@ -152,14 +153,25 @@ export const useDetailInput = (farm: Farm) => {
             _withdrawable = farmData?.withdrawableAmounts[0];
         }
         setWithdrawable(_withdrawable);
-        setMax(false);
+        if (
+            depositable?.amountDollar !== _depositable?.amountDollar ||
+            withdrawable?.amountDollar !== _withdrawable?.amountDollar
+        )
+            setMax(false);
     }, [currencySymbol, farmData]);
 
     useEffect(() => {
+        if (getTokenAmount() === 0) {
+            setSlippage(undefined);
+            return;
+        }
+
         console.log("%cAmount changed", "color: lightgreen;");
-        const int = setTimeout(() => {
+        setFetchingSlippage(true);
+        const int = setTimeout(async () => {
             console.log("%cFetching slippage", "color: lightgreen;");
-            fetchSlippage();
+            await fetchSlippage();
+            setFetchingSlippage(false);
         }, 2000);
         return () => {
             clearTimeout(int);
@@ -174,6 +186,7 @@ export const useDetailInput = (farm: Farm) => {
         currentWallet,
         maxBalance,
         setMax,
+        fetchingSlippage,
         handleToggleShowInUsdc,
         handleInput,
         handleSubmit,
