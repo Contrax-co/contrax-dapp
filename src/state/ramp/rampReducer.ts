@@ -99,7 +99,10 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 currentWallet
             );
             console.log("got route", route);
-            notifyLoading({ title: "Bridging", message: "Approving Polygon USDC - 1/3" }, { id: notiId });
+            notifyLoading(
+                { title: "Bridging", message: `Approving Polygon ${BridgeChainInfo[direction].sourceName} - 1/3` },
+                { id: notiId }
+            );
             await approveErc20(
                 approvalData.approvalTokenAddress,
                 approvalData.allowanceTarget,
