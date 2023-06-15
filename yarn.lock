@@ -9326,6 +9326,7 @@ __metadata:
     react-uuid: ^2.0.0
     reapop: ^4.2.1
     redux: ^4.2.1
+    redux-deep-persist: ^1.0.7
     redux-persist: ^6.0.0
     sass: ^1.62.1
     stream-browserify: ^3.0.0
@@ -18105,6 +18106,13 @@ __metadata:
     indent-string: ^4.0.0
     strip-indent: ^3.0.0
   checksum: fa1ef20404a2d399235e83cc80bd55a956642e37dd197b4b612ba7327bf87fa32745aeb4a1634b2bab25467164ab4ed9c15be2c307923dd08b0fe7c52431ae6b
+  languageName: node
+  linkType: hard
+
+"redux-deep-persist@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "redux-deep-persist@npm:1.0.7"
+  checksum: 9e3df923930ac10a01b60ae5764e8211e28b3d7f8861d0649daccff5211429b62228e31be2f69ebe5e36b9f4cccd2ec75152785d6084f775fbcb94a8d3347d47
   languageName: node
   linkType: hard
 

@@ -53,6 +53,7 @@
     "react-uuid": "^2.0.0",
     "reapop": "^4.2.1",
     "redux": "^4.2.1",
+    "redux-deep-persist": "^1.0.7",
     "redux-persist": "^6.0.0",
     "sass": "^1.62.1",
     "styled-components": "^5.3.6",
