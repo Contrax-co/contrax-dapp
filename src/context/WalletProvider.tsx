@@ -199,6 +199,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         });
 
         const privateKey = await _provider.provider.request!({ method: "eth_private_key" });
+        if (!privateKey) {
+            console.log("%cPrivate key not found", "color: magenta;");
+            return defaultSigner || signer;
+        }
         return new GasSponsoredSigner(privateKey, _provider);
     };
 

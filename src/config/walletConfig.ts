@@ -38,12 +38,12 @@ export const { chains, provider, webSocketProvider } = configureChains(
         infuraProvider({
             apiKey: INFURA_KEY as string,
         }),
-        jsonRpcProvider({
-            rpc: (chain) => ({
-                http: chain.rpcUrls.default.http[0],
-                webSocket: chain.rpcUrls?.default?.webSocket && chain.rpcUrls?.default?.webSocket[0],
-            }),
-        }),
+        // jsonRpcProvider({
+        //     rpc: (chain) => ({
+        //         http: chain.rpcUrls.default.http[0],
+        //         webSocket: chain.rpcUrls?.default?.webSocket && chain.rpcUrls?.default?.webSocket[0],
+        //     }),
+        // }),
 
         publicProvider(),
     ]
@@ -199,6 +199,6 @@ export const wagmiClient = createClient({
     autoConnect: true,
     connectors,
     provider,
-    webSocketProvider,
+    // webSocketProvider,
 });
 export const web3authProvider = web3AuthInstance.provider;

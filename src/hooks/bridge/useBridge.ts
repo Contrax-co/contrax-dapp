@@ -31,6 +31,7 @@ const useBridge = (direction: BridgeDirection) => {
             BridgeChainInfo[direction].sourceAddress !== constants.AddressZero
                 ? (BridgeChainInfo[direction].sourceAddress as `0x${string}`)
                 : undefined,
+        enabled: !!currentWallet,
     });
     const isLoading = useAppSelector((state) => state.ramp.bridgeStates[direction].isBridging);
     const checkingStatus = useAppSelector((state) => state.ramp.bridgeStates[direction].checkingStatus);
