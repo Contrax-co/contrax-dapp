@@ -26,6 +26,7 @@ interface VaultStatsResponse {
 
 interface VaultStats {
     address: string;
+    name?: string;
     averageDeposit: number;
     depositedTvl: number;
     numberOfDeposits: number;
