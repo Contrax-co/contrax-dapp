@@ -9,7 +9,10 @@ import { errorMessages, loadingMessages, successMessages } from "src/config/cons
 import {
     DepositFn,
     GetFarmDataProcessedFn,
+    SlippageDepositBaseFn,
     SlippageInBaseFn,
+    SlippageOutBaseFn,
+    SlippageWithdrawBaseFn,
     TokenAmounts,
     WithdrawFn,
     ZapInFn,
@@ -17,7 +20,9 @@ import {
 } from "./types";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { defaultChainId } from "src/config/constants";
-import { slippageIn, zapInBase, zapOutBase } from "./common";
+import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
+import { TenderlySimulateTransactionBody } from "src/types/tenderly";
+import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
 
 const farm = pools.find((farm) => farm.id === 5) as Farm;
 
@@ -99,6 +104,7 @@ export const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
 export const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
 
 export const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
+export const zapOutSlippage: SlippageOutBaseFn = (props) => slippageOut({ ...props, farm });
 
 export const deposit: DepositFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
     if (!signer) return;
@@ -191,4 +197,87 @@ export const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, signer,
         dismissNotify(notiId);
         notifyError(errorMessages.generalError(err.reason || err.message));
     }
+};
+
+export const depositSlippage: SlippageDepositBaseFn = async ({ farm, currentWallet, signer, amountInWei, max }) => {
+    if (!signer) return BigNumber.from(0);
+    const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+
+    const transaction = {} as Omit<
+        TenderlySimulateTransactionBody,
+        "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
+    >;
+    transaction.from = currentWallet;
+
+    // approve the vault to spend asset
+    transaction.state_overrides = getAllowanceStateOverride([
+        {
+            tokenAddress: farm.lp_address,
+            owner: currentWallet,
+            spender: farm.vault_addr,
+        },
+    ]);
+
+    if (max) {
+        const populated = await vaultContract.populateTransaction.depositAll();
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    } else {
+        const populated = await vaultContract.populateTransaction.deposit(amountInWei);
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    }
+
+    const simulationResult = await simulateTransaction({
+        /* Standard EVM Transaction object */
+        ...transaction,
+        to: farm.vault_addr,
+    });
+
+    const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
+    const difference = BigNumber.from(filteredState.afterChange[currentWallet.toLowerCase()]).sub(
+        BigNumber.from(filteredState.original[currentWallet.toLowerCase()])
+    );
+
+    return difference;
+};
+
+export const withdrawSlippage: SlippageWithdrawBaseFn = async ({
+    amountInWei,
+    currentWallet,
+    signer,
+    chainId,
+    max,
+    farm,
+}) => {
+    if (!signer) return BigNumber.from(0);
+    const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+    const transaction = {} as Omit<
+        TenderlySimulateTransactionBody,
+        "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
+    >;
+    transaction.from = currentWallet;
+    if (max) {
+        const populated = await vaultContract.populateTransaction.withdrawAll();
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    } else {
+        const populated = await vaultContract.populateTransaction.withdraw(amountInWei);
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    }
+
+    const simulationResult = await simulateTransaction({
+        /* Standard EVM Transaction object */
+        ...transaction,
+        to: farm.vault_addr,
+    });
+    const { added, subtracted } = filterAssetChanges(farm.lp_address, currentWallet, simulationResult.assetChanges);
+    const difference = BigNumber.from(added).sub(subtracted);
+
+    return difference;
 };

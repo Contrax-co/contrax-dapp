@@ -236,13 +236,13 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     }
-
+    console.log(transaction, farm.zapper_addr);
     const simulationResult = await simulateTransaction({
         /* Standard EVM Transaction object */
         ...transaction,
         to: farm.zapper_addr,
     });
-
+    console.log({ simulationResult });
     const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
     const difference = BigNumber.from(filteredState.afterChange[args.currentWallet.toLowerCase()]).sub(
         BigNumber.from(filteredState.original[args.currentWallet.toLowerCase()])

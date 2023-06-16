@@ -61,7 +61,9 @@ export interface FarmDataProcessed {
 }
 
 export type DepositFn = (args: DepositArgs) => Promise<void>;
+export type SlippageDepositBaseFn = (args: DepositArgs & { farm: Farm }) => Promise<BigNumber>;
 export type WithdrawFn = (args: WithdrawArgs) => Promise<void>;
+export type SlippageWithdrawBaseFn = (args: WithdrawArgs & { farm: Farm }) => Promise<BigNumber>;
 export type ZapInFn = (args: ZapInArgs) => Promise<void>;
 export type ZapInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<void>;
 export type SlippageInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<BigNumber>;
@@ -82,5 +84,7 @@ export interface FarmFunctions {
     zapOut: ZapOutFn;
     zapInSlippage?: SlippageInBaseFn;
     zapOutSlippage?: SlippageOutBaseFn;
+    depositSlippage?: SlippageDepositBaseFn;
+    withdrawSlippage?: SlippageWithdrawBaseFn;
 }
 export type DynamicFarmFunctions = (farmId: number) => FarmFunctions;
