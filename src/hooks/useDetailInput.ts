@@ -31,9 +31,9 @@ export const useDetailInput = (farm: Farm) => {
     const { isBalanceTooLow } = useEstimateGasFee();
     const { prices } = usePriceOfTokens();
     const { isLoading: isZapping, zapInAsync, slippageZapIn } = useZapIn(farm);
-    const { isLoading: isDepositing, depositAsync } = useDeposit(farm);
+    const { isLoading: isDepositing, depositAsync, slippageDeposit } = useDeposit(farm);
     const { isLoading: isZappingOut, zapOutAsync, slippageZapOut } = useZapOut(farm);
-    const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
+    const { isLoading: isWithdrawing, withdrawAsync, slippageWithdraw } = useWithdraw(farm);
     const { farmDetails, isLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
     const { currentWallet } = useWallet();
@@ -116,16 +116,22 @@ export const useDetailInput = (farm: Farm) => {
             let _slippage = NaN;
             if (type === FarmTransactionType.Deposit) {
                 if (depositable?.tokenAddress === farm.lp_address) {
-                    // await depositAsync({ depositAmount: amnt, max });
+                    const res = await slippageDeposit({ depositAmount: amnt, max });
+                    console.log(res);
+                    _slippage = res.slippage;
                 } else {
                     const res = await slippageZapIn({ zapAmount: amnt, max, token: depositable?.tokenAddress! });
+                    console.log(res);
                     _slippage = res.slippage;
                 }
             } else {
                 if (withdrawable?.tokenAddress === farm.lp_address) {
-                    // await withdrawAsync({ withdrawAmount: amnt, max });
+                    const res = await slippageWithdraw({ withdrawAmount: amnt, max });
+                    console.log(res);
+                    _slippage = res.slippage;
                 } else {
                     const res = await slippageZapOut({ withdrawAmt: amnt, max, token: withdrawable?.tokenAddress! });
+                    console.log(res);
                     _slippage = res.slippage;
                 }
             }
