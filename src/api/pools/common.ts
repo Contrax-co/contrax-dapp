@@ -236,7 +236,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     }
-    console.log(transaction, farm.zapper_addr);
+    console.log(transaction, farm);
     const simulationResult = await simulateTransaction({
         /* Standard EVM Transaction object */
         ...transaction,
