@@ -12,6 +12,7 @@ import useBridge from "./bridge/useBridge";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { defaultChainId } from "src/config/constants";
 import { BridgeDirection } from "src/state/ramp/types";
+import arbTokens from "src/config/constants/tokens";
 
 const ethAddress = constants.AddressZero;
 const tokenBalDecimalPlaces = 3;
@@ -109,6 +110,36 @@ export const useTokens = () => {
             };
             return obj;
         });
+
+        arbTokens
+            .filter((token) => token.chainId === defaultChainId)
+            .forEach((token) => {
+                let obj: Token = {
+                    address: token.address,
+                    decimals: token.decimals,
+                    token_type: FarmType.normal,
+                    balance: formattedBalances[token.address]
+                        ? formattedBalances[token.address]! < 1 / 10 ** tokenBalDecimalPlaces
+                            ? noExponents(formattedBalances[token.address]!.toPrecision(2)).slice(0, -1)
+                            : toFixedFloor(formattedBalances[token.address]!, tokenBalDecimalPlaces).toString()
+                        : "0",
+                    usdBalance: formattedBalances[token.address]
+                        ? prices[token.address] * formattedBalances[token.address]! < 1 / 10 ** usdBalDecimalPlaces
+                            ? noExponents(
+                                  (prices[token.address] * formattedBalances[token.address]!).toPrecision(2)
+                              ).slice(0, -1)
+                            : toFixedFloor(
+                                  prices[token.address] * formattedBalances[token.address]!,
+                                  usdBalDecimalPlaces
+                              ).toString()
+                        : "0",
+                    name: token.name,
+                    logo: token.logo,
+                    price: prices[token.address],
+                    networkId: token.chainId,
+                };
+                tokens.push(obj);
+            });
 
         const lpTokens: Token[] = lpAddresses.map(({ address, decimals }) => {
             const farm = farms.find((farm) => utils.getAddress(farm.lp_address) === address);

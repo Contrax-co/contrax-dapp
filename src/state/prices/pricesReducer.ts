@@ -7,6 +7,7 @@ import { getNetworkName } from "src/utils/common";
 import { getPriceByTime, getPricesByTime } from "src/api/token";
 import { defaultChainId } from "src/config/constants";
 import { addressesByChainId } from "src/config/constants/contracts";
+import tokens from "src/config/constants/tokens";
 
 const initialState: StateInterface = {
     prices: {},
@@ -49,6 +50,9 @@ export const updatePrices = createAsyncThunk(
                 return acc;
             }, new Set<string>());
             additionalTokens.forEach((token) => set.add(token.toLowerCase()));
+            tokens.forEach((token) => {
+                if (token.chainId === defaultChainId) set.add(token.address.toLowerCase());
+            });
             let addresses = Array.from(set);
 
             //------------------->> 1. Get prices from coinsLama
@@ -153,6 +157,7 @@ export const updatePrices = createAsyncThunk(
             });
             // USDC price hardcoded TODO: maybe change to actual price in future
             checksummed[addressesByChainId[chainId].usdcAddress] = 1;
+            checksummed[addressesByChainId[chainId].nativeUsdAddress!] = 1;
 
             return checksummed;
         } catch (error) {

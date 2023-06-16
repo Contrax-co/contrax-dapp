@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { constants, Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
 import { Decimals, StateInterface, UpdateDecimalsActionPayload } from "./types";
+import tokens from "src/config/constants/tokens";
+import { defaultChainId } from "src/config/constants";
 
 const initialState: StateInterface = { decimals: {}, isLoading: false, isFetched: false };
 
@@ -15,7 +17,9 @@ export const fetchDecimals = createAsyncThunk(
             farm.token2 && addresses.add(farm.token2.toLowerCase());
             farm.vault_addr && addresses.add(farm.vault_addr.toLowerCase());
         });
-
+        tokens.forEach((token) => {
+            if (token.chainId === defaultChainId) addresses.add(token.address.toLowerCase());
+        });
         const addressesArray = Array.from(addresses);
 
         let promises = addressesArray.map((address) => new Contract(address, erc20ABI, multicallProvider).decimals());
