@@ -220,7 +220,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
                     value: balance,
                 })
             );
-            if (!afterGasCut) throw new Error("Error subtracting gas");
+            if (!afterGasCut) return BigNumber.from(0);
             amountInWei = afterGasCut;
         }
         //#endregion
