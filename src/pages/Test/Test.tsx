@@ -23,6 +23,7 @@ import { useDecimals } from "src/hooks/useDecimals";
 import { getReferalEarning } from "src/api/account";
 import { getCatalogLink } from "src/api/front";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
+import useSwapUsdcNative from "src/hooks/useSwapUsdcNative";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();

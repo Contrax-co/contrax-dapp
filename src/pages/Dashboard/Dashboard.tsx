@@ -28,6 +28,7 @@ import ReferralEarning from "./ReferralEarning/ReferralEarning";
 import { TraxEarning } from "./TraxEarning/TraxEarning";
 import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
 import BridgeEthBtn from "src/components/BridgeEthBtn/BridgeEthBtn";
+import SwapUSDCBtn from "src/components/SwapUSDCBtn/SwapUSDCBtn";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -128,6 +129,7 @@ function Dashboard() {
                 <ReferralEarning />
                 <BridgeBtn />
                 <BridgeEthBtn />
+                <SwapUSDCBtn />
             </div>
             <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
             {currentWallet ? (
