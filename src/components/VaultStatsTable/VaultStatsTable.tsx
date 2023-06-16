@@ -15,7 +15,7 @@ export const VaultStatsTable = () => {
                 <thead>
                     <tr className={styles.header}>
                         <th>
-                            <div className={styles.tableData + " " + styles.heading}>ADDRESS</div>
+                            <div className={styles.tableData + " " + styles.heading}>TITLE</div>
                         </th>
                         <th>
                             <div className={styles.tableData + " " + styles.heading}>DEPOSITED TVL</div>
@@ -30,27 +30,11 @@ export const VaultStatsTable = () => {
                 </thead>
                 <tbody>
                     {vaultStats && vaultStats.length > 0 ? (
-                        vaultStats.map(({ _id, address, depositedTvl, averageDeposit, numberOfDeposits }) => (
+                        vaultStats.map(({ _id, address, name, depositedTvl, averageDeposit, numberOfDeposits }) => (
                             <tr key={_id} className={styles.tableRow}>
                                 <td>
                                     <div className={styles.tableData + " " + styles.addressCol}>
-                                        <p className={styles.addressText + " " + styles.onlyExtraLargeScreen}>
-                                            {address}
-                                        </p>
-                                        <p className={styles.addressText + " " + styles.onlyLargeScreen}>
-                                            {`${address?.substring(0, 12)}...${address?.substring(
-                                                address.length - 12
-                                            )}`}{" "}
-                                            <span className={styles.tooltip}>{address}</span>
-                                        </p>
-                                        <p className={styles.addressText + " " + styles.onlyTablet}>
-                                            {`${address?.substring(0, 8)}...${address?.substring(address.length - 8)}`}{" "}
-                                            <span className={styles.tooltip}>{address}</span>
-                                        </p>
-                                        <p className={styles.addressText + " " + styles.onlyMobile}>
-                                            {`${address?.substring(0, 5)}...${address?.substring(address.length - 3)}`}{" "}
-                                            <span className={styles.tooltip}>{address}</span>
-                                        </p>
+                                        <p>{name}</p>
                                         <FiExternalLink
                                             size={16}
                                             className={styles.arbiscanIcon}
