@@ -12,9 +12,9 @@ import Gatefi from "./Gatefi";
 interface IProps {}
 
 enum Tab {
-    Wert = "Wert",
-    Transak = "Transak",
     Gatefi = "Gatefi",
+    Transak = "Transak",
+    Wert = "Wert",
 }
 
 const Buy: React.FC<IProps> = () => {
@@ -45,7 +45,7 @@ const Buy: React.FC<IProps> = () => {
         if (tab) setTab(tab as Tab);
         else
             setSearchParams((params) => {
-                params.set("tab", Tab.Wert);
+                params.set("tab", Tab.Gatefi);
                 return params;
             });
     }, [params]);
