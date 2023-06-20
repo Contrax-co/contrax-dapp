@@ -42,10 +42,10 @@ const useBalances = () => {
     }, [balances]);
 
     useEffect(() => {
-        if (currentWallet === "") {
+        if (currentWallet === "" && Object.values(balances).length > 0) {
             dispatch(reset());
         }
-    }, [currentWallet]);
+    }, [currentWallet, balances]);
 
     const ethBalance = useMemo(() => ethers.BigNumber.from(balances[ethers.constants.AddressZero] || 0), [balances]);
 
