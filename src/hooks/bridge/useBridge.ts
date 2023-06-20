@@ -14,7 +14,7 @@ import { getPrice } from "src/api/token";
 import { BridgeChainInfo, BridgeDirection } from "src/state/ramp/types";
 
 const useBridge = (direction: BridgeDirection) => {
-    const { getWeb3AuthSigner, currentWallet, switchNetworkAsync, networkId } = useWallet();
+    const { currentWallet, switchNetworkAsync, networkId } = useWallet();
     const { data: price } = useQuery({
         queryKey: GET_PRICE_TOKEN(
             getNetworkName(BridgeChainInfo[direction].sourceChainId),
@@ -52,11 +52,11 @@ const useBridge = (direction: BridgeDirection) => {
         if (!checkingStatus) dispatch(checkBridgeStatus({ direction }));
     };
 
-    React.useEffect(() => {
-        getWeb3AuthSigner(CHAIN_ID.POLYGON, polygonSigner as ethers.Signer).then((res) => {
-            setPolygonSigner(res);
-        });
-    }, [getWeb3AuthSigner]);
+    // React.useEffect(() => {
+    //     getWeb3AuthSigner(CHAIN_ID.POLYGON, polygonSigner as ethers.Signer).then((res) => {
+    //         setPolygonSigner(res);
+    //     });
+    // }, [getWeb3AuthSigner]);
 
     React.useEffect(() => {
         const int = setInterval(() => {

@@ -20,7 +20,6 @@ import { providers } from "ethers";
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
 
-const clientId = WEB3AUTH_CLIENT_ID as string;
 arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
 arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
 
@@ -38,30 +37,10 @@ export const { chains, provider, webSocketProvider } = configureChains(
         infuraProvider({
             apiKey: INFURA_KEY as string,
         }),
-        // jsonRpcProvider({
-        //     rpc: (chain) => ({
-        //         http: chain.rpcUrls.default.http[0],
-        //         webSocket: chain.rpcUrls?.default?.webSocket && chain.rpcUrls?.default?.webSocket[0],
-        //     }),
-        // }),
 
         publicProvider(),
     ]
 );
-
-// Instantiating Web3Auth
-const web3AuthInstance = new Web3AuthNoModal({
-    clientId,
-    chainConfig: {
-        chainNamespace: CHAIN_NAMESPACES.EIP155,
-        chainId: "0x" + arbitrum.id.toString(16),
-        rpcTarget: ARBITRUM_MAINNET,
-        displayName: arbitrum.name,
-        tickerName: arbitrum.nativeCurrency.name,
-        ticker: arbitrum.nativeCurrency.symbol,
-        blockExplorer: "https://arbiscan.io/",
-    },
-});
 
 export async function getWeb3AuthProvider(config: {
     chainId: number;
@@ -88,117 +67,15 @@ export async function getWeb3AuthProvider(config: {
     return new providers.Web3Provider(PrivateKeyProvider.provider!);
 }
 
-const openloginAdapter = new OpenloginAdapter({
-    loginSettings: {
-        mfaLevel: "none", // Pass on the mfa level of your choice: default, optional, mandatory, none
-    },
-    web3AuthNetwork: "cyan",
-});
-
-web3AuthInstance.configureAdapter(openloginAdapter);
-
 const { wallets } = getDefaultWallets({
     appName: "Contrax",
     chains,
 });
 
-const connectors = connectorsForWallets([
-    {
-        groupName: "Social",
-        wallets: [
-            {
-                id: "google",
-                name: "Google",
-                iconUrl: googleIcon,
-
-                iconBackground: "white",
-                createConnector: () => {
-                    const connector = new Web3AuthConnector({
-                        chains,
-                        options: {
-                            web3AuthInstance,
-                            loginParams: {
-                                loginProvider: "google",
-                            },
-                        },
-                    });
-
-                    return {
-                        connector,
-                    };
-                },
-            },
-            {
-                id: "Facebook",
-                name: "Facebook",
-                iconUrl: facebookIcon,
-                iconBackground: "white",
-                createConnector: () => {
-                    const connector = new Web3AuthConnector({
-                        chains,
-                        options: {
-                            web3AuthInstance,
-                            loginParams: {
-                                loginProvider: "facebook",
-                            },
-                        },
-                    });
-
-                    return {
-                        connector,
-                    };
-                },
-            },
-            {
-                id: "discord",
-                name: "Discord",
-                iconUrl: discordIcon,
-                iconBackground: "white",
-                createConnector: () => {
-                    const connector = new Web3AuthConnector({
-                        chains,
-                        options: {
-                            web3AuthInstance,
-                            loginParams: {
-                                loginProvider: "discord",
-                            },
-                        },
-                    });
-
-                    return {
-                        connector,
-                    };
-                },
-            },
-            {
-                id: "github",
-                name: "Github",
-                iconUrl: githubIcon,
-                iconBackground: "white",
-                createConnector: () => {
-                    const connector = new Web3AuthConnector({
-                        chains,
-                        options: {
-                            web3AuthInstance,
-                            loginParams: {
-                                loginProvider: "github",
-                            },
-                        },
-                    });
-
-                    return {
-                        connector,
-                    };
-                },
-            },
-        ],
-    },
-    ...wallets,
-]);
+const connectors = connectorsForWallets([...wallets]);
 export const wagmiClient = createClient({
     autoConnect: true,
     connectors,
     provider,
-    // webSocketProvider,
+    webSocketProvider,
 });
-export const web3authProvider = web3AuthInstance.provider;

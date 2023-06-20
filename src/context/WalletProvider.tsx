@@ -26,6 +26,13 @@ import { getWeb3AuthProvider } from "src/config/walletConfig";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { getPrice } from "src/api/token";
 import { CHAIN_ID } from "src/types/enums";
+import SocialLogin from "@biconomy/web3-auth";
+import "@biconomy/web3-auth/dist/src/style.css";
+import { ChainId } from "@biconomy/core-types";
+import SmartAccount from "@biconomy/smart-account";
+import { BiconomySigner } from "src/utils/biconomySigner";
+import { useWeb3AuthContext } from "./SocialLoginContext";
+import { useSmartAccountContext } from "./SmartAccountContext";
 
 interface IWalletContext {
     /**
@@ -68,11 +75,10 @@ interface IWalletContext {
     chains: Chain[];
     getPkey: () => Promise<string>;
     multicallProvider: providers.MulticallProvider;
-    getWeb3AuthSigner: (chainId?: number, defaultSigner?: ethers.Signer) => Promise<ethers.ethers.Signer | undefined>;
-    isWeb3AuthWallet: boolean;
     polygonBalance?: BalanceResult;
     mainnetBalance?: BalanceResult;
     arbitrumBalance?: BalanceResult;
+    connectBiconomy: () => void;
 }
 
 type BalanceResult = {
@@ -89,28 +95,6 @@ export const WalletContext = React.createContext<IWalletContext>({} as IWalletCo
 interface IProps {
     children: React.ReactNode;
 }
-
-const useWaleltSigner = () => {
-    const { data: _signer } = useSigner();
-    const [signer, setSigner] = useState<ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer>();
-    const { connectorId, sponsoredGas } = useAppSelector((state) => state.settings);
-
-    useEffect(() => {
-        const setupSigner = async () => {
-            if (web3AuthConnectorId === connectorId && sponsoredGas) {
-                // @ts-ignore
-                const privateKey = await _signer?.provider?.provider?.request({ method: "eth_private_key" });
-                if (privateKey) setSigner(new GasSponsoredSigner(privateKey, _signer?.provider));
-            } else {
-                // @ts-ignore
-                setSigner(_signer);
-            }
-        };
-
-        setupSigner();
-    }, [_signer, sponsoredGas, web3AuthConnectorId, connectorId]);
-    return signer;
-};
 
 const useNativeBalance = (currentWallet: `0x${string}` | undefined, chainId: number): BalanceResult => {
     const { data: price } = useQuery({
@@ -132,32 +116,91 @@ const useNativeBalance = (currentWallet: `0x${string}` | undefined, chainId: num
     };
 };
 
+// let options = {
+//     activeNetworkId: ChainId.ARBITRUM_ONE_MAINNET,
+//     supportedNetworksIds: [ChainId.ARBITRUM_ONE_MAINNET, ChainId.POLYGON_MUMBAI],
+//     networkConfig: [
+//         {
+//             chainId: ChainId.ARBITRUM_ONE_MAINNET,
+//             // Dapp API Key you will get from new Biconomy dashboard that will be live soon
+//             // Meanwhile you can use the test dapp api key mentioned above
+//             dappAPIKey: "LNyR-YF15.5528fd61-d34c-4a35-bb92-69510d521b1f",
+//             providerUrl: "https://arbitrum-mainnet.infura.io/v3/547b7378b8c2400aafd92ef4281c732f",
+//         },
+//         {
+//             chainId: ChainId.POLYGON_MAINNET,
+//             // Dapp API Key you will get from new Biconomy dashboard that will be live soon
+//             // Meanwhile you can use the test dapp api key mentioned above
+//             dappAPIKey: "LNyR-YF15.5528fd61-d34c-4a35-bb92-69510d521b1f",
+//             providerUrl: "https://polygon-mainnet.infura.io/v3/547b7378b8c2400aafd92ef4281c732f",
+//         },
+//     ],
+// };
+
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
     const { balances } = useBalances();
-    const signer = useWaleltSigner();
+    const { data: _signer } = useSigner();
+    const [signer, setSigner] = useState<any>();
 
     const { switchNetworkAsync, chains } = useSwitchNetwork();
     const dispatch = useDispatch();
-    const { address: currentWallet, connector } = useAccount();
+    const { address: currentWalletWagmi, connector } = useAccount();
     const { disconnect } = useDisconnect();
     const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
-    const { openConnectModal } = useConnectModal();
+    // @ts-ignore
+    const [currentWallet, setCurrentWallet] = useState<`0x${string}`>("");
     const polygonBalance = useNativeBalance(currentWallet, CHAIN_ID.POLYGON);
     const mainnetBalance = useNativeBalance(currentWallet, CHAIN_ID.MAINNET);
     const arbitrumBalance = useNativeBalance(currentWallet, CHAIN_ID.ARBITRUM);
-
+    const { openConnectModal } = useConnectModal();
+    const {
+        loading: eoaLoading,
+        userInfo,
+        connect,
+        web3Provider: _biconomyProvider,
+        disconnect: _biconomyDisconnect,
+        getUserInfo,
+    } = useWeb3AuthContext();
+    const { selectedAccount, loading: scwLoading, setSelectedAccount, state } = useSmartAccountContext();
+    console.log(selectedAccount,state)
     const connectWallet = async () => {
-        if (openConnectModal) openConnectModal();
-
+        openConnectModal && openConnectModal();
         return false;
+    };
+
+    const connectBiconomy = () => {
+        connect();
     };
 
     async function logout() {
         disconnect();
+        if (_biconomyProvider) {
+            _biconomyDisconnect();
+        }
     }
+
+    useEffect(() => {
+        if (_biconomyProvider) {
+            new BiconomySigner(_biconomyProvider);
+        } else {
+            setSigner(_signer);
+        }
+    }, [_signer, _biconomyProvider]);
+
+    useEffect(() => {
+        if (currentWalletWagmi) {
+            setCurrentWallet(currentWalletWagmi);
+        } else if (selectedAccount?.smartAccountAddress) {
+            // @ts-ignore
+            setCurrentWallet(selectedAccount.smartAccountAddress);
+        } else {
+            // @ts-ignore
+            setCurrentWallet("");
+        }
+    }, [currentWalletWagmi, selectedAccount]);
 
     const displayAccount = React.useMemo(
         () =>
@@ -173,37 +216,15 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     );
 
     const getPkey = async () => {
-        try {
-            // @ts-ignore
-            const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
-            return pkey;
-        } catch (error) {
-            console.warn("Pkey: Not web3auth signer!");
-            // notifyError(errorMessages.privateKeyError());
-        }
-    };
-
-    const getWeb3AuthSigner = async (chainId?: number, defaultSigner?: ethers.Signer) => {
-        if (web3AuthConnectorId !== getConnectorId()) return defaultSigner || signer;
-        // @ts-ignore
-        const pkey = await getPkey();
-        const chain = chains.find((c) => c.id === chainId);
-        const _provider = await getWeb3AuthProvider({
-            chainId: chain?.id!,
-            blockExplorer: chain?.blockExplorers?.default.url!,
-            name: chain?.name!,
-            rpc: chain?.rpcUrls.default.http[0]!,
-            ticker: chain?.nativeCurrency.symbol!,
-            tickerName: chain?.nativeCurrency.name!,
-            pkey,
-        });
-
-        const privateKey = await _provider.provider.request!({ method: "eth_private_key" });
-        if (!privateKey) {
-            console.log("%cPrivate key not found", "color: magenta;");
-            return defaultSigner || signer;
-        }
-        return new GasSponsoredSigner(privateKey, _provider);
+        return "";
+        // try {
+        //     // @ts-ignore
+        //     const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
+        //     return pkey;
+        // } catch (error) {
+        //     console.warn("Pkey: Not web3auth signer!");
+        //     // notifyError(errorMessages.privateKeyError());
+        // }
     };
 
     React.useEffect(() => {
@@ -218,10 +239,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     React.useEffect(() => {
         setMulticallProvider(getMulticallProvider(provider));
     }, [provider]);
-
-    React.useEffect(() => {
-        dispatch(setConnectorId(connector?.id || ""));
-    }, [connector]);
 
     React.useEffect(() => {
         const int = setInterval(async () => {
@@ -257,11 +274,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 chains,
                 getPkey,
                 multicallProvider,
-                getWeb3AuthSigner,
-                isWeb3AuthWallet: web3AuthConnectorId === getConnectorId(),
                 polygonBalance,
                 mainnetBalance,
                 arbitrumBalance,
+                connectBiconomy,
             }}
         >
             {children}

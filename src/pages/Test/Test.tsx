@@ -24,16 +24,33 @@ import { getReferalEarning } from "src/api/account";
 import { getCatalogLink } from "src/api/front";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 import useSwapUsdcNative from "src/hooks/useSwapUsdcNative";
+import { useWeb3AuthContext } from "src/context/SocialLoginContext";
+import { useSmartAccountContext } from "src/context/SmartAccountContext";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const addRecentTransaction = useAddRecentTransaction();
     const dispatch = useAppDispatch();
-    const { currentWallet } = useWallet();
+    const { currentWallet, connectWallet } = useWallet();
     const { decimals } = useDecimals();
     const [url, setUrl] = useState<string>("");
+
     const { platformTVL } = usePlatformTVL();
 
+    const {
+        address,
+        loading: eoaLoading,
+        userInfo,
+        connect,
+        web3Provider,
+        provider,
+        disconnect,
+        getUserInfo,
+    } = useWeb3AuthContext();
+    const { selectedAccount, loading: scwLoading, setSelectedAccount, state } = useSmartAccountContext();
+    console.log(selectedAccount);
+    console.log(address);
+    console.log(userInfo);
     // web3authProvider
     const handleTransaction = async () => {};
 
@@ -42,6 +59,11 @@ const Test = () => {
         //   transaction:{
         //   }
         // })
+        console.log(provider, web3Provider);
+        connect();
+        const privateKey = await provider?.request({ method: "eth_private_key" });
+        console.log(privateKey);
+        selectedAccount?.smartAccountAddress;
     };
 
     return (

@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { updatePrices } from "src/state/prices/pricesReducer";
 import { toggleTheme, toggleSupportChat as _toggleSupportChat } from "src/state/settings/settingsReducer";
+import { Web3AuthProvider } from "./SocialLoginContext";
+import { SmartAccountProvider } from "./SmartAccountContext";
 
 export const AppContext = React.createContext({
     lightMode: true,
@@ -31,7 +33,7 @@ const AppProvider: React.FC<Props> = ({ children }) => {
 
     React.useEffect(() => {
         document.documentElement.setAttribute("data-lightMode", `${lightMode}`);
-    }, [lightMode]);    
+    }, [lightMode]);
 
     return (
         <AppContext.Provider
@@ -42,7 +44,9 @@ const AppProvider: React.FC<Props> = ({ children }) => {
                 toggleSupportChat,
             }}
         >
-            {children}
+            <Web3AuthProvider>
+                <SmartAccountProvider>{children}</SmartAccountProvider>
+            </Web3AuthProvider>
         </AppContext.Provider>
     );
 };
