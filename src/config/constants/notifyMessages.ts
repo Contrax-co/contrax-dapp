@@ -65,10 +65,10 @@ export const loadingMessages: LoadingMessages = {
     }),
     depositing: (tx?: string) => ({
         title: "Depositing...",
-        message: `Please wait...`,
+        message: `Your deposit is in progress`,
     }),
     transferingTokens: () => ({
         title: "Transferring...",
-        message: "Please wait while we transfer your tokens",
+        message: "Your transfer is in progress",
     }),
 };
