@@ -35,9 +35,9 @@ export const { chains, provider, webSocketProvider } = configureChains(
         // optimism, avalanche, gnosis, fantom, bsc
     ],
     [
-        infuraProvider({
-            apiKey: INFURA_KEY as string,
-        }),
+        // infuraProvider({
+        //     apiKey: INFURA_KEY as string,
+        // }),
         // jsonRpcProvider({
         //     rpc: (chain) => ({
         //         http: chain.rpcUrls.default.http[0],

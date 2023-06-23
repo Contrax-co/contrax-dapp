@@ -26,7 +26,6 @@ const useBridge = (direction: BridgeDirection) => {
     const { data, refetch } = useBalance({
         address: currentWallet as `0x${string}`,
         chainId: BridgeChainInfo[direction].sourceChainId,
-        watch: true,
         token:
             BridgeChainInfo[direction].sourceAddress !== constants.AddressZero
                 ? (BridgeChainInfo[direction].sourceAddress as `0x${string}`)

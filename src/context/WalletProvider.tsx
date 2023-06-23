@@ -119,11 +119,20 @@ const useNativeBalance = (currentWallet: `0x${string}` | undefined, chainId: num
         refetchInterval: 60000,
     });
 
-    const { data: bal } = useBalance({
+    const { data: bal, refetch } = useBalance({
         address: currentWallet,
         chainId: chainId,
-        watch: true,
+        enabled: !!currentWallet,
     });
+
+    useEffect(() => {
+        const int = setInterval(() => {
+            refetch();
+        }, 10000);
+        return () => {
+            clearInterval(int);
+        };
+    }, []);
 
     return {
         ...bal,
