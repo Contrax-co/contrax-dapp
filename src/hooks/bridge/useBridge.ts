@@ -59,7 +59,7 @@ const useBridge = (direction: BridgeDirection) => {
 
     React.useEffect(() => {
         const int = setInterval(() => {
-            refetch();
+            if (currentWallet) refetch();
         }, 10000);
 
         return () => {

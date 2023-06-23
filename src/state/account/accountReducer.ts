@@ -56,24 +56,24 @@ export const addAccount = createAsyncThunk(
                 if (data.referrer) {
                     thunkApi.dispatch(setRefAddress(data.referrer.address));
                 }
-                if (data.referralCode) {
-                    thunkApi.dispatch(setReferralCode(data.referralCode));
-                }
-                if (data.earnedTrax) {
-                    thunkApi.dispatch(setEarnedTrax(data.earnedTrax));
-                }
-                if (data.earnedTraxByReferral) {
-                    thunkApi.dispatch(setEarnedTraxByReferral(data.earnedTraxByReferral));
-                }
-                if (data.totalEarnedTrax) {
-                    thunkApi.dispatch(setTotalEarnedTrax(data.totalEarnedTrax));
-                }
-                if (data.totalEarnedTraxByReferral) {
-                    thunkApi.dispatch(setTotalEarnedTraxByReferral(data.totalEarnedTraxByReferral));
-                }
-                if (data.traxCalculatedTimestamp) {
-                    thunkApi.dispatch(setTraxCalculatedTimestamp(data.traxCalculatedTimestamp));
-                }
+                // if (data.referralCode) {
+                thunkApi.dispatch(setReferralCode(data.referralCode || ""));
+                // }
+                // if (data.earnedTrax) {
+                thunkApi.dispatch(setEarnedTrax(data.earnedTrax || 0));
+                // }
+                // if (data.earnedTraxByReferral) {
+                thunkApi.dispatch(setEarnedTraxByReferral(data.earnedTraxByReferral || 0));
+                // }
+                // if (data.totalEarnedTrax) {
+                thunkApi.dispatch(setTotalEarnedTrax(data.totalEarnedTrax || 0));
+                // }
+                // if (data.totalEarnedTraxByReferral) {
+                thunkApi.dispatch(setTotalEarnedTraxByReferral(data.totalEarnedTraxByReferral || 0));
+                // }
+                // if (data.traxCalculatedTimestamp) {
+                thunkApi.dispatch(setTraxCalculatedTimestamp(data.traxCalculatedTimestamp || 0));
+                // }
             }
         } catch (error) {
             console.log("Cannot create new account");
