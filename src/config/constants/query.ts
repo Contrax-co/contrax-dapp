@@ -64,3 +64,5 @@ export const TRANSFER_TOKEN = (currentWallet: string, networkName: string) => [
     networkName,
     currentWallet,
 ];
+
+export const REFFERED_ACCOUNTS = (currentWallet: string) => ["accounts", "reffered-accounts", currentWallet];
