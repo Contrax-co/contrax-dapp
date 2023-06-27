@@ -16,7 +16,7 @@ export const defaultChainId = CHAIN_ID.ARBITRUM; // Arbitrum
 export const defaultNetworkName = "arbitrum";
 export const web3AuthConnectorId = "web3auth";
 export const isDev = process.env.NODE_ENV === "development";
-
+export const isStagging = window.location.hostname.includes("staging.contrax.finance");
 export const GATEFI_MERCHANT_ID = process.env.REACT_APP_GATEFI_MERCHANT_ID as string;
 export const SOCKET_BRIDGE_KEY = process.env.REACT_APP_SOCKET_BRIDGE_KEY;
 export const SOCKET_API_KEY = process.env.REACT_APP_SOCKET_API_KEY;
