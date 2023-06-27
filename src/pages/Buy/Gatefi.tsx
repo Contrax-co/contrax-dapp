@@ -3,11 +3,11 @@ import styles from "./Buy.module.scss";
 import useWallet from "src/hooks/useWallet";
 import { GateFiDisplayModeEnum, GateFiSDK } from "@gatefi/js-sdk";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
-import { useSearchParams } from "react-router-dom";
 import useBridge from "src/hooks/bridge/useBridge";
 import { GATEFI_MERCHANT_ID } from "src/config/constants";
 import useApp from "src/hooks/useApp";
 import { BridgeDirection } from "src/state/ramp/types";
+import { TiWarningOutline } from "react-icons/ti";
 
 interface IProps {}
 
@@ -58,6 +58,10 @@ const Gatefi: React.FC<IProps> = () => {
 
     return (
         <div style={{ width: 360 }}>
+            <p className={styles.disclaimer}>
+                <TiWarningOutline size={12} className={styles.disclaimerLogo} />
+                USDC is auto-bridged to arbitrum on purchase*
+            </p>
             <div id="overlay-button" className={styles.gatefiWrapper}></div>
             <BridgeBtn />
             <p className={styles.lightText} style={{ textAlign: "justify", paddingBottom: 50 }}>

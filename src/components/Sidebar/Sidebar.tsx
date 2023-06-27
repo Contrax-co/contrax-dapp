@@ -41,13 +41,6 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
 
                 <SidebarItem
-                    title="Deposit"
-                    icon={<DepositIcon width={16} />}
-                    onClick={() => handleNavigation(RoutesPaths.Deposit)}
-                    active={pathname === RoutesPaths.Deposit}
-                />
-
-                <SidebarItem
                     title="Buy"
                     icon={<BsCurrencyExchange size={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Buy)}
@@ -73,7 +66,12 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     onClick={() => handleNavigation(RoutesPaths.Bridge)}
                     active={pathname === RoutesPaths.Bridge}
                 />
-
+                <SidebarItem
+                    title="Front"
+                    icon={<DepositIcon width={16} />}
+                    onClick={() => handleNavigation(RoutesPaths.Deposit)}
+                    active={pathname === RoutesPaths.Deposit}
+                />
                 {process.env.NODE_ENV === "development" && (
                     <>
                         <SidebarItem
