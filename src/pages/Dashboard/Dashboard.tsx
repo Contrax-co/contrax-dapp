@@ -25,6 +25,10 @@ import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
 import { CHAIN_ID } from "src/types/enums";
 import { WrongNetwork } from "src/components/WrongNetwork/WrongNetwork";
 import ReferralEarning from "./ReferralEarning/ReferralEarning";
+import { TraxEarning } from "./TraxEarning/TraxEarning";
+import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
+import BridgeEthBtn from "src/components/BridgeEthBtn/BridgeEthBtn";
+import SwapUSDCBtn from "src/components/SwapUSDCBtn/SwapUSDCBtn";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -118,13 +122,16 @@ function Dashboard() {
 
             <ReferralLink />
 
-            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
-
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
+                <TraxEarning />
+                <TraxReferralEarning />
                 <ReferralEarning />
                 <BridgeBtn />
+                <BridgeEthBtn />
+                <SwapUSDCBtn />
             </div>
+            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
             {currentWallet ? (
                 <>
                     <div className={`dashboard_section outlinedContainer`}>

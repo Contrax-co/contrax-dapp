@@ -199,6 +199,6 @@ export const wagmiClient = createClient({
     autoConnect: true,
     connectors,
     provider,
-    webSocketProvider,
+    // webSocketProvider,
 });
 export const web3authProvider = web3AuthInstance.provider;

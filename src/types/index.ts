@@ -70,10 +70,15 @@ export interface Token {
     token_type: FarmType;
     logo: string;
     logo2?: string;
+    /**
+     * Formatted Balance
+     */
     balance: string;
     usdBalance: string;
     decimals: number;
     network?: string;
+    networkId: number;
+    price: number;
 }
 export interface FarmData extends FarmDataProcessed {}
 
@@ -106,6 +111,45 @@ export interface LoadingMessages {
     depositing: (tx?: string) => NotifyMessage;
     transferingTokens: () => NotifyMessage;
 }
+
+export interface AccountInfo {
+    _id: string;
+    address: string;
+    referralCode?: string;
+    referrer?: AccountInfo;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface AccountDetails extends UserTVL {
+    _id: string;
+    accountInfo: AccountInfo;
+    earnedTrax: string;
+    earnedTraxByReferral: number;
+    traxCalculatedTimeStamp: number;
+    totalEarnedTrax: number;
+    totalEarnedTraxByReferral: number;
+    tvl: number;
+}
+
+export interface UserTVL {
+    id: string;
+    tvl: number;
+    address: string;
+    createdAt: string;
+    updatedAt: string;
+    vaultTvls: UserVVL[];
+}
+
+export interface UserVVL {
+    price: number;
+    usdAmount: number;
+    userBalance: string;
+    vaultAddress: string;
+    _id: string;
+}
+
+export type Order = "" | "-";
 
 export interface WertOptions {
     /**

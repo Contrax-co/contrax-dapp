@@ -13,48 +13,44 @@ import errorReducer from "./error/errorReducer";
 import internetReducer from "./internet/internetReducer";
 import rampReducer from "./ramp/rampReducer";
 import accountReducer from "./account/accountReducer";
-
-const persistedPricesReducer = persistReducer(
-    { key: "prices", version: 1, storage, blacklist: ["isFetched", "oldPrices"] },
-    pricesReducer
-);
-
-const persistedDecimalReducer = persistReducer({ key: "decimals", version: 1, storage }, decimalsReducer);
-const persistedSettingsReducer = persistReducer(
-    { key: "settings", version: 1, storage, whitelist: ["theme", "supportChat"] },
-    settingsReducer
-);
-
-const persistedRampReducer = persistReducer(
-    { key: "ramp", version: 2, storage, whitelist: ["socketSourceTxHash"] },
-    rampReducer
-);
-
-const persistedAccountReducer = persistReducer(
-    { key: "account", version: 2, storage, whitelist: ["referrerCode"] },
-    accountReducer
-);
+import { getPersistConfig } from "redux-deep-persist";
 
 const rootReducer = combineReducers({
-    account: persistedAccountReducer,
-    settings: persistedSettingsReducer,
+    account: accountReducer,
+    settings: settingsReducer,
     internet: internetReducer,
     error: errorReducer,
-    prices: persistedPricesReducer,
+    prices: pricesReducer,
     apys: apysReducer,
     farms: farmsReducer,
     balances: balancesReducer,
-    decimals: persistedDecimalReducer,
+    decimals: decimalsReducer,
     supply: supplyReducer,
-    ramp: persistedRampReducer,
+    ramp: rampReducer,
 });
 
-// const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistConfig = getPersistConfig({
+    key: "root",
+    storage,
+    version: 2,
+    whitelist: [
+        "prices.prices",
+        "decimals.decimals",
+        "settings.theme",
+        "settings.supportChat",
+        "account.referrerCode",
+        "ramp.bridgeStates.USDC_POLYGON_TO_ARBITRUM_USDC.socketSourceTxHash",
+        "ramp.bridgeStates.ETH_POLYGON_TO_ARBITRUM_ETH.socketSourceTxHash",
+    ],
+    rootReducer, // your root reducer must be also passed here
+});
+
+export const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
     // devTools: process.env.NODE_ENV !== "production",
     devTools: true,
-    reducer: rootReducer,
+    reducer: persistedReducer,
     middleware(getDefaultMiddleware) {
         return getDefaultMiddleware({
             serializableCheck: {

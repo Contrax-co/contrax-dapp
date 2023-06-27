@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useDeposit from "src/hooks/farms/useDeposit";
 import useWithdraw from "src/hooks/farms/useWithdraw";
 import useZapIn from "src/hooks/farms/useZapIn";
@@ -14,6 +14,8 @@ import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 
 export const useDetailInput = (farm: Farm) => {
     const [amount, setAmount] = useState("");
+    const [slippage, setSlippage] = useState<number>();
+    const [fetchingSlippage, setFetchingSlippage] = useState(false);
     const [max, setMax] = useState(false);
     const {
         transactionType: type,
@@ -28,10 +30,10 @@ export const useDetailInput = (farm: Farm) => {
 
     const { isBalanceTooLow } = useEstimateGasFee();
     const { prices } = usePriceOfTokens();
-    const { isLoading: isZapping, zapInAsync } = useZapIn(farm);
-    const { isLoading: isDepositing, depositAsync } = useDeposit(farm);
-    const { isLoading: isZappingOut, zapOutAsync } = useZapOut(farm);
-    const { isLoading: isWithdrawing, withdrawAsync } = useWithdraw(farm);
+    const { isLoading: isZapping, zapInAsync, slippageZapIn } = useZapIn(farm);
+    const { isLoading: isDepositing, depositAsync, slippageDeposit } = useDeposit(farm);
+    const { isLoading: isZappingOut, zapOutAsync, slippageZapOut } = useZapOut(farm);
+    const { isLoading: isWithdrawing, withdrawAsync, slippageWithdraw } = useWithdraw(farm);
     const { farmDetails, isLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
     const { currentWallet } = useWallet();
@@ -108,6 +110,39 @@ export const useDetailInput = (farm: Farm) => {
         setMax(false);
     };
 
+    const fetchSlippage = async () => {
+        try {
+            const amnt = getTokenAmount();
+            let _slippage = NaN;
+            if (type === FarmTransactionType.Deposit) {
+                if (depositable?.tokenAddress === farm.lp_address) {
+                    const res = await slippageDeposit({ depositAmount: amnt, max });
+                    console.log(res);
+                    _slippage = res.slippage;
+                } else {
+                    const res = await slippageZapIn({ zapAmount: amnt, max, token: depositable?.tokenAddress! });
+                    console.log(res);
+                    _slippage = res.slippage;
+                }
+            } else {
+                if (withdrawable?.tokenAddress === farm.lp_address) {
+                    const res = await slippageWithdraw({ withdrawAmount: amnt, max });
+                    console.log(res);
+                    _slippage = res.slippage;
+                } else {
+                    const res = await slippageZapOut({ withdrawAmt: amnt, max, token: withdrawable?.tokenAddress! });
+                    console.log(res);
+                    _slippage = res.slippage;
+                }
+            }
+            if (_slippage.toString()) setSlippage(_slippage);
+            else setSlippage(undefined);
+        } catch (err) {
+            console.log(`%cError Slippage: ${err}`, "color: magenta;");
+            setSlippage(undefined);
+        }
+    };
+
     useEffect(() => {
         if (max) setAmount(maxBalance.toString());
     }, [max, maxBalance, showInUsd]);
@@ -124,16 +159,40 @@ export const useDetailInput = (farm: Farm) => {
             _withdrawable = farmData?.withdrawableAmounts[0];
         }
         setWithdrawable(_withdrawable);
-        setMax(false);
+        if (
+            depositable?.amountDollar !== _depositable?.amountDollar ||
+            withdrawable?.amountDollar !== _withdrawable?.amountDollar
+        )
+            setMax(false);
     }, [currencySymbol, farmData]);
+
+    useEffect(() => {
+        if (getTokenAmount() === 0) {
+            setSlippage(undefined);
+            return;
+        }
+
+        console.log("%cAmount changed", "color: lightgreen;");
+        setFetchingSlippage(true);
+        const int = setTimeout(async () => {
+            console.log("%cFetching slippage", "color: lightgreen;");
+            await fetchSlippage();
+            setFetchingSlippage(false);
+        }, 2000);
+        return () => {
+            clearTimeout(int);
+        };
+    }, [max, amount, showInUsd, type, depositable?.tokenAddress, withdrawable?.tokenAddress]);
 
     return {
         type,
         amount,
+        slippage,
         showInUsd,
         currentWallet,
         maxBalance,
         setMax,
+        fetchingSlippage,
         handleToggleShowInUsdc,
         handleInput,
         handleSubmit,

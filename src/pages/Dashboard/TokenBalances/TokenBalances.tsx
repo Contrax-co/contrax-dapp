@@ -8,6 +8,7 @@ import { TransferToken } from "src/components/modals/TransferToken/TransferToken
 import { Token } from "src/types";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
+import useWallet from "src/hooks/useWallet";
 
 interface IProps {}
 
@@ -16,6 +17,7 @@ export const TokenBalances: FC<IProps> = () => {
     const { tokens, lpTokens, isLoading, UIState } = useTokens();
     const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
+    const { networkId } = useWallet();
 
     const handleCloseModal = useCallback(() => setSelectedToken(undefined), [setSelectedToken]);
 
@@ -49,9 +51,9 @@ export const TokenBalances: FC<IProps> = () => {
                                 key={i}
                                 className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
                                 onClick={() =>
-                                    token.network === "Mainnet" || token.network === "Polygon"
-                                        ? navigate("/exchange/?tab=Bridge")
-                                        : setSelectedToken(token)
+                                    networkId === token.networkId
+                                        ? setSelectedToken(token)
+                                        : navigate("/exchange/?tab=Bridge")
                                 }
                             >
                                 <img className={styles.tokenLogo} src={token.logo} alt="logo" />
@@ -96,9 +98,9 @@ export const TokenBalances: FC<IProps> = () => {
                                     key={i}
                                     className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
                                     onClick={() =>
-                                        token.name === "ETH" && token.network === "Mainnet"
-                                            ? navigate("/exchange/?tab=bridge")
-                                            : setSelectedToken(token)
+                                        networkId === token.networkId
+                                            ? setSelectedToken(token)
+                                            : navigate("/exchange/?tab=Bridge")
                                     }
                                 >
                                     <span style={{ display: "flex" }}>

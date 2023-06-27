@@ -10,6 +10,13 @@ import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
 import { utils } from "ethers";
 import { useDecimals } from "../useDecimals";
+import usePriceOfTokens from "../usePriceOfTokens";
+import { toEth } from "src/utils/common";
+
+interface Deposit {
+    depositAmount: number;
+    max?: boolean;
+}
 
 const useDeposit = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
@@ -17,12 +24,32 @@ const useDeposit = (farm: Farm) => {
     const { reloadBalances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
     const { decimals } = useDecimals();
+    const { prices } = usePriceOfTokens();
 
-    const _deposit = async ({ depositAmount, max }: { depositAmount: number; max?: boolean }) => {
+    const _deposit = async ({ depositAmount, max }: Deposit) => {
         let amountInWei = utils.parseUnits(depositAmount.toString(), decimals[farm.lp_address]);
         await farmFunctions[farm.id].deposit({ amountInWei, currentWallet, signer, chainId, max });
         reloadBalances();
         reloadSupplies();
+    };
+
+    const slippageDeposit = async ({ depositAmount, max }: Deposit) => {
+        let amountInWei = utils.parseUnits(depositAmount.toString(), decimals[farm.lp_address]);
+        //  @ts-ignore
+        const difference = await farmFunctions[farm.id]?.depositSlippage({
+            amountInWei,
+            currentWallet,
+            signer,
+            chainId,
+            max,
+            farm,
+        });
+
+        const afterDepositAmount = Number(toEth(difference, decimals[farm.lp_address])) * prices[farm.lp_address];
+        const beforeDepositAmount = depositAmount * prices[farm.lp_address];
+        let slippage = (1 - afterDepositAmount / beforeDepositAmount) * 100;
+        if (slippage < 0) slippage = 0;
+        return { afterDepositAmount, beforeDepositAmount, slippage };
     };
 
     const {
@@ -43,7 +70,7 @@ const useDeposit = (farm: Farm) => {
         return depositInIsMutating > 0;
     }, [depositInIsMutating]);
 
-    return { isLoading, depositAsync, status, deposit };
+    return { isLoading, depositAsync, status, deposit, slippageDeposit };
 };
 
 export default useDeposit;

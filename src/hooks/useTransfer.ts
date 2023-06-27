@@ -16,11 +16,11 @@ import { isGasSponsored } from "src/api";
 const useTransfer = () => {
     const { signer, currentWallet } = useWallet();
     const { NETWORK_NAME } = useConstants();
-    const { ethBalance } = useBalances();
 
     const _transferEth = async ({ to, amount, max }: { to: string; amount: BigNumber; max?: boolean }) => {
         if (!signer) return;
-        if (max) amount = ethBalance;
+        const balance = await signer.getBalance();
+        if (max) amount = balance;
         if (getConnectorId() !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
             const afterGasCut = await subtractGas(
                 amount,
@@ -29,14 +29,14 @@ const useTransfer = () => {
                     to,
                     value: amount,
                 }),
-                false
+                false,
+                balance
             );
             if (!afterGasCut) {
                 throw { message: errorMessages.insufficientGas().message };
             }
             amount = afterGasCut;
         }
-
         const response = await awaitTransaction(
             signer?.sendTransaction({
                 to,

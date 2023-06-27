@@ -3,7 +3,6 @@ import { ExternallyOwnedAccount } from "@ethersproject/abstract-signer";
 import { BytesLike, Deferrable, SigningKey } from "ethers/lib/utils.js";
 import { Wallet, providers } from "ethers";
 import { backendApi } from "src/api";
-import { provider } from "src/config/walletConfig";
 
 interface SponsoredTransactionRequest {
     transactionRequest: TransactionRequest;

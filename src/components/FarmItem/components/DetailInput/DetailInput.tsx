@@ -30,8 +30,11 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         setMax,
         handleInput,
         handleSubmit,
+
+        fetchingSlippage,
         handleToggleShowInUsdc,
         isLoadingFarm,
+        slippage,
         isLoadingTransaction,
     } = useDetailInput(farm);
     const { farmDetails } = useFarmDetails();
@@ -122,6 +125,17 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                         : "Withdraw"
                     : "Enter Amount"}
             </button>
+
+            <div style={{ justifyContent: "flex-start" }} className="center">
+                <p className={styles.slippage}>Slippage: &nbsp;</p>
+                <p className={styles.slippage}>
+                    {fetchingSlippage ? (
+                        <Skeleton w={50} h={20} style={{}} />
+                    ) : (
+                        `${slippage?.toString() && !isNaN(slippage) ? slippage?.toFixed(2) : "- "}%`
+                    )}
+                </p>
+            </div>
         </form>
     );
 };

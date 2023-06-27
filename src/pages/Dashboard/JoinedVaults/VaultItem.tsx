@@ -13,9 +13,9 @@ interface Props {
 function useOldPrice(address: string) {
     const { isLoadingEarnings } = useFarmDetails();
     const oldPrice = useAppSelector((state) => state.prices.oldPrices[address]);
-    const isLoadingOldPrices = useAppSelector((state) => state.prices.isLoadingOldPrices);
+    const { isFetchingOldPrices, isLoadedOldPrices } = useAppSelector((state) => state.prices);
 
-    return { oldPrice, isLoading: isLoadingEarnings || isLoadingOldPrices };
+    return { oldPrice, isLoading: (isLoadingEarnings || isFetchingOldPrices) && !isLoadedOldPrices };
 }
 
 const VaultItem: React.FC<Props> = ({ vault }) => {
@@ -102,7 +102,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
                     <div className={styles.property}>
                         <div className={styles.title}>
-                            <p>Your Stake</p>
+                            <p>APY</p>
                         </div>
                         <div className={styles.value}>
                             <p>

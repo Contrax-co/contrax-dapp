@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
 import { StateInterface, UpdateBalancesActionPayload, TotalSupplies } from "./types";
+import tokens from "src/config/constants/tokens";
+import { defaultChainId } from "src/config/constants";
 
 const initialState: StateInterface = { totalSupplies: {}, isLoading: false, isFetched: false };
 
@@ -12,6 +14,9 @@ export const fetchTotalSupplies = createAsyncThunk(
         farms.forEach((farm) => {
             addresses.add(farm.vault_addr.toLowerCase());
             addresses.add(farm.lp_address.toLowerCase());
+        });
+        tokens.forEach((token) => {
+            if (token.chainId === defaultChainId) addresses.add(token.address.toLowerCase());
         });
         const addressesArray = Array.from(addresses);
         let promises = addressesArray.map((address) =>

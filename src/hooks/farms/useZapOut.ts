@@ -8,22 +8,48 @@ import farmFunctions from "src/api/pools";
 import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
 import { useDecimals } from "../useDecimals";
-import { utils } from "ethers";
-import useFarmDetails from "./useFarmDetails";
-import { toWei } from "src/utils/common";
+import { toEth, toWei } from "src/utils/common";
+import usePriceOfTokens from "../usePriceOfTokens";
+
+export interface ZapOut {
+    withdrawAmt: number;
+    max?: boolean;
+    token: string;
+}
 
 const useZapOut = (farm: Farm) => {
     const { signer, currentWallet, networkId: chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
-    const { reloadBalances } = useBalances();
+    const { reloadBalances, balances } = useBalances();
     const { decimals } = useDecimals();
+    const { prices } = usePriceOfTokens();
     const { reloadSupplies } = useTotalSupplies();
 
-    const _zapOut = async ({ withdrawAmt, max, token }: { withdrawAmt: number; max?: boolean; token: string }) => {
-        let amountInWei = toWei(withdrawAmt, decimals[token]);
+    const _zapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
+        let amountInWei = toWei(withdrawAmt, decimals[farm.lp_address]);
         await farmFunctions[farm.id].zapOut({ amountInWei, currentWallet, signer, chainId, max, token });
         reloadBalances();
         reloadSupplies();
+    };
+
+    const slippageZapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
+        let amountInWei = toWei(withdrawAmt, decimals[farm.lp_address]);
+
+        //  @ts-ignore
+        const difference = await farmFunctions[farm.id]?.zapOutSlippage({
+            currentWallet,
+            amountInWei,
+            balances,
+            signer,
+            chainId,
+            max,
+            token,
+        });
+        const afterWithdrawAmount = Number(toEth(difference, decimals[token])) * prices[token];
+        const beforeWithdrawAmount = withdrawAmt * prices[farm.lp_address];
+        let slippage = (1 - afterWithdrawAmount / beforeWithdrawAmount) * 100;
+        if (slippage < 0) slippage = 0;
+        return { afterWithdrawAmount, beforeWithdrawAmount, slippage };
     };
 
     const {
@@ -44,7 +70,7 @@ const useZapOut = (farm: Farm) => {
         return zapOutIsMutating > 0;
     }, [zapOutIsMutating]);
 
-    return { isLoading, zapOut, zapOutAsync, status };
+    return { isLoading, zapOut, zapOutAsync, status, slippageZapOut };
 };
 
 export default useZapOut;

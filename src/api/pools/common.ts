@@ -16,6 +16,8 @@ import {
     DepositFn,
     DynamicFarmFunctions,
     GetFarmDataProcessedFn,
+    SlippageInBaseFn,
+    SlippageOutBaseFn,
     TokenAmounts,
     WithdrawFn,
     ZapInArgs,
@@ -28,7 +30,13 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { backendApi, isGasSponsored } from "..";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
-import { filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
+import {
+    filterAssetChanges,
+    filterBalanceChanges,
+    filterStateDiff,
+    getAllowanceStateOverride,
+    simulateTransaction,
+} from "../tenderly";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -170,9 +178,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
     }
 };
 
-// TODO: move to tenderly and work in progress
-
-export const slippageIn: ZapInBaseFn = async (args) => {
+export const slippageIn: SlippageInBaseFn = async (args) => {
     let { amountInWei, balances, chainId, currentWallet, token, max, signer, tokenIn, farm } = args;
     const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
     const wethAddress = addressesByChainId[chainId].wethAddress;
@@ -214,7 +220,7 @@ export const slippageIn: ZapInBaseFn = async (args) => {
                     value: balance,
                 })
             );
-            if (!afterGasCut) return;
+            if (!afterGasCut) return BigNumber.from(0);
             amountInWei = afterGasCut;
         }
         //#endregion
@@ -222,18 +228,93 @@ export const slippageIn: ZapInBaseFn = async (args) => {
         const populated = await zapperContract.populateTransaction.zapInETH(farm.vault_addr, 0, token, {
             value: amountInWei,
         });
+
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
-        console.log(populated);
+    } else {
+        const populated = await zapperContract.populateTransaction.zapIn(farm.vault_addr, 0, token, amountInWei);
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
     }
-
+    console.log(transaction, farm);
     const simulationResult = await simulateTransaction({
         /* Standard EVM Transaction object */
         ...transaction,
         to: farm.zapper_addr,
     });
-    console.log(simulationResult);
-
+    console.log({ simulationResult });
     const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
-    console.log(filteredState);
+    const difference = BigNumber.from(filteredState.afterChange[args.currentWallet.toLowerCase()]).sub(
+        BigNumber.from(filteredState.original[args.currentWallet.toLowerCase()])
+    );
+
+    return difference;
+};
+
+export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max, amountInWei, currentWallet }) => {
+    const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
+    const transaction = {} as Omit<
+        TenderlySimulateTransactionBody,
+        "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
+    >;
+    transaction.from = currentWallet;
+    const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer?.provider!);
+
+    //#region Approve
+    transaction.state_overrides = getAllowanceStateOverride([
+        {
+            tokenAddress: farm.vault_addr,
+            owner: currentWallet,
+            spender: farm.zapper_addr,
+        },
+        {
+            tokenAddress: farm.lp_address,
+            owner: currentWallet,
+            spender: farm.zapper_addr,
+        },
+    ]);
+    //#endregion
+
+    //#region Zapping Out
+    if (max) {
+        amountInWei = vaultBalance;
+    }
+    if (token === constants.AddressZero) {
+        const populated = await zapperContract.populateTransaction.zapOutAndSwapEth(
+            farm.vault_addr,
+            max ? vaultBalance : amountInWei,
+            0
+        );
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    } else {
+        const populated = await zapperContract.populateTransaction.zapOutAndSwap(
+            farm.vault_addr,
+            max ? vaultBalance : amountInWei,
+            token,
+            0
+        );
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    }
+
+    //#endregion
+    const simulationResult = await simulateTransaction({
+        /* Standard EVM Transaction object */
+        ...transaction,
+        to: farm.zapper_addr,
+    });
+
+    let difference = BigNumber.from(0);
+    if (token === constants.AddressZero) {
+        const { before, after } = filterBalanceChanges(currentWallet, simulationResult.balanceDiff);
+        difference = BigNumber.from(after).sub(before || "0");
+    } else {
+        const { added, subtracted } = filterAssetChanges(token, currentWallet, simulationResult.assetChanges);
+        difference = BigNumber.from(added).sub(subtracted);
+    }
+
+    return difference;
 };

@@ -3,17 +3,21 @@ import { CHAIN_ID } from "src/types/enums";
 export const RoutesPaths = {
     Home: "/",
     Farms: "/farms",
-    CreateToken: "/create-token",
-    CreatePool: "/create-pool",
-    Exchange: "/exchange",
+    Swap: "/swap",
+    Bridge: "/bridge",
     Buy: "/buy",
+    Deposit: "/deposit",
+    Stats: "/stats",
+    Test: "/Test",
 };
 
 export const MAX_GAS_UNITS_PER_TRANSACTION = "700000";
 export const defaultChainId = CHAIN_ID.ARBITRUM; // Arbitrum
 export const defaultNetworkName = "arbitrum";
 export const web3AuthConnectorId = "web3auth";
+export const isDev = process.env.NODE_ENV === "development";
 
+export const GATEFI_MERCHANT_ID = process.env.REACT_APP_GATEFI_MERCHANT_ID as string;
 export const SOCKET_BRIDGE_KEY = process.env.REACT_APP_SOCKET_BRIDGE_KEY;
 export const SOCKET_API_KEY = process.env.REACT_APP_SOCKET_API_KEY;
 export const RAMP_TRANSAK_API_KEY = process.env.REACT_APP_RAMP_TRANSAK_API_KEY;
@@ -33,3 +37,9 @@ export const TENDERLY_PROJECT_SLUG = process.env.REACT_APP_TENDERLY_PROJECT_SLUG
 export const TENDERLY_USER_NAME = process.env.REACT_APP_TENDERLY_USER_NAME;
 export const WERT_PARTNER_ID = process.env.REACT_APP_WERT_PARTNER_ID;
 export const INFURA_KEY = process.env.REACT_APP_INFURA;
+
+// export const FRONT_URL = process.env.REACT_APP_FRONT_URL_SANDBOX as string;
+// export const FRONT_API_KEY = process.env.REACT_APP_FRONT_API_KEY_SANDBOX as string;
+export const FRONT_URL = process.env.REACT_APP_FRONT_URL as string;
+export const FRONT_API_KEY = process.env.REACT_APP_FRONT_API_KEY as string;
+export const FRONT_CLIENT_ID = process.env.REACT_APP_FRONT_CLIENT_ID as string;

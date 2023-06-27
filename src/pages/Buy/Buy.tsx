@@ -1,5 +1,4 @@
 import React from "react";
-import useWallet from "src/hooks/useWallet";
 import styles from "./Buy.module.scss";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { Tabs } from "src/components/Tabs/Tabs";
@@ -7,17 +6,15 @@ import { useSearchParams } from "react-router-dom";
 import useBalances from "src/hooks/useBalances";
 import Transak from "./Transak";
 import Wert from "./Wert";
-import { useAppSelector } from "src/state";
-import useBridge from "src/hooks/useBridge";
 import useAccountData from "src/hooks/useAccountData";
-import { TiWarningOutline } from "react-icons/ti";
-import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
+import Gatefi from "./Gatefi";
 
 interface IProps {}
 
 enum Tab {
-    Wert = "Wert",
+    Unlimit = "Unlimit",
     Transak = "Transak",
+    Wert = "Wert",
 }
 
 const Buy: React.FC<IProps> = () => {
@@ -25,7 +22,6 @@ const Buy: React.FC<IProps> = () => {
     const [params, setSearchParams] = useSearchParams();
     const { reloadBalances, balances } = useBalances();
     const { fetchAccountData } = useAccountData();
-    const { currentWallet } = useWallet();
     // const { lock } = useBridge();
 
     // Reload Balances every time this component unmounts
@@ -49,12 +45,12 @@ const Buy: React.FC<IProps> = () => {
         if (tab) setTab(tab as Tab);
         else
             setSearchParams((params) => {
-                params.set("tab", Tab.Wert);
+                params.set("tab", Tab.Unlimit);
                 return params;
             });
     }, [params]);
 
-    return currentWallet ? (
+    return (
         <div className={styles.container}>
             <h5>Fund Your Account</h5>
             <p>
@@ -63,36 +59,26 @@ const Buy: React.FC<IProps> = () => {
             <small>Note: If Wert isn't supported for you, use Transak</small>
 
             <Tabs>
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(Tab.Wert);
-                        setSearchParams((params) => {
-                            params.set("tab", Tab.Wert);
-                            return params;
-                        });
-                    }}
-                    description="Wert"
-                    active={tab === Tab.Wert}
-                />
-                <PoolButton
-                    variant={2}
-                    onClick={() => {
-                        setTab(Tab.Transak);
-                        setSearchParams((params) => {
-                            params.set("tab", Tab.Transak);
-                            return params;
-                        });
-                    }}
-                    description="Transak"
-                    active={tab === Tab.Transak}
-                />
+                {Object.values(Tab).map((_tab, i) => (
+                    <PoolButton
+                        key={i}
+                        variant={2}
+                        onClick={() => {
+                            setTab(_tab);
+                            setSearchParams((params) => {
+                                params.set("tab", _tab);
+                                return params;
+                            });
+                        }}
+                        description={_tab}
+                        active={tab === _tab}
+                    />
+                ))}
             </Tabs>
             {tab === Tab.Transak && <Transak />}
             {tab === Tab.Wert && <Wert />}
+            {tab === Tab.Unlimit && <Gatefi />}
         </div>
-    ) : (
-        <NotSignedIn />
     );
 };
 

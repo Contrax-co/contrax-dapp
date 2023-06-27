@@ -28,3 +28,16 @@ export enum CHAIN_ID {
     POLYGON = 137,
     ARBITRUM = 42161,
 }
+
+export enum UsersTableColumns {
+    Address = "Address",
+    TVL = "TVL",
+    Referrer = "Referrer",
+}
+
+export enum VaultsTableColumns {
+    Title = "Title",
+    DepositedTvl = "Deposited Tvl",
+    AverageDeposits = "Average Deposits",
+    NoOfDeposits = "No of Deposits",
+}

@@ -119,11 +119,20 @@ const useNativeBalance = (currentWallet: `0x${string}` | undefined, chainId: num
         refetchInterval: 60000,
     });
 
-    const { data: bal } = useBalance({
+    const { data: bal, refetch } = useBalance({
         address: currentWallet,
         chainId: chainId,
-        watch: true,
+        enabled: !!currentWallet,
     });
+
+    useEffect(() => {
+        const int = setInterval(() => {
+            if (currentWallet) refetch();
+        }, 10000);
+        return () => {
+            clearInterval(int);
+        };
+    }, [currentWallet]);
 
     return {
         ...bal,
@@ -199,6 +208,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         });
 
         const privateKey = await _provider.provider.request!({ method: "eth_private_key" });
+        if (!privateKey) {
+            console.log("%cPrivate key not found", "color: magenta;");
+            return defaultSigner || signer;
+        }
         return new GasSponsoredSigner(privateKey, _provider);
     };
 

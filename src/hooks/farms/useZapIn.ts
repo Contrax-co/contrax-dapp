@@ -8,9 +8,9 @@ import farmFunctions from "src/api/pools";
 import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
 import { useDecimals } from "../useDecimals";
-import { utils } from "ethers";
 import { toWei } from "src/utils/common";
-import useFarmDetails from "./useFarmDetails";
+import usePriceOfTokens from "../usePriceOfTokens";
+import { toEth } from "./../../utils/common";
 
 export interface ZapIn {
     zapAmount: number;
@@ -24,6 +24,7 @@ const useZapIn = (farm: Farm) => {
     const { reloadBalances, balances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
     const { decimals } = useDecimals();
+    const { prices } = usePriceOfTokens();
 
     const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
         let amountInWei = toWei(zapAmount, decimals[token]);
@@ -36,18 +37,29 @@ const useZapIn = (farm: Farm) => {
             max,
             token,
         });
-        // // @ts-ignore
-        // await farmFunctions[farm.id]?.zapInSlippage({
-        //     currentWallet,
-        //     amountInWei,
-        //     balances,
-        //     signer,
-        //     chainId,
-        //     max,
-        //     token,
-        // });
+
         reloadBalances();
         reloadSupplies();
+    };
+
+    const slippageZapIn = async ({ zapAmount, max, token }: ZapIn) => {
+        let amountInWei = toWei(zapAmount, decimals[token]);
+
+        //  @ts-ignore
+        const difference = await farmFunctions[farm.id]?.zapInSlippage({
+            currentWallet,
+            amountInWei,
+            balances,
+            signer,
+            chainId,
+            max,
+            token,
+        });
+        const afterDepositAmount = Number(toEth(difference)) * prices[farm.lp_address];
+        const beforeDepositAmount = zapAmount * prices[token];
+        let slippage = (1 - afterDepositAmount / beforeDepositAmount) * 100;
+        if (slippage < 0) slippage = 0;
+        return { afterDepositAmount, beforeDepositAmount, slippage };
     };
 
     const {
@@ -68,7 +80,7 @@ const useZapIn = (farm: Farm) => {
         return zapInIsMutating > 0;
     }, [zapInIsMutating]);
 
-    return { isLoading, zapIn, zapInAsync, status };
+    return { isLoading, zapIn, zapInAsync, status, slippageZapIn };
 };
 
 export default useZapIn;

@@ -1,5 +1,24 @@
 version: 0.2
 
+env:
+  secrets-manager: 
+    REACT_APP_WEB3AUTH_CLIENT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WEB3AUTH_CLIENT_ID_PRODUCTION
+    REACT_APP_RAMP_TRANSAK_API_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TRANSAK_RAMP_API_KEY_PRODUCTION
+    REACT_APP_WERT_PARTNER_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WERT_PARTNER_ID_PRODUCTION
+    REACT_APP_SOCKET_API_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:SOCKET_API_KEY_PRODUCTION
+    REACT_APP_SOCKET_BRIDGE_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:SOCKET_BRIDGE_KEY_PRODUCTION
+    REACT_APP_TENDERLY_ACCESS_TOKEN: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TENDERLY_ACCESS_TOKEN
+    REACT_APP_TENDERLY_PROJECT_SLUG: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TENDERLY_PROJECT_SLUG
+    REACT_APP_TENDERLY_USER_NAME: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TENDERLY_USER_NAME
+    REACT_APP_INFURA: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:INFURA_KEY
+    REACT_APP_GATEFI_MERCHANT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:GATEFI_MERCHANT_ID_PRODUCTION
+    REACT_APP_FRONT_URL: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_PROD_URL
+    REACT_APP_FRONT_API_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_PROD_API_KEY
+    REACT_APP_FRONT_CLIENT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_CLIENT_ID
+    REACT_APP_FRONT_URL_SANDBOX: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_SANDBOX_URL
+    REACT_APP_FRONT_API_KEY_SANDBOX: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_SANDBOX_API_KEY
+
+
 phases:
   install:
     runtime-versions:

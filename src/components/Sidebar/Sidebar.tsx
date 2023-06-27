@@ -1,10 +1,13 @@
 import SidebarItem from "./SidebarItem";
-import { MdSpaceDashboard } from "react-icons/md";
+import { MdSpaceDashboard, MdTransform } from "react-icons/md";
 import { HiDocumentText } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { FaExchangeAlt } from "react-icons/fa";
 import { BsCurrencyExchange } from "react-icons/bs";
+import { ImStatsDots } from "react-icons/im";
+import { IoIosFlask } from "react-icons/io";
 import { ReactComponent as EarnIcon } from "src/assets/images/earn.svg";
+import { ReactComponent as DepositIcon } from "src/assets/images/deposit.svg";
 import logo from "src/assets/images/logo.png";
 import logo2 from "src/assets/images/logo-4x.png";
 import LightModeToggle from "src/components/LightModeToggle/LightModeToggle";
@@ -52,19 +55,38 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
 
                 <SidebarItem
-                    title="Exchange"
+                    title="Swap"
                     icon={<FaExchangeAlt size={18} />}
-                    onClick={() => handleNavigation(RoutesPaths.Exchange)}
-                    active={pathname === RoutesPaths.Exchange}
+                    onClick={() => handleNavigation(RoutesPaths.Swap)}
+                    active={pathname === RoutesPaths.Swap}
                 />
-
+                <SidebarItem
+                    title="Bridge"
+                    icon={<MdTransform size={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Bridge)}
+                    active={pathname === RoutesPaths.Bridge}
+                />
+                <SidebarItem
+                    title="Front"
+                    icon={<DepositIcon width={16} />}
+                    onClick={() => handleNavigation(RoutesPaths.Deposit)}
+                    active={pathname === RoutesPaths.Deposit}
+                />
                 {process.env.NODE_ENV === "development" && (
-                    <SidebarItem
-                        title="Test"
-                        icon={<BsCurrencyExchange size={18} />}
-                        onClick={() => handleNavigation("/test")}
-                        active={pathname === "/test"}
-                    />
+                    <>
+                        <SidebarItem
+                            title="Stats"
+                            icon={<ImStatsDots size={15} />}
+                            onClick={() => handleNavigation(RoutesPaths.Stats)}
+                            active={pathname === RoutesPaths.Stats}
+                        />
+                        <SidebarItem
+                            title="Test"
+                            icon={<IoIosFlask size={18} />}
+                            onClick={() => handleNavigation(RoutesPaths.Test)}
+                            active={pathname === RoutesPaths.Test}
+                        />
+                    </>
                 )}
                 <SidebarItem
                     title="User Guide"

@@ -3,7 +3,6 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Farms from "src/pages/Farms/Farms";
 import Dashboard from "src/pages/Dashboard/Dashboard";
-import Exchange from "./pages/Exchange/Exchange";
 import Test from "./pages/Test/Test";
 import usePriceOfTokens from "./hooks/usePriceOfTokens";
 import { useFarmApys } from "./hooks/farms/useFarmApy";
@@ -13,7 +12,14 @@ import useTotalSupplies from "./hooks/useTotalSupplies";
 import { useDecimals } from "./hooks/useDecimals";
 import Buy from "./pages/Buy/Buy";
 import useAccountData from "./hooks/useAccountData";
-import useBridge from "./hooks/useBridge";
+import useBridge from "./hooks/bridge/useBridge";
+import Stats from "./pages/Stats/Stats";
+import Front from "./pages/Front/Front";
+import { RoutesPaths } from "./config/constants";
+import Swap from "./pages/Swap/Swap";
+import Bridge from "./pages/Bridge/Bridge";
+import { SignInRequiredWrapper } from "./components/SignInRequiredWrapper/SignInRequiredWrapper";
+import { BridgeDirection } from "./state/ramp/types";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -23,10 +29,12 @@ function Body() {
     const { reloadSupplies } = useTotalSupplies();
     const { reloadFarmData } = useFarmDetails();
     const { fetchAccountData } = useAccountData();
-    const { isBridgePending } = useBridge();
+    const { isBridgePending } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
+    const { isBridgePending: isBridgePendingEth } = useBridge(BridgeDirection.ETH_POLYGON_TO_ARBITRUM_ETH);
 
     useEffect(() => {
         isBridgePending();
+        isBridgePendingEth();
     }, []);
 
     useEffect(() => {
@@ -84,12 +92,43 @@ function Body() {
 
     return (
         <Routes>
-            <Route path="/" element={<Home />}>
+            <Route path={RoutesPaths.Home} element={<Home />}>
                 <Route path="" element={<Dashboard />} />
-                <Route path="/buy" element={<Buy />} />
-                <Route path="/farms" element={<Farms />} />
-                <Route path="/exchange" element={<Exchange />} />
-                <Route path="test" element={<Test />} />
+                <Route
+                    path={RoutesPaths.Deposit}
+                    element={
+                        <SignInRequiredWrapper>
+                            <Front />
+                        </SignInRequiredWrapper>
+                    }
+                />
+                <Route
+                    path={RoutesPaths.Buy}
+                    element={
+                        <SignInRequiredWrapper>
+                            <Buy />
+                        </SignInRequiredWrapper>
+                    }
+                />
+                <Route path={RoutesPaths.Farms} element={<Farms />} />
+                <Route
+                    path={RoutesPaths.Swap}
+                    element={
+                        <SignInRequiredWrapper>
+                            <Swap />
+                        </SignInRequiredWrapper>
+                    }
+                />
+                <Route
+                    path={RoutesPaths.Bridge}
+                    element={
+                        <SignInRequiredWrapper>
+                            <Bridge />
+                        </SignInRequiredWrapper>
+                    }
+                />
+                <Route path={RoutesPaths.Test} element={<Test />} />
+                <Route path={RoutesPaths.Stats} element={<Stats />} />
                 <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
             </Route>
         </Routes>

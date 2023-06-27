@@ -105,6 +105,17 @@ export const getBalance = async (
     multicallProvider: MulticallProvider | providers.Provider | Signer
 ): Promise<BigNumber> => {
     try {
+        if (tokenAddress === constants.AddressZero) {
+            // @ts-ignore
+            if (multicallProvider._isSigner) {
+                // @ts-ignore
+                const res = await multicallProvider.getBalance();
+                return res;
+            } else {
+                const res = await multicallProvider.getBalance(address);
+                return res;
+            }
+        }
         const contract = new Contract(
             tokenAddress,
             ["function balanceOf(address) view returns (uint)"],

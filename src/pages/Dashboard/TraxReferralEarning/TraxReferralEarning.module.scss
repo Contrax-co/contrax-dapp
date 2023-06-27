@@ -1,0 +1,32 @@
+.container {
+    width: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--color_primary);
+    position: relative;
+    overflow: hidden;
+
+    p {
+        margin: 0px;
+    }
+}
+
+.heading {
+    font-size: 20px;
+    font-weight: bold;
+}
+.value {
+    font-size: 40px;
+    font-weight: bold;
+
+    svg {
+        width: 110px;
+        height: 100px;
+        position: absolute;
+        bottom: -20px;
+        right: 8px;
+    }
+}
