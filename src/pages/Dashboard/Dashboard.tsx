@@ -124,8 +124,8 @@ function Dashboard() {
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
-                <TraxEarning />
-                <TraxReferralEarning />
+                {/* <TraxEarning />
+                <TraxReferralEarning /> */}
                 <ReferralEarning />
                 <BridgeBtn />
                 <BridgeEthBtn />
