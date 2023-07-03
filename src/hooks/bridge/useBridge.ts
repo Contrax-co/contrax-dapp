@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useBalance, useSigner } from "wagmi";
 import useWallet from "../useWallet";
 import { constants, ethers } from "ethers";
@@ -12,9 +12,11 @@ import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import { useQuery } from "@tanstack/react-query";
 import { getPrice } from "src/api/token";
 import { BridgeChainInfo, BridgeDirection } from "src/state/ramp/types";
+import useBalances from "../useBalances";
 
 const useBridge = (direction: BridgeDirection) => {
     const { getWeb3AuthSigner, currentWallet, switchNetworkAsync, networkId } = useWallet();
+    const { balances, polygonBalances, reloadBalances } = useBalances();
     const { data: price } = useQuery({
         queryKey: GET_PRICE_TOKEN(
             getNetworkName(BridgeChainInfo[direction].sourceChainId),
@@ -23,15 +25,15 @@ const useBridge = (direction: BridgeDirection) => {
         queryFn: () => getPrice(BridgeChainInfo[direction].sourceAddress, BridgeChainInfo[direction].sourceChainId),
         refetchInterval: 60000,
     });
-    const { data, refetch } = useBalance({
-        address: currentWallet as `0x${string}`,
-        chainId: BridgeChainInfo[direction].sourceChainId,
-        token:
-            BridgeChainInfo[direction].sourceAddress !== constants.AddressZero
-                ? (BridgeChainInfo[direction].sourceAddress as `0x${string}`)
-                : undefined,
-        enabled: !!currentWallet,
-    });
+
+    const balance = useMemo(() => {
+        if (BridgeChainInfo[direction].sourceChainId === CHAIN_ID.POLYGON) {
+            return polygonBalances[BridgeChainInfo[direction].sourceAddress];
+        } else if (BridgeChainInfo[direction].sourceChainId === CHAIN_ID.ARBITRUM) {
+            return balances[BridgeChainInfo[direction].sourceAddress];
+        }
+    }, [polygonBalances, balances, direction]);
+
     const isLoading = useAppSelector((state) => state.ramp.bridgeStates[direction].isBridging);
     const checkingStatus = useAppSelector((state) => state.ramp.bridgeStates[direction].checkingStatus);
 
@@ -44,7 +46,7 @@ const useBridge = (direction: BridgeDirection) => {
 
     const startBridging = async () => {
         if (!polygonSigner) return;
-        dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner, refechBalance: refetch, direction }));
+        dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner, refechBalance: reloadBalances, direction }));
     };
 
     const isBridgePending = () => {
@@ -57,16 +59,6 @@ const useBridge = (direction: BridgeDirection) => {
         });
     }, [getWeb3AuthSigner]);
 
-    React.useEffect(() => {
-        const int = setInterval(() => {
-            if (currentWallet) refetch();
-        }, 10000);
-
-        return () => {
-            clearInterval(int);
-        };
-    }, []);
-
     const wrongNetwork = React.useMemo(() => {
         if (networkId !== CHAIN_ID.POLYGON && getConnectorId() !== web3AuthConnectorId) {
             return true;
@@ -75,15 +67,21 @@ const useBridge = (direction: BridgeDirection) => {
     }, [networkId, switchNetworkAsync, getConnectorId()]);
 
     const usdAmount = React.useMemo(() => {
-        return Number(data?.formatted) * (price || 0);
-    }, [price, data]);
+        const formatted = toEth(balance || 0, BridgeChainInfo[direction].sourceDecimals);
+        return Number(formatted) * (price || 0);
+    }, [price, balance, direction]);
+
+    const formattedBalance = React.useMemo(
+        () => customCommify(toEth(balance || "0", BridgeChainInfo[direction].sourceDecimals)),
+        [balance, direction]
+    );
 
     return {
         startBridging,
         isLoading,
         isBridgePending,
         wrongNetwork,
-        formattedBalance: customCommify(toEth(data?.value || "0", data?.decimals)),
+        formattedBalance,
         usdAmount,
     };
 };

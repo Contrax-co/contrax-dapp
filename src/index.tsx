@@ -13,7 +13,6 @@ import AppProvider from "./context/AppProvider";
 import "src/api/interceptor";
 import { supportChatConfig } from "./config/supportChat";
 
-
 // Configuration for toast notifications
 setUpNotifications({
     defaultProps: {
