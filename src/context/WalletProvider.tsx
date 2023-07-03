@@ -210,28 +210,31 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     };
 
-    const getWeb3AuthSigner = async (chainId?: number, defaultSigner?: ethers.Signer) => {
-        if (web3AuthConnectorId !== getConnectorId()) return defaultSigner || signer;
-        // @ts-ignore
-        const pkey = await getPkey();
-        const chain = chains.find((c) => c.id === chainId);
-        const _provider = await getWeb3AuthProvider({
-            chainId: chain?.id!,
-            blockExplorer: chain?.blockExplorers?.default.url!,
-            name: chain?.name!,
-            rpc: chain?.rpcUrls.default.http[0]!,
-            ticker: chain?.nativeCurrency.symbol!,
-            tickerName: chain?.nativeCurrency.name!,
-            pkey,
-        });
+    const getWeb3AuthSigner = React.useCallback(
+        async (chainId?: number, defaultSigner?: ethers.Signer) => {
+            if (web3AuthConnectorId !== getConnectorId()) return defaultSigner || signer;
+            // @ts-ignore
+            const pkey = await getPkey();
+            const chain = chains.find((c) => c.id === chainId);
+            const _provider = await getWeb3AuthProvider({
+                chainId: chain?.id!,
+                blockExplorer: chain?.blockExplorers?.default.url!,
+                name: chain?.name!,
+                rpc: chain?.rpcUrls.default.http[0]!,
+                ticker: chain?.nativeCurrency.symbol!,
+                tickerName: chain?.nativeCurrency.name!,
+                pkey,
+            });
 
-        const privateKey = await _provider.provider.request!({ method: "eth_private_key" });
-        if (!privateKey) {
-            console.log("%cPrivate key not found", "color: magenta;");
-            return defaultSigner || signer;
-        }
-        return new GasSponsoredSigner(privateKey, _provider);
-    };
+            const privateKey = await _provider.provider.request!({ method: "eth_private_key" });
+            if (!privateKey) {
+                console.log("%cPrivate key not found", "color: magenta;");
+                return defaultSigner || signer;
+            }
+            return new GasSponsoredSigner(privateKey, _provider);
+        },
+        [signer, getConnectorId()]
+    );
 
     React.useEffect(() => {
         if (chain) {
