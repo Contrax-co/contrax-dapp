@@ -1,11 +1,78 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { constants, Contract, utils } from "ethers";
 import { erc20ABI } from "wagmi";
-import { StateInterface, UpdateBalancesActionPayload } from "./types";
+import { StateInterface, UpdateBalancesActionPayload, UpdatePolygonBalancesActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
 import { defaultChainId } from "src/config/constants";
 
-const initialState: StateInterface = { balances: {}, isLoading: false, isFetched: false, account: "" };
+const initialState: StateInterface = {
+    balances: {},
+    mainnetBalances: {},
+    polygonBalances: {},
+    isLoading: false,
+    isFetched: false,
+    account: "",
+};
+
+export const fetchPolygonBalances = createAsyncThunk(
+    "balances/fetchPolygonBalances",
+    async ({ multicallProvider, account, addresses }: UpdatePolygonBalancesActionPayload, thunkApi) => {
+        // console.log("fetchPolygonBalances");
+        // console.trace();
+        let promises = addresses.map((address) =>
+            new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
+        );
+
+        const [maticBalance, ...balancesResponse] = await Promise.all([
+            multicallProvider.getBalance(account),
+            ...promises,
+        ]);
+
+        const balances = balancesResponse.reduce((accum: { [key: string]: string }, balance, index) => {
+            accum[addresses[index]] = balance.toString();
+            return accum;
+        }, {});
+
+        balances[constants.AddressZero] = maticBalance.toString();
+
+        // create address checksum
+        const checksummed: { [key: string]: string } = {};
+        Object.entries(balances).forEach(([key, value]) => {
+            checksummed[utils.getAddress(key)] = value;
+        });
+
+        return checksummed;
+    }
+);
+
+export const fetchMainnetBalances = createAsyncThunk(
+    "balances/fetchMainnetBalances",
+    async ({ multicallProvider, account, addresses }: UpdatePolygonBalancesActionPayload, thunkApi) => {
+        let promises = addresses.map((address) =>
+            new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
+        );
+
+        const [ethBalance, ...balancesResponse] = await Promise.all([
+            multicallProvider.getBalance(account),
+            ...promises,
+        ]);
+
+        const balances = balancesResponse.reduce((accum: { [key: string]: string }, balance, index) => {
+            accum[addresses[index]] = balance.toString();
+            return accum;
+        }, {});
+
+        balances[constants.AddressZero] = ethBalance.toString();
+
+        // create address checksum
+        const checksummed: { [key: string]: string } = {};
+        Object.entries(balances).forEach(([key, value]) => {
+            checksummed[utils.getAddress(key)] = value;
+        });
+
+        return checksummed;
+    }
+);
 
 export const fetchBalances = createAsyncThunk(
     "balances/fetchBalances",
@@ -57,6 +124,8 @@ const balancesSlice = createSlice({
         },
         reset(state) {
             state.balances = {};
+            state.mainnetBalances = {};
+            state.polygonBalances = {};
             state.isLoading = false;
             state.isFetched = false;
             state.account = "";
@@ -75,6 +144,18 @@ const balancesSlice = createSlice({
             state.isLoading = false;
             state.isFetched = false;
             state.balances = {};
+        });
+        builder.addCase(fetchPolygonBalances.fulfilled, (state, action) => {
+            state.polygonBalances = { ...action.payload };
+        });
+        builder.addCase(fetchMainnetBalances.fulfilled, (state, action) => {
+            state.mainnetBalances = { ...action.payload };
+        });
+        builder.addCase(fetchPolygonBalances.rejected, (state) => {
+            state.polygonBalances = {};
+        });
+        builder.addCase(fetchMainnetBalances.rejected, (state) => {
+            state.mainnetBalances = {};
         });
     },
 });

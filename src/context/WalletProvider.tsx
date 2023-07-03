@@ -14,7 +14,7 @@ import {
     useBalance,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { getConnectorId, getNetworkName } from "src/utils/common";
+import { getConnectorId, getNetworkName, toEth } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
@@ -73,6 +73,8 @@ interface IWalletContext {
     polygonBalance?: BalanceResult;
     mainnetBalance?: BalanceResult;
     arbitrumBalance?: BalanceResult;
+    mainnetMulticallProvider: providers.MulticallProvider;
+    polygonMulticallProvider: providers.MulticallProvider;
 }
 
 type BalanceResult = {
@@ -80,7 +82,7 @@ type BalanceResult = {
     usdAmount: number;
     decimals?: number | undefined;
     formatted?: string | undefined;
-    symbol?: string | undefined;
+    // symbol?: string | undefined;
     value?: ethers.ethers.BigNumber | undefined;
 };
 
@@ -112,38 +114,54 @@ const useWaleltSigner = () => {
     return signer;
 };
 
-const useNativeBalance = (currentWallet: `0x${string}` | undefined, chainId: number): BalanceResult => {
+const useNativeBalance = (chainId: number): BalanceResult => {
     const { data: price } = useQuery({
         queryKey: GET_PRICE_TOKEN(getNetworkName(chainId), ethers.constants.AddressZero),
         queryFn: () => getPrice(ethers.constants.AddressZero, chainId),
         refetchInterval: 60000,
     });
+    const { balances, mainnetBalances, polygonBalances } = useBalances();
 
-    const { data: bal, refetch } = useBalance({
-        address: currentWallet,
-        chainId: chainId,
-        enabled: !!currentWallet,
-    });
+    const balance = useMemo(() => {
+        switch (chainId) {
+            case CHAIN_ID.ARBITRUM:
+                return balances[ethers.constants.AddressZero];
+            case CHAIN_ID.MAINNET:
+                return mainnetBalances[ethers.constants.AddressZero];
+            case CHAIN_ID.POLYGON:
+                return polygonBalances[ethers.constants.AddressZero];
 
-    useEffect(() => {
-        const int = setInterval(() => {
-            if (currentWallet) refetch();
-        }, 10000);
-        return () => {
-            clearInterval(int);
-        };
-    }, [currentWallet]);
+            default:
+                return "0";
+        }
+    }, [chainId, balances, mainnetBalances, polygonBalances]);
+
+    const formatted = useMemo(() => toEth(balance || 0), [balance]);
+    const usdAmount = useMemo(() => (price || 0) * Number(formatted), [price, formatted]);
 
     return {
-        ...bal,
         price: price || 0,
-        usdAmount: (price || 0) * Number(bal?.formatted),
+        decimals: 18,
+        formatted,
+        value: ethers.BigNumber.from(balance || 0),
+        usdAmount,
     };
+};
+
+const useMulticallProvider = (chainId?: number) => {
+    const provider = useProvider({ chainId });
+    const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
+    useEffect(() => {
+        setMulticallProvider(getMulticallProvider(provider));
+    }, [provider, chainId]);
+    return multicallProvider;
 };
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
+    const mainnetMulticallProvider = useMulticallProvider(CHAIN_ID.MAINNET);
+    const polygonMulticallProvider = useMulticallProvider(CHAIN_ID.POLYGON);
     const { balances } = useBalances();
     const signer = useWaleltSigner();
 
@@ -154,9 +172,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { openConnectModal } = useConnectModal();
-    const polygonBalance = useNativeBalance(currentWallet, CHAIN_ID.POLYGON);
-    const mainnetBalance = useNativeBalance(currentWallet, CHAIN_ID.MAINNET);
-    const arbitrumBalance = useNativeBalance(currentWallet, CHAIN_ID.ARBITRUM);
+    const polygonBalance = useNativeBalance(CHAIN_ID.POLYGON);
+    const mainnetBalance = useNativeBalance(CHAIN_ID.MAINNET);
+    const arbitrumBalance = useNativeBalance(CHAIN_ID.ARBITRUM);
 
     const connectWallet = async () => {
         if (openConnectModal) openConnectModal();
@@ -271,6 +289,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 polygonBalance,
                 mainnetBalance,
                 arbitrumBalance,
+                mainnetMulticallProvider,
+                polygonMulticallProvider,
             }}
         >
             {children}

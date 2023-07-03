@@ -10,7 +10,7 @@ import { createClient, configureChains } from "wagmi";
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import { INFURA_KEY, WEB3AUTH_CLIENT_ID } from "./constants";
+import { INFURA_KEY, WEB3AUTH_CLIENT_ID, isDev } from "./constants";
 import googleIcon from "./../assets/images/google-logo.svg";
 import facebookIcon from "./../assets/images/facebook-icon.svg";
 import discordIcon from "./../assets/images/discordapp-icon.svg";
@@ -24,8 +24,17 @@ const clientId = WEB3AUTH_CLIENT_ID as string;
 arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
 arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
 
-// Configure chains & providers with the Alchemy provider.
-// Popular providers are Alchemy (alchemy.com), Infura (infura.io), Quicknode (quicknode.com) etc.
+const providersArray = [];
+
+if (INFURA_KEY && !isDev) {
+    providersArray.push(
+        infuraProvider({
+            apiKey: INFURA_KEY as string,
+        })
+    );
+}
+providersArray.push(publicProvider());
+
 export const { chains, provider, webSocketProvider } = configureChains(
     [
         arbitrum,
@@ -34,19 +43,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
 
         // optimism, avalanche, gnosis, fantom, bsc
     ],
-    [
-        infuraProvider({
-            apiKey: INFURA_KEY as string,
-        }),
-        // jsonRpcProvider({
-        //     rpc: (chain) => ({
-        //         http: chain.rpcUrls.default.http[0],
-        //         webSocket: chain.rpcUrls?.default?.webSocket && chain.rpcUrls?.default?.webSocket[0],
-        //     }),
-        // }),
-
-        publicProvider(),
-    ]
+    providersArray
 );
 
 // Instantiating Web3Auth
