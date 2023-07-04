@@ -98,7 +98,7 @@ const { wallets } = getDefaultWallets({
     appName: "Contrax",
     chains,
 });
-
+delete wallets[0].wallets[4];
 const connectors = connectorsForWallets([
     {
         groupName: "Social",
@@ -192,6 +192,8 @@ const connectors = connectorsForWallets([
     },
     ...wallets,
 ]);
+
+
 export const wagmiClient = createClient({
     autoConnect: true,
     connectors,

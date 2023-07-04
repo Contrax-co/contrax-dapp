@@ -26,6 +26,7 @@ import { getWeb3AuthProvider } from "src/config/walletConfig";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { getPrice } from "src/api/token";
 import { CHAIN_ID } from "src/types/enums";
+import { BiconomySigner } from "src/utils/biconomySigner";
 
 interface IWalletContext {
     /**
@@ -92,17 +93,21 @@ interface IProps {
     children: React.ReactNode;
 }
 
-const useWaleltSigner = () => {
-    const { data: _signer } = useSigner();
+const useWaleltSigner = (chainId?: number) => {
+    const { data: _signer } = useSigner({ chainId });
     const [signer, setSigner] = useState<ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer>();
-    const { connectorId, sponsoredGas } = useAppSelector((state) => state.settings);
+    const { connectorId } = useAppSelector((state) => state.settings);
 
     useEffect(() => {
         const setupSigner = async () => {
-            if (web3AuthConnectorId === connectorId && sponsoredGas) {
+            if (web3AuthConnectorId === connectorId) {
                 // @ts-ignore
-                const privateKey = await _signer?.provider?.provider?.request({ method: "eth_private_key" });
-                if (privateKey) setSigner(new GasSponsoredSigner(privateKey, _signer?.provider));
+                // const privateKey = await _signer?.provider?.provider?.request({ method: "eth_private_key" });
+                console.log(_signer);
+                // @ts-ignore
+                const biconomySigner = new BiconomySigner(_signer?.provider, chainId);
+                await biconomySigner.init();
+                setSigner(biconomySigner);
             } else {
                 // @ts-ignore
                 setSigner(_signer);
@@ -110,7 +115,7 @@ const useWaleltSigner = () => {
         };
 
         setupSigner();
-    }, [_signer, sponsoredGas, web3AuthConnectorId, connectorId]);
+    }, [_signer, connectorId, chainId]);
     return signer;
 };
 
@@ -164,10 +169,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const polygonMulticallProvider = useMulticallProvider(CHAIN_ID.POLYGON);
     const { balances } = useBalances();
     const signer = useWaleltSigner();
-
     const { switchNetworkAsync, chains } = useSwitchNetwork();
     const dispatch = useDispatch();
-    const { address: currentWallet, connector } = useAccount();
+    const { connector } = useAccount();
     const { disconnect } = useDisconnect();
     const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
@@ -175,6 +179,13 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const polygonBalance = useNativeBalance(CHAIN_ID.POLYGON);
     const mainnetBalance = useNativeBalance(CHAIN_ID.MAINNET);
     const arbitrumBalance = useNativeBalance(CHAIN_ID.ARBITRUM);
+
+    const [currentWallet, setCurrentWallet] = useState<string>("");
+    useEffect(() => {
+        signer?.getAddress().then((address) => {
+            setCurrentWallet(address);
+        });
+    }, [signer]);
 
     const connectWallet = async () => {
         if (openConnectModal) openConnectModal();

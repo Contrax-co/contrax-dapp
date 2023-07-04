@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@0xsequence/multicall": "^0.43.19",
+    "@biconomy/smart-account": "^2.0.2",
     "@ethersproject/abstract-provider": "^5.7.0",
     "@front-finance/link": "^1.0.7",
     "@gatefi/js-sdk": "^0.7.1",
