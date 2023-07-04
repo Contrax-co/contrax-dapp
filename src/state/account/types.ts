@@ -19,11 +19,11 @@ export interface AccountResponse {
     address: string;
     createdAt: string;
     updatedAt: string;
-    earnedTrax: number;
-    earnedTraxByReferral: number;
-    totalEarnedTrax: number;
-    totalEarnedTraxByReferral: number;
-    traxCalculatedTimestamp: number;
+    earnedTrax?: number;
+    earnedTraxByReferral?: number;
+    totalEarnedTrax?: number;
+    totalEarnedTraxByReferral?: number;
+    traxCalculatedTimestamp?: number;
     tvl: number;
     referralCode?: string;
     referrer?: {

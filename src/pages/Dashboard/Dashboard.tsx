@@ -29,6 +29,7 @@ import { TraxEarning } from "./TraxEarning/TraxEarning";
 import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
 import BridgeEthBtn from "src/components/BridgeEthBtn/BridgeEthBtn";
 import SwapUSDCBtn from "src/components/SwapUSDCBtn/SwapUSDCBtn";
+import { isDev, isStagging } from "src/config/constants";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -124,8 +125,13 @@ function Dashboard() {
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
-                <TraxEarning />
-                <TraxReferralEarning />
+                {isStagging ||
+                    (isDev && (
+                        <>
+                            <TraxEarning />
+                            <TraxReferralEarning />
+                        </>
+                    ))}
                 <ReferralEarning />
                 <BridgeBtn />
                 <BridgeEthBtn />

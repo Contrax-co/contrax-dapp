@@ -22,8 +22,8 @@ const Front: React.FC<IProps> = () => {
     return (
         <div className={styles.container}>
             <div className={styles.heading}>
-                <h5>Access All you Wallets</h5>
-                <p>Transfer your funds from any of your wallet of Defi Universe into Contrax</p>
+                <h5>Get Your Funds from Other Crypto Accounts</h5>
+                <p>Transfer your funds another account or wallet to Contrax</p>
             </div>
             <div className={styles.buttonWrapper}>
                 <div className={styles.logoWrapper}>
@@ -42,7 +42,7 @@ const Front: React.FC<IProps> = () => {
                     disabled={loading}
                     className={`custom-button ${lightMode && "custom-button-light"}`}
                 >
-                    {authData?.accessToken ? "Change Connection" : "Create Connection"}
+                    {authData?.accessToken ? "Change Connection" : "Connect an Account"}
                 </button>
                 <div className={styles.logoWrapper}>
                     <div className={styles.logoCircle}>

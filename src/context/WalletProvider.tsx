@@ -14,7 +14,7 @@ import {
     useBalance,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { getConnectorId, getNetworkName } from "src/utils/common";
+import { getConnectorId, getNetworkName, toEth } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
@@ -79,6 +79,8 @@ interface IWalletContext {
     mainnetBalance?: BalanceResult;
     arbitrumBalance?: BalanceResult;
     connectBiconomy: () => void;
+    mainnetMulticallProvider: providers.MulticallProvider;
+    polygonMulticallProvider: providers.MulticallProvider;
 }
 
 type BalanceResult = {
@@ -86,7 +88,7 @@ type BalanceResult = {
     usdAmount: number;
     decimals?: number | undefined;
     formatted?: string | undefined;
-    symbol?: string | undefined;
+    // symbol?: string | undefined;
     value?: ethers.ethers.BigNumber | undefined;
 };
 
@@ -96,50 +98,76 @@ interface IProps {
     children: React.ReactNode;
 }
 
-const useNativeBalance = (currentWallet: `0x${string}` | undefined, chainId: number): BalanceResult => {
+const useWaleltSigner = () => {
+    const { data: _signer } = useSigner();
+    const [signer, setSigner] = useState<ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer>();
+    const { connectorId, sponsoredGas } = useAppSelector((state) => state.settings);
+
+    useEffect(() => {
+        const setupSigner = async () => {
+            if (web3AuthConnectorId === connectorId && sponsoredGas) {
+                // @ts-ignore
+                const privateKey = await _signer?.provider?.provider?.request({ method: "eth_private_key" });
+                if (privateKey) setSigner(new GasSponsoredSigner(privateKey, _signer?.provider));
+            } else {
+                // @ts-ignore
+                setSigner(_signer);
+            }
+        };
+
+        setupSigner();
+    }, [_signer, sponsoredGas, web3AuthConnectorId, connectorId]);
+    return signer;
+};
+
+const useNativeBalance = (chainId: number): BalanceResult => {
     const { data: price } = useQuery({
         queryKey: GET_PRICE_TOKEN(getNetworkName(chainId), ethers.constants.AddressZero),
         queryFn: () => getPrice(ethers.constants.AddressZero, chainId),
         refetchInterval: 60000,
     });
+    const { balances, mainnetBalances, polygonBalances } = useBalances();
 
-    const { data: bal } = useBalance({
-        address: currentWallet,
-        chainId: chainId,
-        watch: true,
-    });
+    const balance = useMemo(() => {
+        switch (chainId) {
+            case CHAIN_ID.ARBITRUM:
+                return balances[ethers.constants.AddressZero];
+            case CHAIN_ID.MAINNET:
+                return mainnetBalances[ethers.constants.AddressZero];
+            case CHAIN_ID.POLYGON:
+                return polygonBalances[ethers.constants.AddressZero];
+
+            default:
+                return "0";
+        }
+    }, [chainId, balances, mainnetBalances, polygonBalances]);
+
+    const formatted = useMemo(() => toEth(balance || 0), [balance]);
+    const usdAmount = useMemo(() => (price || 0) * Number(formatted), [price, formatted]);
 
     return {
-        ...bal,
         price: price || 0,
-        usdAmount: (price || 0) * Number(bal?.formatted),
+        decimals: 18,
+        formatted,
+        value: ethers.BigNumber.from(balance || 0),
+        usdAmount,
     };
 };
 
-// let options = {
-//     activeNetworkId: ChainId.ARBITRUM_ONE_MAINNET,
-//     supportedNetworksIds: [ChainId.ARBITRUM_ONE_MAINNET, ChainId.POLYGON_MUMBAI],
-//     networkConfig: [
-//         {
-//             chainId: ChainId.ARBITRUM_ONE_MAINNET,
-//             // Dapp API Key you will get from new Biconomy dashboard that will be live soon
-//             // Meanwhile you can use the test dapp api key mentioned above
-//             dappAPIKey: "LNyR-YF15.5528fd61-d34c-4a35-bb92-69510d521b1f",
-//             providerUrl: "https://arbitrum-mainnet.infura.io/v3/547b7378b8c2400aafd92ef4281c732f",
-//         },
-//         {
-//             chainId: ChainId.POLYGON_MAINNET,
-//             // Dapp API Key you will get from new Biconomy dashboard that will be live soon
-//             // Meanwhile you can use the test dapp api key mentioned above
-//             dappAPIKey: "LNyR-YF15.5528fd61-d34c-4a35-bb92-69510d521b1f",
-//             providerUrl: "https://polygon-mainnet.infura.io/v3/547b7378b8c2400aafd92ef4281c732f",
-//         },
-//     ],
-// };
+const useMulticallProvider = (chainId?: number) => {
+    const provider = useProvider({ chainId });
+    const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
+    useEffect(() => {
+        setMulticallProvider(getMulticallProvider(provider));
+    }, [provider, chainId]);
+    return multicallProvider;
+};
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useProvider();
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
+    const mainnetMulticallProvider = useMulticallProvider(CHAIN_ID.MAINNET);
+    const polygonMulticallProvider = useMulticallProvider(CHAIN_ID.POLYGON);
     const { balances } = useBalances();
     const { data: _signer } = useSigner();
     const [signer, setSigner] = useState<any>();
@@ -152,9 +180,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     // @ts-ignore
     const [currentWallet, setCurrentWallet] = useState<`0x${string}`>("");
-    const polygonBalance = useNativeBalance(currentWallet, CHAIN_ID.POLYGON);
-    const mainnetBalance = useNativeBalance(currentWallet, CHAIN_ID.MAINNET);
-    const arbitrumBalance = useNativeBalance(currentWallet, CHAIN_ID.ARBITRUM);
+    const polygonBalance = useNativeBalance(CHAIN_ID.POLYGON);
+    const mainnetBalance = useNativeBalance(CHAIN_ID.MAINNET);
+    const arbitrumBalance = useNativeBalance(CHAIN_ID.ARBITRUM);
     const { openConnectModal } = useConnectModal();
     const {
         loading: eoaLoading,
@@ -165,7 +193,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         getUserInfo,
     } = useWeb3AuthContext();
     const { selectedAccount, loading: scwLoading, setSelectedAccount, state } = useSmartAccountContext();
-    console.log(selectedAccount,state)
+    console.log(selectedAccount, state);
     const connectWallet = async () => {
         openConnectModal && openConnectModal();
         return false;
@@ -278,6 +306,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 mainnetBalance,
                 arbitrumBalance,
                 connectBiconomy,
+                mainnetMulticallProvider,
+                polygonMulticallProvider,
             }}
         >
             {children}
