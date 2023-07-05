@@ -51,7 +51,7 @@ export const calcCompoundingApy = (rewardsApr: number) => {
     const fee = 0.1; // 10% fee
     const rate = (rewardsApr / 100) * (1 - fee);
     const apy = ((1 + rate / period) ** period - 1) * 100;
-    return apy - rewardsApr;
+    return (apy - rewardsApr) * -1; // multiply by -1 to get positive number
     // return apy;
 };
 
