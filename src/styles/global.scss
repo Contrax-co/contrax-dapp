@@ -124,3 +124,25 @@ select {
 ::placeholder {
     color: #979797;
 }
+
+[data-rk] ._1am14410::-webkit-scrollbar {
+    height: 7px;
+    display: initial;
+}
+
+/* Track */
+[data-rk] ._1am14410::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px #b4b4b4;
+    // border-radius: 10px;
+}
+
+/* Handle */
+[data-rk] ._1am14410::-webkit-scrollbar-thumb {
+    background: grey;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+[data-rk] ._1am14410::-webkit-scrollbar-thumb:hover {
+    background: #b30000;
+}
