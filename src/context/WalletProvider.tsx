@@ -95,11 +95,11 @@ interface IProps {
 const useWaleltSigner = () => {
     const { data: _signer } = useSigner();
     const [signer, setSigner] = useState<ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer>();
-    const { connectorId, sponsoredGas } = useAppSelector((state) => state.settings);
+    const { connectorId } = useAppSelector((state) => state.settings);
 
     useEffect(() => {
         const setupSigner = async () => {
-            if (web3AuthConnectorId === connectorId && sponsoredGas) {
+            if (web3AuthConnectorId === connectorId) {
                 // @ts-ignore
                 const privateKey = await _signer?.provider?.provider?.request({ method: "eth_private_key" });
                 if (privateKey) setSigner(new GasSponsoredSigner(privateKey, _signer?.provider));
@@ -110,7 +110,7 @@ const useWaleltSigner = () => {
         };
 
         setupSigner();
-    }, [_signer, sponsoredGas, web3AuthConnectorId, connectorId]);
+    }, [_signer, web3AuthConnectorId, connectorId]);
     return signer;
 };
 

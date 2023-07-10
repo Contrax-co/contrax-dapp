@@ -1,10 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { BridgeChainInfo, BridgeDirection, BridgeStatus, PolyUsdcToArbUsdcArgs, StateInterface } from "./types";
 import { notifyLoading } from "src/api/notify";
-import { addressesByChainId } from "src/config/constants/contracts";
 import { awaitTransaction, sleep } from "src/utils/common";
 import { approveErc20, getBalance } from "src/api/token";
-import { CHAIN_ID } from "src/types/enums";
 import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
 import { notifySuccess } from "src/api/notify";
 import { notifyError } from "src/api/notify";
