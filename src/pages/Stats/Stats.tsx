@@ -7,7 +7,7 @@ import { MyReferrals } from "src/components/MyReferrals/MyReferrals";
 import { VaultStatsTable } from "src/components/VaultStatsTable/VaultStatsTable";
 
 function Stats() {
-    const { meanTvl, medianTvl, activeUsers } = useStats();
+    const { meanTvl, activeUsers } = useStats();
     return (
         <div className={styles.container}>
             <div className={styles.topRow}>

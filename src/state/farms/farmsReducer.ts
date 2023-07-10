@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getEarnings } from "src/api/farms";
 import farmFunctions from "src/api/pools";
 import { sleep, toEth } from "src/utils/common";
@@ -10,14 +10,10 @@ import {
     FetchEarningsAction,
     FarmDetailInputOptions,
 } from "./types";
-import { Contract, BigNumber, utils } from "ethers";
+import { Contract, BigNumber } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
 import { erc20ABI } from "wagmi";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
-import { Farm } from "src/types";
-import { getPriceByTime, getPricesByTime } from "src/api/token";
-import { Decimals } from "../decimals/types";
-import { getPricesOfLpByTimestamp, setOldPrices } from "../prices/pricesReducer";
+import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
 import { defaultChainId } from "src/config/constants";
 import { FarmTransactionType } from "src/types/enums";
 
