@@ -15,9 +15,6 @@ import { MdOutlineQrCode2 } from "react-icons/md";
 import { ExportPrivateKey } from "src/components/modals/ExportPrivateKey/ExportPrivateKey";
 import { ExportPublicKey } from "src/components/modals/ExportPublicKey/ExportPublicKey";
 import SupportChatToggle from "src/components/SupportChatToggle/SupportChatToggle";
-import { TbGasStation, TbGasStationOff } from "react-icons/tb";
-import { useAppDispatch, useAppSelector } from "src/state";
-import { toggleSponsoredGas } from "src/state/settings/settingsReducer";
 import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import ReferralLink from "src/components/ReferralLink/ReferralLink";
 import ReferBanner from "src/components/ReferBanner/ReferBanner";
@@ -33,17 +30,11 @@ import { isDev, isStagging } from "src/config/constants";
 
 function Dashboard() {
     const { lightMode } = useApp();
-    const { sponsoredGas } = useAppSelector((state) => state.settings);
     const { currentWallet, displayAccount, signer, networkId } = useWallet();
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
-    const dispatch = useAppDispatch();
-
-    const handleGasToggle = () => {
-        dispatch(toggleSponsoredGas());
-    };
 
     const copy = () => {
         setCopied(true);
@@ -99,21 +90,6 @@ function Dashboard() {
                                 size={23}
                                 onClick={() => setOpenQrCodeModal(true)}
                             />
-                            {sponsoredGas ? (
-                                <TbGasStation
-                                    color={lightMode ? "var(--color_grey)" : "#ffffff"}
-                                    cursor="pointer"
-                                    size={23}
-                                    onClick={handleGasToggle}
-                                />
-                            ) : (
-                                <TbGasStationOff
-                                    color={lightMode ? "var(--color_grey)" : "#ffffff"}
-                                    cursor="pointer"
-                                    size={23}
-                                    onClick={handleGasToggle}
-                                />
-                            )}
                             {openPrivateKeyModal ? <ExportPrivateKey setOpenModal={setOpenPrivateKeyModal} /> : null}
                             {openQrCodeModal ? <ExportPublicKey setOpenModal={setOpenQrCodeModal} /> : null}
                         </>

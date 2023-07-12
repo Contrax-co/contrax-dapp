@@ -52,12 +52,13 @@ const useBridge = (direction: BridgeDirection) => {
     const isBridgePending = () => {
         if (!checkingStatus) dispatch(checkBridgeStatus({ direction }));
     };
-
     React.useEffect(() => {
-        getWeb3AuthSigner(CHAIN_ID.POLYGON, polygonSigner as ethers.Signer).then((res) => {
+        const fn = async () => {
+            const res = await getWeb3AuthSigner(CHAIN_ID.POLYGON, polygonSignerWagmi as ethers.Signer);
             setPolygonSigner(res);
-        });
-    }, [getWeb3AuthSigner]);
+        };
+        fn();
+    }, [getWeb3AuthSigner, polygonSigner]);
 
     const wrongNetwork = React.useMemo(() => {
         if (networkId !== CHAIN_ID.POLYGON && getConnectorId() !== web3AuthConnectorId) {
