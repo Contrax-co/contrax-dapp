@@ -34,7 +34,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
     const handleClick = () => {
         setDropDown((prev) => !prev);
-        dispatch(setFarmDetailInputOptions({ transactionType: FarmTransactionType.Deposit, currencySymbol: "USDC" }));
+        dispatch(setFarmDetailInputOptions({ transactionType: FarmTransactionType.Deposit }));
         if (farm) setOpenedFarm(openedFarm === farm.id ? undefined : farm.id);
     };
 
