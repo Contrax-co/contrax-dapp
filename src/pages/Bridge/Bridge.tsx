@@ -3,7 +3,7 @@ import { Bridge as SocketBridge } from "@socket.tech/plugin";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import useWallet from "src/hooks/useWallet";
-import { useSigner } from "wagmi";
+import { useEthersSigner } from "src/config/walletConfig";
 import { SOCKET_BRIDGE_KEY, defaultChainId } from "src/config/constants";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
 import "./Bridge.css";
@@ -41,7 +41,7 @@ const Bridge = () => {
     const { lightMode } = useApp();
     const { currentWallet, chains } = useWallet();
     const [chainId, setChainId] = React.useState<number>(defaultChainId);
-    const { data: signer } = useSigner({
+    const signer = useEthersSigner({
         chainId,
     });
     const [provider, setProvider] = React.useState<any>();

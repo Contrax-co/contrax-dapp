@@ -73,7 +73,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                   ) || [],
         [transactionType, farmData, showInUsd]
     );
-                          console.log(currencySymbol);
+
     return (
         <form
             className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}

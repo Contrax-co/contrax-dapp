@@ -4,8 +4,8 @@ import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import {
-    useProvider,
-    useSigner,
+    usePublicClient,
+    useWalletClient,
     useAccount,
     useDisconnect,
     useNetwork,
@@ -26,6 +26,7 @@ import { getWeb3AuthProvider } from "src/config/walletConfig";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { getPrice } from "src/api/token";
 import { CHAIN_ID } from "src/types/enums";
+import { useEthersProvider, useEthersSigner } from "src/config/walletConfig";
 
 interface IWalletContext {
     /**
@@ -93,7 +94,7 @@ interface IProps {
 }
 
 const useWaleltSigner = () => {
-    const { data: _signer } = useSigner();
+    const _signer = useEthersSigner();
     const [signer, setSigner] = useState<ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer>();
     const { connectorId } = useAppSelector((state) => state.settings);
 
@@ -149,7 +150,7 @@ const useNativeBalance = (chainId: number): BalanceResult => {
 };
 
 const useMulticallProvider = (chainId?: number) => {
-    const provider = useProvider({ chainId });
+    const provider = useEthersProvider({ chainId });
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
     useEffect(() => {
         setMulticallProvider(getMulticallProvider(provider));
@@ -158,7 +159,7 @@ const useMulticallProvider = (chainId?: number) => {
 };
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
-    const provider = useProvider();
+    const provider = useEthersProvider();
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
     const mainnetMulticallProvider = useMulticallProvider(CHAIN_ID.MAINNET);
     const polygonMulticallProvider = useMulticallProvider(CHAIN_ID.POLYGON);
