@@ -17,6 +17,7 @@ env:
     REACT_APP_FRONT_CLIENT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_CLIENT_ID
     REACT_APP_FRONT_URL_SANDBOX: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_SANDBOX_URL
     REACT_APP_FRONT_API_KEY_SANDBOX: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_SANDBOX_API_KEY
+    REACT_APP_WALLET_CONNECT_PROJECT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WALLET_CONNECT_PROJECT_ID
 
 
 phases:
