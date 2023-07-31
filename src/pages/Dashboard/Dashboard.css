@@ -145,6 +145,11 @@
     box-shadow: var(--rk-shadows-connectButton);
 }
 
+.earn_trax_button {
+    margin-top: 20px;
+    margin-left: 30px;
+}
+
 @media (max-height: 600px) {
     .dashboard_wallet_title {
         font-size: 20px;
