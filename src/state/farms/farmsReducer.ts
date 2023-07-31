@@ -51,8 +51,8 @@ export const updateFarmDetails = createAsyncThunk(
             const ethI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "ETH");
 
             if (
-                Number(data[farms[0].id]?.depositableAmounts[usdcI!].amountDollar) === 0 &&
-                Number(data[farms[0].id]?.depositableAmounts[ethI!].amountDollar) > 0
+                Number(data[farms[0].id]?.depositableAmounts[ethI!].amountDollar) >
+                Number(data[farms[0].id]?.depositableAmounts[usdcI!].amountDollar)
             ) {
                 thunkApi.dispatch(setCurrencySymbol("ETH"));
             }
