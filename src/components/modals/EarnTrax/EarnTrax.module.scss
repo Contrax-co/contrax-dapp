@@ -1,0 +1,49 @@
+.container {
+    max-width: 500px;
+}
+
+.heading {
+    font-size: 28px;
+}
+
+.description {
+    padding: 8px 0px;
+}
+
+.terms {
+    color: var(--color_grey);
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: var(--background_primary);
+
+    li {
+        padding: 2px 0px;
+    }
+}
+
+.checkbox {
+    margin-top: 30px;
+    color: var(--color_text);
+    & label {
+        margin-left: 8px;
+    }
+    margin-bottom: 16px;
+}
+
+.buttonsContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+        @media only screen and (max-width: 500px) {
+            min-width: 48%;
+        }
+    }
+}
+
+.cancelButton {
+    background-color: transparent;
+    border: 1px solid var(--color_primary);
+    color: var(--color_primary);
+}
