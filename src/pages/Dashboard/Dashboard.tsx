@@ -27,13 +27,17 @@ import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
 import BridgeEthBtn from "src/components/BridgeEthBtn/BridgeEthBtn";
 import SwapUSDCBtn from "src/components/SwapUSDCBtn/SwapUSDCBtn";
 import { isDev, isStagging } from "src/config/constants";
+import { EarnTrax } from "src/components/modals/EarnTrax/EarnTrax";
+import { useAppSelector } from "src/state";
 
 function Dashboard() {
     const { lightMode } = useApp();
+    const { earnTrax } = useAppSelector((state) => state.settings);
     const { currentWallet, displayAccount, signer, networkId } = useWallet();
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
+    const [openEarnTraxModal, setOpenEarnTraxModal] = useState(false);
     const { BLOCK_EXPLORER_URL } = useConstants();
 
     const copy = () => {
@@ -99,9 +103,16 @@ function Dashboard() {
 
             <ReferralLink />
 
+            {currentWallet && !earnTrax && (
+                <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>
+                    Earn Trax
+                </button>
+            )}
+            {currentWallet && !earnTrax && openEarnTraxModal && <EarnTrax setOpenModal={setOpenEarnTraxModal} />}
+
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
-                {(isStagging || isDev) && (
+                {(isStagging || isDev) && earnTrax && (
                     <>
                         <TraxEarning />
                         <TraxReferralEarning />
