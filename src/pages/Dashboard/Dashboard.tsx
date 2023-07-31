@@ -101,13 +101,12 @@ function Dashboard() {
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
-                {isStagging ||
-                    (isDev && (
-                        <>
-                            <TraxEarning />
-                            <TraxReferralEarning />
-                        </>
-                    ))}
+                {(isStagging || isDev) && (
+                    <>
+                        <TraxEarning />
+                        <TraxReferralEarning />
+                    </>
+                )}
                 <ReferralEarning />
                 <BridgeBtn />
                 <BridgeEthBtn />
