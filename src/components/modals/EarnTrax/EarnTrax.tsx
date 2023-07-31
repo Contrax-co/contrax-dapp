@@ -58,7 +58,7 @@ export const EarnTrax: FC<IProps> = ({ setOpenModal }) => {
                     Cancel
                 </button>
                 <button
-                    className="custom-button"
+                    className={"custom-button " + styles.agreeButton}
                     disabled={!agree}
                     onClick={() => {
                         dispatch(setEarnTrax(true));

@@ -34,6 +34,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    button {
+        @media only screen and (max-width: 500px) {
+            min-width: 48%;
+        }
+    }
 }
 
 .cancelButton {
