@@ -103,7 +103,7 @@ function Dashboard() {
 
             <div style={{ display: "flex", gap: 12 }}>
                 <ReferralLink />
-                {currentWallet && !earnTrax && (
+                {(isStagging || isDev) && currentWallet && !earnTrax && (
                     <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>
                         Earn Trax
                     </button>
