@@ -101,13 +101,15 @@ function Dashboard() {
                 </div>
             </div>
 
-            <ReferralLink />
+            <div style={{ display: "flex", gap: 12 }}>
+                <ReferralLink />
+                {(isStagging || isDev) && currentWallet && !earnTrax && (
+                    <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>
+                        Earn Trax
+                    </button>
+                )}
+            </div>
 
-            {currentWallet && !earnTrax && (
-                <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>
-                    Earn Trax
-                </button>
-            )}
             {currentWallet && !earnTrax && openEarnTraxModal && <EarnTrax setOpenModal={setOpenEarnTraxModal} />}
 
             <div className={`dashboard_tvl_section`}>

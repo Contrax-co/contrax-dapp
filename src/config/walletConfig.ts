@@ -6,7 +6,7 @@ import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { WalletClient, configureChains, createConfig, useWalletClient } from "wagmi";
+import { ChainProviderFn, WalletClient, configureChains, createConfig, useWalletClient } from "wagmi";
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
@@ -38,7 +38,8 @@ const clientId = WEB3AUTH_CLIENT_ID as string;
 // arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
 // arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
 
-const providersArray = [];
+const providersArray: ChainProviderFn[] = [];
+
 
 if (INFURA_KEY && !isDev) {
     providersArray.push(

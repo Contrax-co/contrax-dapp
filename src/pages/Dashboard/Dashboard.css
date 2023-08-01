@@ -146,8 +146,10 @@
 }
 
 .earn_trax_button {
-    margin-top: 20px;
-    margin-left: 30px;
+    font-family: "Poppins";
+    font-size: 16px;
+    padding: 12px 32px !important;
+    min-width: 100px;
 }
 
 @media (max-height: 600px) {
@@ -174,5 +176,9 @@
     .dashboard-key-icons {
         display: grid;
         grid-template-columns: 1fr 1fr;
+    }
+    .earn_trax_button {
+        font-size: 14px;
+        padding: 10px 24px !important;
     }
 }

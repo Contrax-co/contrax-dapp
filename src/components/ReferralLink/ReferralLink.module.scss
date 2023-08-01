@@ -7,11 +7,6 @@
     margin-left: 30px;
     padding: 10px 16px;
     max-width: calc(100% - 92px);
-    @include devices(xlMobile) {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0px;
-    }
     @include devices(mobile) {
         font-size: 14px;
     }
@@ -23,6 +18,21 @@
 
 .heading {
     min-width: 100px;
+    display: block;
+    @include devices(xlMobile) {
+        display: none;
+    }
+}
+
+.heading2 {
+    min-width: 30px;
+    display: none;
+    @include devices(xlMobile) {
+        display: block;
+    }
+    @include devices(mobile) {
+        min-width: 26px;
+    }
 }
 
 .link {
@@ -30,12 +40,21 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 298px;
+    @include devices(xlMobile) {
+        width: 200px;
+    }
+    @include devices(mobile) {
+        width: 120px;
+    }
     .text {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        max-width: calc(100% - 30px);
+        max-width: calc(100% - 24px);
+        @include devices(mobile) {
+            max-width: calc(100% - 22px);
+        }
     }
 }
 
