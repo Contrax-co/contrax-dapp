@@ -58,7 +58,7 @@ const useBridge = (direction: BridgeDirection) => {
             setPolygonSigner(res);
         };
         fn();
-    }, [getWeb3AuthSigner, polygonSigner]);
+    }, [getWeb3AuthSigner]);
 
     const wrongNetwork = React.useMemo(() => {
         if (networkId !== CHAIN_ID.POLYGON && getConnectorId() !== web3AuthConnectorId) {
