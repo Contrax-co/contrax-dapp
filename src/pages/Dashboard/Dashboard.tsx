@@ -32,7 +32,7 @@ import { useAppSelector } from "src/state";
 
 function Dashboard() {
     const { lightMode } = useApp();
-    const { earnTrax } = useAppSelector((state) => state.settings);
+    const { earnTrax } = useAppSelector((state) => state.account);
     const { currentWallet, displayAccount, signer, networkId } = useWallet();
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
@@ -101,7 +101,7 @@ function Dashboard() {
                 </div>
             </div>
 
-            <div style={{ display: "flex", gap: 12 }}>
+            <div style={{ display: "flex" }}>
                 <ReferralLink />
                 {(isStagging || isDev) && currentWallet && !earnTrax && (
                     <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>

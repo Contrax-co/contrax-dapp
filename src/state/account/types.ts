@@ -11,6 +11,7 @@ export interface StateInterface {
     totalEarnedTrax?: number;
     totalEarnedTraxByReferral?: number;
     traxCalculatedTimestamp?: number;
+    earnTrax: boolean;
 }
 
 export interface AccountResponse {

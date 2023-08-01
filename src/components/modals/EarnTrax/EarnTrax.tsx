@@ -2,7 +2,10 @@ import { FC, useState } from "react";
 import { ModalLayout } from "../ModalLayout/ModalLayout";
 import styles from "./EarnTrax.module.scss";
 import { useAppDispatch } from "src/state";
-import { setEarnTrax } from "src/state/settings/settingsReducer";
+import { acceptTerms, getMessage } from "src/api/trax";
+import useWallet from "src/hooks/useWallet";
+import { useSignMessage } from "wagmi";
+import { setEarnTrax } from "src/state/account/accountReducer";
 
 interface IProps {
     setOpenModal: Function;
@@ -10,7 +13,19 @@ interface IProps {
 
 export const EarnTrax: FC<IProps> = ({ setOpenModal }) => {
     const dispatch = useAppDispatch();
+    const { currentWallet } = useWallet();
+    const { signMessageAsync } = useSignMessage();
     const [agree, setAgree] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleAgree = async () => {
+        setIsLoading(true);
+        const message = await getMessage();
+        const signature = await signMessageAsync({ message });
+        const termsAccepted = await acceptTerms(currentWallet, signature);
+        dispatch(setEarnTrax(termsAccepted));
+        setIsLoading(false);
+    };
 
     return (
         <ModalLayout onClose={() => setOpenModal(false)} className={styles.container}>
@@ -57,14 +72,8 @@ export const EarnTrax: FC<IProps> = ({ setOpenModal }) => {
                 >
                     Cancel
                 </button>
-                <button
-                    className={"custom-button " + styles.agreeButton}
-                    disabled={!agree}
-                    onClick={() => {
-                        dispatch(setEarnTrax(true));
-                    }}
-                >
-                    Earn
+                <button className={"custom-button " + styles.agreeButton} disabled={!agree} onClick={handleAgree}>
+                    {isLoading ? "l" : "Earn"}
                 </button>
             </div>
         </ModalLayout>

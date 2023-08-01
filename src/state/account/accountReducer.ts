@@ -6,7 +6,7 @@ import {
     getReferalEarning as getReferalEarningApi,
 } from "src/api/account";
 
-const initialState: StateInterface = {};
+const initialState: StateInterface = { earnTrax: false };
 
 const getAccountData = createAsyncThunk("account/getAccountData", async (address: string, thunkApi) => {
     console.log("in action");
@@ -120,6 +120,9 @@ const accountSlice = createSlice({
         reset: (state: StateInterface) => {
             return { ...initialState, referrerCode: state.referrerCode };
         },
+        setEarnTrax: (state: StateInterface, action: { payload: boolean }) => {
+            state.earnTrax = action.payload;
+        },
     },
     extraReducers(builder) {
         builder.addCase(getReferralEarning.fulfilled, (state, action) => {
@@ -139,6 +142,7 @@ export const {
     setTotalEarnedTraxByReferral,
     setTraxCalculatedTimestamp,
     setReferralEarning,
+    setEarnTrax,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;

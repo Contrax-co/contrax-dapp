@@ -32,7 +32,7 @@ const ReferralLink: React.FC<IProps> = () => {
                 </p>
             </div>
         );
-    else return <div></div>;
+    else return <div style={{ marginLeft: 18 }}></div>;
 };
 
 export default ReferralLink;

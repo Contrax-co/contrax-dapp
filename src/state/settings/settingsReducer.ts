@@ -5,7 +5,6 @@ const initialState: StateInterface = {
     theme: "light",
     supportChat: true,
     connectorId: "",
-    earnTrax: false,
 };
 
 const settingsSlice = createSlice({
@@ -24,12 +23,9 @@ const settingsSlice = createSlice({
         setConnectorId: (state: StateInterface, action: PayloadAction<string>) => {
             state.connectorId = action.payload;
         },
-        setEarnTrax: (state: StateInterface, action: PayloadAction<boolean>) => {
-            state.earnTrax = action.payload;
-        },
     },
 });
 
-export const { setSettings, toggleTheme, toggleSupportChat, setConnectorId, setEarnTrax } = settingsSlice.actions;
+export const { setSettings, toggleTheme, toggleSupportChat, setConnectorId } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

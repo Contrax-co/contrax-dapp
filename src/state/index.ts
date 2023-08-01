@@ -38,7 +38,7 @@ const persistConfig = getPersistConfig({
         "decimals.decimals",
         "settings.theme",
         "settings.supportChat",
-        "settings.earnTrax",
+        "account.earnTrax",
         "account.referrerCode",
         "ramp.bridgeStates.USDC_POLYGON_TO_ARBITRUM_USDC.socketSourceTxHash",
         "ramp.bridgeStates.ETH_POLYGON_TO_ARBITRUM_ETH.socketSourceTxHash",
