@@ -32,7 +32,7 @@ import { useAppSelector } from "src/state";
 
 function Dashboard() {
     const { lightMode } = useApp();
-    const { earnTrax } = useAppSelector((state) => state.account);
+    const { earnTraxTermsAgreed } = useAppSelector((state) => state.account);
     const { currentWallet, displayAccount, signer, networkId } = useWallet();
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
@@ -103,18 +103,20 @@ function Dashboard() {
 
             <div style={{ display: "flex" }}>
                 <ReferralLink />
-                {(isStagging || isDev) && currentWallet && !earnTrax && (
+                {(isStagging || isDev) && currentWallet && !earnTraxTermsAgreed && (
                     <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>
                         Earn Trax
                     </button>
                 )}
             </div>
 
-            {currentWallet && !earnTrax && openEarnTraxModal && <EarnTrax setOpenModal={setOpenEarnTraxModal} />}
+            {currentWallet && !earnTraxTermsAgreed && openEarnTraxModal && (
+                <EarnTrax setOpenModal={setOpenEarnTraxModal} />
+            )}
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
-                {(isStagging || isDev) && earnTrax && (
+                {(isStagging || isDev) && earnTraxTermsAgreed && (
                     <>
                         <TraxEarning />
                         <TraxReferralEarning />

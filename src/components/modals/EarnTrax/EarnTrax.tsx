@@ -5,7 +5,7 @@ import { useAppDispatch } from "src/state";
 import { acceptTerms, getMessage } from "src/api/trax";
 import useWallet from "src/hooks/useWallet";
 import { useSignMessage } from "wagmi";
-import { setEarnTrax } from "src/state/account/accountReducer";
+import { setEarnTraxTermsAgreed } from "src/state/account/accountReducer";
 
 interface IProps {
     setOpenModal: Function;
@@ -23,7 +23,7 @@ export const EarnTrax: FC<IProps> = ({ setOpenModal }) => {
         const message = await getMessage();
         const signature = await signMessageAsync({ message });
         const termsAccepted = await acceptTerms(currentWallet, signature);
-        dispatch(setEarnTrax(termsAccepted));
+        dispatch(setEarnTraxTermsAgreed(termsAccepted));
         setIsLoading(false);
     };
 

@@ -6,7 +6,7 @@ import {
     getReferalEarning as getReferalEarningApi,
 } from "src/api/account";
 
-const initialState: StateInterface = { earnTrax: false };
+const initialState: StateInterface = {};
 
 const getAccountData = createAsyncThunk("account/getAccountData", async (address: string, thunkApi) => {
     console.log("in action");
@@ -39,6 +39,7 @@ export const addAccount = createAsyncThunk(
             }
             // Get current account data
             const data = await getAccountDataApi(address);
+            console.log(data);
 
             // if account is not exist, create new account
             if (!data) {
@@ -55,6 +56,9 @@ export const addAccount = createAsyncThunk(
                 thunkApi.dispatch(setReferrerCode(""));
                 if (data.referrer) {
                     thunkApi.dispatch(setRefAddress(data.referrer.address));
+                }
+                if (data.earnTraxTermsAgreed) {
+                    thunkApi.dispatch(setEarnTraxTermsAgreed(data.earnTraxTermsAgreed || false));
                 }
                 // if (data.referralCode) {
                 thunkApi.dispatch(setReferralCode(data.referralCode || ""));
@@ -120,8 +124,8 @@ const accountSlice = createSlice({
         reset: (state: StateInterface) => {
             return { ...initialState, referrerCode: state.referrerCode };
         },
-        setEarnTrax: (state: StateInterface, action: { payload: boolean }) => {
-            state.earnTrax = action.payload;
+        setEarnTraxTermsAgreed: (state: StateInterface, action: { payload: boolean }) => {
+            state.earnTraxTermsAgreed = action.payload;
         },
     },
     extraReducers(builder) {
@@ -142,7 +146,7 @@ export const {
     setTotalEarnedTraxByReferral,
     setTraxCalculatedTimestamp,
     setReferralEarning,
-    setEarnTrax,
+    setEarnTraxTermsAgreed,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;
