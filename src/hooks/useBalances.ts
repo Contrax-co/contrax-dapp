@@ -13,6 +13,7 @@ import {
 import { useDecimals } from "./useDecimals";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
+import { Address } from "src/types";
 
 /**
  * Returns balances for all tokens
@@ -28,8 +29,7 @@ const useBalances = () => {
         polygonBalances,
         mainnetBalances,
     } = useAppSelector((state) => state.balances);
-    const { networkId, multicallProvider, currentWallet, mainnetMulticallProvider, polygonMulticallProvider } =
-        useWallet();
+    const { networkId, currentWallet, arbitrumPublicClient, mainnetPublicClient, polygonPublicClient } = useWallet();
     const {
         decimals,
         isFetched: isDecimalsFetched,
@@ -40,11 +40,11 @@ const useBalances = () => {
 
     const reloadBalances = useCallback(() => {
         if (currentWallet) {
-            dispatch(fetchBalances({ farms, multicallProvider, account: currentWallet }));
+            dispatch(fetchBalances({ farms, account: currentWallet as Address, publicClient: arbitrumPublicClient }));
             dispatch(
                 fetchPolygonBalances({
-                    multicallProvider: polygonMulticallProvider,
-                    account: currentWallet,
+                    publicClient: polygonPublicClient,
+                    account: currentWallet as Address,
                     addresses: [
                         addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
                         addressesByChainId[CHAIN_ID.POLYGON].wethAddress,
@@ -53,13 +53,13 @@ const useBalances = () => {
             );
             dispatch(
                 fetchMainnetBalances({
-                    multicallProvider: mainnetMulticallProvider,
-                    account: currentWallet,
+                    publicClient: mainnetPublicClient,
+                    account: currentWallet as Address,
                     addresses: [],
                 })
             );
         }
-    }, [farms, currentWallet, networkId, polygonMulticallProvider, mainnetMulticallProvider]);
+    }, [farms, currentWallet, networkId, arbitrumPublicClient, polygonPublicClient, mainnetPublicClient]);
 
     const formattedBalances = useMemo(() => {
         let b: { [key: string]: number | undefined } = {};
@@ -77,7 +77,7 @@ const useBalances = () => {
     }, [balances]);
 
     useEffect(() => {
-        if (currentWallet === "" && Object.values(balances).length > 0) {
+        if (!currentWallet && Object.values(balances).length > 0) {
             dispatch(reset());
         }
     }, [currentWallet, balances]);

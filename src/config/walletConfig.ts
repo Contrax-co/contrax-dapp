@@ -40,7 +40,6 @@ const clientId = WEB3AUTH_CLIENT_ID as string;
 
 const providersArray: ChainProviderFn[] = [];
 
-
 if (INFURA_KEY && !isDev) {
     providersArray.push(
         infuraProvider({
@@ -59,7 +58,16 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
         // optimism, avalanche, gnosis, fantom, bsc
     ],
     // @ts-ignore
-    providersArray
+    providersArray,
+    {
+        batch: {
+            multicall: {
+                batchSize: 2048,
+                wait: 500,
+            },
+        },
+        pollingInterval: 30000,
+    }
 );
 
 // Instantiating Web3Auth
@@ -251,13 +259,18 @@ export function publicClientToProvider(publicClient: PublicClient) {
         name: chain.name,
         ensAddress: chain.contracts?.ensRegistry?.address,
     };
-    if (transport.type === "fallback")
-        return new providers.FallbackProvider(
+    if (transport.type === "fallback") {
+        const provider = new providers.FallbackProvider(
             (transport.transports as ReturnType<HttpTransport>[]).map(
                 ({ value }) => new providers.JsonRpcProvider(value?.url, network)
             )
         );
-    return new providers.JsonRpcProvider(transport.url, network);
+        provider.pollingInterval = 30000;
+        return provider;
+    }
+    const provider = new providers.JsonRpcProvider(transport.url, network);
+    provider.pollingInterval = 30000;
+    return provider;
 }
 
 /** Hook to convert a viem Public Client to an ethers.js Provider. */
@@ -274,6 +287,7 @@ export function walletClientToSigner(walletClient: WalletClient) {
         ensAddress: chain.contracts?.ensRegistry?.address,
     };
     const provider = new providers.Web3Provider(transport, network);
+    provider.pollingInterval = 30000;
     const signer = provider.getSigner(account.address);
     return signer;
 }

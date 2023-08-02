@@ -7,12 +7,12 @@ import useWallet from "./useWallet";
 export const useDecimals = () => {
     const { farms } = useFarms();
     const { isLoading, decimals, isFetched } = useAppSelector((state) => state.decimals);
-    const { multicallProvider } = useWallet();
+    const { arbitrumPublicClient } = useWallet();
     const dispatch = useAppDispatch();
 
     const reloadDecimals = useCallback(() => {
-        dispatch(fetchDecimals({ farms, multicallProvider }));
-    }, [farms, dispatch, multicallProvider]);
+        dispatch(fetchDecimals({ farms, publicClient: arbitrumPublicClient }));
+    }, [farms, dispatch, arbitrumPublicClient]);
 
     return { isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading, decimals, reloadDecimals };
 };

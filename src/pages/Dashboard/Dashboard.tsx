@@ -49,7 +49,7 @@ function Dashboard() {
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
             <div className={`dashboard_header ${lightMode && "dashboard_header--light"}`}>
                 <div className="dashboard_header_left">
-                    <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet)} />
+                    <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet as string)} />
 
                     {currentWallet ? (
                         <>

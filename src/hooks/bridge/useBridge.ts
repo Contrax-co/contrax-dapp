@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { useBalance } from "wagmi";
 import { useEthersSigner } from "src/config/walletConfig";
 import useWallet from "../useWallet";
 import { constants, ethers } from "ethers";

@@ -2,17 +2,19 @@ import { useState } from "react";
 import useNotify from "src/hooks/useNotify";
 import { commify } from "ethers/lib/utils.js";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
+import { usePublicClient, useWalletClient } from "wagmi";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
     const { platformTVL } = usePlatformTVL();
+    const { data: walletClient } = useWalletClient();
+    const publicClient = usePublicClient({ chainId: 1 });
 
     const fn = async () => {
-        // tenderly.simulator.simulateTransaction({
-        //   transaction:{
-        //   }
-        // })
+        if (!walletClient?.account.address) return;
+        const res = await publicClient.getBalance({ address: walletClient.account.address });
+        console.log({ res });
     };
 
     return (

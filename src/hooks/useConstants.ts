@@ -9,6 +9,7 @@ import useWallet from "./useWallet";
 const useConstants = () => {
     const { networkId: CHAIN_ID } = useWallet();
     const NETWORK_NAME = getNetworkName(CHAIN_ID) || "";
+    // @ts-ignore
     const CONTRACTS = addressesByChainId[CHAIN_ID] || "";
     const BLOCK_EXPLORER_URL = blockExplorersByChainId[CHAIN_ID] || "";
     const COINS_LLAMA_PRICE = coinsLamaPriceByChainId[CHAIN_ID] || "";

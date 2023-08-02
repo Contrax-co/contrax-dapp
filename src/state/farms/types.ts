@@ -5,6 +5,7 @@ import { Decimals } from "../decimals/types";
 import { Prices } from "../prices/types";
 import { TotalSupplies } from "../supply/types";
 import { FarmTransactionType } from "src/types/enums";
+import { PublicClient } from "wagmi";
 
 export interface StateInterface {
     farmDetails: FarmDetails;
@@ -44,7 +45,6 @@ export interface FetchEarningsAction {
     decimals: Partial<Decimals>;
     prices: Partial<Prices>;
     balances: Balances;
-    multicallProvider: MulticallProvider;
     totalSupplies: Partial<TotalSupplies>;
     chainId: number;
 }

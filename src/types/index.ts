@@ -131,6 +131,7 @@ export interface AccountDetails extends UserTVL {
     totalEarnedTraxByReferral: number;
     tvl: number;
 }
+export type Address = `0x${string}`;
 
 export interface UserTVL {
     id: string;

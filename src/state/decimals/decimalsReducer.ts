@@ -1,15 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { constants, Contract, utils } from "ethers";
+import { constants } from "ethers";
 import { erc20ABI } from "wagmi";
+import { getContract } from "@wagmi/core";
 import { Decimals, StateInterface, UpdateDecimalsActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
 import { defaultChainId } from "src/config/constants";
+import { Address } from "src/types";
+import { getAddress } from "viem";
 
 const initialState: StateInterface = { decimals: {}, isLoading: false, isFetched: false };
 
 export const fetchDecimals = createAsyncThunk(
     "decimals/fetchDecimals",
-    async ({ farms, multicallProvider }: UpdateDecimalsActionPayload) => {
+    async ({ farms, publicClient }: UpdateDecimalsActionPayload) => {
         const addresses = new Set<string>();
         farms.forEach((farm) => {
             addresses.add(farm.lp_address.toLowerCase());
@@ -20,16 +23,18 @@ export const fetchDecimals = createAsyncThunk(
         tokens.forEach((token) => {
             if (token.chainId === defaultChainId) addresses.add(token.address.toLowerCase());
         });
-        const addressesArray = Array.from(addresses);
+        const addressesArray = Array.from(addresses as Set<Address>);
 
-        let promises = addressesArray.map((address) => new Contract(address, erc20ABI, multicallProvider).decimals());
+        let promises = addressesArray.map((address) =>
+            getContract({ address: address, abi: erc20ABI }).read.decimals()
+        );
 
         const decimalsResponses = await Promise.all(promises);
 
         const decimals: Decimals = decimalsResponses.reduce((accum, decimals, index) => {
-            accum[utils.getAddress(addressesArray[index])] = decimals;
+            accum[getAddress(addressesArray[index])] = decimals;
             return accum;
-        }, {});
+        }, {} as Decimals);
 
         decimals[constants.AddressZero] = 18;
 

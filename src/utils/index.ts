@@ -1,8 +1,8 @@
 import { TokenInfo } from "@uniswap/widgets";
 import { ethers } from "ethers";
-import { Farm } from "src/types";
+import { Address, Farm } from "src/types";
 
-export const copyToClipboard = (text: string, cb: Function | null = null) => {
+export const copyToClipboard = (text: string | Address = "", cb: Function | null = null) => {
     navigator.clipboard.writeText(text);
     setTimeout(() => {
         if (cb) cb();

@@ -2,12 +2,15 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface, UpdatePricesActionPayload } from "./types";
-import { Contract, utils, constants, BigNumber } from "ethers";
+import { constants, BigNumber } from "ethers";
+import { parseUnits, parseEther, formatEther, getAddress } from "viem";
 import { getNetworkName } from "src/utils/common";
 import { getPriceByTime, getPricesByTime } from "src/api/token";
 import { defaultChainId } from "src/config/constants";
 import { addressesByChainId } from "src/config/constants/contracts";
 import tokens from "src/config/constants/tokens";
+import { getContract } from "@wagmi/core";
+import { Address } from "src/types";
 
 const initialState: StateInterface = {
     prices: {},
@@ -23,7 +26,7 @@ const lpAbi = [
     "function token1() view returns (address)",
     "function totalSupply() view returns (uint256)",
     "function getReserves() view returns (uint112,uint112,uint32)",
-];
+] as const;
 
 const additionalTokens = [
     constants.AddressZero,
@@ -37,7 +40,7 @@ const additionalTokens = [
 
 export const updatePrices = createAsyncThunk(
     "prices/updatePrices",
-    async ({ chainId, farms, multicallProvider }: UpdatePricesActionPayload, thunkApi) => {
+    async ({ chainId, farms }: UpdatePricesActionPayload, thunkApi) => {
         try {
             if (chainId !== defaultChainId) return;
             //----------------- Get Addresses -----------------
@@ -68,13 +71,13 @@ export const updatePrices = createAsyncThunk(
 
             //------------------->> 2. Get prices from blockchain
             const remaining = addresses.filter((address) => !Object.keys(prices).includes(address));
-            const lpContracts = remaining.map((address) => new Contract(address, lpAbi, multicallProvider));
+            const lpContracts = remaining.map((address) => getContract({ address: address as Address, abi: lpAbi }));
             const lpCalls: any[] = [];
             lpContracts.forEach((contract) => {
-                lpCalls.push(contract.token0());
-                lpCalls.push(contract.token1());
-                lpCalls.push(contract.totalSupply());
-                lpCalls.push(contract.getReserves());
+                lpCalls.push(contract.read.token0());
+                lpCalls.push(contract.read.token1());
+                lpCalls.push(contract.read.totalSupply());
+                lpCalls.push(contract.read.getReserves());
             });
             const lpResults = await Promise.all(lpCalls);
             const lpInfo: { [key: string]: any } = {};
@@ -95,17 +98,17 @@ export const updatePrices = createAsyncThunk(
                     reserves,
                 };
             }
-            const tokensContracts = Array.from(tokensForDecimalsAddresses).map(
-                (address) => new Contract(address, ["function decimals() view returns (uint256)"], multicallProvider)
+            const tokensContracts = Array.from(tokensForDecimalsAddresses).map((address) =>
+                getContract({ address: address as Address, abi: ["function decimals() view returns (uint256)"] })
             );
             const tokensCalls: any[] = [];
             tokensContracts.forEach((contract) => {
-                tokensCalls.push(contract.decimals());
+                tokensCalls.push(contract.read.decimals());
             });
             const tokensResults = await Promise.all(tokensCalls);
             const tokensDecimals: { [key: string]: number } = {};
             for (let i = 0; i < tokensResults.length; i++) {
-                tokensDecimals[Array.from(tokensForDecimalsAddresses)[i]] = tokensResults[i].toNumber();
+                tokensDecimals[Array.from(tokensForDecimalsAddresses)[i]] = Number(tokensResults[i]);
             }
             ///////////////////////////////////////////////
 
@@ -113,25 +116,25 @@ export const updatePrices = createAsyncThunk(
             Object.entries(lpInfo).forEach(([key, value]) => {
                 const token0Decimals = tokensDecimals[value.token0];
                 const token1Decimals = tokensDecimals[value.token1];
-                const token0USDLiquidity = value.reserves[0]
-                    .mul(parseInt(String(prices[value.token0] * 1000)))
-                    .div(1000)
-                    .div(utils.parseUnits("1", token0Decimals));
-                const token1USDLiquidity = value.reserves[1]
-                    .mul(parseInt(String(prices[value.token1] * 1000)))
-                    .div(1000)
-                    .div(utils.parseUnits("1", token1Decimals));
-                let totalUSDLiquidity = utils.parseEther("0");
-                if (token0USDLiquidity.gt(0) && token1USDLiquidity.gt(0)) {
-                    totalUSDLiquidity = token0USDLiquidity.add(token1USDLiquidity);
+                const token0USDLiquidity =
+                    (value.reserves[0] * BigInt(prices[value.token0] * 1000)) /
+                    BigInt(1000) /
+                    parseUnits("1", token0Decimals);
+                const token1USDLiquidity =
+                    (value.reserves[1] * BigInt(prices[value.token1] * 1000)) /
+                    BigInt(1000) /
+                    parseUnits("1", token1Decimals);
+                let totalUSDLiquidity = parseEther("0");
+                if (token0USDLiquidity > BigInt(0) && token1USDLiquidity > BigInt(0)) {
+                    totalUSDLiquidity = token0USDLiquidity + token1USDLiquidity;
                 } else {
-                    if (token0USDLiquidity !== 0) {
-                        totalUSDLiquidity = token0USDLiquidity.mul(2);
-                    } else if (token1USDLiquidity !== 0) {
-                        totalUSDLiquidity = token1USDLiquidity.mul(2);
+                    if (token0USDLiquidity !== BigInt(0)) {
+                        totalUSDLiquidity = token0USDLiquidity * BigInt(2);
+                    } else if (token1USDLiquidity !== BigInt(0)) {
+                        totalUSDLiquidity = token1USDLiquidity * BigInt(2);
                     }
                 }
-                const price = Number(totalUSDLiquidity.toNumber() / Number(utils.formatEther(value.totalSupply)));
+                const price = Number(Number(totalUSDLiquidity) / Number(formatEther(value.totalSupply)));
 
                 lpInfo[key] = {
                     ...value,
@@ -153,7 +156,7 @@ export const updatePrices = createAsyncThunk(
             // create address checksum
             const checksummed: { [key: string]: number } = {};
             Object.entries(prices).forEach(([key, value]) => {
-                checksummed[utils.getAddress(key)] = value;
+                checksummed[getAddress(key)] = value;
             });
             // USDC price hardcoded TODO: maybe change to actual price in future
             checksummed[addressesByChainId[chainId].usdcAddress] = 1;
@@ -169,7 +172,7 @@ export const updatePrices = createAsyncThunk(
 
 export const getPricesOfLpByTimestamp = createAsyncThunk(
     "prices/getOldPrices",
-    async ({ lpData, farms, provider, chainId, decimals }: GetOldPricesActionPayload, thunkApi) => {
+    async ({ lpData, farms, chainId, decimals }: GetOldPricesActionPayload, thunkApi) => {
         let prices: { [key: string]: { timestamp: number; price: number }[] } = {};
         // ----------------- Find Lp Addresses of given lpData -----------------
         const lps = lpData.map((lp) => ({
@@ -183,7 +186,7 @@ export const getPricesOfLpByTimestamp = createAsyncThunk(
         )
             .map((res, index) => {
                 if (res.price !== 0) {
-                    prices[utils.getAddress(lps[index].address)] = [{ ...res }];
+                    prices[getAddress(lps[index].address)] = [{ ...res }];
                     return undefined;
                 }
                 return { ...lps[index] };
@@ -207,13 +210,13 @@ export const getPricesOfLpByTimestamp = createAsyncThunk(
 
         // ----------------- Set token prices in prices object along with timestamp of price -----------------
         res?.forEach((item) => {
-            if (prices[utils.getAddress(item.address)]) {
-                prices[utils.getAddress(item.address)].push({
+            if (prices[getAddress(item.address)]) {
+                prices[getAddress(item.address)].push({
                     price: item.price!,
                     timestamp: item.timestamp,
                 });
             } else {
-                prices[utils.getAddress(item.address)] = [
+                prices[getAddress(item.address)] = [
                     {
                         price: item.price!,
                         timestamp: item.timestamp,
@@ -231,25 +234,25 @@ export const getPricesOfLpByTimestamp = createAsyncThunk(
                 .mul(
                     parseInt(
                         String(
-                            prices[utils.getAddress(lp.token0)].find((e) => e.timestamp === Number(lp.blockTimestamp))!
+                            prices[getAddress(lp.token0)].find((e) => e.timestamp === Number(lp.blockTimestamp))!
                                 .price * 1000
                         )
                     )
                 )
                 .div(1000)
-                .div(utils.parseUnits("1", token0Decimals));
+                .div(parseUnits("1", token0Decimals));
             const token1USDLiquidity = BigNumber.from(lp.reserve1)
                 .mul(
                     parseInt(
                         String(
-                            prices[utils.getAddress(lp.token1)].find((e) => e.timestamp === Number(lp.blockTimestamp))!
+                            prices[getAddress(lp.token1)].find((e) => e.timestamp === Number(lp.blockTimestamp))!
                                 .price * 1000
                         )
                     )
                 )
                 .div(1000)
-                .div(utils.parseUnits("1", token1Decimals));
-            let totalUSDLiquidity = utils.parseEther("0");
+                .div(parseUnits("1", token1Decimals));
+            let totalUSDLiquidity = BigNumber.from(parseEther("0"));
             if (token0USDLiquidity.gt(0) && token1USDLiquidity.gt(0)) {
                 totalUSDLiquidity = token0USDLiquidity.add(token1USDLiquidity);
             } else {
@@ -259,9 +262,9 @@ export const getPricesOfLpByTimestamp = createAsyncThunk(
                     totalUSDLiquidity = token1USDLiquidity.mul(2);
                 }
             }
-            const price = Number(totalUSDLiquidity.toNumber() / Number(utils.formatEther(lp.totalSupply)));
+            const price = Number(totalUSDLiquidity.toNumber() / Number(formatEther(BigInt(lp.totalSupply))));
 
-            prices[utils.getAddress(lp.address)] = [{ price, timestamp: Number(lp.blockTimestamp) }];
+            prices[getAddress(lp.address)] = [{ price, timestamp: Number(lp.blockTimestamp) }];
         });
         thunkApi.dispatch(setOldPrices(prices));
     }

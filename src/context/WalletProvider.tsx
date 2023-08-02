@@ -4,14 +4,14 @@ import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import {
-    usePublicClient,
-    useWalletClient,
     useAccount,
     useDisconnect,
     useNetwork,
     useSwitchNetwork,
     Chain,
-    useBalance,
+    Address,
+    usePublicClient,
+    PublicClient,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { getConnectorId, getNetworkName, toEth } from "src/utils/common";
@@ -76,6 +76,9 @@ interface IWalletContext {
     arbitrumBalance?: BalanceResult;
     mainnetMulticallProvider: providers.MulticallProvider;
     polygonMulticallProvider: providers.MulticallProvider;
+    arbitrumPublicClient: PublicClient;
+    mainnetPublicClient: PublicClient;
+    polygonPublicClient: PublicClient;
 }
 
 type BalanceResult = {
@@ -160,6 +163,9 @@ const useMulticallProvider = (chainId?: number) => {
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useEthersProvider();
+    const arbitrumPublicClient = usePublicClient({ chainId: CHAIN_ID.ARBITRUM });
+    const mainnetPublicClient = usePublicClient({ chainId: CHAIN_ID.MAINNET });
+    const polygonPublicClient = usePublicClient({ chainId: CHAIN_ID.POLYGON });
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
     const mainnetMulticallProvider = useMulticallProvider(CHAIN_ID.MAINNET);
     const polygonMulticallProvider = useMulticallProvider(CHAIN_ID.POLYGON);
@@ -216,6 +222,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             if (web3AuthConnectorId !== getConnectorId()) return defaultSigner || signer;
             // @ts-ignore
             const pkey = await getPkey();
+
             const chain = chains.find((c) => c.id === chainId);
             const _provider = await getWeb3AuthProvider({
                 chainId: chain?.id!,
@@ -278,6 +285,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 currentWallet: currentWallet || "",
                 // currentWallet: "0x1C9057544409046f82d7d47332383a6780763EAF",
                 connectWallet,
+                arbitrumPublicClient,
+                mainnetPublicClient,
+                polygonPublicClient,
                 networkId,
                 logout,
                 displayAccount,

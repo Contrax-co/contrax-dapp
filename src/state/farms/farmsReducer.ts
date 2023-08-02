@@ -11,11 +11,13 @@ import {
     FarmDetailInputOptions,
 } from "./types";
 import { Contract, BigNumber } from "ethers";
-import VaultAbi from "src/assets/abis/vault.json";
+import VaultAbi from "src/assets/abis/vault";
 import { erc20ABI } from "wagmi";
 import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
 import { defaultChainId } from "src/config/constants";
 import { FarmTransactionType } from "src/types/enums";
+import { getContract } from "@wagmi/core";
+import { Address } from "src/types";
 
 const initialState: StateInterface = {
     farmDetails: {},
@@ -68,16 +70,7 @@ export const updateFarmDetails = createAsyncThunk(
 export const updateEarnings = createAsyncThunk(
     "farms/updateEarnings",
     async (
-        {
-            currentWallet,
-            farms,
-            decimals,
-            prices,
-            balances,
-            multicallProvider,
-            totalSupplies,
-            chainId,
-        }: FetchEarningsAction,
+        { currentWallet, farms, decimals, prices, balances, totalSupplies, chainId }: FetchEarningsAction,
         thunkApi
     ) => {
         try {
@@ -90,12 +83,16 @@ export const updateEarnings = createAsyncThunk(
             }
 
             const earnings: Earnings = {};
-            const balancesPromises: Promise<BigNumber>[] = [];
+            const balancesPromises: Promise<bigint>[] = [];
             const withdrawableLpAmount: { [farmId: number]: string } = {};
             farms.forEach((farm) => {
-                balancesPromises.push(new Contract(farm.vault_addr, VaultAbi, multicallProvider).balance());
                 balancesPromises.push(
-                    new Contract(farm.lp_address, erc20ABI, multicallProvider).balanceOf(farm.vault_addr)
+                    getContract({ address: farm.vault_addr as Address, abi: VaultAbi }).read.balance()
+                );
+                balancesPromises.push(
+                    getContract({ address: farm.lp_address as Address, abi: erc20ABI }).read.balanceOf([
+                        farm.vault_addr as Address,
+                    ])
                 );
             });
             const vaultBalancesResponse = await Promise.all(balancesPromises);
@@ -103,14 +100,15 @@ export const updateEarnings = createAsyncThunk(
                 const balance = vaultBalancesResponse[i];
                 const b = vaultBalancesResponse[i + 1];
 
-                let r = balance.mul(balances[farms[i / 2].vault_addr]!);
-                if (totalSupplies[farms[i / 2].vault_addr] !== "0") r = r.div(totalSupplies[farms[i / 2].vault_addr]!);
-                if (b.lt(r)) {
-                    const _withdraw = r.sub(b);
-                    const _after = b.add(_withdraw);
-                    const _diff = _after.sub(b);
-                    if (_diff.lt(_withdraw)) {
-                        r = b.add(_diff);
+                let r = balance * BigInt(balances[farms[i / 2].vault_addr]!);
+                if (totalSupplies[farms[i / 2].vault_addr] !== "0")
+                    r = r / BigInt(totalSupplies[farms[i / 2].vault_addr]!);
+                if (b < r) {
+                    const _withdraw = r - b;
+                    const _after = b + _withdraw;
+                    const _diff = _after - b;
+                    if (_diff < _withdraw) {
+                        r = b + _diff;
                     }
                 }
                 withdrawableLpAmount[farms[i / 2].id] = r.toString();
@@ -125,10 +123,8 @@ export const updateEarnings = createAsyncThunk(
                 earnings[farm.id] = Number(toEth(earnedTokens, decimals[farm.lp_address])) * prices[farm.lp_address]!;
                 if (earnings[farm.id] < 0.0001) earnings[farm.id] = 0;
             });
-            thunkApi.dispatch(
-                // @ts-ignore
-                getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, provider: multicallProvider, decimals })
-            );
+            // @ts-ignore
+            thunkApi.dispatch(getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, decimals }));
             return { earnings, currentWallet };
         } catch (error) {
             console.error(error);
