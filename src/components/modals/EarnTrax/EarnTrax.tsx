@@ -6,6 +6,7 @@ import { acceptTerms, getMessage } from "src/api/trax";
 import useWallet from "src/hooks/useWallet";
 import { useSignMessage } from "wagmi";
 import { setEarnTraxTermsAgreed } from "src/state/account/accountReducer";
+import { ImSpinner8 } from "react-icons/im";
 
 interface IProps {
     setOpenModal: Function;
@@ -72,8 +73,12 @@ export const EarnTrax: FC<IProps> = ({ setOpenModal }) => {
                 >
                     Cancel
                 </button>
-                <button className={"custom-button " + styles.agreeButton} disabled={!agree} onClick={handleAgree}>
-                    {isLoading ? "l" : "Earn"}
+                <button
+                    className={"custom-button " + styles.agreeButton}
+                    disabled={!agree || isLoading}
+                    onClick={handleAgree}
+                >
+                    {isLoading ? <ImSpinner8 className={styles.loader} /> : "Earn"}
                 </button>
             </div>
         </ModalLayout>
