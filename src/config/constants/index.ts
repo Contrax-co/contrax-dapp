@@ -37,6 +37,7 @@ export const TENDERLY_ACCESS_TOKEN = process.env.REACT_APP_TENDERLY_ACCESS_TOKEN
 export const TENDERLY_PROJECT_SLUG = process.env.REACT_APP_TENDERLY_PROJECT_SLUG;
 export const TENDERLY_USER_NAME = process.env.REACT_APP_TENDERLY_USER_NAME;
 export const WERT_PARTNER_ID = process.env.REACT_APP_WERT_PARTNER_ID;
+export const POLLING_INTERVAL = 30000;
 export const INFURA_KEY = process.env.REACT_APP_INFURA;
 
 // export const FRONT_URL = process.env.REACT_APP_FRONT_URL_SANDBOX as string;

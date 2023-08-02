@@ -12,7 +12,7 @@ import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import { INFURA_KEY, WEB3AUTH_CLIENT_ID, isDev, walletConnectProjectId } from "./constants";
+import { INFURA_KEY, POLLING_INTERVAL, WEB3AUTH_CLIENT_ID, isDev, walletConnectProjectId } from "./constants";
 import googleIcon from "./../assets/images/google-logo.svg";
 import facebookIcon from "./../assets/images/facebook-icon.svg";
 import discordIcon from "./../assets/images/discordapp-icon.svg";
@@ -40,7 +40,6 @@ const clientId = WEB3AUTH_CLIENT_ID as string;
 
 const providersArray: ChainProviderFn[] = [];
 
-
 if (INFURA_KEY && !isDev) {
     providersArray.push(
         infuraProvider({
@@ -59,7 +58,16 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
         // optimism, avalanche, gnosis, fantom, bsc
     ],
     // @ts-ignore
-    providersArray
+    providersArray,
+    {
+        batch: {
+            multicall: {
+                batchSize: 2048,
+                wait: 500,
+            },
+        },
+        pollingInterval: POLLING_INTERVAL,
+    }
 );
 
 // Instantiating Web3Auth
@@ -112,7 +120,9 @@ export async function getWeb3AuthProvider(config: {
         },
     });
     await PrivateKeyProvider.setupProvider(config.pkey);
-    return new providers.Web3Provider(PrivateKeyProvider.provider!);
+    const provider = new providers.Web3Provider(PrivateKeyProvider.provider!);
+    provider.pollingInterval = POLLING_INTERVAL;
+    return provider;
 }
 
 const openloginAdapter = new OpenloginAdapter({
@@ -251,13 +261,18 @@ export function publicClientToProvider(publicClient: PublicClient) {
         name: chain.name,
         ensAddress: chain.contracts?.ensRegistry?.address,
     };
-    if (transport.type === "fallback")
-        return new providers.FallbackProvider(
+    if (transport.type === "fallback") {
+        const provider = new providers.FallbackProvider(
             (transport.transports as ReturnType<HttpTransport>[]).map(
                 ({ value }) => new providers.JsonRpcProvider(value?.url, network)
             )
         );
-    return new providers.JsonRpcProvider(transport.url, network);
+        provider.pollingInterval = POLLING_INTERVAL;
+        return provider;
+    }
+    const provider = new providers.JsonRpcProvider(transport.url, network);
+    provider.pollingInterval = POLLING_INTERVAL;
+    return provider;
 }
 
 /** Hook to convert a viem Public Client to an ethers.js Provider. */
@@ -274,6 +289,7 @@ export function walletClientToSigner(walletClient: WalletClient) {
         ensAddress: chain.contracts?.ensRegistry?.address,
     };
     const provider = new providers.Web3Provider(transport, network);
+    provider.pollingInterval = POLLING_INTERVAL;
     const signer = provider.getSigner(account.address);
     return signer;
 }
