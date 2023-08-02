@@ -55,7 +55,7 @@ const providersArray: ChainProviderFn[] = [];
 //     );
 // }
 
-if (ALCHEMY_KEY && isDev) {
+if (ALCHEMY_KEY && !isDev) {
     providersArray.push(
         alchemyProvider({
             apiKey: ALCHEMY_KEY as string,
