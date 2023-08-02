@@ -47,13 +47,13 @@ const clientId = WEB3AUTH_CLIENT_ID as string;
 
 const providersArray: ChainProviderFn[] = [];
 
-if (INFURA_KEY && isDev) {
-    providersArray.push(
-        infuraProvider({
-            apiKey: INFURA_KEY as string,
-        })
-    );
-}
+// if (INFURA_KEY && isDev) {
+//     providersArray.push(
+//         infuraProvider({
+//             apiKey: INFURA_KEY as string,
+//         })
+//     );
+// }
 
 if (ALCHEMY_KEY && isDev) {
     providersArray.push(
@@ -82,6 +82,8 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
             },
         },
         pollingInterval: POLLING_INTERVAL,
+        retryCount: 3,
+        stallTimeout: 5000,
     }
 );
 
