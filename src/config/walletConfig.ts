@@ -9,10 +9,17 @@ import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ChainProviderFn, WalletClient, configureChains, createConfig, useWalletClient } from "wagmi";
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import { INFURA_KEY, POLLING_INTERVAL, WEB3AUTH_CLIENT_ID, isDev, walletConnectProjectId } from "./constants";
+import {
+    ALCHEMY_KEY,
+    INFURA_KEY,
+    POLLING_INTERVAL,
+    WEB3AUTH_CLIENT_ID,
+    isDev,
+    walletConnectProjectId,
+} from "./constants";
 import googleIcon from "./../assets/images/google-logo.svg";
 import facebookIcon from "./../assets/images/facebook-icon.svg";
 import discordIcon from "./../assets/images/discordapp-icon.svg";
@@ -40,10 +47,18 @@ const clientId = WEB3AUTH_CLIENT_ID as string;
 
 const providersArray: ChainProviderFn[] = [];
 
-if (INFURA_KEY && !isDev) {
+if (INFURA_KEY && isDev) {
     providersArray.push(
         infuraProvider({
             apiKey: INFURA_KEY as string,
+        })
+    );
+}
+
+if (ALCHEMY_KEY && isDev) {
+    providersArray.push(
+        alchemyProvider({
+            apiKey: ALCHEMY_KEY as string,
         })
     );
 }
