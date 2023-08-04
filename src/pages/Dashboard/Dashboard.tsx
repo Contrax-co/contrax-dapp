@@ -127,7 +127,6 @@ function Dashboard() {
                 <BridgeEthBtn />
                 <SwapUSDCBtn />
             </div>
-            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
             {currentWallet ? (
                 <>
                     <div className={`dashboard_section outlinedContainer`}>
@@ -147,6 +146,7 @@ function Dashboard() {
             ) : (
                 <NotSignedIn />
             )}
+            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
         </div>
     );
 }
