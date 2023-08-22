@@ -1,5 +1,5 @@
 .container {
-    max-width: 500px;
+    max-width: 700px;
 }
 
 .heading {
@@ -12,8 +12,9 @@
 
 .terms {
     color: var(--color_grey);
-    max-height: 300px;
+    max-height: 50dvh;
     overflow-y: auto;
+    padding:6px;
     background-color: var(--background_primary);
 
     li {
