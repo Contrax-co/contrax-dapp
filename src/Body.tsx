@@ -59,11 +59,10 @@ function Body() {
 
     useEffect(() => {
         reloadApys();
-        // after 5 min reload apys
+        // after 30 min reload apys
         const interval = setInterval(() => {
-            if (document.hidden) return;
             reloadApys();
-        }, 1000 * 60 * 5);
+        }, 1000 * 60 * 30);
         return () => clearInterval(interval);
     }, [reloadApys]);
 
