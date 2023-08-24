@@ -26,7 +26,6 @@ import { TraxEarning } from "./TraxEarning/TraxEarning";
 import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
 import BridgeEthBtn from "src/components/BridgeEthBtn/BridgeEthBtn";
 import SwapUSDCBtn from "src/components/SwapUSDCBtn/SwapUSDCBtn";
-import { isDev, isStagging } from "src/config/constants";
 import { EarnTrax } from "src/components/modals/EarnTrax/EarnTrax";
 import { useAppSelector } from "src/state";
 
@@ -103,7 +102,7 @@ function Dashboard() {
 
             <div style={{ display: "flex" }}>
                 <ReferralLink />
-                {(isStagging || isDev) && currentWallet && !earnTraxTermsAgreed && (
+                {currentWallet && !earnTraxTermsAgreed && (
                     <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>
                         Earn Trax
                     </button>
@@ -116,7 +115,7 @@ function Dashboard() {
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
-                {(isStagging || isDev) && earnTraxTermsAgreed && (
+                {earnTraxTermsAgreed && (
                     <>
                         <TraxEarning />
                         <TraxReferralEarning />
