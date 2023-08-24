@@ -1,0 +1,63 @@
+.container {
+    max-width: 700px;
+}
+
+.heading {
+    font-size: 28px;
+}
+
+.description {
+    padding: 8px 0px;
+}
+
+.terms {
+    color: var(--color_grey);
+    max-height: 50dvh;
+    overflow-y: auto;
+    padding:6px;
+    background-color: var(--background_primary);
+
+    li {
+        padding: 2px 0px;
+    }
+}
+
+.checkbox {
+    margin-top: 30px;
+    color: var(--color_text);
+    & label {
+        margin-left: 8px;
+    }
+    margin-bottom: 16px;
+}
+
+.buttonsContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button {
+        @media only screen and (max-width: 500px) {
+            min-width: 48%;
+        }
+    }
+}
+
+.cancelButton {
+    background-color: transparent;
+    border: 1px solid var(--color_primary);
+    color: var(--color_primary);
+}
+
+.loader {
+    animation: spin infinite 1s;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

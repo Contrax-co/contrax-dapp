@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
-import { useBalance, useSigner } from "wagmi";
+import { useBalance } from "wagmi";
+import { useEthersSigner } from "src/config/walletConfig";
 import useWallet from "../useWallet";
 import { constants, ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
@@ -37,7 +38,7 @@ const useBridge = (direction: BridgeDirection) => {
     const isLoading = useAppSelector((state) => state.ramp.bridgeStates[direction].isBridging);
     const checkingStatus = useAppSelector((state) => state.ramp.bridgeStates[direction].checkingStatus);
 
-    const { data: polygonSignerWagmi } = useSigner({
+    const polygonSignerWagmi = useEthersSigner({
         chainId: BridgeChainInfo[direction].sourceChainId,
     });
 
@@ -55,6 +56,7 @@ const useBridge = (direction: BridgeDirection) => {
     React.useEffect(() => {
         const fn = async () => {
             const res = await getWeb3AuthSigner(CHAIN_ID.POLYGON, polygonSignerWagmi as ethers.Signer);
+            // @ts-ignore
             setPolygonSigner(res);
         };
         fn();

@@ -41,6 +41,7 @@ function Body() {
         fetchAccountData();
         // after 5 min reload
         const interval = setInterval(() => {
+            if (document.hidden) return;
             fetchAccountData();
         }, 1000 * 60 * 5);
         return () => clearInterval(interval);
@@ -50,6 +51,7 @@ function Body() {
         reloadPrices();
         // after 5 min reload prices
         const interval = setInterval(() => {
+            if (document.hidden) return;
             reloadPrices();
         }, 1000 * 60 * 5);
         return () => clearInterval(interval);
@@ -57,10 +59,10 @@ function Body() {
 
     useEffect(() => {
         reloadApys();
-        // after 5 min reload apys
+        // after 30 min reload apys
         const interval = setInterval(() => {
             reloadApys();
-        }, 1000 * 60 * 5);
+        }, 1000 * 60 * 30);
         return () => clearInterval(interval);
     }, [reloadApys]);
 
@@ -68,6 +70,7 @@ function Body() {
         reloadBalances();
         // after 30 s reload balances
         const interval = setInterval(() => {
+            if (document.hidden) return;
             reloadBalances();
         }, 1000 * 60 * 0.5);
         return () => clearInterval(interval);
@@ -77,6 +80,7 @@ function Body() {
         reloadSupplies();
         // after 2 min reload supplies
         const interval = setInterval(() => {
+            if (document.hidden) return;
             reloadSupplies();
         }, 1000 * 60 * 2);
         return () => clearInterval(interval);

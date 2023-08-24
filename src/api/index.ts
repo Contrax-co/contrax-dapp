@@ -40,6 +40,10 @@ export const socketTechApi = axios.create({
     },
 });
 
+export const traxApi = axios.create({
+    baseURL: `${BACKEND_BASE_URL}account/terms/trax/`,
+});
+
 export const tenderly = new Tenderly({
     accessKey: TENDERLY_ACCESS_TOKEN!,
     accountName: TENDERLY_USER_NAME!,

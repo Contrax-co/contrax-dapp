@@ -39,6 +39,7 @@ export const addAccount = createAsyncThunk(
             }
             // Get current account data
             const data = await getAccountDataApi(address);
+            console.log(data);
 
             // if account is not exist, create new account
             if (!data) {
@@ -55,6 +56,9 @@ export const addAccount = createAsyncThunk(
                 thunkApi.dispatch(setReferrerCode(""));
                 if (data.referrer) {
                     thunkApi.dispatch(setRefAddress(data.referrer.address));
+                }
+                if (data.earnTraxTermsAgreed) {
+                    thunkApi.dispatch(setEarnTraxTermsAgreed(data.earnTraxTermsAgreed || false));
                 }
                 // if (data.referralCode) {
                 thunkApi.dispatch(setReferralCode(data.referralCode || ""));
@@ -120,6 +124,9 @@ const accountSlice = createSlice({
         reset: (state: StateInterface) => {
             return { ...initialState, referrerCode: state.referrerCode };
         },
+        setEarnTraxTermsAgreed: (state: StateInterface, action: { payload: boolean }) => {
+            state.earnTraxTermsAgreed = action.payload;
+        },
     },
     extraReducers(builder) {
         builder.addCase(getReferralEarning.fulfilled, (state, action) => {
@@ -139,6 +146,7 @@ export const {
     setTotalEarnedTraxByReferral,
     setTraxCalculatedTimestamp,
     setReferralEarning,
+    setEarnTraxTermsAgreed,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;

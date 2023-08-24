@@ -25,13 +25,14 @@ const ReferralLink: React.FC<IProps> = () => {
         return (
             <div className={`outlinedContainer ${styles.container}`}>
                 <p className={styles.heading}>Referal Link:</p>
+                <p className={styles.heading2}>Ref:</p>
                 <p className={styles.link} onClick={copy}>
                     <span className={styles.text}>{referralLink}</span>
                     {!copied ? <FiCopy className={styles.icon} /> : <BsCheckCircle className={styles.icon} />}
                 </p>
             </div>
         );
-    else return <div></div>;
+    else return <div style={{ marginLeft: 18 }}></div>;
 };
 
 export default ReferralLink;

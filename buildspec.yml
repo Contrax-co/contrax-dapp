@@ -11,10 +11,12 @@ env:
     REACT_APP_TENDERLY_PROJECT_SLUG: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TENDERLY_PROJECT_SLUG
     REACT_APP_TENDERLY_USER_NAME: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TENDERLY_USER_NAME
     REACT_APP_INFURA: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:INFURA_KEY
+    REACT_APP_ALCHEMY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:ALCHEMY_KEY
     REACT_APP_GATEFI_MERCHANT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:GATEFI_MERCHANT_ID_PRODUCTION
     REACT_APP_FRONT_URL: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_PROD_URL
     REACT_APP_FRONT_API_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_PROD_API_KEY
     REACT_APP_FRONT_CLIENT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_CLIENT_ID
+    REACT_APP_WALLET_CONNECT_PROJECT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WALLET_CONNECT_PROJECT_ID
 
 
 phases:

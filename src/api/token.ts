@@ -65,10 +65,10 @@ export const getPricesByTime = async (
             // @ts-ignore
             prices[key.split(":")[1].toLowerCase()] = value.prices;
         });
-        console.log(JSON.parse(JSON.stringify(addTime)), JSON.parse(JSON.stringify(prices)));
+        console.log(JSON.parse(JSON.stringify(addTime)), JSON.parse(JSON.stringify(prices)), obj);
         addTime = addTime.map((item, i) => {
-            console.log("inm", i);
-            return { ...item, price: prices[item.address].pop()!.price };
+            const price = prices[item.address] ? prices[item.address].pop()!.price : 0;
+            return { ...item, price };
         });
 
         return addTime;

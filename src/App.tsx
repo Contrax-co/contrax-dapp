@@ -41,7 +41,7 @@ function App() {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <WagmiConfig client={wagmiClient}>
+            <WagmiConfig config={wagmiClient}>
                 <RainbowKitProvider
                     chains={chains}
                     theme={

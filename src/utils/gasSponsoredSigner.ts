@@ -3,6 +3,7 @@ import { ExternallyOwnedAccount } from "@ethersproject/abstract-signer";
 import { BytesLike, Deferrable, SigningKey } from "ethers/lib/utils.js";
 import { Wallet, providers } from "ethers";
 import { backendApi } from "src/api";
+import { sleep } from "./common";
 
 interface SponsoredTransactionRequest {
     transactionRequest: TransactionRequest;
@@ -10,6 +11,8 @@ interface SponsoredTransactionRequest {
 }
 
 export class GasSponsoredSigner extends Wallet {
+    pendingTransactions = 0;
+    nonce = 0;
     constructor(privateKey: BytesLike | ExternallyOwnedAccount | SigningKey, provider?: providers.Provider) {
         super(privateKey, provider);
     }
@@ -23,15 +26,24 @@ export class GasSponsoredSigner extends Wallet {
         transaction.maxFeePerGas = gasPrice;
         transaction.gasLimit = gasLimit;
         transaction.chainId = await this.getChainId();
-        const transactionRequest = await this.populateTransaction(transaction);
+
+        let transactionRequest = await this.populateTransaction(transaction);
+        if (this.pendingTransactions > 0) {
+            // @ts-ignore
+            transactionRequest.nonce = this.nonce;
+            this.nonce += 1;
+        } else {
+            // @ts-ignore
+            this.nonce = transactionRequest.nonce + 1;
+        }
         const signedTransactionHash = await this.signTransaction(transactionRequest);
 
         const request: SponsoredTransactionRequest = {
             transactionRequest,
             signedTransactionHash,
         };
-
         try {
+            this.pendingTransactions++;
             const response = await backendApi.post("transaction/send-sponsored-transaction", request);
 
             const transactionReceipt: TransactionReceipt = response.data.data.receipt;
@@ -43,9 +55,11 @@ export class GasSponsoredSigner extends Wallet {
                 },
             };
 
+            this.pendingTransactions--;
             return { ...transactionResponse };
         } catch (e: any) {
             console.log(e);
+            this.pendingTransactions--;
             throw new Error(`${e.response.data.error}`);
         }
     }

@@ -11,14 +11,12 @@ import { fetchApys } from "src/state/apys/apysReducer";
  * @returns apy
  */
 export const useFarmApys = () => {
-    const { farms } = useFarms();
     const { isLoading, apys, isFetched } = useAppSelector((state) => state.apys);
-    const { networkId, multicallProvider } = useWallet();
     const dispatch = useAppDispatch();
 
     const reloadApys = useCallback(() => {
-        dispatch(fetchApys({ farms, chainId: networkId, multicallProvider }));
-    }, [farms, networkId, dispatch, multicallProvider]);
+        dispatch(fetchApys());
+    }, []);
 
     return { isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading, apys, reloadApys };
 };
