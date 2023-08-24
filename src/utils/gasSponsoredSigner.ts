@@ -11,7 +11,7 @@ interface SponsoredTransactionRequest {
 }
 
 export class GasSponsoredSigner extends Wallet {
-    isPendingTransaction = false;
+    pendingTransactions = 0;
     nonce = 0;
     constructor(privateKey: BytesLike | ExternallyOwnedAccount | SigningKey, provider?: providers.Provider) {
         super(privateKey, provider);
@@ -28,7 +28,7 @@ export class GasSponsoredSigner extends Wallet {
         transaction.chainId = await this.getChainId();
 
         let transactionRequest = await this.populateTransaction(transaction);
-        if (this.isPendingTransaction) {
+        if (this.pendingTransactions > 0) {
             // @ts-ignore
             transactionRequest.nonce = this.nonce;
             this.nonce += 1;
@@ -43,7 +43,7 @@ export class GasSponsoredSigner extends Wallet {
             signedTransactionHash,
         };
         try {
-            this.isPendingTransaction = true;
+            this.pendingTransactions++;
             const response = await backendApi.post("transaction/send-sponsored-transaction", request);
 
             const transactionReceipt: TransactionReceipt = response.data.data.receipt;
@@ -55,11 +55,11 @@ export class GasSponsoredSigner extends Wallet {
                 },
             };
 
-            this.isPendingTransaction = false;
+            this.pendingTransactions--;
             return { ...transactionResponse };
         } catch (e: any) {
             console.log(e);
-            this.isPendingTransaction = false;
+            this.pendingTransactions--;
             throw new Error(`${e.response.data.error}`);
         }
     }
