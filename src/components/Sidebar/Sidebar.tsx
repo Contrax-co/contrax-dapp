@@ -91,7 +91,7 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 )}
                 <SidebarItem
                     title="User Guide"
-                    onClick={() => handleNavigation("https://contrax.gitbook.io/contrax-docs/", "_blank")}
+                    onClick={() => handleNavigation("https://docs.contrax.finance/introduction/", "_blank")}
                     icon={<HiDocumentText size={18} />}
                     icon2={<AiOutlineExport size={12} />}
                 />
