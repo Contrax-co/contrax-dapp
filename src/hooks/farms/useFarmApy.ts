@@ -1,8 +1,6 @@
 import { useMemo, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { Farm } from "src/types";
-import useWallet from "../useWallet";
-import useFarms from "./useFarms";
 import { fetchApys } from "src/state/apys/apysReducer";
 
 /**
