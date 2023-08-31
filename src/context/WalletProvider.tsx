@@ -168,7 +168,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     const { switchNetworkAsync, chains } = useSwitchNetwork();
     const dispatch = useDispatch();
-    const { address: currentWallet, connector } = useAccount();
+    const { address: currentWallet, connector, isConnecting } = useAccount();
     const { disconnect } = useDisconnect();
     const { chain } = useNetwork();
     const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
@@ -271,6 +271,18 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             clearInterval(int);
         };
     }, [provider]);
+
+    React.useEffect(() => {
+        if (isConnecting) {
+            const ele = document.querySelector("[data-rk] ._1am14410");
+            // @ts-ignore
+            if (ele) ele.style.filter = "saturate(0) blur(1px)";
+        } else {
+            const ele = document.querySelector("[data-rk] ._1am14410");
+            // @ts-ignore
+            if (ele) ele.style.filter = "";
+        }
+    }, [isConnecting]);
 
     return (
         <WalletContext.Provider
