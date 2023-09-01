@@ -7,8 +7,6 @@ import { ReactComponent as AlpacaSvg } from "src/assets/images/alpaca.svg";
 import { ReactComponent as BinanceSvg } from "src/assets/images/binance.svg";
 import { ReactComponent as BitstampSvg } from "src/assets/images/bitstamp.svg";
 import { ReactComponent as BittrexSvg } from "src/assets/images/bittrex.svg";
-import { ReactComponent as CoinbaseSvg } from "src/assets/images/coinbase.svg";
-import { ReactComponent as RobinhoodSvg } from "src/assets/images/robinhood.svg";
 import Mfa from "./Mfa";
 
 interface IProps {}
@@ -23,11 +21,11 @@ const Front: React.FC<IProps> = () => {
         <div className={styles.container}>
             <div className={styles.heading}>
                 <h5>Get Your Funds from Other Crypto Accounts</h5>
-                <p>Transfer your funds another account or wallet to Contrax</p>
+                <p>Transfer your funds from another account or wallet to Contrax</p>
             </div>
             <div className={styles.buttonWrapper}>
                 <div className={styles.logoWrapper}>
-                    <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
+                    {/* <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
                         <AlpacaSvg />
                     </div>
                     <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
@@ -35,7 +33,7 @@ const Front: React.FC<IProps> = () => {
                     </div>
                     <div className={styles.logoCircle}>
                         <BinanceSvg />
-                    </div>
+                    </div> */}
                 </div>
                 <button
                     onClick={handleCreateConnection}
@@ -44,7 +42,7 @@ const Front: React.FC<IProps> = () => {
                 >
                     {authData?.accessToken ? "Change Connection" : "Connect an Account"}
                 </button>
-                <div className={styles.logoWrapper}>
+                {/* <div className={styles.logoWrapper}>
                     <div className={styles.logoCircle}>
                         <CoinbaseSvg />
                     </div>
@@ -54,7 +52,7 @@ const Front: React.FC<IProps> = () => {
                     <div className={styles.logoCircle + " " + styles.onlyLargeScreen}>
                         <RobinhoodSvg />
                     </div>
-                </div>
+                </div> */}
             </div>
             <div>{/* <iframe src={iframeLink} style={{ width: 380, height: 700 }}></iframe> */}</div>
 
