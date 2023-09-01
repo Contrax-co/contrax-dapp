@@ -30,9 +30,11 @@ export enum CHAIN_ID {
 }
 
 export enum UsersTableColumns {
-    Address = "Address",
-    TVL = "TVL",
-    Referrer = "Referrer",
+    Address = "address",
+    TVL = "tvl",
+    Referrer = "referrer",
+    TraxEarned = "earnedTrax",
+    TraxEarnedRefferal = "earnedTraxByReferral",
 }
 
 export enum VaultsTableColumns {

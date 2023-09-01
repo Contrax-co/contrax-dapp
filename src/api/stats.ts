@@ -40,7 +40,7 @@ export const fetchUserTVLs = async (
     search: string
 ) => {
     return axios.get<UserStatsResponse>(
-        `${BACKEND_BASE_URL}stats/tvl?page=${page}&limit=10&sort=${order + sortBy?.toLowerCase()}&address=${search}`
+        `${BACKEND_BASE_URL}stats/tvl?page=${page}&limit=10&sort=${order + sortBy}&address=${search}`
     );
 };
 
