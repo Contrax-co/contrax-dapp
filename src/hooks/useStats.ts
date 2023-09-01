@@ -6,7 +6,8 @@ import useFarms from "./farms/useFarms";
 
 export const useStats = () => {
     const [page, setPage] = useState<number>(1);
-    const [sortBy, setSortBy] = useState<UsersTableColumns>();
+    // @ts-ignore
+    const [sortBy, setSortBy] = useState<UsersTableColumns>("");
     const [order, setOrder] = useState<"" | "-">("");
     const [search, setSearch] = useState("");
     const { farms } = useFarms();

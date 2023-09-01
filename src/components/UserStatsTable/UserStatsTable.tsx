@@ -7,6 +7,7 @@ import { FiExternalLink } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { UsersTableColumns } from "src/types/enums";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import { v4 as uuid } from "uuid";
 
 export const UserStatsTable: FC = () => {
     const {
@@ -71,12 +72,45 @@ export const UserStatsTable: FC = () => {
                                 )}
                             </div>
                         </th>
+                        <th>
+                            <div
+                                className={styles.tableData + " " + styles.heading}
+                                onClick={() => handleSorting(UsersTableColumns.TraxEarned)}
+                            >
+                                Trax Earned
+                                {sortBy === UsersTableColumns.TraxEarned && (
+                                    <FaArrowDown
+                                        size={14}
+                                        className={`${styles.transitionDelay} ${order === "" ? "" : styles.rotate}`}
+                                    />
+                                )}
+                            </div>
+                        </th>
+                        <th>
+                            <div
+                                className={styles.tableData + " " + styles.heading}
+                                onClick={() => handleSorting(UsersTableColumns.TraxEarnedRefferal)}
+                            >
+                                Trax Earned (referral)
+                                {sortBy === UsersTableColumns.TraxEarnedRefferal && (
+                                    <FaArrowDown
+                                        size={14}
+                                        className={`${styles.transitionDelay} ${order === "" ? "" : styles.rotate}`}
+                                    />
+                                )}
+                            </div>
+                        </th>
+                        <th>
+                            <div className={styles.tableData + " " + styles.heading} style={{ cursor: "initial" }}>
+                                Code
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     {userTVLs && userTVLs.length > 0 ? (
-                        userTVLs.map(({ id, address, tvl, accountInfo }) => (
-                            <tr key={id} className={styles.tableRow}>
+                        userTVLs.map(({ id, address, tvl, accountInfo, earnedTrax, earnedTraxByReferral }) => (
+                            <tr key={uuid()} className={styles.tableRow}>
                                 <td>
                                     <div className={styles.tableData + " " + styles.addressCol}>
                                         <p className={styles.addressText + " " + styles.onlyExtraLargeScreen}>
@@ -161,11 +195,22 @@ export const UserStatsTable: FC = () => {
                                         )}
                                     </div>
                                 </td>
+                                <td>
+                                    <div className={styles.tableData}>{Number(earnedTrax).toLocaleString("en-us")}</div>
+                                </td>
+                                <td>
+                                    <div className={styles.tableData}>
+                                        {Number(earnedTraxByReferral).toLocaleString("en-us")}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className={styles.tableData}>{accountInfo?.referralCode || "-"}</div>
+                                </td>
                             </tr>
                         ))
                     ) : (
                         <tr className={styles.tableRow}>
-                            <td colSpan={3}>
+                            <td colSpan={6}>
                                 <EmptyTable />
                             </td>
                         </tr>
@@ -191,7 +236,7 @@ export const UserStatsTable: FC = () => {
                                 />
                             </div>
                         </td>
-                        <td colSpan={2}>
+                        <td colSpan={5}>
                             <div className={styles.tableData + " " + styles.controls}>
                                 {hasPrevPage && (
                                     <FaArrowLeft
