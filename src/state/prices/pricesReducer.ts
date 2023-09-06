@@ -3,7 +3,7 @@ import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface, UpdatePricesActionPayload } from "./types";
 import { Contract, utils, constants, BigNumber } from "ethers";
-import { getNetworkName } from "src/utils/common";
+import { getNetworkName, toEth } from "src/utils/common";
 import { getPriceByTime, getPricesByTime } from "src/api/token";
 import { defaultChainId } from "src/config/constants";
 import { addressesByChainId } from "src/config/constants/contracts";
@@ -23,6 +23,7 @@ const lpAbi = [
     "function token1() view returns (address)",
     "function totalSupply() view returns (uint256)",
     "function getReserves() view returns (uint112,uint112,uint32)",
+    "function swap() view returns (address)",
 ];
 
 const additionalTokens = [
@@ -69,31 +70,58 @@ export const updatePrices = createAsyncThunk(
             //------------------->> 2. Get prices from blockchain
             const remaining = addresses.filter((address) => !Object.keys(prices).includes(address));
             const lpContracts = remaining.map((address) => new Contract(address, lpAbi, multicallProvider));
-            const lpCalls: any[] = [];
+            let lpCalls: any[] = [];
             lpContracts.forEach((contract) => {
-                lpCalls.push(contract.token0());
-                lpCalls.push(contract.token1());
                 lpCalls.push(contract.totalSupply());
-                lpCalls.push(contract.getReserves());
+                lpCalls.push(contract.swap());
             });
-            const lpResults = await Promise.all(lpCalls);
+            // lpContracts.forEach((contract) => {
+            //     lpCalls.push(contract.token0());
+            //     lpCalls.push(contract.token1());
+            //     lpCalls.push(contract.totalSupply());
+            //     lpCalls.push(contract.getReserves());
+            // });
+            let lpResults = await Promise.all(lpCalls);
+            lpCalls = [];
+            for (let i = 0; i < lpResults.length; i += 2) {
+                const swapAddress = lpResults[i + 1];
+                const swapContract = new Contract(
+                    swapAddress,
+                    [
+                        "function getToken(uint8) view returns (address)",
+                        "function getTokenBalance(uint8) view returns (uint256)",
+                        "function getVirtualPrice() view returns (uint256)",
+                    ],
+                    multicallProvider
+                );
+                lpCalls.push(swapContract.getToken(0));
+                lpCalls.push(swapContract.getToken(1));
+                lpCalls.push(swapContract.getTokenBalance(0));
+                lpCalls.push(swapContract.getTokenBalance(1));
+                lpCalls.push(swapContract.getVirtualPrice());
+            }
+            const lpResults2 = await Promise.all(lpCalls);
             const lpInfo: { [key: string]: any } = {};
 
             // Getting Decimals for tokens of LPs
+            let j = 0;
             const tokensForDecimalsAddresses = new Set<string>();
-            for (let i = 0; i < lpResults.length; i += 4) {
-                const token0 = lpResults[i].toLowerCase();
-                const token1 = lpResults[i + 1].toLowerCase();
-                const totalSupply = lpResults[i + 2];
-                const reserves = lpResults[i + 3];
+            for (let i = 0; i < lpResults2.length; i += 5) {
+                const token0 = lpResults2[i].toLowerCase();
+                const token1 = lpResults2[i + 1].toLowerCase();
+                const reserves = [lpResults2[i + 2], lpResults2[i + 3]];
+                const priceOfToken1PerToken0 = 1 / Number(toEth(lpResults2[i + 4]));
+                const totalSupply = lpResults[j];
                 tokensForDecimalsAddresses.add(token0);
                 tokensForDecimalsAddresses.add(token1);
-                lpInfo[remaining[Number((i / 4).toFixed())]] = {
+                lpInfo[remaining[Number((i / 5).toFixed())]] = {
                     token0,
                     token1,
                     totalSupply,
                     reserves,
+                    priceOfToken1PerToken0,
                 };
+                j += 2;
             }
             const tokensContracts = Array.from(tokensForDecimalsAddresses).map(
                 (address) => new Contract(address, ["function decimals() view returns (uint256)"], multicallProvider)
@@ -108,7 +136,6 @@ export const updatePrices = createAsyncThunk(
                 tokensDecimals[Array.from(tokensForDecimalsAddresses)[i]] = tokensResults[i].toNumber();
             }
             ///////////////////////////////////////////////
-
             //------------------->> 3. Calculate prices for LPs
             Object.entries(lpInfo).forEach(([key, value]) => {
                 const token0Decimals = tokensDecimals[value.token0];
@@ -117,8 +144,16 @@ export const updatePrices = createAsyncThunk(
                     .mul(parseInt(String(prices[value.token0] * 1000)))
                     .div(1000)
                     .div(utils.parseUnits("1", token0Decimals));
+
+                // we know token 0 price
+                // we can get virtual price in wei which we convert to eth
+                // 1 / virtual price is the price of token1 in terms of token 0 eg.0.997
+                // token1 Price = token0Price * 1/virtualPrice
+                const token1Price = prices[value.token0] * value.priceOfToken1PerToken0;
+                prices[value.token1] = token1Price;
+
                 const token1USDLiquidity = value.reserves[1]
-                    .mul(parseInt(String(prices[value.token1] * 1000)))
+                    .mul(parseInt(String(token1Price * 1000)))
                     .div(1000)
                     .div(utils.parseUnits("1", token1Decimals));
                 let totalUSDLiquidity = utils.parseEther("0");
