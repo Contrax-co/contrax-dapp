@@ -448,7 +448,7 @@
   {
     "id": 27,
     "token_type": "Token",
-    "name": "rEth",
+    "name": "rETH",
     "url_name": "rEth",
     "originPlatform": "Hop",
     "source":"https://app.hop.exchange/#/pools",
@@ -479,7 +479,7 @@
   {
     "id": 28,
     "token_type": "Token",
-    "name": "Magic",
+    "name": "MAGIC",
     "url_name": "Magic",
     "originPlatform": "Hop",
     "source":"https://app.hop.exchange/#/pools",
