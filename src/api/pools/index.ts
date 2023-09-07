@@ -21,6 +21,8 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     24: sushi(24), // 24: wethDPX,
     25: sushi(25), // 25: wethrDpx,
     26: sushi(26), // 25: wethSushi,
+    27: hop(27), // 18: hoprEth,
+    28: hop(28), // 18: hopMagic,
 
     99: sushi(99), // 10: wethUSDC-deprecated
     100: sushi(100), // 10: wethUSDT-deprecated
