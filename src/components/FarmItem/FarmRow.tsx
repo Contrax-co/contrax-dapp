@@ -30,6 +30,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const farmData = farmDetails[farm.id];
     const isLoading = isFarmLoading || isApyLoading;
     const key = uuid();
+    const key2 = uuid();
     const dispatch = useAppDispatch();
 
     const handleClick = () => {
@@ -177,6 +178,34 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                 ? farmApys.apy.toPrecision(2).slice(0, -1)
                                 : toFixedFloor(farmApys?.apy || 0, 2).toString()}
                             %
+                            <a
+                                id={key2}
+                                data-tooltip-html={`<p>
+                                            <b>Base APRs</b>
+                                        </p>
+                                        ${
+                                            farmApys && parseFloat(farmApys.rewardsApr.toString())
+                                                ? `<p>Compounding Rewards: ${toFixedFloor(
+                                                      farmApys.rewardsApr + farmApys.compounding,
+                                                      3
+                                                  )}%</p>`
+                                                : ``
+                                        }
+                                        ${
+                                            farmApys && parseFloat(farmApys.feeApr.toString())
+                                                ? `<p>Trading Fees: ${toFixedFloor(farmApys.feeApr, 3)}%</p>`
+                                                : ``
+                                        }`}
+                            >
+                                <CgInfo
+                                    className={`apy_info hoverable ${lightMode && "apy_info--light"}`}
+                                    style={{ transform: "translateY(2px)" }}
+                                />
+                            </a>
+                            <Tooltip
+                                anchorId={key2}
+                                className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                            />
                         </p>
                     )}
                 </div>
