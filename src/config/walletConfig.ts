@@ -24,6 +24,7 @@ import googleIcon from "./../assets/images/google-logo.svg";
 import facebookIcon from "./../assets/images/facebook-icon.svg";
 import discordIcon from "./../assets/images/discordapp-icon.svg";
 import githubIcon from "./../assets/images/github-icon.svg";
+import twitterIcon from "./../assets/images/twitter-icon.svg";
 import { providers } from "ethers";
 import {
     injectedWallet,
@@ -217,6 +218,27 @@ const connectors = connectorsForWallets([
                             web3AuthInstance,
                             loginParams: {
                                 loginProvider: "discord",
+                            },
+                        },
+                    });
+
+                    return {
+                        connector,
+                    };
+                },
+            },
+            {
+                id: "twitter",
+                name: "Twitter",
+                iconUrl: twitterIcon,
+                iconBackground: "white",
+                createConnector: () => {
+                    const connector = new Web3AuthConnector({
+                        chains,
+                        options: {
+                            web3AuthInstance,
+                            loginParams: {
+                                loginProvider: "twitter",
                             },
                         },
                     });
