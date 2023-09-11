@@ -33,10 +33,14 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const key2 = uuid();
     const dispatch = useAppDispatch();
 
-    const handleClick = () => {
-        setDropDown((prev) => !prev);
-        dispatch(setFarmDetailInputOptions({ transactionType: FarmTransactionType.Deposit }));
-        if (farm) setOpenedFarm(openedFarm === farm.id ? undefined : farm.id);
+    const handleClick = (e: any) => {
+        if (e.target.tagName === "svg" || e.target.tagName === "path") {
+            // Clicked for tooltip
+        } else {
+            setDropDown((prev) => !prev);
+            dispatch(setFarmDetailInputOptions({ transactionType: FarmTransactionType.Deposit }));
+            if (farm) setOpenedFarm(openedFarm === farm.id ? undefined : farm.id);
+        }
     };
 
     useEffect(() => {
@@ -153,16 +157,6 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                         </>
                     ) : null}
                 </div>
-
-                {/* How much the user has Earned */}
-
-                {/* <div className={`container1 ${lightMode && "container1--light"} desktop`}>
-                    {farmData &&
-                    farmData.Withdrawable_Amounts[0].amountDollar &&
-                    parseFloat(farmData.Withdrawable_Amounts[0].amountDollar) >= 0.01 ? (
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>NA</p>
-                    ) : null}
-                </div> */}
 
                 {/* Mobile View */}
 
