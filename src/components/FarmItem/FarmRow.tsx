@@ -30,12 +30,17 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const farmData = farmDetails[farm.id];
     const isLoading = isFarmLoading || isApyLoading;
     const key = uuid();
+    const key2 = uuid();
     const dispatch = useAppDispatch();
 
-    const handleClick = () => {
-        setDropDown((prev) => !prev);
-        dispatch(setFarmDetailInputOptions({ transactionType: FarmTransactionType.Deposit }));
-        if (farm) setOpenedFarm(openedFarm === farm.id ? undefined : farm.id);
+    const handleClick = (e: any) => {
+        if (e.target.tagName === "svg" || e.target.tagName === "path") {
+            // Clicked for tooltip
+        } else {
+            setDropDown((prev) => !prev);
+            dispatch(setFarmDetailInputOptions({ transactionType: FarmTransactionType.Deposit }));
+            if (farm) setOpenedFarm(openedFarm === farm.id ? undefined : farm.id);
+        }
     };
 
     useEffect(() => {
@@ -153,16 +158,6 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                     ) : null}
                 </div>
 
-                {/* How much the user has Earned */}
-
-                {/* <div className={`container1 ${lightMode && "container1--light"} desktop`}>
-                    {farmData &&
-                    farmData.Withdrawable_Amounts[0].amountDollar &&
-                    parseFloat(farmData.Withdrawable_Amounts[0].amountDollar) >= 0.01 ? (
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>NA</p>
-                    ) : null}
-                </div> */}
-
                 {/* Mobile View */}
 
                 {/* APY */}
@@ -177,6 +172,34 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                 ? farmApys.apy.toPrecision(2).slice(0, -1)
                                 : toFixedFloor(farmApys?.apy || 0, 2).toString()}
                             %
+                            <a
+                                id={key2}
+                                data-tooltip-html={`<p>
+                                            <b>Base APRs</b>
+                                        </p>
+                                        ${
+                                            farmApys && parseFloat(farmApys.rewardsApr.toString())
+                                                ? `<p>Compounding Rewards: ${toFixedFloor(
+                                                      farmApys.rewardsApr + farmApys.compounding,
+                                                      3
+                                                  )}%</p>`
+                                                : ``
+                                        }
+                                        ${
+                                            farmApys && parseFloat(farmApys.feeApr.toString())
+                                                ? `<p>Trading Fees: ${toFixedFloor(farmApys.feeApr, 3)}%</p>`
+                                                : ``
+                                        }`}
+                            >
+                                <CgInfo
+                                    className={`apy_info hoverable ${lightMode && "apy_info--light"}`}
+                                    style={{ transform: "translateY(2px)" }}
+                                />
+                            </a>
+                            <Tooltip
+                                anchorId={key2}
+                                className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                            />
                         </p>
                     )}
                 </div>

@@ -1,7 +1,7 @@
 import VaultItem from "./VaultItem";
 import styles from "./Vaults.module.scss";
 import useWallet from "src/hooks/useWallet";
-import { defaultChainId } from "src/config/constants";
+import { RoutesPaths, defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import { useVaults } from "src/hooks/useVaults";
@@ -27,7 +27,10 @@ const Vaults: React.FC<Props> = () => {
                     ) : (
                         <EmptyComponent>
                             You haven't deposited in any of the farms.{" "}
-                            <Link to={"/farms"} style={{ color: lightMode ? "var(--color_primary)" : "#009aff" }}>
+                            <Link
+                                to={RoutesPaths.Farms}
+                                style={{ color: lightMode ? "var(--color_primary)" : "#009aff" }}
+                            >
                                 Go to Farms
                             </Link>
                         </EmptyComponent>
