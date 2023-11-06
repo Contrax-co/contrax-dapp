@@ -87,7 +87,7 @@
     {
       "group": "Smart Contracts",
       "pages": [
-        "smart-contracts/deployment-addresses", 
+        "smart-contracts/controllers-zappers", 
         "smart-contracts/strategies",
         "smart-contracts/vaults",
         "smart-contracts/multisig"
