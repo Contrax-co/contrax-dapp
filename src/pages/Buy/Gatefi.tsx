@@ -37,9 +37,9 @@ const Gatefi: React.FC<IProps> = () => {
                 amount: "500",
             },
             defaultCrypto: {
-                currency: "USDC-MATIC",
+                currency: "USDC_POLYGON",
             },
-            availableCrypto: ["USDC-MATIC"],
+            availableCrypto: ["USDC_POLYGON"],
             styles: {
                 type: lightMode ? "light" : "dark",
             },
