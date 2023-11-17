@@ -2685,10 +2685,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gatefi/js-sdk@npm:^0.7.1":
-  version: 0.7.1
-  resolution: "@gatefi/js-sdk@npm:0.7.1"
-  checksum: 70166624f5e6dd4832e29f0652830a7158dd849db040bc984ca314362bf9dfed67ccba0200e3094a58a572d96403068aad1bddf0097562077ed717ccd1f38eb4
+"@gatefi/js-sdk@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@gatefi/js-sdk@npm:0.14.0"
+  checksum: 72a4323dd6ae9ec849f458e12b7a6b58f2fa7cac5897129e2183c7b34a77ddfc458d529b5c6d806d13155e0ccb3f1548dabf4d35f025a8c41757665a84df32c1
   languageName: node
   linkType: hard
 
@@ -9746,7 +9746,7 @@ __metadata:
     "@0xsequence/multicall": ^0.43.19
     "@ethersproject/abstract-provider": ^5.7.0
     "@front-finance/link": ^1.0.7
-    "@gatefi/js-sdk": ^0.7.1
+    "@gatefi/js-sdk": ^0.14.0
     "@rainbow-me/rainbowkit": ^1.0.7
     "@ramp-network/ramp-instant-sdk": ^4.0.1
     "@reduxjs/toolkit": ^1.9.3

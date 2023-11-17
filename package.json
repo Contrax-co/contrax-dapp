@@ -6,7 +6,7 @@
     "@0xsequence/multicall": "^0.43.19",
     "@ethersproject/abstract-provider": "^5.7.0",
     "@front-finance/link": "^1.0.7",
-    "@gatefi/js-sdk": "^0.7.1",
+    "@gatefi/js-sdk": "^0.14.0",
     "@rainbow-me/rainbowkit": "^1.0.7",
     "@ramp-network/ramp-instant-sdk": "^4.0.1",
     "@reduxjs/toolkit": "^1.9.3",

@@ -14,16 +14,16 @@ interface IProps {}
 const Gatefi: React.FC<IProps> = () => {
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
-    const { startBridging, isLoading, usdAmount } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
+    // const { startBridging, isLoading, usdAmount } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
     const [gateFiInstance, setGateFiInstance] = useState<GateFiSDK>();
-    const [initialUsdAmount, setInitialUsdAmount] = useState(usdAmount);
+    // const [initialUsdAmount, setInitialUsdAmount] = useState(usdAmount);
 
-    React.useEffect(() => {
-        if (usdAmount !== initialUsdAmount && !isLoading && usdAmount > 1) {
-            startBridging();
-            setInitialUsdAmount(usdAmount);
-        }
-    }, [initialUsdAmount, startBridging, isLoading, usdAmount]);
+    // React.useEffect(() => {
+    //     if (usdAmount !== initialUsdAmount && !isLoading && usdAmount > 1) {
+    //         startBridging();
+    //         setInitialUsdAmount(usdAmount);
+    //     }
+    // }, [initialUsdAmount, startBridging, isLoading, usdAmount]);
 
     React.useEffect(() => {
         let instance = new GateFiSDK({
@@ -37,9 +37,9 @@ const Gatefi: React.FC<IProps> = () => {
                 amount: "500",
             },
             defaultCrypto: {
-                currency: "USDC_POLYGON",
+                currency: "USDC-ARBITRUM",
             },
-            availableCrypto: ["USDC_POLYGON"],
+            availableCrypto: ["USDC-ARBITRUM"],
             styles: {
                 type: lightMode ? "light" : "dark",
             },
@@ -58,19 +58,19 @@ const Gatefi: React.FC<IProps> = () => {
 
     return (
         <div style={{ width: 360 }}>
-            <p className={styles.disclaimer}>
+            {/* <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
                 USDC is auto-bridged to arbitrum on purchase*
-            </p>
+            </p> */}
             <div id="overlay-button" className={styles.gatefiWrapper}></div>
-            <BridgeBtn />
-            <p className={styles.lightText} style={{ textAlign: "justify", paddingBottom: 50 }}>
+            {/* <BridgeBtn /> */}
+            {/* <p className={styles.lightText} style={{ textAlign: "justify", paddingBottom: 50 }}>
                 Bridging puts your tokens on the right network for Contrax. If you logged in using a social account, you
                 just have to wait 5 to 15 minutes after Wert sends your USDC. For Web3 wallets like MetaMask, you then
                 also have to go to the dashboard and bridge it in one click with a few cents of MATIC on the Polygon
                 network. See full details on buying in the{" "}
                 <a href="https://docs.contrax.finance/contrax-dapp/buy">user guide</a>.
-            </p>
+            </p> */}
         </div>
     );
 };

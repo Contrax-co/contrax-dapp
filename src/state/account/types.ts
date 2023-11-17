@@ -12,6 +12,7 @@ export interface StateInterface {
     totalEarnedTraxByReferral?: number;
     traxCalculatedTimestamp?: number;
     earnTraxTermsAgreed?: boolean;
+    boosts?: Boosts[];
 }
 
 export interface AccountResponse {
@@ -28,6 +29,7 @@ export interface AccountResponse {
     traxCalculatedTimestamp?: number;
     tvl: number;
     referralCode?: string;
+    boosts: Boosts[];
     referrer?: {
         _id: string;
         address: string;
@@ -35,4 +37,8 @@ export interface AccountResponse {
         referralCode: string;
         id: string;
     };
+}
+
+export enum Boosts {
+    xSNOB = "xSNOB",
 }
