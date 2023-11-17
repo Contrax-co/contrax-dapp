@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { StateInterface } from "./types";
+import { Boosts, StateInterface } from "./types";
 import {
     postAccountData as postAccountDataApi,
     getAccountData as getAccountDataApi,
@@ -78,6 +78,7 @@ export const addAccount = createAsyncThunk(
                 // if (data.traxCalculatedTimestamp) {
                 thunkApi.dispatch(setTraxCalculatedTimestamp(data.traxCalculatedTimestamp || 0));
                 // }
+                thunkApi.dispatch(setBoosts(data.boosts || []));
             }
         } catch (error) {
             console.log("Cannot create new account");
@@ -121,6 +122,9 @@ const accountSlice = createSlice({
         setTraxCalculatedTimestamp: (state: StateInterface, action: { payload: number }) => {
             state.traxCalculatedTimestamp = action.payload;
         },
+        setBoosts: (state: StateInterface, action: { payload: Boosts[] }) => {
+            state.boosts = action.payload;
+        },
         reset: (state: StateInterface) => {
             return { ...initialState, referrerCode: state.referrerCode };
         },
@@ -147,6 +151,7 @@ export const {
     setTraxCalculatedTimestamp,
     setReferralEarning,
     setEarnTraxTermsAgreed,
+    setBoosts,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;
