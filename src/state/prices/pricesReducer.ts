@@ -57,7 +57,8 @@ export const updatePrices = createAsyncThunk(
             let addresses = Array.from(set);
 
             //------------------->> 1. Get prices from coinsLama
-            const apiUrl = coinsLamaPriceByChainId[chainId] + addresses.join(`,${getNetworkName(chainId)}:`);
+            const apiUrl =
+                coinsLamaPriceByChainId[chainId] + addresses.join(`,${getNetworkName(chainId)}:`) + "?searchWidth=100h";
             const res = await axios.get(apiUrl);
 
             const coins = JSON.parse(JSON.stringify(res.data)).coins;
