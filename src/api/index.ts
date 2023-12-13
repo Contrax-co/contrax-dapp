@@ -10,6 +10,7 @@ import {
 
 import {
     BACKEND_BASE_URL,
+    SNAPSHOT_GRAPHQL_URL,
     SOCKET_API_KEY,
     TENDERLY_ACCESS_TOKEN,
     TENDERLY_PROJECT_SLUG,
@@ -19,6 +20,10 @@ import {
 export const backendApi = axios.create({
     // baseURL: "http://localhost:8000/api/v1/",
     baseURL: BACKEND_BASE_URL,
+});
+
+export const snapshotApi = axios.create({
+    baseURL: SNAPSHOT_GRAPHQL_URL,
 });
 
 export const isGasSponsored = async (addr: string): Promise<boolean> => {

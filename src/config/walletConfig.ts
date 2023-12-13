@@ -334,8 +334,25 @@ export function walletClientToSigner(walletClient: WalletClient) {
     return signer;
 }
 
+export function walletClientToWeb3Provider(walletClient: WalletClient) {
+    const { account, chain, transport } = walletClient;
+    const network = {
+        chainId: chain.id,
+        name: chain.name,
+        ensAddress: chain.contracts?.ensRegistry?.address,
+    };
+    const provider = new providers.Web3Provider(transport, network);
+    provider.pollingInterval = POLLING_INTERVAL;
+    return provider;
+}
+
 /** Hook to convert a viem Wallet Client to an ethers.js Signer. */
 export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
     const { data: walletClient } = useWalletClient({ chainId });
     return useMemo(() => (walletClient ? walletClientToSigner(walletClient) : undefined), [walletClient]);
+}
+/** Hook to convert a viem Wallet Client to an ethers.js Web3Provider. */
+export function useEthersWeb3Provider({ chainId }: { chainId?: number } = {}) {
+    const { data: walletClient } = useWalletClient({ chainId });
+    return useMemo(() => (walletClient ? walletClientToWeb3Provider(walletClient) : undefined), [walletClient]);
 }

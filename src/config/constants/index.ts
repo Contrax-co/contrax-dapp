@@ -8,9 +8,13 @@ export const RoutesPaths = {
     Buy: "/buy",
     Deposit: "/deposit",
     Stats: "/stats",
+    Dao: "/dao",
     Test: "/Test",
 };
 
+export const SNAPSHOT_SPACE_ID = "contrax.eth";
+export const SNAPSHOT_HUB_URL = "https://hub.snapshot.org";
+export const SNAPSHOT_GRAPHQL_URL = "https://hub.snapshot.org/graphql";
 export const MAX_GAS_UNITS_PER_TRANSACTION = "700000";
 export const defaultChainId = CHAIN_ID.ARBITRUM; // Arbitrum
 export const defaultNetworkName = "arbitrum";
