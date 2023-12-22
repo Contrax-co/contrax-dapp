@@ -8,14 +8,17 @@ interface Props {
     scores: number[];
     totalScore: number;
     status: "closed" | "active";
+    title: string;
 }
 
-export const ProposalCard: React.FC<Props> = ({ description, choices, scores, totalScore, status }) => {
+export const ProposalCard: React.FC<Props> = ({ description, choices, scores, totalScore, status, title }) => {
     return (
         <div className="proposal-card">
             <div className="header">
-                <p className="name">Proposal name</p>
-                <p className={`status ${status === "active" ? "in-progress" : "in-progress"}`}>In Progress</p>
+                <p className="name">{title}</p>
+                <p className={`status ${status === "active" ? "in-progress" : ""}`}>
+                    {status === "active" ? "In Progress" : "Closed"}
+                </p>
             </div>
             <p className="description">{description}</p>
             {choices.map((item, i) => (
@@ -24,4 +27,5 @@ export const ProposalCard: React.FC<Props> = ({ description, choices, scores, to
         </div>
     );
 };
+
 

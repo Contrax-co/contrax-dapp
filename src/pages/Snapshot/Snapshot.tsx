@@ -50,6 +50,7 @@ export const Snapshot = () => {
                         scores={item.scores}
                         totalScore={item.scores_total}
                         status={item.state}
+                        title={item.title}
                     />
                 ))}
             </div>
@@ -77,5 +78,6 @@ const ProposalChoiceButton: React.FC<IProposalChoiceButtonProps> = ({ key, propo
         </button>
     );
 };
+
 
 
