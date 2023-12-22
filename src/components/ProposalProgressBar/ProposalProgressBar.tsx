@@ -16,3 +16,4 @@ export const ProposalProgressBar = ({ title, value }: Props) => {
         </div>
     );
 };
+

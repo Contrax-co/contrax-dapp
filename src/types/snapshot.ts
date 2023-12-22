@@ -14,6 +14,8 @@ export interface SnapshotSpaceProposal {
     choices: string[];
     start: number;
     end: number;
+    scores: number[];
+    scores_total: number;
     snapshot: string;
     state: "closed" | "active";
     author: string;
@@ -33,5 +35,6 @@ export interface SnapshotSpaceVote {
         id: string;
     };
 }
+
 
 

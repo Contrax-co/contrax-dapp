@@ -43,9 +43,15 @@ export const Snapshot = () => {
                 );
             })}
             <div className="proposal-list">
-                <ProposalCard />
-                <ProposalCard />
-                <ProposalCard />
+                {proposals?.map((item, i) => (
+                    <ProposalCard
+                        description={item.body}
+                        choices={item.choices}
+                        scores={item.scores}
+                        totalScore={item.scores_total}
+                        status={item.state}
+                    />
+                ))}
             </div>
         </div>
     );
@@ -71,3 +77,5 @@ const ProposalChoiceButton: React.FC<IProposalChoiceButtonProps> = ({ key, propo
         </button>
     );
 };
+
+
