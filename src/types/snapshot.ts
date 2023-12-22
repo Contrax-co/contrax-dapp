@@ -22,3 +22,16 @@ export interface SnapshotSpaceProposal {
         name: string;
     };
 }
+
+export interface SnapshotSpaceVote {
+    id: string;
+    voter: string;
+    created: number;
+    choice: number;
+    reason: string;
+    space: {
+        id: string;
+    };
+}
+
+

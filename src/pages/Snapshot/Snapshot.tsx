@@ -1,8 +1,15 @@
-import { useSnapshotSpace, useSnapshotSpaceProposals, useSnapshotVote } from "src/hooks/useSnapshot";
+import {
+    useSnapshotJoinSpace,
+    useSnapshotSpace,
+    useSnapshotSpaceProposals,
+    useSnapshotVote,
+} from "src/hooks/useSnapshot";
 
 export const Snapshot = () => {
-    const { loadingSpace, space } = useSnapshotSpace();
+    const { joinSpace, loadingJoinSpace } = useSnapshotJoinSpace();
+    const { loadingSpace, space, isMember } = useSnapshotSpace();
     const { loadingSpaceProposals, proposals } = useSnapshotSpaceProposals();
+    console.log("proposals =>", proposals);
     return (
         <div style={{ margin: 20 }}>
             <h4>
@@ -13,6 +20,11 @@ export const Snapshot = () => {
             {space?.members.map((e) => (
                 <li key={e}>{e}</li>
             ))}
+            {!isMember && (
+                <button disabled={loadingJoinSpace} onClick={joinSpace}>
+                    Join Space
+                </button>
+            )}
 
             <h5 style={{ marginTop: 50 }}>Proposals</h5>
             {proposals?.map((e, index) => {
@@ -52,3 +64,4 @@ const ProposalChoiceButton: React.FC<IProposalChoiceButtonProps> = ({ key, propo
         </button>
     );
 };
+
