@@ -1,4 +1,6 @@
 import { useSnapshotSpace, useSnapshotSpaceProposals, useSnapshotVote } from "src/hooks/useSnapshot";
+import "./Snapshot.css";
+import { ProposalCard } from "src/components/ProposalCard/ProposalCard";
 
 export const Snapshot = () => {
     const { loadingSpace, space } = useSnapshotSpace();
@@ -28,6 +30,11 @@ export const Snapshot = () => {
                     </div>
                 );
             })}
+            <div className="proposal-list">
+                <ProposalCard />
+                <ProposalCard />
+                <ProposalCard />
+            </div>
         </div>
     );
 };
