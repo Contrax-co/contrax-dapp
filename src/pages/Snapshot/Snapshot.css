@@ -1,3 +1,8 @@
+.snapshot-container {
+    color: var(--color_text);
+    margin: 20px;
+}
+
 .proposal-list {
     display: flex;
     flex-wrap: wrap;

@@ -17,7 +17,7 @@ export const Snapshot = () => {
     console.log("votes =>", votes);
 
     return (
-        <div style={{ margin: 20 }}>
+        <div className="snapshot-container">
             {/* <h4> */}
             {/* {space?.name} (${space?.symbol}) */}
             {/* </h4> */}
@@ -96,4 +96,3 @@ const ProposalChoiceButton: React.FC<IProposalChoiceButtonProps> = ({ key, propo
         </button>
     );
 };
-
