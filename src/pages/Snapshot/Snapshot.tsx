@@ -6,12 +6,16 @@ import {
 } from "src/hooks/useSnapshot";
 import "./Snapshot.css";
 import { ProposalCard } from "src/components/ProposalCard/ProposalCard";
+import { Skeleton } from "src/components/Skeleton/Skeleton";
 
 export const Snapshot = () => {
     const { joinSpace, loadingJoinSpace } = useSnapshotJoinSpace();
     const { loadingSpace, space, isMember } = useSnapshotSpace();
-    const { loadingSpaceProposals, proposals } = useSnapshotSpaceProposals();
+    const { loadingSpaceProposals, loadingSpaceVotes, proposals, votes, fetchSpaceProposal, fetchSpaceVotes } =
+        useSnapshotSpaceProposals();
     console.log("proposals =>", proposals);
+    console.log("votes =>", votes);
+
     return (
         <div style={{ margin: 20 }}>
             <h4>
@@ -43,16 +47,29 @@ export const Snapshot = () => {
                 );
             })}
             <div className="proposal-list">
-                {proposals?.map((item, i) => (
-                    <ProposalCard
-                        description={item.body}
-                        choices={item.choices}
-                        scores={item.scores}
-                        totalScore={item.scores_total}
-                        status={item.state}
-                        title={item.title}
-                    />
-                ))}
+                {loadingSpaceProposals ? (
+                    <>
+                        <Skeleton w={340} h={300} inverted />
+                        <Skeleton w={340} h={300} inverted />
+                        <Skeleton w={340} h={300} inverted />
+                        <Skeleton w={340} h={300} inverted />
+                    </>
+                ) : (
+                    proposals?.map((item, i) => (
+                        <ProposalCard
+                            id={item.id}
+                            description={item.body}
+                            choices={item.choices}
+                            scores={item.scores}
+                            totalScore={item.scores_total}
+                            status={item.state}
+                            title={item.title}
+                            votedChoice={votes?.find((vote) => vote.proposal.id === item.id)}
+                            fetchVotes={fetchSpaceVotes}
+                            loadingVotes={loadingSpaceVotes}
+                        />
+                    ))
+                )}
             </div>
         </div>
     );
@@ -78,6 +95,5 @@ const ProposalChoiceButton: React.FC<IProposalChoiceButtonProps> = ({ key, propo
         </button>
     );
 };
-
 
 

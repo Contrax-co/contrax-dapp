@@ -31,10 +31,12 @@ export interface SnapshotSpaceVote {
     created: number;
     choice: number;
     reason: string;
+    proposal: {
+        id: string;
+    };
     space: {
         id: string;
     };
 }
-
 
 

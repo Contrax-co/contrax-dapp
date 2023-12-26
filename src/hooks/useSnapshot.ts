@@ -71,36 +71,36 @@ export const useSnapshotSpaceProposals = () => {
     const [loadingSpaceVotes, setLoadingSpaceVotes] = useState(false);
     const { currentWallet } = useWallet();
 
+    const fetchSpaceProposal = async () => {
+        setLoadingSpaceProposals(true);
+        try {
+            const response = await getSnapshotSpaceProposals(SNAPSHOT_SPACE_ID);
+
+            setProposals(response);
+        } catch (e) {
+            console.log("error", e);
+        }
+        setLoadingSpaceProposals(false);
+    };
+
+    const fetchSpaceVotes = async () => {
+        if (!currentWallet) return;
+        setLoadingSpaceVotes(true);
+        try {
+            const response = await getSnapshotSpaceProposalsVotesByAddress(SNAPSHOT_SPACE_ID, currentWallet);
+
+            setVotes(response);
+        } catch (e) {
+            console.log("error", e);
+        }
+        setLoadingSpaceVotes(false);
+    };
+
     useEffect(() => {
-        const fetchSpaceProposal = async () => {
-            setLoadingSpaceProposals(true);
-            try {
-                const response = await getSnapshotSpaceProposals(SNAPSHOT_SPACE_ID);
-
-                setProposals(response);
-            } catch (e) {
-                console.log("error", e);
-            }
-            setLoadingSpaceProposals(false);
-        };
-
         fetchSpaceProposal();
     }, []);
 
     useEffect(() => {
-        const fetchSpaceVotes = async () => {
-            if (!currentWallet) return;
-            setLoadingSpaceVotes(true);
-            try {
-                const response = await getSnapshotSpaceProposalsVotesByAddress(SNAPSHOT_SPACE_ID, currentWallet);
-
-                setVotes(response);
-            } catch (e) {
-                console.log("error", e);
-            }
-            setLoadingSpaceVotes(false);
-        };
-
         fetchSpaceVotes();
     }, []);
 
@@ -108,6 +108,9 @@ export const useSnapshotSpaceProposals = () => {
         proposals,
         votes,
         loadingSpaceProposals,
+        loadingSpaceVotes,
+        fetchSpaceProposal,
+        fetchSpaceVotes,
     };
 };
 
@@ -143,5 +146,7 @@ export const useSnapshotVote = () => {
 
     return { vote, loadingVote };
 };
+
+
 
 

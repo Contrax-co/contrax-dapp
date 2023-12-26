@@ -73,14 +73,17 @@ export const getSnapshotSpaceProposalsVotesByAddress = async (
                 votes (
                   first: 1000
                   where: {
-                    voter:"${address}",
-                    space:  "${spaceId}"
+                    voter: "${address}",
+                    space: "${spaceId}"
                   }
                 ) {
                   id
                   voter
                   created
                   choice
+                  proposal {
+                    id
+                  }
                   reason
                   space {
                     id
@@ -94,6 +97,9 @@ export const getSnapshotSpaceProposalsVotesByAddress = async (
 
     return response.data?.data?.votes;
 };
+
+
+
 
 
 
