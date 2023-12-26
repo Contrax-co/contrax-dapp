@@ -1,11 +1,12 @@
 .snapshot-container {
     color: var(--color_text);
+    overflow: auto;
     margin: 20px;
 }
 
 .proposal-list {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
     gap: 16px;
 }

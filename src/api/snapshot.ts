@@ -98,9 +98,19 @@ export const getSnapshotSpaceProposalsVotesByAddress = async (
     return response.data?.data?.votes;
 };
 
-
-
-
-
+export const getIpfsImageUrls = (body: string) => {
+    const pattern = /ipfs:\/\/.*\)/g;
+    const iterator = body.matchAll(pattern);
+    const images = [];
+    while (true) {
+        const exp = iterator.next();
+        if (!exp.value) break;
+        let result = exp.value[0].replaceAll("ipfs://", "");
+        result = result.replace(")", "");
+        result = `https://snapshot.4everland.link/ipfs/${result}`;
+        images.push(result);
+    }
+    return images;
+};
 
 
