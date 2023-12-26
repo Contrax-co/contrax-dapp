@@ -2,11 +2,12 @@ import snapshot from "@snapshot-labs/snapshot.js";
 import { SNAPSHOT_HUB_URL, SNAPSHOT_SPACE_ID } from "src/config/constants";
 import { useEthersWeb3Provider } from "src/config/walletConfig";
 import { useAccount } from "wagmi";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useStats } from "./useStats";
-import { SnapshotSpace, SnapshotSpaceProposal } from "src/types/snapshot";
-import { getSnapshotSpace, getSnapshotSpaceProposals } from "src/api/snapshot";
+import { SnapshotSpace, SnapshotSpaceProposal, SnapshotSpaceVote } from "src/types/snapshot";
+import { getSnapshotSpace, getSnapshotSpaceProposals, getSnapshotSpaceProposalsVotesByAddress } from "src/api/snapshot";
 import useNotify from "./useNotify";
+import useWallet from "./useWallet";
 
 const client = new snapshot.Client712(SNAPSHOT_HUB_URL);
 
@@ -19,7 +20,6 @@ export const useSnapshotJoinSpace = () => {
     const joinSpace = async () => {
         if (!provider || !address) return;
         setLoadingJoinSpace(true);
-
         try {
             const receipt = await client.follow(provider, address, {
                 space: SNAPSHOT_SPACE_ID,
@@ -38,6 +38,9 @@ export const useSnapshotJoinSpace = () => {
 export const useSnapshotSpace = () => {
     const [space, setSpace] = useState<SnapshotSpace>();
     const [loadingSpace, setLoadingSpace] = useState(false);
+    const { currentWallet } = useWallet();
+
+    const isMember = useMemo(() => space?.members.includes(currentWallet), [space, currentWallet]);
 
     useEffect(() => {
         const fetchSpace = async () => {
@@ -56,32 +59,58 @@ export const useSnapshotSpace = () => {
 
     return {
         space,
+        isMember,
         loadingSpace,
     };
 };
 
 export const useSnapshotSpaceProposals = () => {
     const [proposals, setProposals] = useState<SnapshotSpaceProposal[]>();
+    const [votes, setVotes] = useState<SnapshotSpaceVote[]>();
     const [loadingSpaceProposals, setLoadingSpaceProposals] = useState(false);
+    const [loadingSpaceVotes, setLoadingSpaceVotes] = useState(false);
+    const { currentWallet } = useWallet();
+
+    const fetchSpaceProposal = async () => {
+        setLoadingSpaceProposals(true);
+        try {
+            const response = await getSnapshotSpaceProposals(SNAPSHOT_SPACE_ID);
+
+            setProposals(response);
+        } catch (e) {
+            console.log("error", e);
+        }
+        setLoadingSpaceProposals(false);
+    };
+
+    const fetchSpaceVotes = async () => {
+        if (!currentWallet) return;
+        setLoadingSpaceVotes(true);
+        try {
+            const response = await getSnapshotSpaceProposalsVotesByAddress(SNAPSHOT_SPACE_ID, currentWallet);
+
+            setVotes(response);
+        } catch (e) {
+            console.log("error", e);
+        }
+        setLoadingSpaceVotes(false);
+    };
 
     useEffect(() => {
-        const fetchSpaceProposal = async () => {
-            setLoadingSpaceProposals(true);
-            try {
-                const response = await getSnapshotSpaceProposals(SNAPSHOT_SPACE_ID, "active");
-                setProposals(response);
-            } catch (e) {
-                console.log("error", e);
-            }
-            setLoadingSpaceProposals(false);
-        };
-
         fetchSpaceProposal();
+    }, []);
+
+    useEffect(() => {
+        fetchSpaceVotes();
     }, []);
 
     return {
         proposals,
+        votes,
         loadingSpaceProposals,
+        loadingSpaceVotes,
+        fetchSpaceProposal,
+        fetchSpaceVotes,
     };
 };
 
@@ -105,15 +134,19 @@ export const useSnapshotVote = () => {
                 reason: "This choice make lot of sense",
                 app: "Contrax Finance",
             });
-        } catch (e) {
+            notifySuccess("Vote", `Successfully voted ${choice}`);
+        } catch (e: any) {
             console.log("error", e);
-            notifyError("Error voting", (e as any).toString());
+            notifyError("Error voting", e.message || e.error_description);
         }
 
         dismissNotify(loadingId);
-        notifySuccess("Vote", `Successfully voted ${choice}`);
         setloadingVote(false);
     };
 
     return { vote, loadingVote };
 };
+
+
+
+

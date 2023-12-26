@@ -1,5 +1,5 @@
 import { snapshotApi } from ".";
-import { SnapshotSpace, SnapshotSpaceProposal } from "src/types/snapshot";
+import { SnapshotSpace, SnapshotSpaceProposal, SnapshotSpaceVote } from "src/types/snapshot";
 
 export const getSnapshotSpace = async (spaceId: string): Promise<SnapshotSpace> => {
     const query = `
@@ -23,7 +23,6 @@ export const getSnapshotSpace = async (spaceId: string): Promise<SnapshotSpace> 
 
 export const getSnapshotSpaceProposals = async (
     spaceId: string,
-    state: "closed" | "active",
     first: number = 20,
     skip: number = 0
 ): Promise<SnapshotSpaceProposal[]> => {
@@ -34,7 +33,6 @@ export const getSnapshotSpaceProposals = async (
                   skip: ${skip},
                   where: {
                     space_in: ["${spaceId}"],
-                    state: "${state}"
                   },
                   orderBy: "created",
                   orderDirection: desc
@@ -65,3 +63,44 @@ export const getSnapshotSpaceProposals = async (
 
     return response.data?.data?.proposals;
 };
+
+export const getSnapshotSpaceProposalsVotesByAddress = async (
+    spaceId: string,
+    address: string
+): Promise<SnapshotSpaceVote[]> => {
+    const query = `
+              query {
+                votes (
+                  first: 1000
+                  where: {
+                    voter: "${address}",
+                    space: "${spaceId}"
+                  }
+                ) {
+                  id
+                  voter
+                  created
+                  choice
+                  proposal {
+                    id
+                  }
+                  reason
+                  space {
+                    id
+                  }
+                }
+              }`;
+
+    const response = await snapshotApi.post("", {
+        query,
+    });
+
+    return response.data?.data?.votes;
+};
+
+
+
+
+
+
+

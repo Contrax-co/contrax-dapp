@@ -38,6 +38,7 @@
     "ethers": "^5.7.2",
     "graphql": "^16.6.0",
     "jotai-immer": "^0.2.0",
+    "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-google-charts": "^4.0.0",
