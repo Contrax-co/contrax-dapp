@@ -13,9 +13,7 @@ export const Snapshot = () => {
     const { loadingSpace, space, isMember } = useSnapshotSpace();
     const { loadingSpaceProposals, loadingSpaceVotes, proposals, votes, fetchSpaceProposal, fetchSpaceVotes } =
         useSnapshotSpaceProposals();
-    console.log("proposals =>", proposals);
-    console.log("votes =>", votes);
-
+console.log(proposals);
     return (
         <div className="snapshot-container">
             {/* <h4> */}
@@ -96,3 +94,5 @@ const ProposalChoiceButton: React.FC<IProposalChoiceButtonProps> = ({ key, propo
         </button>
     );
 };
+
+

@@ -5,6 +5,7 @@ import { SnapshotSpaceVote } from "src/types/snapshot";
 import { useSnapshotVote } from "src/hooks/useSnapshot";
 import { Skeleton } from "../Skeleton/Skeleton";
 import moment from "moment";
+import { getIpfsImageUrls } from "src/api/snapshot";
 
 interface Props {
     id: string;
@@ -43,6 +44,8 @@ export const ProposalCard: React.FC<Props> = ({
         }
     };
 
+    const images = useMemo(() => getIpfsImageUrls(description), [description]);
+
     return (
         <div className="proposal-card">
             <div className="header">
@@ -52,13 +55,16 @@ export const ProposalCard: React.FC<Props> = ({
                 </p>
             </div>
             <p className="description">{description}</p>
+            {images.map((item) => (
+                <img src={item} alt="" />
+            ))}
             {choices.map((item, i) =>
                 loadingVote || loadingVotes ? (
                     <Skeleton w={"100%"} h={48} inverted />
                 ) : (
                     <ProposalProgressBar
                         title={item}
-                        value={((scores[i] / totalScore) * 100).toFixed(1)}
+                        value={((scores[i] / (totalScore || 1)) * 100).toFixed(1)}
                         isVoted={votedChoice?.choice === i + 1}
                         isVoteable={isVoteable}
                         handleVote={() => handleVote(i + 1)}
