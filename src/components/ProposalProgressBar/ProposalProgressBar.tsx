@@ -11,7 +11,7 @@ interface Props {
 export const ProposalProgressBar = ({ title, value, isVoted, isVoteable, handleVote }: Props) => {
     return (
         <div className={`progressbar-container ${isVoteable ? "voteable" : ""}`} onClick={() => handleVote()}>
-            <div className={`progress`} style={{ width: `${value}%`, background: isVoted ? "blue" : undefined }}></div>
+            <div className={`progress ${isVoted ? "selected" : ""}`} style={{ width: `${value}%` }}></div>
             <div className="content">
                 <p className="title">{title}</p>
                 <p className="value">{value}%</p>
@@ -19,7 +19,3 @@ export const ProposalProgressBar = ({ title, value, isVoted, isVoteable, handleV
         </div>
     );
 };
-
-
-
-

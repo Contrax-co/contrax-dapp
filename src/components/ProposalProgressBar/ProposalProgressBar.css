@@ -15,6 +15,10 @@
     box-sizing: border-box;
 }
 
+.progress.selected {
+    background-color: var(--color_primary);
+}
+
 .content {
     position: absolute;
     width: 100%;
