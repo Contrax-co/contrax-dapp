@@ -18,22 +18,22 @@ export const Snapshot = () => {
 
     return (
         <div style={{ margin: 20 }}>
-            <h4>
-                {space?.name} (${space?.symbol})
-            </h4>
-            <p>Space details: {space?.about}</p>
-            <p>Space members: </p>
-            {space?.members.map((e) => (
+            {/* <h4> */}
+            {/* {space?.name} (${space?.symbol}) */}
+            {/* </h4> */}
+            {/* <p>Space details: {space?.about}</p> */}
+            {/* <p>Space members: </p> */}
+            {/* {space?.members.map((e) => (
                 <li key={e}>{e}</li>
-            ))}
-            {!isMember && (
+            ))} */}
+            {/* {!isMember && (
                 <button disabled={loadingJoinSpace} onClick={joinSpace}>
                     Join Space
                 </button>
-            )}
+            )} */}
 
-            <h5 style={{ marginTop: 50 }}>Proposals</h5>
-            {proposals?.map((e, index) => {
+            <h5 style={{ marginTop: 20, marginBottom: 30 }}>Proposals</h5>
+            {/* {proposals?.map((e, index) => {
                 return (
                     <div key={e.id}>
                         <div>
@@ -45,7 +45,7 @@ export const Snapshot = () => {
                         ))}
                     </div>
                 );
-            })}
+            })} */}
             <div className="proposal-list">
                 {loadingSpaceProposals ? (
                     <>
@@ -67,6 +67,7 @@ export const Snapshot = () => {
                             votedChoice={votes?.find((vote) => vote.proposal.id === item.id)}
                             fetchVotes={fetchSpaceVotes}
                             loadingVotes={loadingSpaceVotes}
+                            end={item.end}
                         />
                     ))
                 )}
@@ -95,5 +96,4 @@ const ProposalChoiceButton: React.FC<IProposalChoiceButtonProps> = ({ key, propo
         </button>
     );
 };
-
 
