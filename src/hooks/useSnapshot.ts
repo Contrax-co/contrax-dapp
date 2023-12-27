@@ -1,5 +1,5 @@
 import snapshot from "@snapshot-labs/snapshot.js";
-import { SNAPSHOT_HUB_URL, SNAPSHOT_SPACE_ID } from "src/config/constants";
+import { SNAPSHOT_APP_NAME, SNAPSHOT_HUB_URL, SNAPSHOT_SPACE_ID } from "src/config/constants";
 import { useEthersWeb3Provider } from "src/config/walletConfig";
 import { useAccount } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
@@ -98,11 +98,11 @@ export const useSnapshotSpaceProposals = () => {
 
     useEffect(() => {
         fetchSpaceProposal();
-    }, []);
+    }, [currentWallet]);
 
     useEffect(() => {
         fetchSpaceVotes();
-    }, []);
+    }, [currentWallet]);
 
     return {
         proposals,
@@ -132,7 +132,7 @@ export const useSnapshotVote = () => {
                 type: "single-choice",
                 choice: choiceNumber,
                 reason: "This choice make lot of sense",
-                app: "Contrax Finance",
+                app: SNAPSHOT_APP_NAME,
             });
             notifySuccess("Vote", `Successfully voted ${choice}`);
         } catch (e: any) {
@@ -146,6 +146,8 @@ export const useSnapshotVote = () => {
 
     return { vote, loadingVote };
 };
+
+
 
 
 

@@ -17,6 +17,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { RoutesPaths } from "src/config/constants";
 import useApp from "src/hooks/useApp";
 import { Dispatch, SetStateAction } from "react";
+import { FiCommand } from "react-icons/fi";
 
 function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean>> }) {
     const { lightMode } = useApp();
@@ -73,6 +74,12 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     onClick={() => handleNavigation(RoutesPaths.Deposit)}
                     active={pathname === RoutesPaths.Deposit}
                 />
+                <SidebarItem
+                    title="Dao"
+                    icon={<FiCommand width={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Dao)}
+                    active={pathname === RoutesPaths.Dao}
+                />
                 {process.env.NODE_ENV === "development" && (
                     <>
                         <SidebarItem
@@ -105,3 +112,9 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
 }
 
 export default Sidebar;
+
+
+
+
+
+
