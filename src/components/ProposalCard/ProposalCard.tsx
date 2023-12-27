@@ -6,6 +6,7 @@ import { useSnapshotVote } from "src/hooks/useSnapshot";
 import { Skeleton } from "../Skeleton/Skeleton";
 import moment from "moment";
 import { getIpfsImageUrls } from "src/api/snapshot";
+import { SNAPSHOT_SPACE_ID } from "src/config/constants";
 
 interface Props {
     id: string;
@@ -35,7 +36,7 @@ export const ProposalCard: React.FC<Props> = ({
     end,
 }) => {
     const { loadingVote, vote } = useSnapshotVote();
-    const isVoteable = useMemo(() => !votedChoice && status === "active", [status, votedChoice]);
+    const isVoteable = useMemo(() => status === "active", [status, votedChoice]);
 
     const handleVote = async (choice: number) => {
         if (isVoteable) {
@@ -72,6 +73,15 @@ export const ProposalCard: React.FC<Props> = ({
                 )
             )}
             {status === "closed" && <p>Ended {moment(end * 1000).fromNow()}</p>}
+            {
+                <a
+                    href={`https://snapshot.org/#/${SNAPSHOT_SPACE_ID}/proposal/${id}`}
+                    target="_blank"
+                    className="viewLink"
+                >
+                    View on Snapshot
+                </a>
+            }
         </div>
     );
 };
