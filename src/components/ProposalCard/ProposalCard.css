@@ -30,6 +30,7 @@
     white-space: pre;
 }
 
+
 .status.in-progress {
     background-color: var(--color_primary);
     color: var(--color_white);
@@ -42,4 +43,8 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.viewLink {
+    color: var(--color_primary);
 }
