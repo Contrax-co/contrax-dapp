@@ -165,6 +165,26 @@ export const useTokens = () => {
             };
             return obj;
         });
+        const traxAddr = arbTokens.find((item) => item.name === "xTrax")?.address!;
+        const traxToken: Token = {
+            address: arbTokens.find((item) => item.name === "xTrax")?.address!,
+            logo: arbTokens.find((item) => item.name === "xTrax")?.logo!,
+            decimals: 18,
+            balance: formattedBalances[traxAddr]
+                ? formattedBalances[traxAddr]! < 1 / 10 ** tokenBalDecimalPlaces
+                    ? noExponents(formattedBalances[traxAddr]!.toPrecision(2)).slice(0, -1)
+                    : toFixedFloor(formattedBalances[traxAddr]!, tokenBalDecimalPlaces).toString()
+                : "0",
+            usdBalance: formattedBalances[traxAddr]
+                ? formattedBalances[traxAddr]! < 1 / 10 ** tokenBalDecimalPlaces
+                    ? noExponents(formattedBalances[traxAddr]!.toPrecision(2)).slice(0, -1)
+                    : toFixedFloor(formattedBalances[traxAddr]!, tokenBalDecimalPlaces).toString()
+                : "0",
+            name: "xTrax",
+            price: 0,
+            networkId: defaultChainId,
+            token_type: FarmType.normal,
+        };
 
         // const ethToken: Token = {
         //     address: ethAddress,
@@ -268,6 +288,7 @@ export const useTokens = () => {
         if (Number(arbBalance.usdBalance) >= 0.5 && networkId === CHAIN_ID.ARBITRUM) tokens.unshift(arbBalance);
         if (Number(matic.usdBalance) >= 0.5 && networkId === CHAIN_ID.POLYGON) tokens.unshift(matic);
         if (Number(ethMainnet.usdBalance) >= 0.5 && networkId === CHAIN_ID.MAINNET) tokens.unshift(ethMainnet);
+        if (Number(traxToken.balance) >= 0.5 && networkId === CHAIN_ID.ARBITRUM) tokens.unshift(traxToken);
         setTokens(tokens);
         setLpTokens(lpTokens);
     }, [

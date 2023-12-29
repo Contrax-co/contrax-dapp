@@ -7,13 +7,24 @@ import {
 import "./Snapshot.css";
 import { ProposalCard } from "src/components/ProposalCard/ProposalCard";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
+import useBalances from "src/hooks/useBalances";
+import tokens from "src/config/constants/tokens";
+import { useMemo } from "react";
 
 export const Snapshot = () => {
     const { joinSpace, loadingJoinSpace } = useSnapshotJoinSpace();
     const { loadingSpace, space, isMember } = useSnapshotSpace();
     const { loadingSpaceProposals, loadingSpaceVotes, proposals, votes, fetchSpaceProposal, fetchSpaceVotes } =
         useSnapshotSpaceProposals();
-console.log(proposals);
+    const { formattedBalances } = useBalances();
+
+    console.log("formattedBalances =>", formattedBalances);
+
+    const traxBalance = useMemo(
+        () => formattedBalances[tokens.find((item) => item.name === "xTrax")?.address || ""],
+        [formattedBalances]
+    );
+
     return (
         <div className="snapshot-container">
             {/* <h4> */}
@@ -30,7 +41,12 @@ console.log(proposals);
                 </button>
             )} */}
 
-            <h5 style={{ marginTop: 20, marginBottom: 30 }}>Proposals</h5>
+            <div>
+                <h5 style={{ marginTop: 20, marginBottom: 0 }}>Proposals</h5>
+                <p className={"xTrax"} style={{ marginTop: 0, marginBottom: 30 }}>
+                    {traxBalance && `xTrax balance: ${traxBalance}`}
+                </p>
+            </div>
             {/* {proposals?.map((e, index) => {
                 return (
                     <div key={e.id}>
@@ -71,27 +87,6 @@ console.log(proposals);
                 )}
             </div>
         </div>
-    );
-};
-
-interface IProposalChoiceButtonProps {
-    key: string;
-    proposalId: string;
-    choice: string;
-    choiceNumber: number;
-}
-
-const ProposalChoiceButton: React.FC<IProposalChoiceButtonProps> = ({ key, proposalId, choice, choiceNumber }) => {
-    const { loadingVote, vote } = useSnapshotVote();
-
-    const handleVote = async () => {
-        await vote(proposalId, choiceNumber, choice);
-    };
-
-    return (
-        <button style={{ margin: 10 }} key={key} disabled={loadingVote} onClick={handleVote}>
-            {choice}
-        </button>
     );
 };
 

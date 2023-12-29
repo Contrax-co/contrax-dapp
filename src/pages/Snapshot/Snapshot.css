@@ -10,3 +10,8 @@
     align-items: flex-start;
     gap: 16px;
 }
+
+.xTrax {
+    color: var(--color_primary);
+    font-weight: 600;
+}
