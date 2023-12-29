@@ -69,13 +69,14 @@ export const TokenBalances: FC<IProps> = () => {
                                     </p>
                                 </div>
                                 <p className={styles.usdBalance}>
-                                    {Number(token.usdBalance)
-                                        .toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                            minimumFractionDigits: 3,
-                                        })
-                                        .slice(0, -1)}
+                                    {token.name !== "xTrax" &&
+                                        Number(token.usdBalance)
+                                            .toLocaleString("en-US", {
+                                                style: "currency",
+                                                currency: "USD",
+                                                minimumFractionDigits: 3,
+                                            })
+                                            .slice(0, -1)}
                                 </p>
                             </div>
                         ))}
