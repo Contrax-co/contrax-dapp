@@ -2142,6 +2142,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ensdomains/eth-ens-namehash@npm:^2.0.15":
+  version: 2.0.15
+  resolution: "@ensdomains/eth-ens-namehash@npm:2.0.15"
+  checksum: 56e2d4275f30b701e7328e488b7107b5ee793b57653342232f01396f769a51b812e73f9475faf894198ffc8ea97eead3809c1431e0955b9377400f503b4da970
+  languageName: node
+  linkType: hard
+
 "@eslint/eslintrc@npm:^2.0.0":
   version: 2.0.0
   resolution: "@eslint/eslintrc@npm:2.0.0"
@@ -2230,7 +2237,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/abi@npm:5.7.0, @ethersproject/abi@npm:^5.0.12, @ethersproject/abi@npm:^5.5.0, @ethersproject/abi@npm:^5.7.0":
+"@ethersproject/abi@npm:5.7.0, @ethersproject/abi@npm:^5.0.12, @ethersproject/abi@npm:^5.5.0, @ethersproject/abi@npm:^5.6.4, @ethersproject/abi@npm:^5.7.0":
   version: 5.7.0
   resolution: "@ethersproject/abi@npm:5.7.0"
   dependencies:
@@ -2275,7 +2282,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/address@npm:5.7.0, @ethersproject/address@npm:^5, @ethersproject/address@npm:^5.0.0, @ethersproject/address@npm:^5.0.2, @ethersproject/address@npm:^5.7.0":
+"@ethersproject/address@npm:5.7.0, @ethersproject/address@npm:^5, @ethersproject/address@npm:^5.0.0, @ethersproject/address@npm:^5.0.2, @ethersproject/address@npm:^5.6.1, @ethersproject/address@npm:^5.7.0":
   version: 5.7.0
   resolution: "@ethersproject/address@npm:5.7.0"
   dependencies:
@@ -2318,7 +2325,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/bytes@npm:5.7.0, @ethersproject/bytes@npm:^5.7.0":
+"@ethersproject/bytes@npm:5.7.0, @ethersproject/bytes@npm:^5.6.1, @ethersproject/bytes@npm:^5.7.0":
   version: 5.7.0
   resolution: "@ethersproject/bytes@npm:5.7.0"
   dependencies:
@@ -2336,7 +2343,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/contracts@npm:5.7.0":
+"@ethersproject/contracts@npm:5.7.0, @ethersproject/contracts@npm:^5.6.2":
   version: 5.7.0
   resolution: "@ethersproject/contracts@npm:5.7.0"
   dependencies:
@@ -2457,7 +2464,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/providers@npm:5.7.2, @ethersproject/providers@npm:^5, @ethersproject/providers@npm:^5.7.0":
+"@ethersproject/providers@npm:5.7.2, @ethersproject/providers@npm:^5, @ethersproject/providers@npm:^5.6.8, @ethersproject/providers@npm:^5.7.0":
   version: 5.7.2
   resolution: "@ethersproject/providers@npm:5.7.2"
   dependencies:
@@ -2579,7 +2586,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/units@npm:5.7.0":
+"@ethersproject/units@npm:5.7.0, @ethersproject/units@npm:^5.7.0":
   version: 5.7.0
   resolution: "@ethersproject/units@npm:5.7.0"
   dependencies:
@@ -2590,7 +2597,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/wallet@npm:5.7.0":
+"@ethersproject/wallet@npm:5.7.0, @ethersproject/wallet@npm:^5.6.2":
   version: 5.7.0
   resolution: "@ethersproject/wallet@npm:5.7.0"
   dependencies:
@@ -3945,6 +3952,28 @@ __metadata:
   dependencies:
     "@sinonjs/commons": ^1.7.0
   checksum: 09b5a158ce013a6c37613258bad79ca4efeb99b1f59c41c73cca36cac00b258aefcf46eeea970fccf06b989414d86fe9f54c1102272c0c3bdd51a313cea80949
+  languageName: node
+  linkType: hard
+
+"@snapshot-labs/snapshot.js@npm:^0.9.7":
+  version: 0.9.7
+  resolution: "@snapshot-labs/snapshot.js@npm:0.9.7"
+  dependencies:
+    "@ensdomains/eth-ens-namehash": ^2.0.15
+    "@ethersproject/abi": ^5.6.4
+    "@ethersproject/address": ^5.6.1
+    "@ethersproject/bytes": ^5.6.1
+    "@ethersproject/contracts": ^5.6.2
+    "@ethersproject/hash": ^5.7.0
+    "@ethersproject/providers": ^5.6.8
+    "@ethersproject/units": ^5.7.0
+    "@ethersproject/wallet": ^5.6.2
+    ajv: ^8.11.0
+    ajv-formats: ^2.1.1
+    cross-fetch: ^3.1.6
+    json-to-graphql-query: ^2.2.4
+    lodash.set: ^4.3.2
+  checksum: baa7c4996252a9d387c3cbc468a509a4805c4190b6d997f1df3bebbd1a9cf29c29c4f3fa17239ec2007aded4b144eeb56b2e1da54bd55092ed346fdf2dd1c18e
   languageName: node
   linkType: hard
 
@@ -9750,6 +9779,7 @@ __metadata:
     "@rainbow-me/rainbowkit": ^1.0.7
     "@ramp-network/ramp-instant-sdk": ^4.0.1
     "@reduxjs/toolkit": ^1.9.3
+    "@snapshot-labs/snapshot.js": ^0.9.7
     "@socket.tech/plugin": ^1.0.3
     "@tanstack/react-query": ^4.24.10
     "@tanstack/react-query-devtools": ^4.22.0
@@ -9781,6 +9811,7 @@ __metadata:
     graphql: ^16.6.0
     https-browserify: ^1.0.0
     jotai-immer: ^0.2.0
+    moment: ^2.29.4
     os-browserify: ^0.3.0
     prettier: ^2.8.1
     process: ^0.11.10
@@ -9987,7 +10018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.1.5":
+"cross-fetch@npm:^3.1.5, cross-fetch@npm:^3.1.6":
   version: 3.1.8
   resolution: "cross-fetch@npm:3.1.8"
   dependencies:
@@ -14703,6 +14734,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json-to-graphql-query@npm:^2.2.4":
+  version: 2.2.5
+  resolution: "json-to-graphql-query@npm:2.2.5"
+  checksum: f35e8a7ecf1d2e567b0b17ddd67ccf3b3cd4739034272a8a1745b5bdad9ecd3fcf4078a18517fdd15b5dd0c877784a99001d443685510ea0fbed5ed5e028d706
+  languageName: node
+  linkType: hard
+
 "json5@npm:^1.0.2":
   version: 1.0.2
   resolution: "json5@npm:1.0.2"
@@ -15077,6 +15115,13 @@ __metadata:
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005
+  languageName: node
+  linkType: hard
+
+"lodash.set@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "lodash.set@npm:4.3.2"
+  checksum: a9122f49eef9f2d0fc9061a33d87f8e5b8c6b23d46e8b9e9ce1529d3588d79741bd1145a3abdfa3b13082703e65af27ff18d8a07bfc22b9be32f3fc36f763f70
   languageName: node
   linkType: hard
 
@@ -15622,7 +15667,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.19.3":
+"moment@npm:^2.19.3, moment@npm:^2.29.4":
   version: 2.29.4
   resolution: "moment@npm:2.29.4"
   checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e

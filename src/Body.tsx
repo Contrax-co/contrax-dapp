@@ -20,6 +20,7 @@ import Swap from "./pages/Swap/Swap";
 import Bridge from "./pages/Bridge/Bridge";
 import { SignInRequiredWrapper } from "./components/SignInRequiredWrapper/SignInRequiredWrapper";
 import { BridgeDirection } from "./state/ramp/types";
+import { Snapshot } from "./pages/Snapshot/Snapshot";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -133,6 +134,7 @@ function Body() {
                 />
                 <Route path={RoutesPaths.Test} element={<Test />} />
                 <Route path={RoutesPaths.Stats} element={<Stats />} />
+                <Route path={RoutesPaths.Dao} element={<Snapshot />} />
                 <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
             </Route>
         </Routes>
