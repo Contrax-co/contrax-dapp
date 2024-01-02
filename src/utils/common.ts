@@ -19,6 +19,15 @@ export const resolveEnsDomain = async (str: string) => {
     }
     return addr;
 };
+
+export const resolveDomainFromAddress = async (addr: string) => {
+    const name = await web3Name.getDomainName({
+        address: addr,
+        queryChainIdList: [defaultChainId],
+    });
+    return name;
+};
+
 export const getLpAddressForFarmsPrice = (farms: Farm[]) => {
     // temp fix for dodo and stargate wrapped token prices
     // the underlyging tokens are named lp, but they are actaully just wrapped versions of platform tokens, so we

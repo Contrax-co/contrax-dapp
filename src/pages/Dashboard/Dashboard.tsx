@@ -32,7 +32,7 @@ import { useAppSelector } from "src/state";
 function Dashboard() {
     const { lightMode } = useApp();
     const { earnTraxTermsAgreed } = useAppSelector((state) => state.account);
-    const { currentWallet, displayAccount, signer, networkId } = useWallet();
+    const { currentWallet, displayAccount, signer, networkId, domainName } = useWallet();
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
@@ -60,7 +60,7 @@ function Dashboard() {
                                     className={`dashboard_address ${lightMode && "dashboard_address--light"}`}
                                     style={{ marginRight: "10px" }}
                                 >
-                                    {displayAccount}
+                                    {domainName || displayAccount}
                                 </p>
                                 {!copied ? <FiCopy /> : <BsCheckCircle />}
                             </div>
@@ -151,3 +151,5 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+
