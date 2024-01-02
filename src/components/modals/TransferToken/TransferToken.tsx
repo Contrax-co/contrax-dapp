@@ -40,7 +40,7 @@ export const TransferToken: FC<IProps> = ({ token, handleClose }) => {
                         <input
                             type="text"
                             id="reciverAddress"
-                            placeholder="Reciver Address"
+                            placeholder="0x1c... or example.arb"
                             required
                             value={receiverAddress}
                             onChange={(e) => setReceiverAddress(e.target.value)}

@@ -5,7 +5,20 @@ import { defaultChainId } from "src/config/constants";
 import { errorMessages } from "src/config/constants/notifyMessages";
 import store from "src/state";
 import { Farm } from "src/types";
+import { createWeb3Name } from "@web3-name-sdk/core";
+import { getAddress } from "viem";
 
+const web3Name = createWeb3Name();
+
+export const resolveEnsDomain = async (str: string) => {
+    let addr = null;
+    try {
+        addr = getAddress(str);
+    } catch {
+        addr = await web3Name.getAddress(str);
+    }
+    return addr;
+};
 export const getLpAddressForFarmsPrice = (farms: Farm[]) => {
     // temp fix for dodo and stargate wrapped token prices
     // the underlyging tokens are named lp, but they are actaully just wrapped versions of platform tokens, so we
