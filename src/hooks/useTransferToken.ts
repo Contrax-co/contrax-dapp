@@ -1,9 +1,8 @@
 import { Token } from "src/types";
 import useBalances from "./useBalances";
-import usePriceOfTokens from "./usePriceOfTokens";
 import { FormEvent, useEffect, useState } from "react";
 import useTransfer from "./useTransfer";
-import { toWei } from "src/utils/common";
+import { resolveEnsDomain, toWei } from "src/utils/common";
 import { dismissNotify, notifyError, notifyLoading, notifySuccess } from "src/api/notify";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 
@@ -27,9 +26,13 @@ export const useTransferToken = (token: Token, handleClose: Function) => {
         e.preventDefault();
         const id = notifyLoading(loadingMessages.transferingTokens());
         try {
+            const addr = await resolveEnsDomain(receiverAddress);
+            if (addr === null) {
+                throw new Error("Invalid domain!");
+            }
             const res = await transfer({
                 tokenAddress: token.address,
-                to: receiverAddress,
+                to: addr,
                 amount: getAmountInWei(),
                 max,
             });

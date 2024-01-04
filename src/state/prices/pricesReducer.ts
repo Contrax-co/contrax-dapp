@@ -53,7 +53,7 @@ export const updatePrices = createAsyncThunk(
             }, new Set<string>());
             additionalTokens.forEach((token) => set.add(token.toLowerCase()));
             tokens.forEach((token) => {
-                if (token.chainId === defaultChainId) set.add(token.address.toLowerCase());
+                if (token.chainId === defaultChainId && token.name !== "xTrax") set.add(token.address.toLowerCase());
             });
             let addresses = Array.from(set);
 
