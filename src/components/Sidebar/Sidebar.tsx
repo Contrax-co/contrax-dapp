@@ -8,7 +8,7 @@ import { ImStatsDots } from "react-icons/im";
 import { IoIosFlask } from "react-icons/io";
 import { ReactComponent as EarnIcon } from "src/assets/images/earn.svg";
 import { ReactComponent as DepositIcon } from "src/assets/images/deposit.svg";
-import { ReactComponent as FrontIcon } from "src/assets/images/front.svg";
+import { ReactComponent as MeshIcon } from "src/assets/images/front.svg";
 import logo from "src/assets/images/logo.png";
 import logo2 from "src/assets/images/logo-4x.png";
 import LightModeToggle from "src/components/LightModeToggle/LightModeToggle";
@@ -69,13 +69,13 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     active={pathname === RoutesPaths.Bridge}
                 />
                 <SidebarItem
-                    title="Front"
-                    icon={<FrontIcon width={18} />}
+                    title="Mesh"
+                    icon={<MeshIcon width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Deposit)}
                     active={pathname === RoutesPaths.Deposit}
                 />
                 <SidebarItem
-                    title="Dao"
+                    title="DAO"
                     icon={<FiCommand width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Dao)}
                     active={pathname === RoutesPaths.Dao}
