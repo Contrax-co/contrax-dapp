@@ -190,8 +190,106 @@ export const updatePrices = createAsyncThunk(
                 prices[key.toLowerCase()] = price;
             });
 
+            //------------------->> 3.5. Set Hop token prices
+            // #region Hop Prices Calculation
+            const hopFarms = farms.filter((item) => item.platform === "Hop");
+            console.log("hopFarms =>", hopFarms);
+            console.log("prices =>", prices);
+            const hopSwapContractsAddresses = await Promise.all(
+                hopFarms.map((item) => new Contract(item.lp_address, item.lp_abi, multicallProvider).swap())
+            );
+
+            const hopSwapAbi = [
+                "function getVirtualPrice() view returns (uint256)",
+                "function getTokenBalance(uint8) view returns (uint256)",
+                "function getToken(uint8) view returns (address)",
+            ];
+            let hopCalls: any[] = [];
+
+            hopSwapContractsAddresses.forEach((item, i) => {
+                const contract = new Contract(item, hopSwapAbi, multicallProvider);
+                hopCalls.push(contract.getToken(0));
+                hopCalls.push(contract.getToken(1));
+                hopCalls.push(contract.getTokenBalance(0));
+                hopCalls.push(contract.getTokenBalance(1));
+                hopCalls.push(contract.getVirtualPrice());
+                hopCalls.push(
+                    new Contract(
+                        hopFarms[i].lp_address,
+                        ["function totalSupply() view returns (uint256)"],
+                        multicallProvider
+                    ).totalSupply()
+                );
+            });
+            let hopResults = await Promise.all(hopCalls);
+            const hopLpInfo: {
+                token0: string;
+                token1: string;
+                totalSupply: string;
+                token0Balance: string;
+                token1Balance: string;
+                virtualPrice: string;
+                token0Price: number;
+                token1Price: number;
+                token0Decimal: number;
+                token1Decimal: number;
+                lpPrice: number;
+            }[] = [];
+            let hopDecimalsCalls: any[] = [];
+            for (let i = 0; i < hopResults.length; i += 6) {
+                const token0 = hopResults[i].toLowerCase();
+                const token1 = hopResults[i + 1].toLowerCase();
+                const token0Balance = hopResults[i + 2].toString();
+                const token1Balance = hopResults[i + 3].toString();
+                const virtualPrice = hopResults[i + 4].toString();
+                const totalSupply = hopResults[i + 5].toString();
+                const token0Price = prices[token0];
+                const token1Price = Number(toEth(virtualPrice)) * Number(token0Price);
+                hopDecimalsCalls.push(
+                    new Contract(token0, ["function decimals() view returns (uint8)"], multicallProvider).decimals()
+                );
+                hopDecimalsCalls.push(
+                    new Contract(token1, ["function decimals() view returns (uint8)"], multicallProvider).decimals()
+                );
+                // @ts-ignore
+                hopLpInfo[i / 6] = {
+                    token0,
+                    token1,
+                    totalSupply,
+                    token0Balance,
+                    token1Balance,
+                    virtualPrice,
+                    token0Price,
+                    token1Price,
+                };
+            }
+            const hopDecimals = await Promise.all(hopDecimalsCalls);
+            for (let i = 0; i < hopDecimals.length; i += 2) {
+                // @ts-ignore
+                hopLpInfo[i / 2]["token0Decimal"] = hopDecimals[i];
+                // @ts-ignore
+                hopLpInfo[i / 2]["token1Decimal"] = hopDecimals[i + 1];
+            }
+
+            for (let i = 0; i < hopLpInfo.length; i++) {
+                const token0Balance =
+                    Number(toEth(hopLpInfo[i].token0Balance, hopLpInfo[i].token0Decimal)) * hopLpInfo[i].token0Price;
+                const token1Balance =
+                    Number(toEth(hopLpInfo[i].token1Balance, hopLpInfo[i].token1Decimal)) * hopLpInfo[i].token1Price;
+                const totalSupply = toEth(hopLpInfo[i].totalSupply);
+                const lpPrice = (token0Balance + token1Balance) / Number(totalSupply);
+                hopLpInfo[i]["lpPrice"] = lpPrice;
+                // prices[hopFarms[i].lp_address.toLowerCase()] =
+                //     (prices[hopFarms[i].lp_address.toLowerCase()] + lpPrice) / 2;
+                prices[hopFarms[i].lp_address.toLowerCase()] = lpPrice;
+            }
+
+            console.log("hopLpInfo =>", hopLpInfo);
+            // #endregion Hop Prices Calculation
+
             //------------------->> 4. Set Stable coin prices
             // prices[addressesByChainId[chainId].usdcAddress] = 1;
+            // checksummed[addressesByChainId[chainId].nativeUsdAddress!] = 1;
 
             //------------------->> 5. Set prices for tokens in state
 
@@ -200,9 +298,6 @@ export const updatePrices = createAsyncThunk(
             Object.entries(prices).forEach(([key, value]) => {
                 checksummed[utils.getAddress(key)] = value;
             });
-            // USDC price hardcoded TODO: maybe change to actual price in future
-            checksummed[addressesByChainId[chainId].usdcAddress] = 1;
-            checksummed[addressesByChainId[chainId].nativeUsdAddress!] = 1;
 
             return checksummed;
         } catch (error) {

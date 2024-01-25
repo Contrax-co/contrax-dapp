@@ -243,11 +243,12 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         to: farm.zapper_addr,
     });
     console.log({ simulationResult });
+    // const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
     const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
     const difference = BigNumber.from(filteredState.afterChange[args.currentWallet.toLowerCase()]).sub(
         BigNumber.from(filteredState.original[args.currentWallet.toLowerCase()])
     );
-
+    // const difference = BigNumber.from(assetChanges.added);
     return difference;
 };
 
@@ -299,14 +300,13 @@ export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max,
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     }
-
     //#endregion
     const simulationResult = await simulateTransaction({
         /* Standard EVM Transaction object */
         ...transaction,
         to: farm.zapper_addr,
     });
-
+    console.log("simulationResult =>", simulationResult);
     let difference = BigNumber.from(0);
     if (token === constants.AddressZero) {
         const { before, after } = filterBalanceChanges(currentWallet, simulationResult.balanceDiff);

@@ -89,7 +89,7 @@ export interface BalanceDiffs {
 
 export interface SimulationResponse {
     status: boolean;
-    value: BigNumber;
+    value: bigint;
     method: string;
     gasUsed: number;
     logs: {
