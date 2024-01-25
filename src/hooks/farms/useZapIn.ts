@@ -59,6 +59,18 @@ const useZapIn = (farm: Farm) => {
         const beforeDepositAmount = zapAmount * prices[token];
         let slippage = (1 - afterDepositAmount / beforeDepositAmount) * 100;
         if (slippage < 0) slippage = 0;
+        console.log({
+            lpPrice: prices[farm.lp_address],
+            lpAddr: farm.lp_address,
+            tokenPrice: prices[token],
+            tokenAddr: token,
+            zapAmount,
+            difference,
+            differenceEth: toEth(difference),
+            afterDepositAmount,
+            beforeDepositAmount,
+            slippage,
+        });
         return { afterDepositAmount, beforeDepositAmount, slippage };
     };
 
