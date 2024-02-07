@@ -1,5 +1,4 @@
 import { FC } from "react";
-import useApp from "src/hooks/useApp";
 import styles from "./SlippageWarning.module.scss";
 import { ModalLayout } from "../ModalLayout/ModalLayout";
 
