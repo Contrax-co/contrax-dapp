@@ -4,10 +4,12 @@ import { commify } from "ethers/lib/utils.js";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 import useWallet from "src/hooks/useWallet";
 import { getPriceFromUsdtPair } from "src/utils/pair";
+import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
+    const [modelOpen, setModelOpen] = useState(false);
     const { platformTVL } = usePlatformTVL();
     const { multicallProvider } = useWallet();
 
@@ -81,9 +83,24 @@ const Test = () => {
             >
                 dismiss
             </button>
+            <button
+                onClick={() => {
+                    setModelOpen(true);
+                }}
+            >
+                warning modal open
+            </button>
             <br />
             {platformTVL && <h1>Platform TVL: ${commify(platformTVL.toFixed(0))}</h1>}
             <iframe src={url} style={{ width: 400, height: 700 }}></iframe>
+            {modelOpen && (
+                <SlippageWarning
+                    handleClose={() => {
+                        setModelOpen(false);
+                    }}
+                    percentage={18}
+                />
+            )}
         </div>
     );
 };

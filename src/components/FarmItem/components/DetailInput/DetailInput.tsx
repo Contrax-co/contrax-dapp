@@ -148,6 +148,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     handleClose={() => {
                         setShowSlippageModal(false);
                     }}
+                    percentage={slippage}
                 />
             )}
         </form>

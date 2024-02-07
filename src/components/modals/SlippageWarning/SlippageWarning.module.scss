@@ -10,4 +10,37 @@
     @include devices(tablet) {
         width: 100%;
     }
+
+    h1 {
+        margin-bottom: 16px;
+    }
+    .warningText {
+        font-size: 1.3rem;
+        color: var(--color_grey);
+        @include devices(tablet) {
+            font-size: 1.1rem;
+        }
+        @include devices(mobile) {
+            font-size: 0.9rem;
+        }
+    }
+    .cancelButton {
+        background: var(--color_grey);
+        @include devices(mobile) {
+            min-width: 100px;
+        }
+    }
+    .continueButton {
+        @include devices(mobile) {
+            min-width: 100px;
+        }
+    }
+    .buttonContainer {
+        margin-top: 16px;
+        display: flex;
+        gap: 16px;
+        @include devices(tablet) {
+            gap: 8px;
+        }
+    }
 }
