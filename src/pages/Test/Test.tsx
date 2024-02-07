@@ -93,14 +93,6 @@ const Test = () => {
             <br />
             {platformTVL && <h1>Platform TVL: ${commify(platformTVL.toFixed(0))}</h1>}
             <iframe src={url} style={{ width: 400, height: 700 }}></iframe>
-            {modelOpen && (
-                <SlippageWarning
-                    handleClose={() => {
-                        setModelOpen(false);
-                    }}
-                    percentage={18}
-                />
-            )}
         </div>
     );
 };
