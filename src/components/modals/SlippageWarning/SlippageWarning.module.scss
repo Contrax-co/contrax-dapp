@@ -1,0 +1,13 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/_mixins.scss";
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 540px;
+    @include devices(tablet) {
+        width: 100%;
+    }
+}

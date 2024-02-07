@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import useApp from "src/hooks/useApp";
 import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
@@ -13,6 +13,7 @@ import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmDetailInputOptions } from "src/state/farms/types";
+import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
 
 interface Props {
     farm: Farm;
@@ -21,7 +22,7 @@ interface Props {
 const DetailInput: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const { transactionType, currencySymbol } = useAppSelector((state) => state.farms.farmDetailInputOptions);
-
+    const [showSlippageModal, setShowSlippageModal] = useState(false);
     const {
         amount,
         showInUsd,
@@ -73,6 +74,12 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                   ) || [],
         [transactionType, farmData, showInUsd]
     );
+
+    useEffect(() => {
+        if (slippage && slippage > 2) {
+            setShowSlippageModal(true);
+        }
+    }, [slippage]);
 
     return (
         <form
@@ -136,6 +143,13 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     )}
                 </p>
             </div>
+            {showSlippageModal && (
+                <SlippageWarning
+                    handleClose={() => {
+                        setShowSlippageModal(false);
+                    }}
+                />
+            )}
         </form>
     );
 };
