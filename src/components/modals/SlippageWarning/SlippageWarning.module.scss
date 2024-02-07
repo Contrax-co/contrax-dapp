@@ -1,12 +1,16 @@
 @import "../../../styles/variables.scss";
 @import "../../../styles/_mixins.scss";
 
+.modal{
+    border: 6px solid #FFCC00;
+}
+
 .container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 540px;
+    width: 540px;    
     @include devices(tablet) {
         width: 100%;
     }
