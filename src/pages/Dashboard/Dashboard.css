@@ -6,6 +6,13 @@
     overflow-x: hidden;
 }
 
+.dashboard_traxEarningEnabled {
+    display: flex;
+    color: var(--color_primary);
+    gap: 5px;
+    font-weight: bold;
+}
+
 .dashboard_header {
     padding-top: 5px;
     padding: 30px;
@@ -59,6 +66,10 @@
     display: flex;
     align-items: center;
     color: white;
+    flex-wrap: wrap;
+}
+.dashboard_traxEnabledTick {
+    margin-left: 10px;
 }
 
 .dashboard_address_header--light {
@@ -170,6 +181,9 @@
 @media (max-width: 650px) {
     .dashboard_tvl_section {
         flex-wrap: wrap;
+    }
+    .dashboard_traxEnabledTick {
+        margin-left: 0px;
     }
 }
 

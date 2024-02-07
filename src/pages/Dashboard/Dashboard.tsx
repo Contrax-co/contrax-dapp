@@ -27,6 +27,7 @@ import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
 import BridgeEthBtn from "src/components/BridgeEthBtn/BridgeEthBtn";
 import SwapUSDCBtn from "src/components/SwapUSDCBtn/SwapUSDCBtn";
 import { EarnTrax } from "src/components/modals/EarnTrax/EarnTrax";
+import tickIcon from "src/assets/images/tick-blue.svg";
 import { useAppSelector } from "src/state";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 
@@ -65,6 +66,12 @@ function Dashboard() {
                                     {domainName || displayAccount}
                                 </p>
                                 {!copied ? <FiCopy /> : <BsCheckCircle />}
+                                {earnTraxTermsAgreed && (
+                                    <div className="dashboard_traxEarningEnabled">
+                                        <img src={tickIcon} alt="tick" className="dashboard_traxEnabledTick" />
+                                        <p>TRAX Earning Enabled</p>
+                                    </div>
+                                )}
                             </div>
                             <div
                                 className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}
