@@ -75,16 +75,18 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         [transactionType, farmData, showInUsd]
     );
 
-    useEffect(() => {
+    const submitHandler = (e: any) => {
+        e.preventDefault();
         if (slippage && slippage > 2) {
             setShowSlippageModal(true);
+        } else {
+            handleSubmit();
         }
-    }, [slippage]);
-
+    };
     return (
         <form
             className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
-            onSubmit={handleSubmit}
+            onSubmit={submitHandler}
         >
             {isLoadingTransaction && <Loader />}
             {isLoadingFarm && <Skeleton w={100} h={20} style={{ marginLeft: "auto" }} />}
@@ -148,6 +150,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     handleClose={() => {
                         setShowSlippageModal(false);
                     }}
+                    handleSubmit={handleSubmit}
                     percentage={slippage}
                 />
             )}

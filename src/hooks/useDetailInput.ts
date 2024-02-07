@@ -87,8 +87,7 @@ export const useDetailInput = (farm: Farm) => {
         setMax(false);
     };
 
-    const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         // check for eth balance greater than gas fee
         // if (isBalanceTooLow()) return;
         // if enough balance than proceed transaction
