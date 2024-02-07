@@ -3,6 +3,7 @@ import styles from "./SwapUSDCBtn.module.scss";
 import { TiWarningOutline } from "react-icons/ti";
 import { customCommify } from "src/utils/common";
 import useSwapUsdcNative from "src/hooks/useSwapUsdcNative";
+import { ReactComponent as EditSvg } from "src/assets/images/edit.svg";
 
 interface IProps {
     showDisclaimer?: boolean;
@@ -16,7 +17,10 @@ const SwapUSDCBtn: React.FC<IProps> = ({ showDisclaimer }) => {
             <div className={styles.labeledButton}>
                 <div>
                     <h3 className={styles.usdcAmount}>
-                        Native USDC: <b>${customCommify(formattedBalance)}</b>
+                        Native USDC:{" "}
+                        <b>
+                            ${customCommify(formattedBalance)} <EditSvg className={styles.editIcon} />
+                        </b>
                     </h3>
                 </div>
             </div>
