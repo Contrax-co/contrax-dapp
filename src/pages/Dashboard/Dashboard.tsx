@@ -27,12 +27,15 @@ import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
 import BridgeEthBtn from "src/components/BridgeEthBtn/BridgeEthBtn";
 import SwapUSDCBtn from "src/components/SwapUSDCBtn/SwapUSDCBtn";
 import { EarnTrax } from "src/components/modals/EarnTrax/EarnTrax";
+import tickIcon from "src/assets/images/tick-blue.svg";
 import { useAppSelector } from "src/state";
+import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 
 function Dashboard() {
     const { lightMode } = useApp();
     const { earnTraxTermsAgreed } = useAppSelector((state) => state.account);
     const { currentWallet, displayAccount, signer, networkId, domainName } = useWallet();
+    const [congModel, setCongModel] = useState(false);
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
@@ -63,6 +66,12 @@ function Dashboard() {
                                     {domainName || displayAccount}
                                 </p>
                                 {!copied ? <FiCopy /> : <BsCheckCircle />}
+                                {earnTraxTermsAgreed && (
+                                    <div className="dashboard_traxEarningEnabled">
+                                        <img src={tickIcon} alt="tick" className="dashboard_traxEnabledTick" />
+                                        <p>TRAX Earning Enabled</p>
+                                    </div>
+                                )}
                             </div>
                             <div
                                 className={`dashboard_copy ${lightMode && "dashboard_copy--light"}`}
@@ -110,8 +119,9 @@ function Dashboard() {
             </div>
 
             {currentWallet && !earnTraxTermsAgreed && openEarnTraxModal && (
-                <EarnTrax setOpenModal={setOpenEarnTraxModal} />
+                <EarnTrax setOpenModal={setOpenEarnTraxModal} setCongModal={setCongModel} />
             )}
+            {congModel && <SuccessfulEarnTrax handleClose={() => setCongModel(false)} />}
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
@@ -151,5 +161,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
-

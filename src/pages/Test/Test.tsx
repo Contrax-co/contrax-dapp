@@ -5,11 +5,13 @@ import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 import useWallet from "src/hooks/useWallet";
 import { getPriceFromUsdtPair } from "src/utils/pair";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
+import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
     const [modelOpen, setModelOpen] = useState(false);
+    const [model1Open, set1ModelOpen] = useState(false);
     const { platformTVL } = usePlatformTVL();
     const { multicallProvider } = useWallet();
 
@@ -89,6 +91,13 @@ const Test = () => {
                 }}
             >
                 warning modal open
+            </button>
+            <button
+                onClick={() => {
+                    set1ModelOpen(true);
+                }}
+            >
+                COngras modal open
             </button>
             <br />
             {platformTVL && <h1>Platform TVL: ${commify(platformTVL.toFixed(0))}</h1>}
