@@ -216,6 +216,30 @@
 .container1_apy {
     display: flex;
     align-items: center;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.innerContainer {
+    display: flex;
+    align-items: center;
+}
+
+.xTranxBoosted {
+    min-width: 160px;
+    height: 30px;
+    border-radius: 11px;
+    background: var(--color_primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+.paraxTrax {
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "Segoe UI";
+    color: white;
 }
 
 .apy_info {
@@ -349,6 +373,16 @@
         margin: 0;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+}
+
+@media (max-width: 500px) {
+    .paraxTrax {
+        font-size: 10px;
+    }
+    .xTranxBoosted {
+        min-width: 100px;
+        height: 20px;
     }
 }
 

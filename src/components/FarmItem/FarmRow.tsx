@@ -13,6 +13,7 @@ import useFarmApy from "src/hooks/farms/useFarmApy";
 import { DropDownView } from "./components/DropDownView/DropDownView";
 import { DeprecatedChip } from "./components/Chip/DeprecatedChip";
 import { useAppDispatch } from "src/state";
+import fire from "src/assets/images/fire.png";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmTransactionType } from "src/types/enums";
 
@@ -31,6 +32,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const isLoading = isFarmLoading || isApyLoading;
     const key = uuid();
     const key2 = uuid();
+    const key3 = uuid();
     const dispatch = useAppDispatch();
 
     const handleClick = (e: any) => {
@@ -90,7 +92,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                         {farmApys && toFixedFloor(farmApys?.apy || 0, 2) == 0 ? (
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>--</p>
                         ) : (
-                            <>
+                            <div className={"innerContainer"}>
                                 <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                     {farmApys && farmApys.apy < 0.01
                                         ? farmApys.apy.toPrecision(2).slice(0, -1)
@@ -122,8 +124,25 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                     anchorId={key}
                                     className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
                                 />
-                            </>
+                            </div>
                         )}
+                        <a
+                            id={key3}
+                            data-tooltip-html={`<p>
+                            You current xTRAX APY is <b>x</b> xTRAX
+                                        </p>
+                                        `}
+                        >
+                            <div className={"xTranxBoosted"}>
+                                <img src={fire} alt="fire" />
+                                <p className={"paraxTrax"}>xTRAX Boosted!</p>
+                            </div>
+                        </a>
+                        <Tooltip
+                            anchorId={key3}
+                            place="bottom"
+                            className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
+                        />
                     </div>
                 </div>
 
@@ -167,14 +186,15 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                     {farmApys && toFixedFloor(farmApys?.apy || 0, 2) == 0 ? (
                         <p className={`pool_name ${lightMode && "pool_name--light"}`}>--</p>
                     ) : (
-                        <p className={`pool_name ${lightMode && "pool_name--light"}`}>
-                            {farmApys && farmApys.apy < 0.01
-                                ? farmApys.apy.toPrecision(2).slice(0, -1)
-                                : toFixedFloor(farmApys?.apy || 0, 2).toString()}
-                            %
-                            <a
-                                id={key2}
-                                data-tooltip-html={`<p>
+                        <>
+                            <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                {farmApys && farmApys.apy < 0.01
+                                    ? farmApys.apy.toPrecision(2).slice(0, -1)
+                                    : toFixedFloor(farmApys?.apy || 0, 2).toString()}
+                                %
+                                <a
+                                    id={key2}
+                                    data-tooltip-html={`<p>
                                             <b>Base APRs</b>
                                         </p>
                                         ${
@@ -190,17 +210,35 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                                 ? `<p>Trading Fees: ${toFixedFloor(farmApys.feeApr, 3)}%</p>`
                                                 : ``
                                         }`}
-                            >
-                                <CgInfo
-                                    className={`apy_info hoverable ${lightMode && "apy_info--light"}`}
-                                    style={{ transform: "translateY(2px)" }}
+                                >
+                                    <CgInfo
+                                        className={`apy_info hoverable ${lightMode && "apy_info--light"}`}
+                                        style={{ transform: "translateY(2px)" }}
+                                    />
+                                </a>
+                                <Tooltip
+                                    anchorId={key2}
+                                    className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
                                 />
+                            </p>
+                            <a
+                                id={key3}
+                                data-tooltip-html={`<p>
+                                You current xTRAX APY is <b>x</b> xTRAX
+                                            </p>
+                                            `}
+                            >
+                                <div className={"xTranxBoosted"}>
+                                    <img src={fire} alt="fire" />
+                                    <p className={"paraxTrax"}>xTRAX Boosted!</p>
+                                </div>
                             </a>
                             <Tooltip
-                                anchorId={key2}
+                                anchorId={key3}
+                                place="bottom"
                                 className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
                             />
-                        </p>
+                        </>
                     )}
                 </div>
 
