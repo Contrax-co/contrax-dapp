@@ -11,6 +11,8 @@
     color: var(--color_primary);
     gap: 5px;
     font-weight: bold;
+    margin-left: 10px;
+    padding: 4px 12px;
 }
 
 .dashboard_header {
@@ -67,9 +69,6 @@
     align-items: center;
     color: white;
     flex-wrap: wrap;
-}
-.dashboard_traxEnabledTick {
-    margin-left: 10px;
 }
 
 .dashboard_address_header--light {
@@ -164,6 +163,15 @@
     margin-left: 12px;
 }
 
+@media (max-width: 400px) {
+    .dashboard_traxEarningEnabled {
+        margin-left: 0px;
+    }
+    .dashboard_traxEnabledTick {
+        font-size: 14px;
+    }
+}
+
 @media (max-height: 600px) {
     .dashboard_wallet_title {
         font-size: 20px;
@@ -195,5 +203,34 @@
     .earn_trax_button {
         font-size: 14px;
         padding: 10px 24px !important;
+    }
+}
+
+.animated-border {
+    --border-angle: 0turn;
+    --main-bg: conic-gradient(from var(--border-angle), #f5f6fa, #f5f6fa 5%, #f5f6fa 60%, #f5f6fa 95%);
+    border: solid 3px transparent;
+    border-radius: 25px;
+    --gradient-border: conic-gradient(
+        from var(--border-angle),
+        transparent 25%,
+        var(--color_primary),
+        var(--color_primary) 99%,
+        transparent
+    );
+    background: var(--main-bg) padding-box, var(--gradient-border) border-box, var(--main-bg) border-box;
+    background-position: center center;
+    animation: bg-spin 3s linear infinite;
+}
+
+@property --border-angle {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 0turn;
+}
+
+@keyframes bg-spin {
+    to {
+        --border-angle: 1turn;
     }
 }
