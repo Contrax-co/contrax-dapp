@@ -146,7 +146,6 @@ export interface UserVVL {
     usdAmount: number;
     userBalance: string;
     vaultAddress: string;
-    estimatedTraxPerDay?: number;
     _id: string;
 }
 
