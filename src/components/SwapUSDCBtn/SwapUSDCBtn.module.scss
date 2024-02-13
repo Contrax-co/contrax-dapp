@@ -6,6 +6,7 @@
     flex-direction: column;
     width: auto;
     gap: 5px;
+    position: relative;
 }
 
 .labeledButton {
@@ -44,7 +45,14 @@
     cursor: pointer;
 }
 
+.editIconContainer {
+    position: absolute;
+    top: 2px;
+    right: 10px;
+}
+
 .editIcon {
     width: 14px;
     cursor: pointer;
+    color: var(--color_primary);
 }

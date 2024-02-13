@@ -67,7 +67,11 @@ function Dashboard() {
                                 </p>
                                 {!copied ? <FiCopy /> : <BsCheckCircle />}
                                 {earnTraxTermsAgreed && (
-                                    <div className="dashboard_traxEarningEnabled animated-border">
+                                    <div
+                                        className={`dashboard_traxEarningEnabled animated-border--dark ${
+                                            lightMode && "animated-border"
+                                        }`}
+                                    >
                                         <img src={tickIcon} alt="tick" className="dashboard_traxEnabledTick" />
                                         <p className="dashboard_traxEnabledTick">TRAX Earning Enabled</p>
                                     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import "./FarmRow.css";
 import { CgInfo } from "react-icons/cg";
@@ -12,7 +12,7 @@ import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import useFarmApy from "src/hooks/farms/useFarmApy";
 import { DropDownView } from "./components/DropDownView/DropDownView";
 import { DeprecatedChip } from "./components/Chip/DeprecatedChip";
-import { useAppDispatch } from "src/state";
+import { useAppDispatch, useAppSelector } from "src/state";
 import fire from "src/assets/images/fire.png";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmTransactionType } from "src/types/enums";
@@ -34,6 +34,12 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const key2 = uuid();
     const key3 = uuid();
     const dispatch = useAppDispatch();
+    const { estimatedTraxPerDay } = useAppSelector((state) => state.account);
+
+    const estimateTrax = useMemo(
+        () => estimatedTraxPerDay.find((ele) => ele.vaultAddress === farm.vault_addr),
+        [estimatedTraxPerDay, farm]
+    );
 
     const handleClick = (e: any) => {
         if (e.target.tagName === "svg" || e.target.tagName === "path") {
@@ -128,10 +134,15 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                         )}
                         <a
                             id={key3}
-                            data-tooltip-html={`<p>
-                            You current xTRAX APY is <b>x</b> xTRAX
+                            data-tooltip-html={
+                                estimateTrax?.estimatedTraxPerDay
+                                    ? `<p>
+                            You current xTRAX APY is <b>${estimateTrax?.estimatedTraxPerDay.toLocaleString()}</b> xTRAX
                                         </p>
-                                        `}
+                                        `
+                                    : `<p>
+                                    Stake earn to get xTRAX.</p>`
+                            }
                         >
                             <div className={"xTranxBoosted"}>
                                 <img src={fire} alt="fire" />
@@ -223,10 +234,15 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                             </p>
                             <a
                                 id={key3}
-                                data-tooltip-html={`<p>
-                                You current xTRAX APY is <b>x</b> xTRAX
+                                data-tooltip-html={
+                                    estimateTrax?.estimatedTraxPerDay
+                                        ? `<p>
+                                You current xTRAX APY is <b>${estimateTrax?.estimatedTraxPerDay.toLocaleString()}</b> xTRAX
                                             </p>
-                                            `}
+                                            `
+                                        : `<p>
+                                        Stake earn to get xTRAX.</p>`
+                                }
                             >
                                 <div className={"xTranxBoosted"}>
                                     <img src={fire} alt="fire" />
