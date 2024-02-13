@@ -206,6 +206,23 @@
     }
 }
 
+.animated-border--dark {
+    --border-angle: 0turn;
+    --main-bg: conic-gradient(from var(--border-angle), #012243, #012243 5%, #012243 60%, #012243 95%);
+    border: solid 3px transparent;
+    border-radius: 25px;
+    --gradient-border: conic-gradient(
+        from var(--border-angle),
+        transparent 25%,
+        var(--color_primary),
+        var(--color_primary) 99%,
+        transparent
+    );
+    background: var(--main-bg) padding-box, var(--gradient-border) border-box, var(--main-bg) border-box;
+    background-position: center center;
+    animation: bg-spin 3s linear infinite;
+}
+
 .animated-border {
     --border-angle: 0turn;
     --main-bg: conic-gradient(from var(--border-angle), #f5f6fa, #f5f6fa 5%, #f5f6fa 60%, #f5f6fa 95%);
