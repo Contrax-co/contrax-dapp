@@ -15,7 +15,7 @@ export interface StateInterface {
     traxCalculatedTimestamp?: number;
     earnTraxTermsAgreed?: boolean;
     boosts?: Boosts[];
-    vaultTvls: UserVVL[];
+    estimatedTraxPerDay: { vaultAddress: string; estimatedTraxPerDay: number }[];
 }
 
 export interface AccountResponse {
@@ -34,6 +34,7 @@ export interface AccountResponse {
     referralCode?: string;
     boosts: Boosts[];
     vaultTvls: UserVVL[];
+    estimatedTraxPerDay: { vaultAddress: string; estimatedTraxPerDay: number }[];
     referrer?: {
         _id: string;
         address: string;
