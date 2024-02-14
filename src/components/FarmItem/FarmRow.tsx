@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "src/state";
 import fire from "src/assets/images/fire.png";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmTransactionType } from "src/types/enums";
+import useTrax from "src/hooks/useTrax";
 
 interface Props {
     farm: Farm;
@@ -33,13 +34,11 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const key = uuid();
     const key2 = uuid();
     const key3 = uuid();
+    const key4 = uuid();
     const dispatch = useAppDispatch();
-    const { estimatedTraxPerDay } = useAppSelector((state) => state.account);
+    const { getTraxApy } = useTrax();
 
-    const estimateTrax = useMemo(
-        () => estimatedTraxPerDay.find((ele) => ele.vaultAddress === farm.vault_addr),
-        [estimatedTraxPerDay, farm]
-    );
+    const estimateTrax = useMemo(() => getTraxApy(farm.vault_addr), [getTraxApy, farm]);
 
     const handleClick = (e: any) => {
         if (e.target.tagName === "svg" || e.target.tagName === "path") {
@@ -135,9 +134,10 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                         <a
                             id={key3}
                             data-tooltip-html={
-                                estimateTrax?.estimatedTraxPerDay
+                                estimateTrax !== "0"
                                     ? `<p>
-                            You current xTRAX APY is <b>${estimateTrax?.estimatedTraxPerDay.toLocaleString()}</b> xTRAX
+                                    <b>${estimateTrax}</b>  xTRAX APY<br/>
+                            <a href="https://github.com" target="_blank">Click to learn more </a>
                                         </p>
                                         `
                                     : `<p>
@@ -151,6 +151,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                         </a>
                         <Tooltip
                             anchorId={key3}
+                            clickable
                             place="bottom"
                             className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
                         />
@@ -233,15 +234,16 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                 />
                             </p>
                             <a
-                                id={key3}
+                                id={key4}
                                 data-tooltip-html={
-                                    estimateTrax?.estimatedTraxPerDay
+                                    estimateTrax !== "0"
                                         ? `<p>
-                                You current xTRAX APY is <b>${estimateTrax?.estimatedTraxPerDay.toLocaleString()}</b> xTRAX
-                                            </p>
-                                            `
+                                    <b>${estimateTrax}</b>  xTRAX APY<br/>
+                            <a href="https://github.com" target="_blank">Click to learn more </a>
+                                        </p>
+                                        `
                                         : `<p>
-                                        Stake earn to get xTRAX.</p>`
+                                    Stake earn to get xTRAX.</p>`
                                 }
                             >
                                 <div className={"xTranxBoosted"}>
@@ -250,8 +252,9 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                 </div>
                             </a>
                             <Tooltip
-                                anchorId={key3}
+                                anchorId={key4}
                                 place="bottom"
+                                clickable
                                 className={`${lightMode ? "apy_tooltip--light" : "apy_tooltip"}`}
                             />
                         </>

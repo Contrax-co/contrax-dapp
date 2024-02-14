@@ -30,6 +30,7 @@ import { EarnTrax } from "src/components/modals/EarnTrax/EarnTrax";
 import tickIcon from "src/assets/images/tick-blue.svg";
 import { useAppSelector } from "src/state";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
+import { TraxApy } from "./TraxApy/TraxApy";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -133,6 +134,7 @@ function Dashboard() {
                     <>
                         <TraxEarning />
                         <TraxReferralEarning />
+                        <TraxApy />
                     </>
                 )}
                 <ReferralEarning />
