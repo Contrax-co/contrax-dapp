@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "src/state";
 import fire from "src/assets/images/fire.png";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmTransactionType } from "src/types/enums";
+import useTrax from "src/hooks/useTrax";
 
 interface Props {
     farm: Farm;
@@ -35,18 +36,9 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const key3 = uuid();
     const key4 = uuid();
     const dispatch = useAppDispatch();
-    const { estimatedTraxPerDay } = useAppSelector((state) => state.account);
+    const { getTraxApy } = useTrax();
 
-    const estimateTrax = useMemo(
-        () =>
-            Number(
-                (
-                    (estimatedTraxPerDay.find((ele) => ele.vaultAddress === farm.vault_addr)?.estimatedTraxPerDay ||
-                        0) * 356.25
-                ).toFixed()
-            ).toLocaleString(),
-        [estimatedTraxPerDay, farm]
-    );
+    const estimateTrax = useMemo(() => getTraxApy(farm.vault_addr), [getTraxApy, farm]);
 
     const handleClick = (e: any) => {
         if (e.target.tagName === "svg" || e.target.tagName === "path") {
