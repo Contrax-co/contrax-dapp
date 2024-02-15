@@ -51,7 +51,7 @@ const NativeUSDC: React.FC<IProps> = ({ handleClose, handleInitateSwap, formatte
                         onClick={handleSubmit}
                         disabled={swapAmount > formattedBalance}
                     >
-                        Submit
+                        Swap
                     </button>
                 </div>
             </div>
