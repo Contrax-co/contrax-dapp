@@ -226,8 +226,8 @@
 }
 
 .xTranxBoosted {
-    min-width: 160px;
-    height: 30px;
+    min-width: 130px;
+    height: 20px;
     border-radius: 11px;
     background: var(--color_primary);
     display: flex;

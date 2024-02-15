@@ -30,7 +30,7 @@ const SwapUSDCBtn: React.FC<IProps> = ({ showDisclaimer }) => {
                 className={`custom-button ${styles.bridgeButton}`}
                 type="submit"
                 disabled={loading}
-                onClick={initateSwap}
+                onClick={() => initateSwap()}
             >
                 {loading ? "Swapping..." : "Swap to USDC"}
             </button>
@@ -38,7 +38,13 @@ const SwapUSDCBtn: React.FC<IProps> = ({ showDisclaimer }) => {
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
                 This will swap your entire Native USDC balance over to USDC.
             </p>
-            {nativeModal && <NativeUSDC handleClose={() => setNativeModal(false)} />}
+            {nativeModal && (
+                <NativeUSDC
+                    handleClose={() => setNativeModal(false)}
+                    formattedBalance={formattedBalance}
+                    handleInitateSwap={initateSwap}
+                />
+            )}
         </div>
     ) : null;
 };
