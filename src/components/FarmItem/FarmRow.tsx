@@ -136,15 +136,19 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                             data-tooltip-html={
                                 estimateTrax !== "0"
                                     ? `<p>
-                                    <b>${estimateTrax}</b>  xTRAX APY<br/>
+                                    xTRAX pre-farm rate: <b>${estimateTrax}</b><br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a>
                                         </p>
                                         `
                                     : `<p>
-                                    Stake earn to get xTRAX.</p>`
+                                    Stake to earn xTRAX. <br/>
+                            <a href="https://github.com" target="_blank">Click to learn more </a></p>`
                             }
                         >
-                            <div className={"xTranxBoosted"}>
+                            <div
+                                className={"xTranxBoosted"}
+                                onClick={() => window.open("https://github.com", "_blank")}
+                            >
                                 <img src={fire} alt="fire" />
                                 <p className={"paraxTrax"}>xTRAX Boosted!</p>
                             </div>
@@ -238,15 +242,19 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                 data-tooltip-html={
                                     estimateTrax !== "0"
                                         ? `<p>
-                                    <b>${estimateTrax}</b>  xTRAX APY<br/>
+                                        xTRAX pre-farm rate: <b>${estimateTrax}</b><br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a>
                                         </p>
                                         `
                                         : `<p>
-                                    Stake earn to get xTRAX.</p>`
+                                        Stake to earn xTRAX. <br/>
+                                <a href="https://github.com" target="_blank">Click to learn more </a></p>`
                                 }
                             >
-                                <div className={"xTranxBoosted"}>
+                                <div
+                                    className={"xTranxBoosted"}
+                                    onClick={() => window.open("https://github.com", "_blank")}
+                                >
                                     <img src={fire} alt="fire" />
                                     <p className={"paraxTrax"}>xTRAX Boosted!</p>
                                 </div>

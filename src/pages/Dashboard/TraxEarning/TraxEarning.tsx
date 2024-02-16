@@ -15,7 +15,7 @@ export const TraxEarning: React.FC<Props> = () => {
 
     return (
         <div className={`outlinedContainer ${styles.container}`}>
-            <p className={styles.heading}>TRAX from Staking</p>
+            <p className={styles.heading}>xTRAX from Staking</p>
             {boosts && boosts.includes(Boosts.xSNOB) && <p className={styles.boosted}>Boosted (xSNOB Staker)</p>}
             <p className={styles.value}>
                 {/* <FaUserFriends size={120} /> */}

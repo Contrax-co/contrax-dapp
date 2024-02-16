@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useBalance } from "wagmi";
 import { useEthersSigner } from "src/config/walletConfig";
 import useWallet from "../useWallet";
-import { constants, ethers } from "ethers";
+import { BigNumber, constants, ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { checkBridgeStatus, polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
@@ -44,9 +44,17 @@ const useBridge = (direction: BridgeDirection) => {
     const dispatch = useAppDispatch();
     const [polygonSigner, setPolygonSigner] = React.useState(polygonSignerWagmi);
 
-    const startBridging = async () => {
+    const startBridging = async (polygonUSDCAmount?: BigNumber) => {
         if (!polygonSigner) return;
-        dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner, refechBalance: reloadBalances, direction }));
+        dispatch(
+            polyUsdcToArbUsdc({
+                currentWallet,
+                polygonSigner,
+                refechBalance: reloadBalances,
+                direction,
+                polygonUSDCAmount,
+            })
+        );
     };
 
     const isBridgePending = () => {
