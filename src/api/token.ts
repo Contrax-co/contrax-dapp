@@ -2,9 +2,21 @@ import axios from "axios";
 import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { awaitTransaction, getNetworkName } from "src/utils/common";
 import { Contract, providers, BigNumber, Signer, constants } from "ethers";
-import { erc20ABI } from "wagmi";
+import { Address, erc20ABI } from "wagmi";
 import { utils } from "ethers/lib/ethers";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
+import { backendApi } from ".";
+
+export const getTokenPricesBackend = async () => {
+    try {
+        const { data } = await backendApi.get("settings/token-prices");
+        console.log("data =>", data.data[42161]);
+        return data.data[42161] as { [key: Address]: number };
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
+};
 
 export const getPrice = async (tokenAddress: string, chainId: number) => {
     try {
