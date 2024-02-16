@@ -136,12 +136,12 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                             data-tooltip-html={
                                 estimateTrax !== "0"
                                     ? `<p>
-                                    <b>${estimateTrax}</b>  xTRAX APY<br/>
+                                    xTRAX pre-farm rate: <b>${estimateTrax}</b><br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a>
                                         </p>
                                         `
                                     : `<p>
-                                    Stake earn to get xTRAX. <br/>
+                                    Stake to earn xTRAX. <br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a></p>`
                             }
                         >
@@ -242,12 +242,12 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                 data-tooltip-html={
                                     estimateTrax !== "0"
                                         ? `<p>
-                                    <b>${estimateTrax}</b>  xTRAX APY<br/>
+                                        xTRAX pre-farm rate: <b>${estimateTrax}</b><br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a>
                                         </p>
                                         `
                                         : `<p>
-                                        Stake earn to get xTRAX. <br/>
+                                        Stake to earn xTRAX. <br/>
                                 <a href="https://github.com" target="_blank">Click to learn more </a></p>`
                                 }
                             >
