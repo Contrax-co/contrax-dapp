@@ -34,7 +34,7 @@ const BridgeBtn: React.FC<IProps> = ({ showDisclaimer }) => {
                         ? () => {
                               switchNetworkAsync && switchNetworkAsync(CHAIN_ID.POLYGON);
                           }
-                        : startBridging
+                        : () => startBridging()
                 }
             >
                 {isLoading ? "Transferring..." : wrongNetwork ? "Transfer to Contrax" : "Transfer to Contrax"}

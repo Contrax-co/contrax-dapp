@@ -1,7 +1,6 @@
 import React from "react";
 import { ModalLayout } from "../ModalLayout/ModalLayout";
 import styles from "./NativeUSDC.module.scss";
-import useSwapUsdcNative from "src/hooks/useSwapUsdcNative";
 import { toWei } from "src/utils/common";
 
 interface IProps {
