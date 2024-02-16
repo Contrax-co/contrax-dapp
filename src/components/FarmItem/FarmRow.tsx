@@ -141,10 +141,14 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                         </p>
                                         `
                                     : `<p>
-                                    Stake earn to get xTRAX.</p>`
+                                    Stake earn to get xTRAX. <br/>
+                            <a href="https://github.com" target="_blank">Click to learn more </a></p>`
                             }
                         >
-                            <div className={"xTranxBoosted"}>
+                            <div
+                                className={"xTranxBoosted"}
+                                onClick={() => window.open("https://github.com", "_blank")}
+                            >
                                 <img src={fire} alt="fire" />
                                 <p className={"paraxTrax"}>xTRAX Boosted!</p>
                             </div>
@@ -243,10 +247,14 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                         </p>
                                         `
                                         : `<p>
-                                    Stake earn to get xTRAX.</p>`
+                                        Stake earn to get xTRAX. <br/>
+                                <a href="https://github.com" target="_blank">Click to learn more </a></p>`
                                 }
                             >
-                                <div className={"xTranxBoosted"}>
+                                <div
+                                    className={"xTranxBoosted"}
+                                    onClick={() => window.open("https://github.com", "_blank")}
+                                >
                                     <img src={fire} alt="fire" />
                                     <p className={"paraxTrax"}>xTRAX Boosted!</p>
                                 </div>
