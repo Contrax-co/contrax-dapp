@@ -6,7 +6,7 @@
     border: 1px solid var(--color_primary);
     border-radius: 8px;
     min-width: 340px;
-    max-width: 400px;
+    width: 100%;
     width: -webkit-fill-available;
     box-sizing: border-box;
     font-size: 14px;
@@ -29,7 +29,6 @@
     border: 1px solid var(--color_primary);
     white-space: pre;
 }
-
 
 .status.in-progress {
     background-color: var(--color_primary);
