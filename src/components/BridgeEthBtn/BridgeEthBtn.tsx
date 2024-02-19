@@ -22,9 +22,9 @@ const BridgeEthBtn: React.FC<IProps> = ({ showDisclaimer }) => {
 
     return usdAmount > 0.1 ? (
         <div className={`outlinedContainer ${styles.container}`}>
-            <div className={styles.editIconContainer}>
+            {/* <div className={styles.editIconContainer}>
                 <EditSvg className={styles.editIcon} onClick={() => setPolygonModal(true)} />
-            </div>
+            </div> */}
             <div className={styles.labeledButton}>
                 <div>
                     <h3 className={styles.usdcAmount}>
@@ -32,20 +32,25 @@ const BridgeEthBtn: React.FC<IProps> = ({ showDisclaimer }) => {
                     </h3>
                 </div>
             </div>
-            <button
-                className={`custom-button ${styles.bridgeButton}`}
-                type="submit"
-                disabled={isLoading}
-                onClick={
-                    wrongNetwork
-                        ? () => {
-                              switchNetworkAsync && switchNetworkAsync(CHAIN_ID.POLYGON);
-                          }
-                        : () => startBridging()
-                }
-            >
-                {isLoading ? "Transferring..." : wrongNetwork ? "Transfer to Contrax" : "Transfer to Contrax"}
-            </button>
+            <div className={styles.btnContainer}>
+                <button
+                    className={`custom-button ${styles.bridgeButton}`}
+                    type="submit"
+                    disabled={isLoading}
+                    onClick={
+                        wrongNetwork
+                            ? () => {
+                                  switchNetworkAsync && switchNetworkAsync(CHAIN_ID.POLYGON);
+                              }
+                            : () => startBridging()
+                    }
+                >
+                    {isLoading ? "Transferring..." : wrongNetwork ? "Transfer All" : "Transfer All"}
+                </button>
+                <button className={`custom-button ${styles.bridgeButton}`} onClick={() => setPolygonModal(true)}>
+                    Custom Amount
+                </button>
+            </div>
             <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
                 This will bridge (transfer) your entire Polygon ETH balance over to Arbitrum One network.
