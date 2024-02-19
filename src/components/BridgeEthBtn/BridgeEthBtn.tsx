@@ -6,7 +6,6 @@ import { CHAIN_ID } from "src/types/enums";
 import { TiWarningOutline } from "react-icons/ti";
 import { BridgeDirection } from "src/state/ramp/types";
 import { customCommify } from "src/utils/common";
-import { ReactComponent as EditSvg } from "src/assets/images/edit.svg";
 import PolygonEthBridge from "../modals/PolygonEthBridge/PolygonEthBridge";
 
 interface IProps {
