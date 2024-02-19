@@ -1,6 +1,6 @@
 import React from "react";
 import { ModalLayout } from "../ModalLayout/ModalLayout";
-import styles from "./PolygonEthBridge.module.scss";
+import styles from "./PolygonUSDCBridge.module.scss";
 import { toWei } from "src/utils/common";
 import { CHAIN_ID } from "src/types/enums";
 import useWallet from "src/hooks/useWallet";
@@ -12,7 +12,7 @@ interface IProps {
     wrongNetwork: boolean;
 }
 
-const PolygonEthBridge: React.FC<IProps> = ({ handleClose, wrongNetwork, startBridging, formattedBalance }) => {
+const PolygonUSDCBridge: React.FC<IProps> = ({ handleClose, wrongNetwork, startBridging, formattedBalance }) => {
     const { switchNetworkAsync } = useWallet();
     const [polygonToUSDCAmount, setPolygonToUSDCAmount] = React.useState(0);
 
@@ -23,7 +23,7 @@ const PolygonEthBridge: React.FC<IProps> = ({ handleClose, wrongNetwork, startBr
     return (
         <ModalLayout onClose={handleClose} className={styles.borderClass}>
             <div className={styles.container}>
-                <h1 className={styles.nativeHeading}>Polygon Transfer Eth to USDC.e</h1>
+                <h1 className={styles.nativeHeading}>Polygon USDC Transfer USDC to USDC.e</h1>
                 <div></div>
                 <div className={styles.inputContainer}>
                     <div className={styles.inputWrapper}>
@@ -40,7 +40,7 @@ const PolygonEthBridge: React.FC<IProps> = ({ handleClose, wrongNetwork, startBr
                         Max
                     </button>
                 </div>
-                <p className={styles.para2}>Polygon eth transfer to USDC.</p>
+                <p className={styles.para2}>Polygon Usdc transfer to USDC.</p>
                 <div className={styles.btnContainer}>
                     <button
                         className={`custom-button ${styles.submitButton}`}
@@ -50,7 +50,7 @@ const PolygonEthBridge: React.FC<IProps> = ({ handleClose, wrongNetwork, startBr
                                       switchNetworkAsync && switchNetworkAsync(CHAIN_ID.POLYGON);
                                   }
                                 : () => {
-                                      startBridging(toWei(polygonToUSDCAmount, 18));
+                                      startBridging(toWei(polygonToUSDCAmount, 6));
                                       handleClose();
                                   }
                         }
@@ -64,4 +64,4 @@ const PolygonEthBridge: React.FC<IProps> = ({ handleClose, wrongNetwork, startBr
     );
 };
 
-export default PolygonEthBridge;
+export default PolygonUSDCBridge;
