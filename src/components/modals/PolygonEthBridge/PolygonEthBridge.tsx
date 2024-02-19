@@ -50,7 +50,7 @@ const PolygonEthBridge: React.FC<IProps> = ({ handleClose, wrongNetwork, startBr
                                       switchNetworkAsync && switchNetworkAsync(CHAIN_ID.POLYGON);
                                   }
                                 : () => {
-                                      startBridging(toWei(polygonToUSDCAmount, 6));
+                                      startBridging(toWei(polygonToUSDCAmount, 18));
                                       handleClose();
                                   }
                         }
