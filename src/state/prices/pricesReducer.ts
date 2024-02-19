@@ -4,7 +4,7 @@ import { coinsLamaPriceByChainId } from "src/config/constants/urls";
 import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface, UpdatePricesActionPayload } from "./types";
 import { Contract, utils, constants, BigNumber } from "ethers";
 import { getNetworkName, toEth } from "src/utils/common";
-import { getPriceByTime, getPricesByTime } from "src/api/token";
+import { getPriceByTime, getPricesByTime, getTokenPricesBackend } from "src/api/token";
 import { defaultChainId } from "src/config/constants";
 import { addressesByChainId } from "src/config/constants/contracts";
 import tokens from "src/config/constants/tokens";
@@ -42,6 +42,9 @@ export const updatePrices = createAsyncThunk(
     async ({ chainId, farms, multicallProvider }: UpdatePricesActionPayload, thunkApi) => {
         try {
             if (chainId !== defaultChainId) return;
+            return await getTokenPricesBackend();
+            // #region Get Prices manually
+
             //----------------- Get Addresses -----------------
             let prices: { [key: string]: number } = {};
             const set = farms.reduce((acc, farm) => {
@@ -193,8 +196,6 @@ export const updatePrices = createAsyncThunk(
             //------------------->> 3.5. Set Hop token prices
             // #region Hop Prices Calculation
             const hopFarms = farms.filter((item) => item.platform === "Hop");
-            console.log("hopFarms =>", hopFarms);
-            console.log("prices =>", prices);
             const hopSwapContractsAddresses = await Promise.all(
                 hopFarms.map((item) => new Contract(item.lp_address, item.lp_abi, multicallProvider).swap())
             );
@@ -277,10 +278,11 @@ export const updatePrices = createAsyncThunk(
                 const token1Balance =
                     Number(toEth(hopLpInfo[i].token1Balance, hopLpInfo[i].token1Decimal)) * hopLpInfo[i].token1Price;
                 const totalSupply = toEth(hopLpInfo[i].totalSupply);
-                const lpPrice = (token0Balance + token1Balance) / Number(totalSupply);
+                let lpPrice = (token0Balance + token1Balance) / Number(totalSupply);
                 hopLpInfo[i]["lpPrice"] = lpPrice;
                 // prices[hopFarms[i].lp_address.toLowerCase()] =
                 //     (prices[hopFarms[i].lp_address.toLowerCase()] + lpPrice) / 2;
+
                 prices[hopFarms[i].lp_address.toLowerCase()] = lpPrice;
             }
 
@@ -291,6 +293,30 @@ export const updatePrices = createAsyncThunk(
             // prices[addressesByChainId[chainId].usdcAddress] = 1;
             // checksummed[addressesByChainId[chainId].nativeUsdAddress!] = 1;
 
+            //------------------->> 4. Adjust Lp prices
+            farms.forEach((farm) => {
+                switch (farm.name) {
+                    case "ETH":
+                        prices[farm.lp_address.toLowerCase()] *= 0.99;
+                        break;
+                    case "USDC":
+                        prices[farm.lp_address.toLowerCase()] *= 1.12;
+                        break;
+                    case "DAI":
+                        prices[farm.lp_address.toLowerCase()] *= 1.01;
+                        break;
+                    case "WETH-DPX":
+                        prices[farm.lp_address.toLowerCase()] *= 1.15;
+                        break;
+                    case "WETH-SUSHI":
+                        prices[farm.lp_address.toLowerCase()] *= 1.01;
+                        break;
+                    case "WETH-MAGIC":
+                        prices[farm.lp_address.toLowerCase()] *= 1.08;
+                        break;
+                }
+            });
+
             //------------------->> 5. Set prices for tokens in state
 
             // create address checksum
@@ -298,8 +324,9 @@ export const updatePrices = createAsyncThunk(
             Object.entries(prices).forEach(([key, value]) => {
                 checksummed[utils.getAddress(key)] = value;
             });
-
+            console.log("checksummed =>", checksummed);
             return checksummed;
+            // #endregion Get Prices manually
         } catch (error) {
             console.log("Price unable to fetch", chainId, defaultChainId);
             console.error(error);

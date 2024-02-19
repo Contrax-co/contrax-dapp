@@ -6,7 +6,9 @@ import {
     getReferalEarning as getReferalEarningApi,
 } from "src/api/account";
 
-const initialState: StateInterface = {};
+const initialState: StateInterface = {
+    estimatedTraxPerDay: [],
+};
 
 const getAccountData = createAsyncThunk("account/getAccountData", async (address: string, thunkApi) => {
     console.log("in action");
@@ -19,7 +21,7 @@ const getAccountData = createAsyncThunk("account/getAccountData", async (address
         thunkApi.dispatch(reset());
         return;
     }
-
+    thunkApi.dispatch(setEstimatedTraxPerDay(data.estimatedTraxPerDay));
     thunkApi.dispatch(setReferrerCode(""));
     if (data.referralCode) {
         thunkApi.dispatch(setReferralCode(data.referralCode));
@@ -53,6 +55,7 @@ export const addAccount = createAsyncThunk(
                 }
             } else {
                 // remove code of person whose link used to come on site
+                thunkApi.dispatch(setEstimatedTraxPerDay(data.estimatedTraxPerDay));
                 thunkApi.dispatch(setReferrerCode(""));
                 if (data.referrer) {
                     thunkApi.dispatch(setRefAddress(data.referrer.address));
@@ -131,6 +134,12 @@ const accountSlice = createSlice({
         setEarnTraxTermsAgreed: (state: StateInterface, action: { payload: boolean }) => {
             state.earnTraxTermsAgreed = action.payload;
         },
+        setEstimatedTraxPerDay: (
+            state: StateInterface,
+            action: { payload: { vaultAddress: string; estimatedTraxPerDay: number }[] }
+        ) => {
+            state.estimatedTraxPerDay = action.payload;
+        },
     },
     extraReducers(builder) {
         builder.addCase(getReferralEarning.fulfilled, (state, action) => {
@@ -152,6 +161,7 @@ export const {
     setReferralEarning,
     setEarnTraxTermsAgreed,
     setBoosts,
+    setEstimatedTraxPerDay,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;

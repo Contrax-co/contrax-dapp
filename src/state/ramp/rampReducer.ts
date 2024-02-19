@@ -68,8 +68,12 @@ export const checkBridgeStatus = createAsyncThunk(
 
 export const polyUsdcToArbUsdc = createAsyncThunk(
     "ramp/polyUsdcToArbUsdc",
-    async ({ polygonSigner, currentWallet, refechBalance, direction }: PolyUsdcToArbUsdcArgs, thunkApi) => {
+    async (
+        { polygonSigner, currentWallet, refechBalance, direction, polygonUSDCAmount }: PolyUsdcToArbUsdcArgs,
+        thunkApi
+    ) => {
         if (!polygonSigner) return;
+        console.log("polygonUSDCAmount =>", polygonUSDCAmount);
         await sleep(1000);
         let notiId = notifyLoading({
             title: `Bridging Poly ${BridgeChainInfo[direction].sourceName} to Arb ${BridgeChainInfo[direction].dstName}`,
@@ -93,7 +97,7 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
                 BridgeChainInfo[direction].dstAddress === constants.AddressZero
                     ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
                     : BridgeChainInfo[direction].dstAddress,
-                polyUsdcBalance.toString(),
+                polygonUSDCAmount ? polygonUSDCAmount.toString() : polyUsdcBalance.toString(),
                 currentWallet
             );
             console.log("got route", route);
