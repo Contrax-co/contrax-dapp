@@ -63,10 +63,12 @@ export const Snapshot = () => {
             <div className="proposal-list">
                 {loadingSpaceProposals ? (
                     <>
-                        <Skeleton w={340} h={300} inverted />
-                        <Skeleton w={340} h={300} inverted />
-                        <Skeleton w={340} h={300} inverted />
-                        <Skeleton w={340} h={300} inverted />
+                        <Skeleton w={"100%"} h={300} inverted />
+                        <Skeleton w={"100%"} h={300} inverted />
+                        <Skeleton w={"100%"} h={300} inverted />
+                        <Skeleton w={"100%"} h={300} inverted />
+                        <Skeleton w={"100%"} h={300} inverted />
+                        <Skeleton w={"100%"} h={300} inverted />
                     </>
                 ) : (
                     proposals?.map((item, i) => (
@@ -89,5 +91,3 @@ export const Snapshot = () => {
         </div>
     );
 };
-
-
