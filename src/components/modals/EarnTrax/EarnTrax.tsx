@@ -10,9 +10,10 @@ import { ImSpinner8 } from "react-icons/im";
 
 interface IProps {
     setOpenModal: Function;
+    setCongModal: Function;
 }
 
-export const EarnTrax: FC<IProps> = ({ setOpenModal }) => {
+export const EarnTrax: FC<IProps> = ({ setOpenModal, setCongModal }) => {
     const dispatch = useAppDispatch();
     const { currentWallet } = useWallet();
     const { signMessageAsync } = useSignMessage();
@@ -24,6 +25,7 @@ export const EarnTrax: FC<IProps> = ({ setOpenModal }) => {
         const message = await getMessage();
         const signature = await signMessageAsync({ message });
         const termsAccepted = await acceptTerms(currentWallet, signature);
+        setCongModal(true);
         dispatch(setEarnTraxTermsAgreed(termsAccepted));
         setIsLoading(false);
     };

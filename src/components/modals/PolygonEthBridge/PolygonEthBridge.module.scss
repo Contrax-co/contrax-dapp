@@ -1,0 +1,80 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/_mixins.scss";
+
+.borderClass {
+    border: 6px solid #63cce0;
+}
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 540px;
+    @include devices(tablet) {
+        width: 100%;
+    }
+    .inputContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding-top: 20px;
+    }
+    .para2 {
+        padding-top: 10px;
+        font-size: 18px;
+        font-family: "Segoe UI";
+        padding-top: 10px;
+        color: #8798ad;
+        text-align: center;
+        @include devices(mobile) {
+            font-size: 16px;
+        }
+    }
+    .btnContainer {
+        padding-top: 25px;
+    }
+    .submitButton {
+        padding: 14px 5px;
+        min-width: 160px;
+        border-radius: 33px;
+        background: #63cce0;
+        color: white;
+        font-size: 1.4rem;
+    }
+    .nativeHeading {
+        font-size: 2rem;
+        font-weight: 700;
+        font-family: "Segoe UI";
+        text-align: center;
+        @include devices(mobile) {
+            font-size: 2rem;
+        }
+    }
+    .inputWrapper {
+        background-color: var(--background_primary);
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        padding: 5px 10px;
+        width: 100%;
+        & input {
+            background-color: transparent;
+            border: none;
+            color: var(--color_text);
+            padding: 5px;
+            outline: none;
+            height: 35px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+    }
+    .maxBtn {
+        min-width: 100px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        @include devices(tablet) {
+            padding: 18px 5px !important;
+        }
+    }
+}

@@ -40,6 +40,13 @@
 .bridgeButton {
     padding: 0 !important;
     min-height: 40px;
-    min-width: 178px;
+    min-width: 150px;
     cursor: pointer;
+}
+.USDCBtnContainer {
+    display: flex;
+    gap: 10px;
+    @include devices(mobile) {
+        flex-direction: column;
+    }
 }

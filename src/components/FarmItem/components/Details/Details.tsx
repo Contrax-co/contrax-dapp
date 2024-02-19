@@ -20,7 +20,7 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
     const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();
     const farmData = farmDetails[farm.id];
 
-    const { formattedSupplies, totalSupplies } = useTotalSupplies();
+    const { formattedSupplies } = useTotalSupplies();
 
     const {
         prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
@@ -118,9 +118,7 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
                                     <img className={`unstaked_images2`} alt={farm.alt2} src={farm.logo2} />
                                 ) : null}
 
-                                <p className={`detailed_unstaked_pairs`}>
-                                    {stakedTokenValue?.toFixed(3)} {farm.name}
-                                </p>
+                                <p className={`detailed_unstaked_pairs`}>{stakedTokenValue?.toFixed(3)} LP</p>
                             </div>
                             <p className={`detailed_unstaked_pairs`}>
                                 {stakedTokenValue &&

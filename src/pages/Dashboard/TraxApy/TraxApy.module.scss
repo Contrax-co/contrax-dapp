@@ -1,0 +1,38 @@
+.container {
+    width: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--color_primary);
+    position: relative;
+    overflow: hidden;
+
+    p {
+        margin: 0px;
+    }
+}
+
+.heading {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.value {
+    font-size: 40px;
+    font-weight: bold;
+
+    svg {
+        width: 80px;
+        height: 80px;
+        position: absolute;
+        bottom: -8px;
+        right: 8px;
+    }
+}
+
+.boosted {
+    color: #62e817;
+    font-weight: 800;
+}

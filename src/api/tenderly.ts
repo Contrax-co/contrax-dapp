@@ -13,7 +13,7 @@ import {
     SimulationResponse,
     TenderlySimulateTransactionBody,
 } from "src/types/tenderly";
-import { BigNumber, utils } from "ethers";
+import { zeroAddress } from "viem";
 
 // #region Utility functions
 const mapStateOverridesToEncodeStateRequest = (overrides: SimulationParametersOverrides): EncodeStateRequest => {
@@ -41,9 +41,9 @@ export const getAllowanceStateOverride = (data: { tokenAddress: string; owner: s
     data.forEach((item) => {
         overrides[item.tokenAddress.toLowerCase()] = {
             state: {
-                [`_allowances[[${item.owner.toLowerCase()}][${item.spender.toLowerCase()}]]`]:
+                [`_allowances[${item.owner.toLowerCase()}][${item.spender.toLowerCase()}]`]:
                     "115792089237316195423570985008687907853269984665640564039457584007913129639935",
-                [`allowances[[${item.owner.toLowerCase()}][${item.spender.toLowerCase()}]]`]:
+                [`allowances[${item.owner.toLowerCase()}][${item.spender.toLowerCase()}]`]:
                     "115792089237316195423570985008687907853269984665640564039457584007913129639935",
             },
         };
@@ -88,9 +88,11 @@ export const filterStateDiff = (
 export const filterAssetChanges = (tokenAddress: string, walletAddress: string, assetChanges: AssetChanges[]) => {
     let added = BigInt(0);
     let subtracted = BigInt(0);
-
     assetChanges.forEach((item) => {
+        if (!item.token_info.contract_address) item.token_info.contract_address = zeroAddress;
         if (item.token_info.contract_address.toLowerCase() === tokenAddress.toLowerCase()) {
+            if (!item?.to) item.to = zeroAddress;
+            if (!item?.from) item.from = zeroAddress;
             if (item.from.toLowerCase() === walletAddress.toLowerCase()) {
                 subtracted += BigInt(item.raw_amount);
             }
@@ -123,6 +125,8 @@ export const simulateTransaction = async (
         network_id: `${Network.ARBITRUM_ONE}`,
     };
 
+    // State overiding api is not working hence, commented
+    // TODO: uncomment when fixed
     if (data.state_overrides) {
         const overrides = await encodeStateOverrides(data.state_overrides);
         const contractAddress = Object.keys(overrides);
@@ -144,12 +148,12 @@ export const simulateTransaction = async (
     const res = await tenderlyApi.post("simulate", body);
     let processedResponse = {
         status: res.data.simulation.status as boolean,
-        value: BigNumber.from(res.data.transaction.value + "0"),
+        value: BigInt(res.data.transaction.value + "0"),
         method: res.data.transaction.transaction_info?.method as string,
         gasUsed: res.data.transaction?.gas_used as number,
         logs: res.data.transaction.transaction_info?.logs?.map((item: any) => ({
             name: item.name,
-            inputs: item.inputs.map((input: any) => ({
+            inputs: item.inputs?.map((input: any) => ({
                 value: input.value,
                 name: input.soltype.name,
                 type: input.soltype.type,
@@ -169,4 +173,4 @@ export const simulateTransaction = async (
     return processedResponse;
 };
 
-export const simulateBalanceChange = async () => {};
+

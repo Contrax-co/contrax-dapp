@@ -1,0 +1,36 @@
+.progressbar-container {
+    position: relative;
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.progress {
+    position: absolute;
+    width: 0%;
+    height: 100%;
+    background-color: var(--border_color);
+    border-radius: inherit;
+    box-sizing: border-box;
+}
+
+.progress.selected {
+    background-color: var(--color_primary);
+}
+
+.content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 0px 24px;
+    border-radius: inherit;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.voteable {
+    cursor: pointer;
+}

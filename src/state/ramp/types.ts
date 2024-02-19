@@ -1,4 +1,4 @@
-import { Signer, constants, ethers } from "ethers";
+import { BigNumber, Signer, constants, ethers } from "ethers";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
 
@@ -35,6 +35,7 @@ export interface PolyUsdcToArbUsdcArgs {
     currentWallet: string;
     refechBalance: Function;
     direction: BridgeDirection;
+    polygonUSDCAmount?: BigNumber;
 }
 
 export const BridgeChainInfo = {

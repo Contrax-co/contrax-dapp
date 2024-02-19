@@ -14,7 +14,7 @@ import {
     useBalance,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { getConnectorId, getNetworkName, toEth } from "src/utils/common";
+import { getConnectorId, getNetworkName, resolveDomainFromAddress, toEth } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
@@ -74,6 +74,7 @@ interface IWalletContext {
     polygonBalance?: BalanceResult;
     mainnetBalance?: BalanceResult;
     arbitrumBalance?: BalanceResult;
+    domainName: null | string;
     mainnetMulticallProvider: providers.MulticallProvider;
     polygonMulticallProvider: providers.MulticallProvider;
 }
@@ -176,6 +177,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const polygonBalance = useNativeBalance(CHAIN_ID.POLYGON);
     const mainnetBalance = useNativeBalance(CHAIN_ID.MAINNET);
     const arbitrumBalance = useNativeBalance(CHAIN_ID.ARBITRUM);
+    const [domainName, setDomainName] = useState<null | string>(null);
 
     const connectWallet = async () => {
         if (openConnectModal) openConnectModal();
@@ -284,6 +286,16 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     }, [isConnecting]);
 
+    React.useEffect(() => {
+        if (currentWallet) {
+            resolveDomainFromAddress(currentWallet).then((res) => {
+                setDomainName(res);
+            });
+        } else {
+            setDomainName(null);
+        }
+    }, [currentWallet]);
+
     return (
         <WalletContext.Provider
             value={{
@@ -292,6 +304,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 connectWallet,
                 networkId,
                 logout,
+                domainName,
                 displayAccount,
                 signer,
                 provider,
@@ -315,3 +328,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 };
 
 export default WalletProvider;
+
+
+

@@ -1,3 +1,5 @@
+import { UserVVL } from "src/types";
+
 export interface StateInterface {
     /** Code of person whose link used to come on site  */
     referrerCode?: string;
@@ -12,6 +14,8 @@ export interface StateInterface {
     totalEarnedTraxByReferral?: number;
     traxCalculatedTimestamp?: number;
     earnTraxTermsAgreed?: boolean;
+    boosts?: Boosts[];
+    estimatedTraxPerDay: { vaultAddress: string; estimatedTraxPerDay: number }[];
 }
 
 export interface AccountResponse {
@@ -28,6 +32,9 @@ export interface AccountResponse {
     traxCalculatedTimestamp?: number;
     tvl: number;
     referralCode?: string;
+    boosts: Boosts[];
+    vaultTvls: UserVVL[];
+    estimatedTraxPerDay: { vaultAddress: string; estimatedTraxPerDay: number }[];
     referrer?: {
         _id: string;
         address: string;
@@ -35,4 +42,8 @@ export interface AccountResponse {
         referralCode: string;
         id: string;
     };
+}
+
+export enum Boosts {
+    xSNOB = "xSNOB",
 }

@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { StateInterface } from "./types";
+import { Boosts, StateInterface } from "./types";
 import {
     postAccountData as postAccountDataApi,
     getAccountData as getAccountDataApi,
     getReferalEarning as getReferalEarningApi,
 } from "src/api/account";
 
-const initialState: StateInterface = {};
+const initialState: StateInterface = {
+    estimatedTraxPerDay: [],
+};
 
 const getAccountData = createAsyncThunk("account/getAccountData", async (address: string, thunkApi) => {
     console.log("in action");
@@ -19,7 +21,7 @@ const getAccountData = createAsyncThunk("account/getAccountData", async (address
         thunkApi.dispatch(reset());
         return;
     }
-
+    thunkApi.dispatch(setEstimatedTraxPerDay(data.estimatedTraxPerDay));
     thunkApi.dispatch(setReferrerCode(""));
     if (data.referralCode) {
         thunkApi.dispatch(setReferralCode(data.referralCode));
@@ -53,6 +55,7 @@ export const addAccount = createAsyncThunk(
                 }
             } else {
                 // remove code of person whose link used to come on site
+                thunkApi.dispatch(setEstimatedTraxPerDay(data.estimatedTraxPerDay));
                 thunkApi.dispatch(setReferrerCode(""));
                 if (data.referrer) {
                     thunkApi.dispatch(setRefAddress(data.referrer.address));
@@ -78,6 +81,7 @@ export const addAccount = createAsyncThunk(
                 // if (data.traxCalculatedTimestamp) {
                 thunkApi.dispatch(setTraxCalculatedTimestamp(data.traxCalculatedTimestamp || 0));
                 // }
+                thunkApi.dispatch(setBoosts(data.boosts || []));
             }
         } catch (error) {
             console.log("Cannot create new account");
@@ -121,11 +125,20 @@ const accountSlice = createSlice({
         setTraxCalculatedTimestamp: (state: StateInterface, action: { payload: number }) => {
             state.traxCalculatedTimestamp = action.payload;
         },
+        setBoosts: (state: StateInterface, action: { payload: Boosts[] }) => {
+            state.boosts = action.payload;
+        },
         reset: (state: StateInterface) => {
             return { ...initialState, referrerCode: state.referrerCode };
         },
         setEarnTraxTermsAgreed: (state: StateInterface, action: { payload: boolean }) => {
             state.earnTraxTermsAgreed = action.payload;
+        },
+        setEstimatedTraxPerDay: (
+            state: StateInterface,
+            action: { payload: { vaultAddress: string; estimatedTraxPerDay: number }[] }
+        ) => {
+            state.estimatedTraxPerDay = action.payload;
         },
     },
     extraReducers(builder) {
@@ -147,6 +160,8 @@ export const {
     setTraxCalculatedTimestamp,
     setReferralEarning,
     setEarnTraxTermsAgreed,
+    setBoosts,
+    setEstimatedTraxPerDay,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;

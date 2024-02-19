@@ -1,0 +1,38 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/_mixins.scss";
+
+.borderClass {
+    border: 6px solid #63cce0;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 540px;
+    @include devices(tablet) {
+        width: 100%;
+    }
+    .para1 {
+        padding-top: 25px;
+        font-size: 1.5rem;
+        font-weight: 400;
+        text-align: center;
+    }
+    .para2 {
+        padding-top: 10px;
+        color: #8798ad;
+        text-align: center;
+    }
+    .btnContainer {
+        padding-top: 25px;
+    }
+    .okButton {
+        padding: 14px 5px;
+        min-width: 160px;
+        border-radius: 33px;
+        background: #63cce0;
+        color: white;
+        font-size: 1.4rem;
+    }
+}

@@ -35,7 +35,7 @@ const Wert: React.FC<IProps> = () => {
                 container_id: WertWidgetId,
                 width: 360,
                 height: 580,
-                commodities: "USDC:Polygon",
+                commodities: "USDC:Arbitrum",
                 lang: "en",
                 address: currentWallet,
                 listeners: {
@@ -69,19 +69,19 @@ const Wert: React.FC<IProps> = () => {
 
     return (
         <div style={{ width: 360 }}>
-            <p className={styles.disclaimer}>
+            {/* <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
                 USDC is auto-bridged to arbitrum on purchase*
-            </p>
+            </p> */}
             <div id={WertWidgetId}></div>
-            <BridgeBtn />
-            <p className={styles.lightText} style={{ textAlign: "justify", paddingBottom: 50 }}>
+            {/* <BridgeBtn /> */}
+            {/* <p className={styles.lightText} style={{ textAlign: "justify", paddingBottom: 50 }}>
                 Bridging puts your tokens on the right network for Contrax. If you logged in using a social account, you
                 just have to wait 5 to 15 minutes after Wert sends your USDC. For Web3 wallets like MetaMask, you then
                 also have to go to the dashboard and bridge it in one click with a few cents of MATIC on the Polygon
                 network. See full details on buying in the{" "}
                 <a href="https://docs.contrax.finance/contrax-dapp/buy">user guide</a>.
-            </p>
+            </p> */}
         </div>
     );
 };

@@ -87,8 +87,7 @@ export const useDetailInput = (farm: Farm) => {
         setMax(false);
     };
 
-    const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         // check for eth balance greater than gas fee
         // if (isBalanceTooLow()) return;
         // if enough balance than proceed transaction
@@ -135,7 +134,8 @@ export const useDetailInput = (farm: Farm) => {
                     _slippage = res.slippage;
                 }
             }
-            if (_slippage.toString()) setSlippage(_slippage);
+            if (_slippage.toString())
+                setSlippage(_slippage === 0 ? 0.01 : _slippage); // temporary hardcoding 0.01% slippage instead of zero
             else setSlippage(undefined);
         } catch (err) {
             console.log(`%cError Slippage: ${err}`, "color: magenta;");

@@ -28,7 +28,7 @@ phases:
   pre_build:
     commands:
       - echo Pre build commands started...
-      - yarn set version stable
+      - yarn set version 3.4.1
       - echo yarn install started.
       - yarn install
       - echo Finished installing packages.

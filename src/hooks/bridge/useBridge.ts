@@ -2,13 +2,12 @@ import React, { useMemo } from "react";
 import { useBalance } from "wagmi";
 import { useEthersSigner } from "src/config/walletConfig";
 import useWallet from "../useWallet";
-import { constants, ethers } from "ethers";
+import { BigNumber, constants, ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { checkBridgeStatus, polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
 import { web3AuthConnectorId } from "src/config/constants";
 import { customCommify, getConnectorId, getNetworkName, toEth } from "src/utils/common";
-import { addressesByChainId } from "src/config/constants/contracts";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import { useQuery } from "@tanstack/react-query";
 import { getPrice } from "src/api/token";
@@ -45,9 +44,17 @@ const useBridge = (direction: BridgeDirection) => {
     const dispatch = useAppDispatch();
     const [polygonSigner, setPolygonSigner] = React.useState(polygonSignerWagmi);
 
-    const startBridging = async () => {
+    const startBridging = async (polygonUSDCAmount?: BigNumber) => {
         if (!polygonSigner) return;
-        dispatch(polyUsdcToArbUsdc({ currentWallet, polygonSigner, refechBalance: reloadBalances, direction }));
+        dispatch(
+            polyUsdcToArbUsdc({
+                currentWallet,
+                polygonSigner,
+                refechBalance: reloadBalances,
+                direction,
+                polygonUSDCAmount,
+            })
+        );
     };
 
     const isBridgePending = () => {

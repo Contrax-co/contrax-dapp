@@ -7,6 +7,7 @@ import useBalances from "./useBalances";
 import { approveErc20 } from "src/api/token";
 import { dismissNotify, notifyError, notifyLoading, notifySuccess } from "src/api/notify";
 import { v4 as uuid } from "uuid";
+import { BigNumber } from "ethers";
 
 const usdcAddr = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 const nativeUsdAddr = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
@@ -16,7 +17,7 @@ const useSwapUsdcNative = () => {
     const { balances, reloadBalances } = useBalances();
     const [loading, setLoading] = useState(false);
 
-    const initateSwap = async () => {
+    const initateSwap = async (swapAmount?: BigNumber) => {
         const notiId = uuid();
         setLoading(true);
         try {
@@ -26,7 +27,7 @@ const useSwapUsdcNative = () => {
                 CHAIN_ID.ARBITRUM,
                 nativeUsdAddr,
                 usdcAddr,
-                balances[nativeUsdAddr]!,
+                swapAmount ? swapAmount.toString() : balances[nativeUsdAddr]!,
                 currentWallet
             );
             notifyLoading({ title: "Swapping", message: `Approving Native USDC - 1/3` }, { id: notiId });
