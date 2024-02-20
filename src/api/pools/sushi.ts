@@ -31,7 +31,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
         const ethPrice = prices[constants.AddressZero];
         const lpAddress = farm.lp_address;
-        const lpPrice = prices[lpAddress];
+        const vaultTokenPrice = prices[farm.vault_addr];
         const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
@@ -66,22 +66,22 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: ((Number(toEth(vaultBalance)) * lpPrice) / prices[usdcAddress]).toString(),
-                amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+                amount: ((Number(toEth(vaultBalance)) * vaultTokenPrice) / prices[usdcAddress]).toString(),
+                amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
                 price: prices[usdcAddress],
             },
             {
                 tokenAddress: constants.AddressZero,
                 tokenSymbol: "ETH",
-                amount: ((Number(toEth(vaultBalance)) * lpPrice) / ethPrice).toString(),
-                amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+                amount: ((Number(toEth(vaultBalance)) * vaultTokenPrice) / ethPrice).toString(),
+                amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
                 price: ethPrice,
             },
             {
                 tokenAddress: lpAddress,
                 tokenSymbol: farm.name,
                 amount: toEth(vaultBalance),
-                amountDollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
+                amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
                 price: prices[lpAddress],
                 isPrimaryVault: true,
             },
@@ -90,7 +90,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         const result = {
             depositableAmounts,
             withdrawableAmounts,
-            vaultBalanceFormated: (Number(toEth(vaultTotalSupply ?? 0)) * lpPrice).toString(),
+            vaultBalanceFormated: (Number(toEth(vaultTotalSupply ?? 0)) * vaultTokenPrice).toString(),
             id: farm.id,
         };
         return result;
