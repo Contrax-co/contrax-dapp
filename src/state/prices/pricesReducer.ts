@@ -294,28 +294,28 @@ export const updatePrices = createAsyncThunk(
             // checksummed[addressesByChainId[chainId].nativeUsdAddress!] = 1;
 
             //------------------->> 4. Adjust Lp prices
-            farms.forEach((farm) => {
-                switch (farm.name) {
-                    case "ETH":
-                        prices[farm.lp_address.toLowerCase()] *= 0.99;
-                        break;
-                    case "USDC":
-                        prices[farm.lp_address.toLowerCase()] *= 1.12;
-                        break;
-                    case "DAI":
-                        prices[farm.lp_address.toLowerCase()] *= 1.01;
-                        break;
-                    case "WETH-DPX":
-                        prices[farm.lp_address.toLowerCase()] *= 1.15;
-                        break;
-                    case "WETH-SUSHI":
-                        prices[farm.lp_address.toLowerCase()] *= 1.01;
-                        break;
-                    case "WETH-MAGIC":
-                        prices[farm.lp_address.toLowerCase()] *= 1.08;
-                        break;
-                }
-            });
+            // farms.forEach((farm) => {
+            //     switch (farm.name) {
+            //         case "ETH":
+            //             prices[farm.lp_address.toLowerCase()] *= 0.99;
+            //             break;
+            //         case "USDC":
+            //             prices[farm.lp_address.toLowerCase()] *= 1.12;
+            //             break;
+            //         case "DAI":
+            //             prices[farm.lp_address.toLowerCase()] *= 1.01;
+            //             break;
+            //         case "WETH-DPX":
+            //             prices[farm.lp_address.toLowerCase()] *= 1.15;
+            //             break;
+            //         case "WETH-SUSHI":
+            //             prices[farm.lp_address.toLowerCase()] *= 1.01;
+            //             break;
+            //         case "WETH-MAGIC":
+            //             prices[farm.lp_address.toLowerCase()] *= 1.08;
+            //             break;
+            //     }
+            // });
 
             //------------------->> 5. Set prices for tokens in state
 

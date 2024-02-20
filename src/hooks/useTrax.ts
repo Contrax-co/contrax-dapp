@@ -18,7 +18,10 @@ const useTrax = () => {
     );
 
     const totalTraxApy = useMemo(
-        () => Number((estimatedTraxPerDay.reduce((acc, curr) => acc + curr.estimatedTraxPerDay, 0) * 365.25).toFixed()),
+        () =>
+            Number(
+                (estimatedTraxPerDay?.reduce((acc, curr) => acc + curr.estimatedTraxPerDay, 0) || 0 * 365.25).toFixed()
+            ),
         [estimatedTraxPerDay]
     );
     return { getTraxApy, totalTraxApy, estimatedTraxPerDay };

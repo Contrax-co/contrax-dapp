@@ -46,7 +46,7 @@ const useZapOut = (farm: Farm) => {
             token,
         });
         const afterWithdrawAmount = Number(toEth(difference, decimals[token])) * prices[token];
-        const beforeWithdrawAmount = withdrawAmt * prices[farm.lp_address];
+        const beforeWithdrawAmount = withdrawAmt * prices[farm.vault_addr];
         let slippage = (1 - afterWithdrawAmount / beforeWithdrawAmount) * 100;
         if (slippage < 0) slippage = 0;
         return { afterWithdrawAmount, beforeWithdrawAmount, slippage };

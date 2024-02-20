@@ -244,10 +244,15 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     });
     console.log({ simulationResult });
     // const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
+    // const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
     const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
     const difference = BigNumber.from(filteredState.afterChange[args.currentWallet.toLowerCase()]).sub(
         BigNumber.from(filteredState.original[args.currentWallet.toLowerCase()])
     );
+    // const filteredState = filterStateDiff(farm.lp_address, "_balances", simulationResult.stateDiffs);
+    // const difference = BigNumber.from(filteredState.afterChange[farm.vault_addr.toLowerCase()]).sub(
+    //     BigNumber.from(filteredState.original[farm.vault_addr.toLowerCase()])
+    // );
     // const difference = BigNumber.from(assetChanges.added);
     return difference;
 };

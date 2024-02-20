@@ -11,7 +11,6 @@ const initialState: StateInterface = {
 };
 
 const getAccountData = createAsyncThunk("account/getAccountData", async (address: string, thunkApi) => {
-    console.log("in action");
     if (!address) {
         thunkApi.dispatch(reset());
         return;
@@ -21,6 +20,7 @@ const getAccountData = createAsyncThunk("account/getAccountData", async (address
         thunkApi.dispatch(reset());
         return;
     }
+    // @ts-ignore
     thunkApi.dispatch(setEstimatedTraxPerDay(data.estimatedTraxPerDay));
     thunkApi.dispatch(setReferrerCode(""));
     if (data.referralCode) {
@@ -55,6 +55,7 @@ export const addAccount = createAsyncThunk(
                 }
             } else {
                 // remove code of person whose link used to come on site
+                // @ts-ignore
                 thunkApi.dispatch(setEstimatedTraxPerDay(data.estimatedTraxPerDay));
                 thunkApi.dispatch(setReferrerCode(""));
                 if (data.referrer) {
@@ -136,9 +137,9 @@ const accountSlice = createSlice({
         },
         setEstimatedTraxPerDay: (
             state: StateInterface,
-            action: { payload: { vaultAddress: string; estimatedTraxPerDay: number }[] }
+            action: { payload?: { vaultAddress: string; estimatedTraxPerDay: number }[] }
         ) => {
-            state.estimatedTraxPerDay = action.payload;
+            state.estimatedTraxPerDay = action.payload || [];
         },
     },
     extraReducers(builder) {
