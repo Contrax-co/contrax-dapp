@@ -29,7 +29,7 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
         const ethPrice = prices[constants.AddressZero];
         const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
-        const vaultTokenPrice = prices[farm.lp_address];
+        const vaultTokenPrice = prices[farm.vault_addr];
         const zapCurriences = farm.zap_currencies;
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
