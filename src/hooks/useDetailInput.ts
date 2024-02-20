@@ -71,9 +71,9 @@ export const useDetailInput = (farm: Farm) => {
             }
         } else {
             if (showInUsd) {
-                return amt / prices[farm.lp_address];
+                return amt / prices[farm.vault_addr];
             } else {
-                return (amt * withdrawable?.price!) / prices[farm.lp_address];
+                return (amt * withdrawable?.price!) / prices[farm.vault_addr];
             }
         }
     };
