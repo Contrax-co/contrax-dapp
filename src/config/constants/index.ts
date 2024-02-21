@@ -9,9 +9,10 @@ export const RoutesPaths = {
     Deposit: "/deposit",
     Stats: "/stats",
     Dao: "/dao",
+    ReferralDashboard: "/referral-dashboard",
     Test: "/Test",
 };
-    
+
 export const SNAPSHOT_SPACE_ID = "contrax.eth";
 export const SNAPSHOT_APP_NAME = "Contrax Finance";
 export const SNAPSHOT_HUB_URL = "https://hub.snapshot.org";
@@ -51,5 +52,3 @@ export const ALCHEMY_KEY = process.env.REACT_APP_ALCHEMY;
 export const FRONT_URL = process.env.REACT_APP_FRONT_URL as string;
 export const FRONT_API_KEY = process.env.REACT_APP_FRONT_API_KEY as string;
 export const FRONT_CLIENT_ID = process.env.REACT_APP_FRONT_CLIENT_ID as string;
-
-
