@@ -15,14 +15,34 @@ interface ReferralDashboardTableProps {
 export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referrals }) => {
     const { BLOCK_EXPLORER_URL } = useConstants();
     const [sortBy, setSortBy] = useState<"tvl" | "referred" | null>(null);
-    console.log("referrals =>", referrals);
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
     const sortBasedOnTvl = (a: ReferralStats, b: ReferralStats) => {
         return a.tvlFromReferrals - b.tvlFromReferrals;
     };
 
     const sortBasedOnReferred = (a: ReferralStats, b: ReferralStats) => {
         return a.referreredAddresses.length - b.referreredAddresses.length;
+    };
+
+    // Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = referrals
+        ?.sort((a, b) => {
+            if (sortBy === "tvl") {
+                return sortBasedOnTvl(a, b);
+            } else if (sortBy === "referred") {
+                return sortBasedOnReferred(a, b);
+            } else {
+                return 0;
+            }
+        })
+        .slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = referrals ? Math.ceil(referrals.length / itemsPerPage) : 0;
+
+    const changePage = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
     };
 
     return (
@@ -69,85 +89,75 @@ export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referr
                     </tr>
                 </thead>
                 <tbody>
-                    {referrals && referrals.length > 0 ? (
-                        referrals
-                            .sort((a, b) => {
-                                if (sortBy === "tvl") {
-                                    return sortBasedOnTvl(a, b);
-                                } else if (sortBy === "referred") {
-                                    return sortBasedOnReferred(a, b);
-                                } else {
-                                    return 0;
-                                }
-                            })
-                            .map((referral, i) => (
-                                <tr key={uuid()} className={styles.tableRow}>
-                                    <td>
-                                        <div className={`${styles.tableData}${" " + styles.specificCell}`}>{i + 1}</div>
-                                    </td>
-                                    <td>
-                                        {referral.address ? (
-                                            <div className={styles.tableData + " " + styles.addressCol}>
-                                                <p className={styles.addressText + " " + styles.onlyExtraLargeScreen}>
-                                                    {referral.address}
-                                                </p>
-                                                <p className={styles.addressText + " " + styles.onlyLargeScreen}>
-                                                    {`${`${referral.address}`.substring(
-                                                        0,
-                                                        12
-                                                    )}...${`${referral.address}`.substring(
-                                                        `${referral.address}`.length - 12
-                                                    )}`}{" "}
-                                                    <span className={styles.tooltip}>{referral.address}</span>
-                                                </p>
-                                                <p className={styles.addressText + " " + styles.onlyTablet}>
-                                                    {`${`${referral.address}`.substring(
-                                                        0,
-                                                        8
-                                                    )}...${`${referral.address}`.substring(
-                                                        `${referral.address}`.length - 8
-                                                    )}`}{" "}
-                                                    <span className={styles.tooltip}>{`${referral.address}`}</span>
-                                                </p>
-                                                <p className={styles.addressText + " " + styles.onlyMobile}>
-                                                    {`${`${referral.address}`.substring(
-                                                        0,
-                                                        5
-                                                    )}...${`${referral.address}`.substring(
-                                                        `${referral.address}`.length - 3
-                                                    )}`}{" "}
-                                                    <span className={styles.tooltip}>{`${referral.address}`}</span>
-                                                </p>
-                                                <FiExternalLink
-                                                    size={16}
-                                                    className={styles.arbiscanIcon}
-                                                    onClick={() =>
-                                                        window.open(
-                                                            `${BLOCK_EXPLORER_URL}/address/${`${referral.address}`}`,
-                                                            "_blank"
-                                                        )
-                                                    }
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className={styles.tableData}>-</div>
-                                        )}
-                                    </td>
-                                    <td>
-                                        <div className={`${styles.tableData}${" " + styles.specificCell}`}>
-                                            {customCommify(referral.tvlFromReferrals, {
-                                                minimumFractionDigits: 1,
-                                                showDollarSign: true,
-                                            }).slice(0, -2)}
+                    {currentItems && currentItems.length > 0 ? (
+                        currentItems.map((referral, i) => (
+                            <tr key={uuid()} className={styles.tableRow}>
+                                <td>
+                                    <div className={`${styles.tableData}${" " + styles.specificCell}`}>{i + 1}</div>
+                                </td>
+                                <td>
+                                    {referral.address ? (
+                                        <div className={styles.tableData + " " + styles.addressCol}>
+                                            <p className={styles.addressText + " " + styles.onlyExtraLargeScreen}>
+                                                {referral.address}
+                                            </p>
+                                            <p className={styles.addressText + " " + styles.onlyLargeScreen}>
+                                                {`${`${referral.address}`.substring(
+                                                    0,
+                                                    12
+                                                )}...${`${referral.address}`.substring(
+                                                    `${referral.address}`.length - 12
+                                                )}`}{" "}
+                                                <span className={styles.tooltip}>{referral.address}</span>
+                                            </p>
+                                            <p className={styles.addressText + " " + styles.onlyTablet}>
+                                                {`${`${referral.address}`.substring(
+                                                    0,
+                                                    8
+                                                )}...${`${referral.address}`.substring(
+                                                    `${referral.address}`.length - 8
+                                                )}`}{" "}
+                                                <span className={styles.tooltip}>{`${referral.address}`}</span>
+                                            </p>
+                                            <p className={styles.addressText + " " + styles.onlyMobile}>
+                                                {`${`${referral.address}`.substring(
+                                                    0,
+                                                    5
+                                                )}...${`${referral.address}`.substring(
+                                                    `${referral.address}`.length - 3
+                                                )}`}{" "}
+                                                <span className={styles.tooltip}>{`${referral.address}`}</span>
+                                            </p>
+                                            <FiExternalLink
+                                                size={16}
+                                                className={styles.arbiscanIcon}
+                                                onClick={() =>
+                                                    window.open(
+                                                        `${BLOCK_EXPLORER_URL}/address/${`${referral.address}`}`,
+                                                        "_blank"
+                                                    )
+                                                }
+                                            />
                                         </div>
-                                    </td>
-                                    <td>
-                                        <div className={`${styles.tableData}${" " + styles.specificCell}`}>
-                                            {referral.referreredAddresses.length}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
+                                    ) : (
+                                        <div className={styles.tableData}>-</div>
+                                    )}
+                                </td>
+                                <td>
+                                    <div className={`${styles.tableData}${" " + styles.specificCell}`}>
+                                        {customCommify(referral.tvlFromReferrals, {
+                                            minimumFractionDigits: 1,
+                                            showDollarSign: true,
+                                        }).slice(0, -2)}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className={`${styles.tableData}${" " + styles.specificCell}`}>
+                                        {referral.referreredAddresses.length}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))
                     ) : (
                         <tr className={styles.tableRow}>
                             <td colSpan={6}>
@@ -160,11 +170,23 @@ export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referr
                     <tr className={styles.footer}>
                         <td></td>
                         <td colSpan={5}>
-                            {/* <div className={styles.tableData + " " + styles.controls}>
-                                {false && <FaArrowLeft className={styles.pageChangeArrow} />}
-                                <p>Page 1 of 1</p>
-                                {true && <FaArrowRight className={styles.pageChangeArrow} />}
-                            </div> */}
+                            <div className={styles.tableData + " " + styles.controls}>
+                                {currentPage > 1 && (
+                                    <FaArrowLeft
+                                        className={styles.pageChangeArrow}
+                                        onClick={() => changePage(currentPage - 1)}
+                                    />
+                                )}
+                                <p>
+                                    Page {currentPage} of {totalPages}
+                                </p>
+                                {currentPage < totalPages && (
+                                    <FaArrowRight
+                                        className={styles.pageChangeArrow}
+                                        onClick={() => changePage(currentPage + 1)}
+                                    />
+                                )}
+                            </div>
                         </td>
                     </tr>
                 </tfoot>
