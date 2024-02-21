@@ -5,7 +5,6 @@ export const useReferralDashboard = () => {
     const { isLoading, error, data, isFetching } = useQuery({
         queryKey: ["stats/referral-dashboard"],
         queryFn: () => fetchReferralDashboard(),
-        initialData: [],
     });
 
     return {

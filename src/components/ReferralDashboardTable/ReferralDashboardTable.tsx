@@ -6,9 +6,15 @@ import { FiExternalLink } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { v4 as uuid } from "uuid";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { ReferralStats } from "src/api/stats";
 
-export const ReferralDashboardTable: FC = () => {
+interface ReferralDashboardTableProps {
+    referrals: ReferralStats[] | undefined;
+}
+
+export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referrals }) => {
     const { BLOCK_EXPLORER_URL } = useConstants();
+    console.log("referrals =>", referrals);
 
     return (
         <div className={styles.container}>
@@ -33,89 +39,82 @@ export const ReferralDashboardTable: FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {/* {true ? ( */}
-                    {Array.from(Array(10).keys()).map((i) => (
-                        <tr key={uuid()} className={styles.tableRow}>
-                            <td>
-                                <div className={`${styles.tableData}${" " + styles.specificCell}`}>{i}</div>
-                            </td>
-                            <td>
-                                {true ? (
-                                    <div className={styles.tableData + " " + styles.addressCol}>
-                                        <p className={styles.addressText + " " + styles.onlyExtraLargeScreen}>
-                                            {`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`}
-                                        </p>
-                                        <p className={styles.addressText + " " + styles.onlyLargeScreen}>
-                                            {`${`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`.substring(
-                                                0,
-                                                12
-                                            )}...${"0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8".substring(
-                                                `0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`.length - 12
-                                            )}`}{" "}
-                                            <span
-                                                className={styles.tooltip}
-                                            >{`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`}</span>
-                                        </p>
-                                        <p className={styles.addressText + " " + styles.onlyTablet}>
-                                            {`${`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`.substring(
-                                                0,
-                                                8
-                                            )}...${`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`.substring(
-                                                `0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`.length - 8
-                                            )}`}{" "}
-                                            <span
-                                                className={styles.tooltip}
-                                            >{`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`}</span>
-                                        </p>
-                                        <p className={styles.addressText + " " + styles.onlyMobile}>
-                                            {`${`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`.substring(
-                                                0,
-                                                5
-                                            )}...${`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`.substring(
-                                                `0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`.length - 3
-                                            )}`}{" "}
-                                            <span
-                                                className={styles.tooltip}
-                                            >{`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`}</span>
-                                        </p>
-                                        <FiExternalLink
-                                            size={16}
-                                            className={styles.arbiscanIcon}
-                                            onClick={() =>
-                                                window.open(
-                                                    `${BLOCK_EXPLORER_URL}/address/${`0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8`}`,
-                                                    "_blank"
-                                                )
-                                            }
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className={styles.tableData}>-</div>
-                                )}
-                            </td>
-                            <td>
-                                <div className={`${styles.tableData}${" " + styles.specificCell}`}>
-                                    {customCommify(3505, { minimumFractionDigits: 1, showDollarSign: true }).slice(
-                                        0,
-                                        -2
+                    {referrals && referrals.length > 0 ? (
+                        referrals.map((referral, i) => (
+                            <tr key={uuid()} className={styles.tableRow}>
+                                <td>
+                                    <div className={`${styles.tableData}${" " + styles.specificCell}`}>{i + 1}</div>
+                                </td>
+                                <td>
+                                    {true ? (
+                                        <div className={styles.tableData + " " + styles.addressCol}>
+                                            <p className={styles.addressText + " " + styles.onlyExtraLargeScreen}>
+                                                {referral.address}
+                                            </p>
+                                            <p className={styles.addressText + " " + styles.onlyLargeScreen}>
+                                                {`${`${referral.address}`.substring(
+                                                    0,
+                                                    12
+                                                )}...${`${referral.address}`.substring(
+                                                    `${referral.address}`.length - 12
+                                                )}`}{" "}
+                                                <span className={styles.tooltip}>{referral.address}</span>
+                                            </p>
+                                            <p className={styles.addressText + " " + styles.onlyTablet}>
+                                                {`${`${referral.address}`.substring(
+                                                    0,
+                                                    8
+                                                )}...${`${referral.address}`.substring(
+                                                    `${referral.address}`.length - 8
+                                                )}`}{" "}
+                                                <span className={styles.tooltip}>{`${referral.address}`}</span>
+                                            </p>
+                                            <p className={styles.addressText + " " + styles.onlyMobile}>
+                                                {`${`${referral.address}`.substring(
+                                                    0,
+                                                    5
+                                                )}...${`${referral.address}`.substring(
+                                                    `${referral.address}`.length - 3
+                                                )}`}{" "}
+                                                <span className={styles.tooltip}>{`${referral.address}`}</span>
+                                            </p>
+                                            <FiExternalLink
+                                                size={16}
+                                                className={styles.arbiscanIcon}
+                                                onClick={() =>
+                                                    window.open(
+                                                        `${BLOCK_EXPLORER_URL}/address/${`${referral.address}`}`,
+                                                        "_blank"
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className={styles.tableData}>-</div>
                                     )}
-                                </div>
-                            </td>
-                            <td>
-                                <div className={`${styles.tableData}${" " + styles.specificCell}`}>
-                                    {Number(50).toLocaleString("en-us")}
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-
-                    {/* ) : (
+                                </td>
+                                <td>
+                                    <div className={`${styles.tableData}${" " + styles.specificCell}`}>
+                                        {customCommify(referral.tvlFromReferrals, {
+                                            minimumFractionDigits: 1,
+                                            showDollarSign: true,
+                                        }).slice(0, -2)}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className={`${styles.tableData}${" " + styles.specificCell}`}>
+                                        {referral.referreredAddresses.length}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
                         <tr className={styles.tableRow}>
                             <td colSpan={6}>
                                 <EmptyTable />
                             </td>
                         </tr>
-                    )} */}
+                    )}
                 </tbody>
                 <tfoot>
                     <tr className={styles.footer}>

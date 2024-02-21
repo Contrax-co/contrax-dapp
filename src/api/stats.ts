@@ -29,7 +29,7 @@ interface ReferralDashboardResponse {
     status: boolean;
 }
 
-interface ReferralStats {
+export interface ReferralStats {
     address: string;
     tvlFromReferrals: number;
     referreredAddresses: string[];
