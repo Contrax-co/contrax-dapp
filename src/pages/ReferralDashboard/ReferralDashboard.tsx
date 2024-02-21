@@ -2,9 +2,12 @@ import React from "react";
 import styles from "./ReferralDashboard.module.scss";
 import { ReferralCard } from "src/components/ReferralCard/ReferralCard";
 import { ReferralDashboardTable } from "src/components/ReferralDashboardTable/ReferralDashboardTable";
+import { useReferralDashboard } from "src/hooks/useReferralDashboard";
 // import { ReferralDashboardTable } from "src/components/ReferralDashboardTable/ReferralDashboardTable";
 
 const ReferralDashboard: React.FC = () => {
+    const { data } = useReferralDashboard();
+    console.log("referral data =>", data);
     return (
         <div className={styles.container}>
             <div className={styles.topRow}>
