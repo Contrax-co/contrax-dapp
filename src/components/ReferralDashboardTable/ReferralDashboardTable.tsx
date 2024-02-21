@@ -86,7 +86,7 @@ export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referr
                                         <div className={`${styles.tableData}${" " + styles.specificCell}`}>{i + 1}</div>
                                     </td>
                                     <td>
-                                        {true ? (
+                                        {referral.address ? (
                                             <div className={styles.tableData + " " + styles.addressCol}>
                                                 <p className={styles.addressText + " " + styles.onlyExtraLargeScreen}>
                                                     {referral.address}
