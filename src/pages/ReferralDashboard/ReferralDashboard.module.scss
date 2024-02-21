@@ -13,3 +13,9 @@
     grid-template-columns: repeat(auto-fit, minmax(280px, 350px));
     grid-template-rows: 140px;
 }
+
+.para {
+    padding-bottom: 10px;
+    color: var(--color_text);
+    font-size: 0.95em;
+}

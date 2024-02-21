@@ -12,12 +12,13 @@ const ReferralDashboard: React.FC = () => {
     }, [data]);
     return (
         <div className={styles.container}>
+            <p className={styles.para}>Lorem ipsum dolor sit amet consectetur </p>
             <div className={styles.topRow}>
                 {topThreeReferrals.length > 0 &&
                     topThreeReferrals.map((referral, i) => (
                         <ReferralCard
                             key={referral.address}
-                            heading={`${getPositionSuffix(i + 1)} Place ~ ${referral.tvlFromReferrals.toFixed(0)} USD`}
+                            heading={`${getPositionSuffix(i + 1)} Place ~ 300 USD`}
                             address={referral.address}
                         />
                     ))}
