@@ -1,3 +1,5 @@
+@import "../../styles/mixins";
+
 .container {
     color: var(--color_text);
     padding: 30px 30px 120px 30px;
@@ -18,4 +20,20 @@
     padding-bottom: 10px;
     color: var(--color_text);
     font-size: 0.95em;
+}
+.text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color_primary);
+    max-width: calc(100% - 24px);
+    @include devices(mobile) {
+        max-width: calc(100% - 22px);
+    }
+}
+
+.mainHeading {
+    @include devices(mobile) {
+        font-size: 25px;
+    }
 }
