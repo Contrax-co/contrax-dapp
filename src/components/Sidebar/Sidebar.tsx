@@ -6,6 +6,7 @@ import { FaExchangeAlt } from "react-icons/fa";
 import { BsCurrencyExchange } from "react-icons/bs";
 import { ImStatsDots } from "react-icons/im";
 import { IoIosFlask } from "react-icons/io";
+import { VscReferences } from "react-icons/vsc";
 import { ReactComponent as EarnIcon } from "src/assets/images/earn.svg";
 import { ReactComponent as DepositIcon } from "src/assets/images/deposit.svg";
 import { ReactComponent as MeshIcon } from "src/assets/images/front.svg";
@@ -97,6 +98,12 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     </>
                 )}
                 <SidebarItem
+                    title="Referrals"
+                    icon={<VscReferences size={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.ReferralDashboard)}
+                    active={pathname === RoutesPaths.ReferralDashboard}
+                />
+                <SidebarItem
                     title="User Guide"
                     onClick={() => handleNavigation("https://docs.contrax.finance/introduction/", "_blank")}
                     icon={<HiDocumentText size={18} />}
@@ -112,9 +119,3 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
 }
 
 export default Sidebar;
-
-
-
-
-
-

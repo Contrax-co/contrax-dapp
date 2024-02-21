@@ -141,7 +141,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     {fetchingSlippage ? (
                         <Skeleton w={50} h={20} style={{}} />
                     ) : (
-                        `${slippage?.toString() && !isNaN(slippage) ? slippage?.toFixed(2) : "- "}%`
+                        `~${slippage?.toString() && !isNaN(slippage) ? (slippage / 2)?.toFixed(2) : "- "}%`
                     )}
                 </p>
             </div>

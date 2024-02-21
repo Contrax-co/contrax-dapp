@@ -24,6 +24,17 @@ interface VaultStatsResponse {
     status: boolean;
 }
 
+interface ReferralDashboardResponse {
+    data: ReferralStats[];
+    status: boolean;
+}
+
+export interface ReferralStats {
+    address: string;
+    tvlFromReferrals: number;
+    referreredAddresses: string[];
+}
+
 interface VaultStats {
     address: string;
     name?: string;
@@ -52,4 +63,9 @@ export const fetchCountActiveUsers = async () => {
 export const fetchVaultStats = async () => {
     const res = await axios.get<VaultStatsResponse>(`${BACKEND_BASE_URL}stats/tvl/vaults`);
     return res.data.data.vaults;
+};
+
+export const fetchReferralDashboard = async () => {
+    const res = await axios.get<ReferralDashboardResponse>(`${BACKEND_BASE_URL}stats/referral-dashboard`);
+    return res.data.data;
 };

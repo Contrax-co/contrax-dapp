@@ -1,0 +1,77 @@
+@import "../../styles/mixins";
+
+.subHeading {
+    font-size: 1.2em; 
+    margin-bottom: 1em; 
+  }
+  
+  .paraSection {
+    margin-bottom: 2em; 
+  }
+  
+  .prizesSection, .rulesSection {
+    background-color: #ffffff;
+    padding: 1em;
+    border-radius: 5px; 
+    margin-bottom: 1em; 
+  }
+
+.container {
+    color: var(--color_text);
+    padding: 30px 30px 120px 30px;
+    overflow-y: auto;
+    & > div {
+        margin-bottom: 24px;
+    }
+}
+
+.topRow {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 350px));
+    grid-template-rows: 140px;
+}
+
+.para {
+    padding-bottom: 10px;
+    color: var(--color_text);
+    font-size: 0.95em;
+}
+.text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color_primary);
+    max-width: calc(100% - 24px);
+    @include devices(mobile) {
+        max-width: calc(100% - 22px);
+    }
+}
+
+.referralPara {
+    padding-bottom: 10px;
+    color: var(--color_text);
+    font-size: 0.95em;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    @include devices(tablet) {
+        gap: 0px;
+    }
+}
+.referralLinkContainer {
+    display: flex;
+    align-items: center;
+}
+
+.mainHeading {
+    @include devices(mobile) {
+        font-size: 25px;
+    }
+}
+
+.icon {
+    color: var(--color_primary);
+    cursor: pointer;
+    margin-left: 8px;
+}
