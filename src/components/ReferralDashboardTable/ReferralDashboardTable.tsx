@@ -36,8 +36,8 @@ export const ReferralDashboardTable: FC = () => {
                     {/* {true ? ( */}
                     {Array.from(Array(10).keys()).map((i) => (
                         <tr key={uuid()} className={styles.tableRow}>
-                            <td align="center">
-                                <div className={styles.tableData}>{i}</div>
+                            <td>
+                                <div className={`${styles.tableData}${" " + styles.specificCell}`}>{i}</div>
                             </td>
                             <td>
                                 {true ? (
@@ -94,7 +94,7 @@ export const ReferralDashboardTable: FC = () => {
                                 )}
                             </td>
                             <td>
-                                <div className={styles.tableData}>
+                                <div className={`${styles.tableData}${" " + styles.specificCell}`}>
                                     {customCommify(3505, { minimumFractionDigits: 1, showDollarSign: true }).slice(
                                         0,
                                         -2
@@ -102,7 +102,9 @@ export const ReferralDashboardTable: FC = () => {
                                 </div>
                             </td>
                             <td>
-                                <div className={styles.tableData}>{Number(50).toLocaleString("en-us")}</div>
+                                <div className={`${styles.tableData}${" " + styles.specificCell}`}>
+                                    {Number(50).toLocaleString("en-us")}
+                                </div>
                             </td>
                         </tr>
                     ))}
