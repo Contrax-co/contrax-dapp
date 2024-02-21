@@ -27,7 +27,7 @@ export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referr
 
     return (
         <div className={styles.container}>
-            <h1>Referrals Dashboard</h1>
+            <h1 className={styles.mainHeading}>Referrals Dashboard</h1>
             <table className={styles.table}>
                 <thead>
                     <tr className={styles.header}>

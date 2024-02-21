@@ -201,3 +201,9 @@
         padding: 10px 30px;
     }
 }
+
+.mainHeading {
+    @include devices(mobile) {
+        font-size: 25px;
+    }
+}
