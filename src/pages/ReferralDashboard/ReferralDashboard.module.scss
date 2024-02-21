@@ -1,5 +1,21 @@
 @import "../../styles/mixins";
 
+.subHeading {
+    font-size: 1.2em; 
+    margin-bottom: 1em; 
+  }
+  
+  .paraSection {
+    margin-bottom: 2em; 
+  }
+  
+  .prizesSection, .rulesSection {
+    background-color: #ffffff;
+    padding: 1em;
+    border-radius: 5px; 
+    margin-bottom: 1em; 
+  }
+
 .container {
     color: var(--color_text);
     padding: 30px 30px 120px 30px;
