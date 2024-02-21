@@ -17,7 +17,7 @@ const ReferralDashboard: React.FC = () => {
                     topThreeReferrals.map((referral, i) => (
                         <ReferralCard
                             key={referral.address}
-                            heading={`${getPositionSuffix(i + 1)} Place ~ ${referral.tvlFromReferrals.toFixed(0)} USDC`}
+                            heading={`${getPositionSuffix(i + 1)} Place ~ ${referral.tvlFromReferrals.toFixed(0)} USD`}
                             address={referral.address}
                         />
                     ))}
