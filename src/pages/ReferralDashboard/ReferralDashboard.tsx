@@ -14,6 +14,7 @@ const ReferralDashboard: React.FC = () => {
     const { currentWallet } = useWallet();
     const [copied, setCopied] = useState(false);
     const { data } = useReferralDashboard();
+    const [tweetCopied, setTweetCopied] = useState(false);
     const topThreeReferrals = useMemo(() => {
         return data?.sort((a, b) => b.tvlFromReferrals - a.tvlFromReferrals).slice(0, 3) ?? [];
     }, [data]);
@@ -24,6 +25,24 @@ const ReferralDashboard: React.FC = () => {
             copyToClipboard(referralLink, () => setCopied(false));
         }
     };
+    const tweetMessage = referralLink ? (
+        <p>
+            DeFi staking can be complex, but there's a new platform that makes it easy to start. If you want to earn
+            over 10% on ETH and stables in a few clicks, check it out here:
+            <br />
+            <a href={referralLink} target="_blank" rel="noopener noreferrer">
+                {referralLink}
+            </a>
+            <br />
+            <br />
+            Just follow along:{" "}
+            <a href="https://www.youtube.com/watch?v=cqJkiNrbVqk" target="_blank" rel="noopener noreferrer">
+                https://www.youtube.com/watch?v=cqJkiNrbVqk
+            </a>
+        </p>
+    ) : (
+        "Please login to see tweet template with your referral link"
+    );
     return (
         <div className={styles.container}>
             <h1 className={styles.mainHeading}>Intract Referral Contest! 🎉</h1>
@@ -77,6 +96,18 @@ const ReferralDashboard: React.FC = () => {
                             <a href="https://beta.contrax.finance/termsofuse.pdf">terms & conditions</a>.
                         </li>
                     </ul>
+                </div>
+                <div className={styles.rulesSection}>
+                    {currentWallet && referralLink ? (
+                        <>
+                            <strong>🐤 Tweet template with with your referral</strong>
+                            <p>{tweetMessage}</p>
+                        </>
+                    ) : (
+                        <p>
+                            <i>Please sign in/up to see tweet template with your referral link</i>
+                        </p>
+                    )}
                 </div>
             </section>
             <br />
