@@ -151,7 +151,7 @@ function Dashboard() {
                     </div>
                     {networkId === CHAIN_ID.ARBITRUM ? (
                         <div className={`dashboard_section outlinedContainer`}>
-                            {vaults.length < 0 ? (
+                            {vaults.length > 0 ? (
                                 <>
                                     <p
                                         className={`dashboard_wallet_title ${
