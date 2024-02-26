@@ -6,11 +6,19 @@ import useFarms from "./farms/useFarms";
 import useBalances from "./useBalances";
 import usePriceOfTokens from "./usePriceOfTokens";
 
-export const useVaults = (): { vaults: Vault[]; isLoading: boolean } => {
+export const useVaults = (): { vaults: Vault[]; isLoading: boolean; isFetched: boolean } => {
     const { farms } = useFarms();
-    const { formattedBalances: usersVaultBalances, isLoading: isLoadingUserBalances } = useBalances();
-    const { prices: priceOfSingleToken, isLoading: isLoadingPricesOfSingleToken } = usePriceOfTokens();
-    const { apys, isLoading: isLoadingApys } = useFarmApys();
+    const {
+        formattedBalances: usersVaultBalances,
+        isLoading: isLoadingUserBalances,
+        isFetched: isFetchedUserBalances,
+    } = useBalances();
+    const {
+        prices: priceOfSingleToken,
+        isLoading: isLoadingPricesOfSingleToken,
+        isFetched: isFetchedPricesOfSingleToken,
+    } = usePriceOfTokens();
+    const { apys, isLoading: isLoadingApys, isFetched: isFetchedApys } = useFarmApys();
 
     const vaults = useMemo(() => {
         return farms
@@ -34,5 +42,6 @@ export const useVaults = (): { vaults: Vault[]; isLoading: boolean } => {
     return {
         vaults,
         isLoading: isLoadingPricesOfSingleToken || isLoadingApys || isLoadingUserBalances,
+        isFetched: isFetchedPricesOfSingleToken && isFetchedApys && isFetchedUserBalances,
     };
 };
