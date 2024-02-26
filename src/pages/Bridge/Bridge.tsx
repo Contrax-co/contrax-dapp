@@ -51,7 +51,6 @@ const Bridge = () => {
         try {
             // @ts-ignore
             const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
-
             if (!pkey) {
                 setIsWeb3Auth(true);
                 setProvider(undefined);
@@ -113,8 +112,8 @@ const Bridge = () => {
                     // excludeBridges={[]}
                     defaultSourceNetwork={1}
                     defaultDestNetwork={defaultChainId}
-                    sourceNetworks={[1, defaultChainId, 137]}
-                    destNetworks={[1, defaultChainId, 137]}
+                    // sourceNetworks={[1, 137, defaultChainId]}
+                    // destNetworks={[1, 137, defaultChainId]}
                     customize={lightMode ? lightSocketTheme : darkSocketTheme}
                 />
             </div>

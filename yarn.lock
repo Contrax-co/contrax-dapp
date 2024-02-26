@@ -2660,6 +2660,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@floating-ui/core@npm:^1.0.0":
+  version: 1.6.0
+  resolution: "@floating-ui/core@npm:1.6.0"
+  dependencies:
+    "@floating-ui/utils": ^0.2.1
+  checksum: 2e25c53b0c124c5c9577972f8ae21d081f2f7895e6695836a53074463e8c65b47722744d6d2b5a993164936da006a268bcfe87fe68fd24dc235b1cb86bed3127
+  languageName: node
+  linkType: hard
+
 "@floating-ui/core@npm:^1.1.0":
   version: 1.2.1
   resolution: "@floating-ui/core@npm:1.2.1"
@@ -2673,6 +2682,56 @@ __metadata:
   dependencies:
     "@floating-ui/core": ^1.1.0
   checksum: 8b7f3b98ed7ec0b634e4a0b735253b0442358c5cea8302935fc185b2bd882202a053622abe9248c76d0908645dd35f93adeaed2d64371b2ab76b36725ce3f7d3
+  languageName: node
+  linkType: hard
+
+"@floating-ui/dom@npm:^1.6.1":
+  version: 1.6.3
+  resolution: "@floating-ui/dom@npm:1.6.3"
+  dependencies:
+    "@floating-ui/core": ^1.0.0
+    "@floating-ui/utils": ^0.2.0
+  checksum: 81cbb18ece3afc37992f436e469e7fabab2e433248e46fff4302d12493a175b0c64310f8a971e6e1eda7218df28ace6b70237b0f3c22fe12a21bba05b5579555
+  languageName: node
+  linkType: hard
+
+"@floating-ui/react-dom@npm:^2.0.2":
+  version: 2.0.8
+  resolution: "@floating-ui/react-dom@npm:2.0.8"
+  dependencies:
+    "@floating-ui/dom": ^1.6.1
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 5da7f13a69281e38859a3203a608fe9de1d850b332b355c10c0c2427c7b7209a0374c10f6295b6577c1a70237af8b678340bd4cc0a4b1c66436a94755d81e526
+  languageName: node
+  linkType: hard
+
+"@floating-ui/react@npm:^0.25.0":
+  version: 0.25.4
+  resolution: "@floating-ui/react@npm:0.25.4"
+  dependencies:
+    "@floating-ui/react-dom": ^2.0.2
+    "@floating-ui/utils": ^0.1.1
+    tabbable: ^6.0.1
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  checksum: 816a0aa5bfc122c147e073563c0888333bdf58e79972757e37095c788323c8e87ace18d9196d95be8b8f4fe11d90cdeec36b23e5373a791a71a7873bf805590f
+  languageName: node
+  linkType: hard
+
+"@floating-ui/utils@npm:^0.1.1":
+  version: 0.1.6
+  resolution: "@floating-ui/utils@npm:0.1.6"
+  checksum: b34d4b5470869727f52e312e08272edef985ba5a450a76de0917ba0a9c6f5df2bdbeb99448e2c60f39b177fb8981c772ff1831424e75123471a27ebd5b52c1eb
+  languageName: node
+  linkType: hard
+
+"@floating-ui/utils@npm:^0.2.0, @floating-ui/utils@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@floating-ui/utils@npm:0.2.1"
+  checksum: 9ed4380653c7c217cd6f66ae51f20fdce433730dbc77f95b5abfb5a808f5fdb029c6ae249b4e0490a816f2453aa6e586d9a873cd157fdba4690f65628efc6e06
   languageName: node
   linkType: hard
 
@@ -3998,21 +4057,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@socket.tech/ll-core@npm:^0.1.10, @socket.tech/ll-core@npm:^0.1.14":
+"@socket.tech/ll-core-v2@npm:^0.0.66":
+  version: 0.0.66
+  resolution: "@socket.tech/ll-core-v2@npm:0.0.66"
+  checksum: 87f50e3cf75e8b65c6ce489cc61d734530d92c2c6fa070deea3d73ca6c8608a98ddfc11400c5e0e4826fd73ff87658ec9051a780cc7ce58db5ed74986ccc1419
+  languageName: node
+  linkType: hard
+
+"@socket.tech/ll-core@npm:^0.1.10":
   version: 0.1.29
   resolution: "@socket.tech/ll-core@npm:0.1.29"
   checksum: 85318f36e55ca3c1c3a254a24e7604d5e3d6620d6e0338767d87abf1a4635a4318ba0a5331e0202fc10f77e205d3261aa9fb8da8a326862a6cdf838e2b742fcf
   languageName: node
   linkType: hard
 
-"@socket.tech/plugin@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@socket.tech/plugin@npm:1.0.3"
+"@socket.tech/ll-core@npm:^0.1.49":
+  version: 0.1.54
+  resolution: "@socket.tech/ll-core@npm:0.1.54"
+  checksum: e6a8681d6d5e5dc8206d85c4aab43b0c53aa1a3d25a416081aaeb822d1d9d2bdea033790a1311d406686dc86b3d9ff24cbba6aa3d12b692a57142d2376b56a2c
+  languageName: node
+  linkType: hard
+
+"@socket.tech/plugin@npm:^1.3.7":
+  version: 1.3.7
+  resolution: "@socket.tech/plugin@npm:1.3.7"
   dependencies:
+    "@floating-ui/react": ^0.25.0
     "@react-spring/web": ^9.5.0
     "@reduxjs/toolkit": ^1.8.2
     "@socket.tech/ll-core": ^0.1.10
-    "@socket.tech/socket-v2-sdk": ^1.21.3
+    "@socket.tech/socket-v2-sdk": ^1.24.2
     ethers: ^5.6.9
     react-feather: ^2.0.10
     react-redux: ^8.0.2
@@ -4020,20 +4094,21 @@ __metadata:
   peerDependencies:
     react: ">=17.0.1"
     react-dom: ">=17.0.1"
-  checksum: dbd1966c109ca7edd0af50ed5b5341012fb464c3dcea7881bcae449d6d19550c8caef583f0874db8220e00bae354660373dbbd9d837d37d9b88fff85137286b7
+  checksum: 82dfd81dc315335a3120c6af38a9267b878aaed26e2da1b0d961d7d9fd8a9443d23cceb03d8b0c1ee39d1773897bffb613108e445bdcf5f6bdeac2f60929f269
   languageName: node
   linkType: hard
 
-"@socket.tech/socket-v2-sdk@npm:^1.21.3":
-  version: 1.21.5
-  resolution: "@socket.tech/socket-v2-sdk@npm:1.21.5"
+"@socket.tech/socket-v2-sdk@npm:^1.24.2":
+  version: 1.24.2
+  resolution: "@socket.tech/socket-v2-sdk@npm:1.24.2"
   dependencies:
-    "@socket.tech/ll-core": ^0.1.14
+    "@socket.tech/ll-core": ^0.1.49
+    "@socket.tech/ll-core-v2": ^0.0.66
     axios: ^0.27.2
     ethers: ^5.6.5
     form-data: ^4.0.0
     tslib: ^2.4.0
-  checksum: 8f49cd4bc02061c08897bf9031f4b097d5a903753750c6623c15b942ad645ddd7119a8cea8166ec6275c1e0d84c493168146156eb3da3bb143245b560db25ab5
+  checksum: 5fc4e4f2f1a175068b9c18067425c75cdfabbbce5349e83cd7ef2eb2241da9666ca07448569918bc0dcff00c325a453b5866f79acf1b48227f6009556fcf349a
   languageName: node
   linkType: hard
 
@@ -9811,7 +9886,7 @@ __metadata:
     "@ramp-network/ramp-instant-sdk": ^4.0.1
     "@reduxjs/toolkit": ^1.9.3
     "@snapshot-labs/snapshot.js": ^0.9.7
-    "@socket.tech/plugin": ^1.0.3
+    "@socket.tech/plugin": ^1.3.7
     "@tanstack/react-query": ^4.24.10
     "@tanstack/react-query-devtools": ^4.22.0
     "@tenderly/sdk": ^0.1.14
@@ -20353,6 +20428,13 @@ __metadata:
   version: 3.2.4
   resolution: "symbol-tree@npm:3.2.4"
   checksum: 6e8fc7e1486b8b54bea91199d9535bb72f10842e40c79e882fc94fb7b14b89866adf2fd79efa5ebb5b658bc07fb459ccce5ac0e99ef3d72f474e74aaf284029d
+  languageName: node
+  linkType: hard
+
+"tabbable@npm:^6.0.1":
+  version: 6.2.0
+  resolution: "tabbable@npm:6.2.0"
+  checksum: f8440277d223949272c74bb627a3371be21735ca9ad34c2570f7e1752bd646ccfc23a9d8b1ee65d6561243f4134f5fbbf1ad6b39ac3c4b586554accaff4a1300
   languageName: node
   linkType: hard
 
