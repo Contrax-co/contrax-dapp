@@ -17,7 +17,7 @@ export const TraxApy: React.FC<Props> = () => {
                 {/* <FaUserFriends size={120} /> */}
                 <WalletIcon />
                 {/* <MdAdd /> */}
-                {customCommify(totalTraxApy, { minimumFractionDigits: 0, showDollarSign: false })}
+                {customCommify(totalTraxApy, { minimumFractionDigits: 0, showDollarSign: false }) + " per day"}
             </p>
         </div>
     );
