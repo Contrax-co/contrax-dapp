@@ -136,7 +136,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                             data-tooltip-html={
                                 estimateTrax !== "0"
                                     ? `<p>
-                                    xTRAX pre-farm rate: <b>${estimateTrax}</b><br/>
+                                    Pre-farm rate: <b>${estimateTrax}</b> xTRAX<br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a>
                                         </p>
                                         `
@@ -242,7 +242,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                 data-tooltip-html={
                                     estimateTrax !== "0"
                                         ? `<p>
-                                        xTRAX pre-farm rate: <b>${estimateTrax}</b><br/>
+                                        Pre-farm rate: <b>${estimateTrax}</b> xTRAX<br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a>
                                         </p>
                                         `
