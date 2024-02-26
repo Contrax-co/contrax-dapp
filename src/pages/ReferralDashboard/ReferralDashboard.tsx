@@ -9,8 +9,10 @@ import useWallet from "src/hooks/useWallet";
 import { FiCopy } from "react-icons/fi";
 import { BsCheckCircle } from "react-icons/bs";
 import ReactDOMServer from "react-dom/server";
+import useApp from "src/hooks/useApp";
 
 const ReferralDashboard: React.FC = () => {
+    const { lightMode } = useApp();
     const { referralLink } = useAccountData();
     const { currentWallet } = useWallet();
     const [copied, setCopied] = useState(false);
@@ -91,7 +93,7 @@ const ReferralDashboard: React.FC = () => {
                         <span className={styles.text}>Please sign in/up to see your link</span>
                     )}
                 </p>
-                <div className={styles.prizesSection}>
+                <div className={`${styles.prizesSection} ${lightMode && styles.rulesSectionLight}`}>
                     <strong>🏆 Prizes</strong>
                     <ul>
                         <li>1st place: $300 in USDC</li>
@@ -100,7 +102,7 @@ const ReferralDashboard: React.FC = () => {
                     </ul>
                     Prizes will be announced on this page and will be claimable on Intract.io.
                 </div>
-                <div className={styles.rulesSection}>
+                <div className={`${styles.rulesSection} ${lightMode && styles.rulesSectionLight}`}>
                     <strong>📜 Rules</strong>
                     <ul>
                         <li>A referral only counts if the referred user also stakes in a Contrax vault.</li>
@@ -113,7 +115,7 @@ const ReferralDashboard: React.FC = () => {
                         </li>
                     </ul>
                 </div>
-                <div className={styles.rulesSection}>
+                <div className={`${styles.rulesSection} ${lightMode && styles.rulesSectionLight}`}>
                     {currentWallet && referralLink ? (
                         <>
                             <strong>🐤 Tweet template with with your referral</strong>
