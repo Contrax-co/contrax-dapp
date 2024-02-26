@@ -186,7 +186,7 @@ function Dashboard() {
                                     )}
                                 </>
                             ) : (
-                                <Skeleton w={"100%"} h={250} bRadius={20} inverted={true} />
+                                <Skeleton w={"100%"} h={250} bRadius={20} inverted={false} />
                             )}
                         </div>
                     ) : (
