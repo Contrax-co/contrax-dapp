@@ -5,7 +5,7 @@ import useConstants from "src/hooks/useConstants";
 import { FiExternalLink } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { v4 as uuid } from "uuid";
-import { FaArrowDown, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaArrowDown, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 import { ReferralStats } from "src/api/stats";
 
 interface ReferralDashboardTableProps {
@@ -14,6 +14,7 @@ interface ReferralDashboardTableProps {
 
 export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referrals }) => {
     const { BLOCK_EXPLORER_URL } = useConstants();
+    const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<"tvl" | "referred" | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
@@ -38,6 +39,7 @@ export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referr
                 return 0;
             }
         })
+        .filter((item) => item.address.toLowerCase().includes(searchQuery.toLowerCase()))
         .slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = referrals ? Math.ceil(referrals.length / itemsPerPage) : 0;
 
@@ -168,7 +170,24 @@ export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referr
                 </tbody>
                 <tfoot>
                     <tr className={styles.footer}>
-                        <td></td>
+                        <td>
+                            <div className={styles.tableData + " " + styles.searchBox}>
+                                <FaSearch className={styles.onlyMobile} />
+                                <label htmlFor="searchBox" className={styles.onlyDesktop}>
+                                    Search:
+                                </label>
+                                <input
+                                    id="searchBox"
+                                    name="searchBox"
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => {
+                                        setCurrentPage(1);
+                                        setSearchQuery(e.target.value);
+                                    }}
+                                />
+                            </div>
+                        </td>
                         <td colSpan={5}>
                             <div className={styles.tableData + " " + styles.controls}>
                                 {currentPage > 1 && (
