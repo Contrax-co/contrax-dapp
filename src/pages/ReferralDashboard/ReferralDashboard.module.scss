@@ -1,4 +1,5 @@
 @import "../../styles/mixins";
+@import "../../styles/variables";
 
 .subHeading {
     font-size: 1.2em;
@@ -11,11 +12,15 @@
 
 .prizesSection,
 .rulesSection {
-    background-color: #ffffff;
+    background-color: $background-secondary;
     padding: 1em;
     border-radius: 5px;
     margin-bottom: 1em;
     position: relative;
+}
+
+.rulesSectionLight {
+    background-color: $color-white;
 }
 
 .container {
