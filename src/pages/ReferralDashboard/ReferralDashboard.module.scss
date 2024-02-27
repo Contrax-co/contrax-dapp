@@ -1,20 +1,27 @@
 @import "../../styles/mixins";
+@import "../../styles/variables";
 
 .subHeading {
-    font-size: 1.2em; 
-    margin-bottom: 1em; 
-  }
-  
-  .paraSection {
-    margin-bottom: 2em; 
-  }
-  
-  .prizesSection, .rulesSection {
-    background-color: #ffffff;
+    font-size: 1.2em;
+    margin-bottom: 1em;
+}
+
+.paraSection {
+    margin-bottom: 2em;
+}
+
+.prizesSection,
+.rulesSection {
+    background-color: $background-secondary;
     padding: 1em;
-    border-radius: 5px; 
-    margin-bottom: 1em; 
-  }
+    border-radius: 5px;
+    margin-bottom: 1em;
+    position: relative;
+}
+
+.rulesSectionLight {
+    background-color: $color-white;
+}
 
 .container {
     color: var(--color_text);
@@ -72,6 +79,43 @@
 
 .icon {
     color: var(--color_primary);
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.tweetContainer {
+    max-width: 130px;
+    min-width: 130px;
+    padding: 0.7rem 3rem;
+    background: var(--color_primary);
+    border-radius: 5px 0px 0px 0px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: pointer;
+    @media screen and (max-width: 1060px) {
+        padding: 0.7rem 0.8rem;
+    }
+    @media screen and (max-width: 845px) {
+        margin-top: 10px;
+        position: static;
+        border-radius: 5px;
+        padding: 0.7rem 3rem;
+    }
+}
+.tweet {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    p {
+        color: #fff;
+        font-family: "Poppins";
+        font-weight: 600;
+    }
+}
+.tweetIcon {
+    color: #fff;
     cursor: pointer;
     margin-left: 8px;
 }

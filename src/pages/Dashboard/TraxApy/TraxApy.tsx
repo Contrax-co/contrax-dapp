@@ -12,7 +12,7 @@ export const TraxApy: React.FC<Props> = () => {
 
     return (
         <div className={`outlinedContainer ${styles.container}`}>
-            <p className={styles.heading}>xTRAX Pre-Farm Rate</p>
+            <p className={styles.heading}>xTRAX Yearly Rate </p>
             <p className={styles.value}>
                 {/* <FaUserFriends size={120} /> */}
                 <WalletIcon />

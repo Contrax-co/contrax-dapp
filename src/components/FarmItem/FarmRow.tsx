@@ -134,12 +134,15 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                         <a
                             id={key3}
                             data-tooltip-html={
-                                estimateTrax !== "0"
-                                    ? `<p>
-                                    xTRAX pre-farm rate: <b>${estimateTrax}</b><br/>
+                                estimateTrax
+                                    ? estimateTrax !== "0"
+                                        ? `<p>
+                                    Pre-farm rate: <b>${estimateTrax}</b> xTRAX<br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a>
                                         </p>
                                         `
+                                        : `<p>xTrax rate will soon be available<br/>
+                                        <a href="https://github.com" target="_blank">Click to learn more </a></p>`
                                     : `<p>
                                     Stake to earn xTRAX. <br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a></p>`
@@ -240,12 +243,14 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                             <a
                                 id={key4}
                                 data-tooltip-html={
-                                    estimateTrax !== "0"
-                                        ? `<p>
-                                        xTRAX pre-farm rate: <b>${estimateTrax}</b><br/>
+                                    estimateTrax
+                                        ? estimateTrax !== "0"
+                                            ? `<p>
+                                        Pre-farm rate: <b>${estimateTrax}</b> xTRAX<br/>
                             <a href="https://github.com" target="_blank">Click to learn more </a>
                                         </p>
                                         `
+                                            : `<p>xTrax rate will soon be available<br/><a href="https://github.com" target="_blank">Click to learn more </a></p>`
                                         : `<p>
                                         Stake to earn xTRAX. <br/>
                                 <a href="https://github.com" target="_blank">Click to learn more </a></p>`

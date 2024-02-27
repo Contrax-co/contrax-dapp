@@ -31,10 +31,13 @@ import tickIcon from "src/assets/images/tick-blue.svg";
 import { useAppSelector } from "src/state";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 import { TraxApy } from "./TraxApy/TraxApy";
+import { useVaults } from "src/hooks/useVaults";
+import { Skeleton } from "src/components/Skeleton/Skeleton";
 
 function Dashboard() {
     const { lightMode } = useApp();
     const { earnTraxTermsAgreed } = useAppSelector((state) => state.account);
+    const { vaults, isFetched } = useVaults();
     const { currentWallet, displayAccount, signer, networkId, domainName } = useWallet();
     const [congModel, setCongModel] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -149,10 +152,42 @@ function Dashboard() {
                     </div>
                     {networkId === CHAIN_ID.ARBITRUM ? (
                         <div className={`dashboard_section outlinedContainer`}>
-                            <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
-                                Staked Tokens
-                            </p>
-                            <Vaults />
+                            {isFetched ? (
+                                <>
+                                    {vaults.length > 0 ? (
+                                        <>
+                                            <p
+                                                className={`dashboard_wallet_title ${
+                                                    lightMode && "dashboard_wallet_title--light"
+                                                }`}
+                                            >
+                                                Staked Tokens
+                                            </p>
+                                            <Vaults />
+                                        </>
+                                    ) : (
+                                        <div className="dashboard_video_container">
+                                            <div className="dashboard_para">
+                                                <h1 className="dashboard_video_title">New to Contrax?</h1>
+                                                <p className="dashboard_video_content">
+                                                    Watch this demo on how to get started!
+                                                </p>
+                                            </div>
+                                            <iframe
+                                                className="dashboard_iframe_video"
+                                                style={{ aspectRatio: "1.7777" }}
+                                                src="https://www.youtube.com/embed/cqJkiNrbVqk?si=XUyQiNVGbg99NnP1"
+                                                title="YouTube video player"
+                                                frameBorder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                allowFullScreen
+                                            ></iframe>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <Skeleton w={"100%"} h={250} bRadius={20} inverted={false} />
+                            )}
                         </div>
                     ) : (
                         <WrongNetwork />
