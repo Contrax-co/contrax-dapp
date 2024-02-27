@@ -1,3 +1,7 @@
+@font-face {
+    font-family: 'Sony Sketch EF';
+    src: url('../../../../src/assets/fonts/Sony_Sketch_EF/Sony_Sketch_EF.ttf') format('truetype');
+}
 .wrapper {
     position: relative;
     min-width: calc(25% - 12px);
@@ -59,6 +63,11 @@
     .value {
         display: flex;
         align-items: center;
+    }
+    .xtrax_title {
+        font-size: 18px;
+        font-family: 'Sony Sketch EF', sans-serif;
+        color: #62cde1;
     }
 }
 
