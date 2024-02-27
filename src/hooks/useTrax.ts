@@ -10,7 +10,7 @@ const useTrax = () => {
             return Number(
                 (
                     (estimatedTraxPerDay.find((ele) => ele.vaultAddress === vaultAddress)?.estimatedTraxPerDay || 0) *
-                    356.25
+                    365.25
                 ).toFixed()
             ).toLocaleString();
         },
@@ -20,7 +20,9 @@ const useTrax = () => {
     const totalTraxApy = useMemo(
         () =>
             Number(
-                (estimatedTraxPerDay?.reduce((acc, curr) => acc + curr.estimatedTraxPerDay, 0) || 0 * 365.25).toFixed()
+                (
+                    (estimatedTraxPerDay?.reduce((acc, curr) => acc + curr.estimatedTraxPerDay, 0) || 0) * 365.25
+                ).toFixed()
             ),
         [estimatedTraxPerDay]
     );
