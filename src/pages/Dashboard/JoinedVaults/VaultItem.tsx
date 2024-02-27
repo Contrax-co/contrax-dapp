@@ -119,7 +119,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                             </p>
                         </div>
                     </div>
-                    {estimateTrax > "0" && (
+                    {estimateTrax && estimateTrax > "0" && (
                         <div className={styles.property}>
                             <div className={styles.title}>
                                 <p>xTRAX</p>
