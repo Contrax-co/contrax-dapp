@@ -22,7 +22,7 @@ const useTrax = () => {
                 ).toFixed()
             ).toLocaleString();
         },
-        [estimatedTraxPerDay]
+        [estimatedTraxPerDay, vaults]
     );
 
     const totalTraxApy = useMemo(
@@ -36,7 +36,7 @@ const useTrax = () => {
                     }, 0) || 0) * 365.25
                 ).toFixed()
             ),
-        [estimatedTraxPerDay]
+        [estimatedTraxPerDay, vaults]
     );
     return { getTraxApy, totalTraxApy, estimatedTraxPerDay };
 };
