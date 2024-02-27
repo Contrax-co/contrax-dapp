@@ -5,6 +5,8 @@ import { GoArrowUp, GoArrowDown } from "react-icons/go";
 import { useAppSelector } from "src/state";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import styles from "./VaultItem.module.scss";
+import useTrax from "src/hooks/useTrax";
+import { useMemo } from "react";
 
 interface Props {
     vault: Vault;
@@ -20,7 +22,8 @@ function useOldPrice(address: string) {
 
 const VaultItem: React.FC<Props> = ({ vault }) => {
     const { oldPrice, isLoading: isLoadingOldData } = useOldPrice(vault.lp_address);
-
+    const { getTraxApy } = useTrax();
+    const estimateTrax = useMemo(() => getTraxApy(vault.vault_addr), [getTraxApy, vault]);
     const {
         userVaultBalance,
         priceOfSingleToken,
@@ -51,52 +54,54 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                     })
                                     .slice(0, -1)}
                             </p>
-                            {isLoadingOldData && <Skeleton w={45} h={16} style={{ marginLeft: 5 }} />}
-                            {!isLoadingOldData &&
-                                oldPrice &&
-                                Number(
-                                    (
-                                        userVaultBalance * priceOfSingleToken -
-                                        userVaultBalance * oldPrice[0].price
-                                    ).toFixed(2)
-                                ) !== 0 &&
-                                (oldPrice[0].price > priceOfSingleToken ? (
-                                    <span
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <GoArrowDown style={{ color: "red" }} />
-                                        <p style={{ margin: 0, fontSize: 10 }}>
-                                            {Math.abs(
-                                                userVaultBalance * priceOfSingleToken -
-                                                    userVaultBalance * oldPrice[0].price
-                                            ).toLocaleString("en-US", {
-                                                style: "currency",
-                                                currency: "USD",
-                                            })}
-                                        </p>
-                                    </span>
-                                ) : (
-                                    <span
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <GoArrowUp style={{ color: "lime" }} />
-                                        <p style={{ margin: 0, fontSize: 10 }}>
-                                            {Math.abs(
-                                                userVaultBalance * oldPrice[0].price -
-                                                    userVaultBalance * priceOfSingleToken
-                                            ).toLocaleString("en-US", {
-                                                style: "currency",
-                                                currency: "USD",
-                                            })}
-                                        </p>
-                                    </span>
-                                ))}
+                            <div style={{ minWidth: 60 }}>
+                                {isLoadingOldData && <Skeleton w={45} h={16} style={{ marginLeft: 5 }} />}
+                                {!isLoadingOldData &&
+                                    oldPrice &&
+                                    Number(
+                                        (
+                                            userVaultBalance * priceOfSingleToken -
+                                            userVaultBalance * oldPrice[0].price
+                                        ).toFixed(2)
+                                    ) !== 0 &&
+                                    (oldPrice[0].price > priceOfSingleToken ? (
+                                        <span
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <GoArrowDown style={{ color: "red" }} />
+                                            <p style={{ margin: 0, fontSize: 10 }}>
+                                                {Math.abs(
+                                                    userVaultBalance * priceOfSingleToken -
+                                                        userVaultBalance * oldPrice[0].price
+                                                ).toLocaleString("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                })}
+                                            </p>
+                                        </span>
+                                    ) : (
+                                        <span
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <GoArrowUp style={{ color: "lime" }} />
+                                            <p style={{ margin: 0, fontSize: 10 }}>
+                                                {Math.abs(
+                                                    userVaultBalance * oldPrice[0].price -
+                                                        userVaultBalance * priceOfSingleToken
+                                                ).toLocaleString("en-US", {
+                                                    style: "currency",
+                                                    currency: "USD",
+                                                })}
+                                            </p>
+                                        </span>
+                                    ))}
+                            </div>
                         </div>
                     </div>
 
@@ -114,6 +119,16 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                             </p>
                         </div>
                     </div>
+                    {estimateTrax > "0" && (
+                        <div className={styles.property}>
+                            <div className={styles.title}>
+                                <p>xTRAX</p>
+                            </div>
+                            <div className={styles.value}>
+                                <p>+{estimateTrax}</p>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
