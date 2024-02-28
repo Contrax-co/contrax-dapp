@@ -134,7 +134,8 @@ export const useDetailInput = (farm: Farm) => {
                     _slippage = res.slippage;
                 }
             }
-            if (_slippage.toString()) setSlippage(_slippage);
+            if (_slippage.toString())
+                setSlippage(_slippage === 0 ? 0.01 : _slippage); // temporary hardcoding 0.01% slippage instead of zero
             else setSlippage(undefined);
         } catch (err) {
             console.log(`%cError Slippage: ${err}`, "color: magenta;");

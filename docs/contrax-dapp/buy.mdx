@@ -1,55 +1,39 @@
 ---
 title: "Exchange - Buy"
-description: "Buy ETH for farming directly from the Contrax dApp"
+description: "Buy USDC or ETH for farming directly from the Contrax dApp"
 ---
+
+Note: If you have crypto on any other exchange, we recommend you transfer it over to save time and fees.
+Coinbase in particular may let you purchase and transfer USDC over with no fees at all. See our [transfer guide](../transfer/general) on how to do it.
 
 ## Overview
 
-Contrax uses Ramp, a licensed and regulated third party service, to let you buy Ethereum on Arbitrum for Contrax farming. Per money exchange guidelines, you will have to provide identity information to Ramp, which Contrax cannot see or access at all.
+If you don't have another account to transfer crypto over, Contrax offers several onramps to buy the USDC you need to enter any of the farms and start earning.
+
+Our onramp partners are: GateFi, Wert, or Transak. The first two are tiered KYC gateways that don't require ID uploads to purchase for orders under ~$300.
+Transak is another option, but it requires full KYC for any purchase size at this time
+
+You will also receive $5 upon your first purchase of $30 or more from any gateway. Once the purchase is confirmed, you will see it in your dashboard.
 
 ## How to Buy
 
-1. Make sure you connect/create your wallet by clicking the "Connect Wallet" button in the top right corner of the page. See [Wallet set-up](../start/wallet-setup) for more details.
+1. Ensure you've already signed in/up with the top right button.
+2. By default, you will see the GateFi gateway as the best option to buy. If it doesn't work for your region or if your payment options are not compatible, try Wert or Transak.
+3. For each gateway, follow the prompts, provide the request information and enter a card that matches your name.
+4. Upon completion, your funds will bridge over to Arbitrum (or for Transak, you'll already be on Arbitrum).
+5. Your funds and $5 credit will be visible on your dashboard, ready to enter any farm.
 
-2. Once connected, click "Exchange" from the sidebar, and you should see the Ramp widget. Enter your desired amount to purchase. You will see the ETH you will receive after fees upfront.
+Onramps can be unreliable due to some banks not accepting payment from them, or if the ramp does not work for your location or payment method.
+Please try different payment methods and different onramps if your purchases are not going through.
 
-<img height="250" width="250" src="/images/Ramp/1.png" />
+## Auto-Bridging for GateFi and Wert
 
-3. Enter an email address, and then provide the verification code sent to you.
+A note: Because USDC is not offered on Arbitrum for the tiered KYC gateways, we auto-bridge it over for you if you are a social login user.
+Practically, this means that you will need to wait a few more minutes and pay a fractional percentage more to get your USDC.
 
-<img height="250" width="250" src="/images/Ramp/2.png" />
-
-4. Your wallet address should auto-fill if you are already connected. If it isn't, follow the [wallet set-up](../start/wallet-setup) instruction to connect and copy your wallet.
-
-<img height="250" width="250" src="/images/Ramp/3.png" />
-
-5. Pick a payment method. You may only have card available (this is up to Ramp), and provide the payment details.
-
-<img height="250" width="250" src="/images/Ramp/4.png" />
-
-6. Confirm your order summary and "Buy Now"
-
-<img height="250" width="250" src="/images/Ramp/5.png" />
-
-7. For first time purchasers, you will need to verify your identity. This will include a photo of your ID and a selfie.
-   Note that Contrax will never see your ID or other information, as Ramp is a third party service regulated to handle this data.
-
-<img height="250" width="250" src="/images/Ramp/6.png" />
-
-8. Select the ID type and follow the instructions. Be patient if it takes a few tries. You only need to do this once.
-
-<img height="250" width="250" src="/images/Ramp/7.png" />
-
-9. Follow the instructions for providing a selfie.
-
-<img height="250" width="250" src="/images/Ramp/8.png" />
-
-10. If everything is successful, you will see the approval screen. It can take a few minutes to a few hours to see your crypto in your wallet.
-    You can check your dashboard periodically to see if your ETH has arrived.
-
-<img height="250" width="250" src="/images/Ramp/9.png" />
+For MetaMask and other web3 wallets, you will need to have about 20 cents of MATIC on the Polygon network for these gateways.
 
 ## How to Sell
 
-When you want to withdraw, you can use the same widget to sell, and follow the prompts.
-You will not need to provide ID to sell after you already did for buying, so the process will be fairly straightforward.
+When you want to withdraw, you can use the same widget to sell, and follow the prompts. Currently, only Transak has a sell option.
+Alternatively, you can transfer out any crypto in the dashboard to another exchange account of yours to sell.

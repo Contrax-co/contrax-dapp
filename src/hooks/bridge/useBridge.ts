@@ -8,7 +8,6 @@ import { useAppDispatch, useAppSelector } from "src/state";
 import { checkBridgeStatus, polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
 import { web3AuthConnectorId } from "src/config/constants";
 import { customCommify, getConnectorId, getNetworkName, toEth } from "src/utils/common";
-import { addressesByChainId } from "src/config/constants/contracts";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import { useQuery } from "@tanstack/react-query";
 import { getPrice } from "src/api/token";

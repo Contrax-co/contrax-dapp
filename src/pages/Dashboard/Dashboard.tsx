@@ -121,7 +121,7 @@ function Dashboard() {
                 <ReferralLink />
                 {currentWallet && !earnTraxTermsAgreed && (
                     <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>
-                        Earn Trax
+                        Earn xTrax
                     </button>
                 )}
             </div>
