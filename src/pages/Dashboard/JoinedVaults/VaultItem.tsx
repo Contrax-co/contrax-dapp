@@ -125,7 +125,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
                                 <p>xTRAX</p>
                             </div>
                             <div className={styles.value}>
-                                <p>{estimateTrax}</p>
+                                <p>{estimateTrax} per year</p>
                             </div>
                         </div>
                     )}
