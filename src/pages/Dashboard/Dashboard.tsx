@@ -196,7 +196,8 @@ function Dashboard() {
             ) : (
                 <NotSignedIn />
             )}
-            <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner>
+            {/* Removed banner , is reuseable*/}
+            {/* <ReferBanner style={{ marginLeft: 30, marginTop: 20 }}></ReferBanner> */}
         </div>
     );
 }
