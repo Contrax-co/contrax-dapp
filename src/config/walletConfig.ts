@@ -147,7 +147,7 @@ const openloginAdapter = new OpenloginAdapter({
     privateKeyProvider: PrivateKeyProvider,
     adapterSettings: {
         network: "cyan",
-        uxMode: "redirect",
+        uxMode: "popup",
     },
 });
 
