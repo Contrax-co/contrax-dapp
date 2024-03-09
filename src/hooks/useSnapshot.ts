@@ -131,7 +131,7 @@ export const useSnapshotVote = () => {
                 proposal: proposalId,
                 type: "single-choice",
                 choice: choiceNumber,
-                reason: "This choice make lot of sense",
+                reason: "I voted from the Contrax dApp directly!",
                 app: SNAPSHOT_APP_NAME,
             });
             notifySuccess("Vote", `Successfully voted ${choice}`);
@@ -146,9 +146,3 @@ export const useSnapshotVote = () => {
 
     return { vote, loadingVote };
 };
-
-
-
-
-
-

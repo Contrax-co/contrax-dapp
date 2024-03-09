@@ -53,9 +53,6 @@ const Buy: React.FC<IProps> = () => {
     return (
         <div className={styles.container}>
             <h5>Fund Your Account</h5>
-            <p>
-                Limited Promotion! New Buyers get <b>$5</b> in USDC (minimum $30)
-            </p>
             <small>Note: If Wert isn't supported for you, use Transak</small>
 
             <Tabs>
