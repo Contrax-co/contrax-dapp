@@ -12,9 +12,9 @@ import Gatefi from "./Gatefi";
 interface IProps {}
 
 enum Tab {
+    Transak = "Transak",
     Unlimint = "Unlimint",
     Wert = "Wert",
-    Transak = "Transak",
 }
 
 const Buy: React.FC<IProps> = () => {
