@@ -117,7 +117,7 @@ function Dashboard() {
                 </div>
             </div>
 
-            <div style={{ display: "flex" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginLeft: 30 }}>
                 <ReferralLink />
                 {currentWallet && !earnTraxTermsAgreed && (
                     <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>

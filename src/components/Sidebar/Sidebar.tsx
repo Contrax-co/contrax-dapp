@@ -76,10 +76,10 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     active={pathname === RoutesPaths.Deposit}
                 />
                 <SidebarItem
-                    title="Dao"
+                    title="Governance"
                     icon={<FiCommand width={18} />}
-                    onClick={() => handleNavigation(RoutesPaths.Dao)}
-                    active={pathname === RoutesPaths.Dao}
+                    onClick={() => handleNavigation(RoutesPaths.Governance)}
+                    active={pathname === RoutesPaths.Governance}
                 />
                 {process.env.NODE_ENV === "development" && (
                     <>

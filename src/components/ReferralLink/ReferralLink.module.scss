@@ -4,7 +4,7 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    margin-left: 30px;
+    // margin-left: 30px;
     padding: 10px 16px;
     max-width: calc(100% - 92px);
     @include devices(mobile) {
@@ -20,32 +20,33 @@
     min-width: 100px;
     display: block;
     @include devices(xlMobile) {
-        display: none;
+        min-width: 80px;
+        // display: none;
     }
 }
 
-.heading2 {
-    min-width: 30px;
-    display: none;
-    @include devices(xlMobile) {
-        display: block;
-    }
-    @include devices(mobile) {
-        min-width: 26px;
-    }
-}
+// .heading2 {
+//     min-width: 30px;
+//     display: none;
+//     @include devices(xlMobile) {
+//         display: block;
+//     }
+//     @include devices(mobile) {
+//         min-width: 26px;
+//     }
+// }
 
 .link {
     color: var(--color_primary);
     cursor: pointer;
     display: flex;
     align-items: center;
-    width: 298px;
+    width: 300px;
     @include devices(xlMobile) {
         width: 200px;
     }
     @include devices(mobile) {
-        width: 120px;
+        width: 150px;
     }
     .text {
         overflow: hidden;
