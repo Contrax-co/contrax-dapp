@@ -2,13 +2,18 @@
 
 .container {
     display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-left: 30px;
-    padding: 10px 16px;
-    max-width: calc(100% - 92px);
+    gap: 4px;
+    flex-flow: column;
+    align-items: flex-start;
+    // margin-left: 30px;
+    padding: 16px 24px;
+    max-width: calc(100% - 80px);
+    @include devices(tablet) {
+        width: 100%;
+    }
     @include devices(mobile) {
         font-size: 14px;
+        padding: 10px 16px;
     }
 }
 
@@ -17,49 +22,51 @@
 }
 
 .heading {
-    min-width: 100px;
-    display: block;
-    @include devices(xlMobile) {
-        display: none;
-    }
+    font-weight: bold;
+    color: var(--color_primary);
 }
 
 .heading2 {
-    min-width: 30px;
-    display: none;
-    @include devices(xlMobile) {
-        display: block;
-    }
+    color: var(--color_grey);
+}
+
+.text {
+    color: var(--color_grey);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    // max-width: calc(100% - 24px);
     @include devices(mobile) {
-        min-width: 26px;
+        // max-width: calc(100% - 22px);
     }
 }
 
-.link {
-    color: var(--color_primary);
-    cursor: pointer;
+.linkContainer {
+    background-color: var(--background_primary);
     display: flex;
+    justify-content: space-between;
+    height: 40px;
     align-items: center;
-    width: 298px;
-    @include devices(xlMobile) {
-        width: 200px;
-    }
-    @include devices(mobile) {
-        width: 120px;
-    }
-    .text {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        max-width: calc(100% - 24px);
-        @include devices(mobile) {
-            max-width: calc(100% - 22px);
-        }
+    border-radius: 8px;
+    padding-left: 16px;
+    margin-top: 4px;
+    width: 600px;
+    @include devices(tablet) {
+        width: -webkit-fill-available;
     }
 }
 
-.icon {
-    color: var(--color_primary);
-    cursor: pointer;
-    margin-left: 8px;
+.copyBtn {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    height: 100%;
+    min-height: auto;
+    min-width: auto;
+    padding: 0px;
+    width: 120px;
+    @include devices(tablet) {
+        width: 80px;
+        min-width: 80px;
+        padding: 0px !important;
+    }
 }

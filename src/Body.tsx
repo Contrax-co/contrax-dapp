@@ -135,7 +135,7 @@ function Body() {
                 />
                 <Route path={RoutesPaths.Test} element={<Test />} />
                 <Route path={RoutesPaths.Stats} element={<Stats />} />
-                <Route path={RoutesPaths.Dao} element={<Snapshot />} />
+                <Route path={RoutesPaths.Governance} element={<Snapshot />} />
                 <Route path={RoutesPaths.ReferralDashboard} element={<ReferralDashboard />} />
                 <Route path="*" element={<h3 style={{ color: "white" }}>Not Found</h3>} />
             </Route>

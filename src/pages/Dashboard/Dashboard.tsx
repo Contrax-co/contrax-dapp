@@ -69,8 +69,12 @@ function Dashboard() {
                                 >
                                     {domainName || displayAccount}
                                 </p>
-                                {!copied ? <FiCopy /> : <BsCheckCircle />}
-                                {earnTraxTermsAgreed && (
+                                {!copied ? (
+                                    <FiCopy style={{ marginRight: 10 }} />
+                                ) : (
+                                    <BsCheckCircle style={{ marginRight: 10 }} />
+                                )}
+                                {earnTraxTermsAgreed ? (
                                     <div
                                         className={`dashboard_traxEarningEnabled animated-border--dark ${
                                             lightMode && "animated-border"
@@ -79,6 +83,13 @@ function Dashboard() {
                                         <img src={tickIcon} alt="tick" className="dashboard_traxEnabledTick" />
                                         <p className="dashboard_traxEnabledTick">TRAX Earning Enabled</p>
                                     </div>
+                                ) : (
+                                    <button
+                                        className="custom-button earn_trax_button"
+                                        onClick={() => setOpenEarnTraxModal(true)}
+                                    >
+                                        Earn xTrax
+                                    </button>
                                 )}
                             </div>
                             <div
@@ -117,13 +128,8 @@ function Dashboard() {
                 </div>
             </div>
 
-            <div style={{ display: "flex" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginLeft: 30 }}>
                 <ReferralLink />
-                {currentWallet && !earnTraxTermsAgreed && (
-                    <button className="custom-button earn_trax_button" onClick={() => setOpenEarnTraxModal(true)}>
-                        Earn xTrax
-                    </button>
-                )}
             </div>
 
             {currentWallet && !earnTraxTermsAgreed && openEarnTraxModal && (
