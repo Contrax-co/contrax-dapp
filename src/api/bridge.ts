@@ -1,8 +1,9 @@
 import { CHAIN_ID } from "src/types/enums";
 import { socketTechApi } from ".";
 import { addressesByChainId } from "src/config/constants/contracts";
-import { getPrice } from "./token";
 import { toEth } from "src/utils/common";
+import { getTokenPricesBackend } from "./token";
+import { Address } from "viem";
 
 interface TokenList {
     address: string;
@@ -108,7 +109,12 @@ export const getRoute = async (
     if (!route) {
         const err = parseError(errors);
         console.log("Bridge route errors: ", err);
-        const price = await getPrice(fromTokenAddress, fromChainId);
+        const priceRes = await getTokenPricesBackend();
+        if (!priceRes?.[String(fromChainId)][fromTokenAddress as Address]) {
+            throw new Error(`Error in getting price for bridge`);
+        }
+        // @ts-expect-error
+        const price = priceRes[String(fromChainId)][fromTokenAddress]!;
         const usdAmount = Number(toEth(err.minAmount, res.data.result.fromAsset.decimals)) * price;
 
         if (!route)

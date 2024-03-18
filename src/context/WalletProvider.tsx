@@ -24,9 +24,9 @@ import { GasSponsoredSigner } from "src/utils/gasSponsoredSigner";
 import { useAppSelector } from "src/state";
 import { getWeb3AuthProvider } from "src/config/walletConfig";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
-import { getPrice } from "src/api/token";
 import { CHAIN_ID } from "src/types/enums";
 import { useEthersProvider, useEthersSigner } from "src/config/walletConfig";
+import { getTokenPricesBackend } from "src/api/token";
 
 interface IWalletContext {
     /**
@@ -119,7 +119,12 @@ const useWaleltSigner = () => {
 const useNativeBalance = (chainId: number): BalanceResult => {
     const { data: price } = useQuery({
         queryKey: GET_PRICE_TOKEN(getNetworkName(chainId), ethers.constants.AddressZero),
-        queryFn: () => getPrice(ethers.constants.AddressZero, chainId),
+        queryFn: () => getTokenPricesBackend(),
+        select(data) {
+            if (data) {
+                return data[String(chainId)][ethers.constants.AddressZero];
+            }
+        },
         refetchInterval: 60000,
     });
     const { balances, mainnetBalances, polygonBalances } = useBalances();
@@ -178,7 +183,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const mainnetBalance = useNativeBalance(CHAIN_ID.MAINNET);
     const arbitrumBalance = useNativeBalance(CHAIN_ID.ARBITRUM);
     const [domainName, setDomainName] = useState<null | string>(null);
-
     const connectWallet = async () => {
         if (openConnectModal) openConnectModal();
 
@@ -259,9 +263,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     React.useEffect(() => {
         const int = setInterval(async () => {
             try {
-                if ((await getPrice(ethers.constants.AddressZero, defaultChainId)) === 0) {
-                    throw new Error();
-                }
                 await provider.getBlockNumber();
                 dispatch(resetErrorCount());
             } catch (error) {
@@ -301,6 +302,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             value={{
                 currentWallet: currentWallet || "",
                 // currentWallet: "0x1C9057544409046f82d7d47332383a6780763EAF",
+                // currentWallet: "0x6403e9d6141fb36B76521871e986d68FebBda064",
+                // currentWallet: "0x74541e279fe87135e43D390aA5eaB8486fb185B9",
                 connectWallet,
                 networkId,
                 logout,
@@ -328,6 +331,3 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 };
 
 export default WalletProvider;
-
-
-

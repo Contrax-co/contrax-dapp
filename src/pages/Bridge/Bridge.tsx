@@ -112,6 +112,7 @@ const Bridge = () => {
                     // excludeBridges={[]}
                     defaultSourceNetwork={1}
                     defaultDestNetwork={defaultChainId}
+                    // enableSameChainSwaps
                     // sourceNetworks={[1, 137, defaultChainId]}
                     // destNetworks={[1, 137, defaultChainId]}
                     customize={lightMode ? lightSocketTheme : darkSocketTheme}
