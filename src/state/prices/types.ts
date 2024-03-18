@@ -23,8 +23,6 @@ export interface AddPrice {
 }
 export interface UpdatePricesActionPayload {
     chainId: number;
-    farms: Farm[];
-    multicallProvider: MulticallProvider;
 }
 
 export interface GetOldPricesActionPayload {
@@ -38,9 +36,6 @@ export interface GetOldPricesActionPayload {
         blockTimestamp: string;
     }[];
     farms: Farm[];
-    provider: MulticallProvider;
-    chainId: number;
-    decimals: Decimals;
 }
 
 export interface Prices {
