@@ -1,5 +1,5 @@
-import { Addresses, addressesByChainId } from "src/config/constants/contracts";
-import { blockExplorersByChainId, coinsLamaPriceByChainId } from "src/config/constants/urls";
+import { addressesByChainId } from "src/config/constants/contracts";
+import { blockExplorersByChainId } from "src/config/constants/urls";
 import { getNetworkName } from "src/utils/common";
 import useWallet from "./useWallet";
 
@@ -11,8 +11,7 @@ const useConstants = () => {
     const NETWORK_NAME = getNetworkName(CHAIN_ID) || "";
     const CONTRACTS = addressesByChainId[CHAIN_ID] || "";
     const BLOCK_EXPLORER_URL = blockExplorersByChainId[CHAIN_ID] || "";
-    const COINS_LLAMA_PRICE = coinsLamaPriceByChainId[CHAIN_ID] || "";
-    return { CHAIN_ID, NETWORK_NAME, CONTRACTS, BLOCK_EXPLORER_URL, COINS_LLAMA_PRICE };
+    return { CHAIN_ID, NETWORK_NAME, CONTRACTS, BLOCK_EXPLORER_URL };
 };
 
 export default useConstants;

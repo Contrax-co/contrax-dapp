@@ -8,7 +8,7 @@ export const RoutesPaths = {
     Buy: "/buy",
     Deposit: "/deposit",
     Stats: "/stats",
-    Dao: "/dao",
+    Governance: "/governance",
     ReferralDashboard: "/referral-dashboard",
     Test: "/Test",
 };

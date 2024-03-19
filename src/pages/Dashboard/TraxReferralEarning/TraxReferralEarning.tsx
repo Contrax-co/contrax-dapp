@@ -6,17 +6,20 @@ import { ReactComponent as RefEarnIcon } from "src/assets/images/refEarn.svg";
 interface Props {}
 
 export const TraxReferralEarning: React.FC<Props> = () => {
-    const { earnedTraxByReferral } = useAppSelector((state) => state.account);
+    const { earnedTraxByReferral, totalEarnedTraxByReferral } = useAppSelector((state) => state.account);
+    const trax =
+        (totalEarnedTraxByReferral || 0) > (earnedTraxByReferral || 0)
+            ? totalEarnedTraxByReferral
+            : earnedTraxByReferral;
 
-    if (!earnedTraxByReferral || earnedTraxByReferral < 0.001 || Number.isNaN(Number(earnedTraxByReferral.toFixed(0))))
-        return null;
+    if (!trax || trax < 0.001 || Number.isNaN(Number(trax.toFixed(0)))) return null;
 
     return (
         <div className={`outlinedContainer ${styles.container}`}>
             <p className={styles.heading}>TRAX from Referrals</p>
             <p className={styles.value}>
                 <RefEarnIcon />
-                {customCommify(earnedTraxByReferral, { minimumFractionDigits: 3, showDollarSign: false })}
+                {customCommify(trax, { minimumFractionDigits: 3, showDollarSign: false })}
             </p>
         </div>
     );

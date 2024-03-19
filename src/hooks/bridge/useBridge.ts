@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
-import { useBalance } from "wagmi";
 import { useEthersSigner } from "src/config/walletConfig";
 import useWallet from "../useWallet";
-import { BigNumber, constants, ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { CHAIN_ID } from "src/types/enums";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { checkBridgeStatus, polyUsdcToArbUsdc } from "src/state/ramp/rampReducer";
@@ -10,9 +9,10 @@ import { web3AuthConnectorId } from "src/config/constants";
 import { customCommify, getConnectorId, getNetworkName, toEth } from "src/utils/common";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import { useQuery } from "@tanstack/react-query";
-import { getPrice } from "src/api/token";
 import { BridgeChainInfo, BridgeDirection } from "src/state/ramp/types";
 import useBalances from "../useBalances";
+import { getTokenPricesBackend } from "src/api/token";
+import { Address } from "viem";
 
 const useBridge = (direction: BridgeDirection) => {
     const { getWeb3AuthSigner, currentWallet, switchNetworkAsync, networkId } = useWallet();
@@ -22,7 +22,13 @@ const useBridge = (direction: BridgeDirection) => {
             getNetworkName(BridgeChainInfo[direction].sourceChainId),
             BridgeChainInfo[direction].sourceAddress
         ),
-        queryFn: () => getPrice(BridgeChainInfo[direction].sourceAddress, BridgeChainInfo[direction].sourceChainId),
+        // BridgeChainInfo[direction].sourceAddress, BridgeChainInfo[direction].sourceChainId
+        queryFn: () => getTokenPricesBackend(),
+        select(data) {
+            return data?.[String(BridgeChainInfo[direction].sourceChainId)][
+                BridgeChainInfo[direction].sourceAddress as Address
+            ];
+        },
         refetchInterval: 60000,
     });
 

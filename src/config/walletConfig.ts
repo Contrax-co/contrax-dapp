@@ -99,7 +99,7 @@ const web3AuthInstance = new Web3AuthNoModal({
         displayName: arbitrum.name,
         tickerName: arbitrum.nativeCurrency.name,
         ticker: arbitrum.nativeCurrency.symbol,
-        blockExplorer: "https://arbiscan.io/",
+        blockExplorerUrl: "https://arbiscan.io/",
     },
 });
 
@@ -111,7 +111,8 @@ const PrivateKeyProvider = new EthereumPrivateKeyProvider({
             displayName: arbitrum.name,
             tickerName: arbitrum.nativeCurrency.name,
             ticker: arbitrum.nativeCurrency.symbol,
-            blockExplorer: "https://arbiscan.io/",
+            blockExplorerUrl: "https://arbiscan.io/",
+            chainNamespace: CHAIN_NAMESPACES.EIP155,
         },
     },
 });
@@ -133,7 +134,8 @@ export async function getWeb3AuthProvider(config: {
                 displayName: config.name,
                 tickerName: config.tickerName,
                 ticker: config.ticker,
-                blockExplorer: config.blockExplorer,
+                blockExplorerUrl: config.blockExplorer,
+                chainNamespace: CHAIN_NAMESPACES.EIP155,
             },
         },
     });
@@ -147,7 +149,8 @@ const openloginAdapter = new OpenloginAdapter({
     privateKeyProvider: PrivateKeyProvider,
     adapterSettings: {
         network: "cyan",
-        uxMode: "popup",
+        uxMode: "redirect",
+        replaceUrlOnRedirect: false,
     },
 });
 
@@ -167,7 +170,6 @@ const connectors = connectorsForWallets([
                 id: "google",
                 name: "Google",
                 iconUrl: googleIcon,
-
                 iconBackground: "white",
                 createConnector: () => {
                     const connector = new Web3AuthConnector({
