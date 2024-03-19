@@ -9,9 +9,10 @@ import { Boosts } from "src/state/account/types";
 interface Props {}
 
 export const TraxEarning: React.FC<Props> = () => {
-    const { earnedTrax, boosts } = useAppSelector((state) => state.account);
+    const { earnedTrax, totalEarnedTrax, boosts } = useAppSelector((state) => state.account);
+    const trax = (totalEarnedTrax || 0) > (earnedTrax || 0) ? totalEarnedTrax : earnedTrax;
 
-    if (!earnedTrax || earnedTrax < 0.001 || Number.isNaN(Number(earnedTrax.toFixed(0)))) return null;
+    if (!trax || trax < 0.001 || Number.isNaN(Number(trax.toFixed(0)))) return null;
 
     return (
         <div className={`outlinedContainer ${styles.container}`}>
@@ -21,7 +22,7 @@ export const TraxEarning: React.FC<Props> = () => {
                 {/* <FaUserFriends size={120} /> */}
                 <EarnIcon />
                 {/* <MdAdd /> */}
-                {customCommify(earnedTrax, { minimumFractionDigits: 3, showDollarSign: false })}
+                {customCommify(trax, { minimumFractionDigits: 3, showDollarSign: false })}
             </p>
         </div>
     );
