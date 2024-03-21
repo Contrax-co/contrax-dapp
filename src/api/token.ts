@@ -18,7 +18,7 @@ export const getTokenPricesBackend = async (
 ) => {
     try {
         const { data } = await backendApi.get<{ data: { allPrices: { [key: string]: { [key: Address]: number } } } }>(
-            "price" + (timestamp ? `?timestamp=${timestamp}` : "") + (searchWidth ? `?searchWidth=${searchWidth}` : ""),
+            "price" + (timestamp ? `?timestamp=${timestamp}` : "") + (searchWidth ? `&searchWidth=${searchWidth}` : ""),
             { cache: true }
         );
 
