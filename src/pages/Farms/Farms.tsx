@@ -201,7 +201,7 @@ function Farms() {
                               ))}
                 </>
             ) : (
-                <EmptyComponent>Please change network to Arbitrum to use the farms</EmptyComponent>
+                <EmptyComponent>Please change network to Arbitrum to access the vaults</EmptyComponent>
             )}
         </div>
     );
