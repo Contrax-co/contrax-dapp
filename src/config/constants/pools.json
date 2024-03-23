@@ -2,7 +2,7 @@
   {
     "id": 24,
     "originPlatform": "Sushiswap",
-    "source":"https://app.sushi.com/farm?chainId=42161",
+    "source":"https://www.sushi.com/pool/42161%3A0x0C1Cf6883efA1B496B01f654E247B9b419873054",
     "token_type": "LP Token",
     "name": "WETH-DPX",
     "url_name": "WETH-DPX",
@@ -35,7 +35,7 @@
   {
     "id": 26,
     "originPlatform": "Sushiswap",
-    "source":"https://app.sushi.com/farm?chainId=42161",
+    "source":"https://www.sushi.com/pool/42161%3A0x3221022e37029923aCe4235D812273C5A42C322d",
     "token_type": "LP Token",
     "name": "WETH-SUSHI",
     "url_name": "WETH-SUSHI",
@@ -66,7 +66,7 @@
   {
     "id": 10,
     "originPlatform": "Sushiswap",
-    "source":"https://app.sushi.com/farm?chainId=42161",
+    "source":"https://www.sushi.com/pool/42161%3A0xB7E50106A5bd3Cf21AF210A755F9C8740890A8c9",
     "token_type": "LP Token",
     "name": "WETH-MAGIC",
     "url_name": "WETH-MAGIC",
@@ -104,7 +104,7 @@
     "name1": "WETH",
     "name2": "PLS",
     "originPlatform": "Sushiswap",
-    "source":"https://app.sushi.com/farm?chainId=42161",
+    "source":"https://www.sushi.com/pool/42161%3A0x6CC0D643C7b8709F468f58F363d73Af6e4971515",
     "platform": "Plutus",
     "platform_alt": "Plutus logo",
     "total_apy": 33.2,
@@ -132,7 +132,7 @@
   {
     "id": 4,
     "originPlatform": "Sushiswap",
-    "source":"https://app.sushi.com/farm?chainId=42161",
+    "source":"https://www.sushi.com/pool/42161%3A0x515e252b2b5c22b4b2b6Df66c2eBeeA871AA4d69",
     "token_type": "LP Token",
     "name": "WETH-WBTC",
     "url_name": "WETH-WBTC",
@@ -163,7 +163,7 @@
   {
     "id": 1,
     "originPlatform": "Sushiswap",
-    "source":"https://app.sushi.com/farm?chainId=42161",
+    "source":"https://www.sushi.com/pool/42161%3A0x692a0B300366D1042679397e40f3d2cb4b8F7D30",
     "token_type": "LP Token",
     "name": "WETH-DAI",
     "url_name": "WETH-DAI",
@@ -194,7 +194,7 @@
   {
     "id": 3,
     "originPlatform": "Sushiswap",
-    "source":"https://app.sushi.com/farm?chainId=42161",
+    "source":"https://www.sushi.com/pool/42161%3A0xCB0E5bFa72bBb4d16AB5aA0c60601c438F04b4ad",
     "token_type": "LP Token",
     "name": "WETH-USDT",
     "url_name": "WETH-USDT",
@@ -225,7 +225,7 @@
   {
     "id": 2,
     "originPlatform": "Sushiswap",
-    "source":"https://app.sushi.com/farm?chainId=42161",
+    "source":"https://www.sushi.com/pool/42161%3A0x905dfCD5649217c42684f23958568e533C711Aa3",
     "token_type": "LP Token",
     "name": "WETH-USDC",
     "url_name": "WETH-USDC",
