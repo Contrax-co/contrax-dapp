@@ -19,7 +19,7 @@ export class GasSponsoredSigner extends Wallet {
 
     override async sendTransaction(transaction: Deferrable<TransactionRequest>): Promise<TransactionResponse> {
         this._checkProvider("sendTransaction");
-        const gasPrice = await this.getGasPrice();
+        const gasPrice = (await this.getGasPrice()).mul(2);
         const gasLimit = transaction.gasLimit || (await this.estimateGas({ ...transaction }));
 
         transaction.maxPriorityFeePerGas = gasPrice;
