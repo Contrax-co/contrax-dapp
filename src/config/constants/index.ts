@@ -30,6 +30,7 @@ export const SOCKET_API_KEY = process.env.REACT_APP_SOCKET_API_KEY;
 export const RAMP_TRANSAK_API_KEY = process.env.REACT_APP_RAMP_TRANSAK_API_KEY;
 export const ZERODEV_PROJECT_ID = process.env.REACT_APP_ZERODEV_PROJECT_ID!;
 export const ZERODEV_PROJECT_ID_MAINNET = process.env.REACT_APP_ZERODEV_PROJECT_ID_MAINNET!;
+export const IS_LEGACY = process.env.REACT_APP_REACT_APP_IS_LEGACY === "true";
 export const DODO_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum";
 export const FRAX_APR_API_URL = "https://stargate.finance/.netlify/functions/farms";
 export const SUSHUISWAP_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/sushi-0m/sushiswap-arbitrum";
