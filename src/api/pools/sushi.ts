@@ -6,77 +6,104 @@ import { toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
-import { Balances } from "src/state/balances/types";
-import { Prices } from "src/state/prices/types";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
+import {
+    DepositFn,
+    DynamicFarmFunctions,
+    GetFarmDataProcessedFn,
+    SlippageDepositBaseFn,
+    SlippageInBaseFn,
+    SlippageOutBaseFn,
+    SlippageWithdrawBaseFn,
+    TokenAmounts,
+    WithdrawFn,
+    ZapInFn,
+    ZapOutFn,
+} from "./types";
+import { defaultChainId } from "src/config/constants";
+import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
+import { TenderlySimulateTransactionBody } from "src/types/tenderly";
+import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
 
-export default function sushi(farmId: number) {
+let sushi: DynamicFarmFunctions = function (farmId) {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
 
-    const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices) => {
+    const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
         const ethPrice = prices[constants.AddressZero];
-        const lpPrice = prices[farm.lp_address];
+        const lpAddress = farm.lp_address;
+        const vaultTokenPrice = prices[farm.vault_addr];
         const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
-        const ethBalance = BigNumber.from(balances[constants.AddressZero]);
-        const lpBalance = BigNumber.from(balances[farm.lp_address]);
+
+        const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
+
+        let depositableAmounts: TokenAmounts[] = [
+            {
+                tokenAddress: usdcAddress,
+                tokenSymbol: "USDC",
+                amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
+                amountDollar: (
+                    Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
+                ).toString(),
+                price: prices[usdcAddress],
+            },
+            {
+                tokenAddress: constants.AddressZero,
+                tokenSymbol: "ETH",
+                amount: toEth(balances[constants.AddressZero]!, 18),
+                amountDollar: (Number(toEth(balances[constants.AddressZero]!, 18)) * ethPrice).toString(),
+                price: ethPrice,
+            },
+            {
+                tokenAddress: lpAddress,
+                tokenSymbol: farm.name,
+                amount: toEth(balances[lpAddress]!, decimals[lpAddress]),
+                amountDollar: (Number(toEth(balances[lpAddress]!, decimals[lpAddress])) * prices[lpAddress]).toString(),
+                price: prices[lpAddress],
+            },
+        ];
+
+        let withdrawableAmounts: TokenAmounts[] = [
+            {
+                tokenAddress: usdcAddress,
+                tokenSymbol: "USDC",
+                amount: ((Number(toEth(vaultBalance)) * vaultTokenPrice) / prices[usdcAddress]).toString(),
+                amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
+                price: prices[usdcAddress],
+            },
+            {
+                tokenAddress: constants.AddressZero,
+                tokenSymbol: "ETH",
+                amount: ((Number(toEth(vaultBalance)) * vaultTokenPrice) / ethPrice).toString(),
+                amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
+                price: ethPrice,
+            },
+            {
+                tokenAddress: lpAddress,
+                tokenSymbol: farm.name,
+                amount: toEth(vaultBalance),
+                amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
+                price: prices[lpAddress],
+                isPrimaryVault: true,
+            },
+        ];
 
         const result = {
-            Max_Zap_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
-            Max_Zap_Withdraw_Balance: ((Number(toEth(vaultBalance)) * lpPrice) / ethPrice).toString(),
-            Max_Token_Withdraw_Balance: toEth(vaultBalance),
-            Max_Token_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
-            Max_Token_Deposit_Balance: toEth(lpBalance),
-            Max_Token_Deposit_Balance_Dollar: (Number(toEth(lpBalance)) * lpPrice).toString(),
-            Max_Zap_Deposit_Balance_Dollar: (Number(toEth(ethBalance)) * ethPrice).toString(),
-            Max_Zap_Deposit_Balance: toEth(ethBalance),
-            Token_Token_Symbol: farm.name,
-            Zap_Token_Symbol: "ETH",
-            Token_Deposit_Token_Address: farm.lp_address,
-            Token_Withdraw_Token_Address: farm.lp_address,
-            Zap_Deposit_Token_Address: constants.AddressZero,
-            Zap_Withdraw_Token_Address: constants.AddressZero,
-            TOKEN_PRICE: lpPrice,
-            ZAP_TOKEN_PRICE: ethPrice,
-            Zap_Enabled: true,
-            ID: farm.id,
+            depositableAmounts,
+            withdrawableAmounts,
+            vaultBalanceFormated: (Number(toEth(vaultTotalSupply ?? 0)) * vaultTokenPrice).toString(),
+            id: farm.id,
         };
         return result;
     };
 
-    const deposit = async ({
-        depositAmount,
-        currentWallet,
-        signer,
-        chainId,
-        max,
-        cb,
-    }: {
-        depositAmount: number;
-        currentWallet: string;
-        signer?: Signer;
-        chainId: number;
-        max?: boolean;
-        cb?: () => any;
-    }) => {
+    const deposit: DepositFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
         if (!signer) return;
         let notiId = notifyLoading(loadingMessages.approvingDeposit());
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         try {
             const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
 
-            /*
-             * Execute the actual deposit functionality from smart contract
-             */
-            let formattedBal;
-
             const lpBalance = await getBalance(farm.lp_address, currentWallet, signer.provider!);
-            if (max) {
-                // Deposit all
-                formattedBal = lpBalance;
-            } else {
-                // Deposit
-                formattedBal = utils.parseUnits(validateNumberDecimals(depositAmount, farm.decimals), farm.decimals);
-            }
 
             // approve the vault to spend asset
             await approveErc20(farm.lp_address, farm.vault_addr, lpBalance, currentWallet, signer);
@@ -88,19 +115,18 @@ export default function sushi(farmId: number) {
             if (max) {
                 depositTxn = await vaultContract.depositAll();
             } else {
-                depositTxn = await vaultContract.deposit(formattedBal);
+                depositTxn = await vaultContract.deposit(amountInWei);
             }
-
             dismissNotify(notiId);
-            notifyLoading(loadingMessages.depositing(depositTxn.hash), {
+            notifyLoading(loadingMessages.depositing(depositTxn.transactionHash), {
                 id: notiId,
-                buttons: [
-                    {
-                        name: "View",
-                        // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${depositTxn.hash}`, "_blank"),
-                    },
-                ],
+                // buttons: [
+                //     {
+                //         name: "View",
+                //         // @ts-ignore
+                //         onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${depositTxn.hash}`, "_blank"),
+                //     },
+                // ],
             });
 
             const depositTxnStatus = await depositTxn.wait(1);
@@ -116,35 +142,15 @@ export default function sushi(farmId: number) {
             dismissNotify(notiId);
             notifyError(errorMessages.generalError(err.reason || err.message));
         }
-        cb && cb();
     };
 
-    const withdraw = async ({
-        withdrawAmount,
-        currentWallet,
-        signer,
-        chainId,
-        max,
-        cb,
-    }: {
-        withdrawAmount: number;
-        currentWallet: string;
-        signer?: Signer;
-        chainId: number;
-        max?: boolean;
-        cb?: () => any;
-    }) => {
+    const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
         if (!signer) return;
         const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
             const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
 
-            /*
-             * Execute the actual withdraw functionality from smart contract
-             */
-            let formattedBal;
-            formattedBal = utils.parseUnits(validateNumberDecimals(withdrawAmount, farm.decimals), farm.decimals);
             dismissNotify(notiId);
             notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
@@ -152,19 +158,19 @@ export default function sushi(farmId: number) {
             if (max) {
                 withdrawTxn = await vaultContract.withdrawAll();
             } else {
-                withdrawTxn = await vaultContract.withdraw(formattedBal);
+                withdrawTxn = await vaultContract.withdraw(amountInWei);
             }
 
             dismissNotify(notiId);
-            notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
+            notifyLoading(loadingMessages.withDrawing(withdrawTxn.bundleTransactionHash), {
                 id: notiId,
-                buttons: [
-                    {
-                        name: "View",
-                        // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${withdrawTxn.hash}`, "_blank"),
-                    },
-                ],
+                // buttons: [
+                //     {
+                //         name: "View",
+                //         // @ts-ignore
+                //         onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${withdrawTxn.bundleTransactionHash}`, "_blank"),
+                //     },
+                // ],
             });
 
             const withdrawTxnStatus = await withdrawTxn.wait(1);
@@ -180,140 +186,111 @@ export default function sushi(farmId: number) {
             dismissNotify(notiId);
             notifyError(errorMessages.generalError(err.reason || err.message));
         }
-        cb && cb();
     };
 
-    const zapIn = async ({
-        zapAmount,
+    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max, signer }) => {
+        if (!signer) return BigNumber.from(0);
+        const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+
+        const transaction = {} as Omit<
+            TenderlySimulateTransactionBody,
+            "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
+        >;
+        transaction.from = currentWallet;
+
+        // approve the vault to spend asset
+        transaction.state_overrides = getAllowanceStateOverride([
+            {
+                tokenAddress: farm.lp_address,
+                owner: currentWallet,
+                spender: farm.vault_addr,
+            },
+        ]);
+
+        if (max) {
+            const populated = await vaultContract.populateTransaction.depositAll();
+
+            transaction.input = populated.data || "";
+            transaction.value = populated.value?.toString();
+        } else {
+            const populated = await vaultContract.populateTransaction.deposit(amountInWei);
+
+            transaction.input = populated.data || "";
+            transaction.value = populated.value?.toString();
+        }
+        const simulationResult = await simulateTransaction({
+            /* Standard EVM Transaction object */
+            ...transaction,
+            to: farm.vault_addr,
+        });
+
+        const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
+        const difference = BigNumber.from(filteredState.afterChange[currentWallet.toLowerCase()]).sub(
+            BigNumber.from(filteredState.original[currentWallet.toLowerCase()])
+        );
+
+        return difference;
+    };
+
+    const withdrawSlippage: SlippageWithdrawBaseFn = async ({
+        amountInWei,
         currentWallet,
         signer,
         chainId,
         max,
-        cb,
-    }: {
-        zapAmount: number;
-        currentWallet: string;
-        signer?: Signer;
-        chainId: number;
-        max?: boolean;
-        cb?: () => any;
+        farm,
     }) => {
-        if (!signer) return;
-        const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
-        const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
-        const wethAddress = addressesByChainId[chainId].wethAddress;
-        let notiId = notifyLoading(loadingMessages.approvingZapping());
-        try {
-            let formattedBal = utils.parseUnits(zapAmount.toString(), 18);
-            // If the user is trying to zap in the exact amount of ETH they have, we need to remove the gas cost from the zap amount
-            if (max) {
-                const balance = await signer.getBalance();
-                formattedBal = await signer.getBalance();
-                const gasPrice: any = await signer.getGasPrice();
-                const gasLimit = await zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, wethAddress, {
-                    value: formattedBal,
-                });
-                const gasToRemove = gasLimit.mul(gasPrice).mul(3);
-                formattedBal = balance.sub(gasToRemove);
-            }
-            let zapperTxn = await zapperContract.zapInETH(farm.vault_addr, 0, wethAddress, {
-                value: formattedBal,
-            });
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.zapping(zapperTxn.hash), {
-                id: notiId,
-                buttons: [
-                    {
-                        name: "View",
-                        // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${zapperTxn.hash}`, "_blank"),
-                    },
-                ],
-            });
+        if (!signer) return BigNumber.from(0);
+        const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+        const transaction = {} as Omit<
+            TenderlySimulateTransactionBody,
+            "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
+        >;
+        transaction.from = currentWallet;
 
-            const zapperTxnStatus = await zapperTxn.wait(1);
-            if (!zapperTxnStatus.status) {
-                throw new Error("Error zapping into vault!");
-            } else {
-                dismissNotify(notiId);
-                notifySuccess(successMessages.zapIn());
-            }
-        } catch (error: any) {
-            console.log(error);
-            let err = JSON.parse(JSON.stringify(error));
-            dismissNotify(notiId);
-            notifyError(errorMessages.generalError(err.reason || err.message));
+        if (max) {
+            const populated = await vaultContract.populateTransaction.withdrawAll();
+
+            transaction.input = populated.data || "";
+            transaction.value = populated.value?.toString();
+        } else {
+            const populated = await vaultContract.populateTransaction.withdraw(amountInWei);
+
+            transaction.input = populated.data || "";
+            transaction.value = populated.value?.toString();
         }
-        cb && cb();
+
+        const simulationResult = await simulateTransaction({
+            /* Standard EVM Transaction object */
+            ...transaction,
+            to: farm.vault_addr,
+        });
+
+        const filteredState = filterStateDiff(farm.lp_address, "balanceOf", simulationResult.stateDiffs);
+        const difference = BigNumber.from(filteredState.afterChange[currentWallet.toLowerCase()]).sub(
+            BigNumber.from(filteredState.original[currentWallet.toLowerCase()])
+        );
+
+        return difference;
     };
 
-    const zapOut = async ({
-        zapAmount,
-        currentWallet,
-        signer,
-        chainId,
-        max,
-        cb,
-    }: {
-        zapAmount: number;
-        currentWallet: string;
-        signer?: Signer;
-        chainId: number;
-        max?: boolean;
-        cb?: () => any;
-    }) => {
-        if (!signer) return;
-        const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
-        const wethAddress = addressesByChainId[chainId].wethAddress;
-        const notiId = notifyLoading(loadingMessages.approvingWithdraw());
-        try {
-            /*
-             * Execute the actual withdraw functionality from smart contract
-             */
-            let formattedBal;
-            formattedBal = utils.parseUnits(validateNumberDecimals(zapAmount), farm.decimals || 18);
-            const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
+    const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
+    const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
 
-            await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer);
-            await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, signer);
+    const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
+    const zapOutSlippage: SlippageOutBaseFn = (props) => slippageOut({ ...props, farm });
 
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
-
-            let withdrawTxn = await zapperContract.zapOutAndSwap(
-                farm.vault_addr,
-                max ? vaultBalance : formattedBal,
-                wethAddress,
-                0
-            );
-
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.withDrawing(withdrawTxn.hash), {
-                id: notiId,
-                buttons: [
-                    {
-                        name: "View",
-                        // @ts-ignore
-                        onClick: () => window.open(`${BLOCK_EXPLORER_URL}/tx/${withdrawTxn.hash}`, "_blank"),
-                    },
-                ],
-            });
-
-            const withdrawTxnStatus = await withdrawTxn.wait(1);
-            if (!withdrawTxnStatus.status) {
-                throw new Error("Error withdrawing Try again!");
-            } else {
-                dismissNotify(notiId);
-                notifySuccess(successMessages.withdraw());
-            }
-        } catch (error) {
-            console.log(error);
-            let err = JSON.parse(JSON.stringify(error));
-            dismissNotify(notiId);
-            notifyError(errorMessages.generalError(err.reason || err.message || err?.data?.message));
-        }
-        cb && cb();
+    return {
+        getProcessedFarmData,
+        deposit,
+        withdraw,
+        zapIn,
+        zapOut,
+        zapInSlippage,
+        zapOutSlippage,
+        depositSlippage,
+        withdrawSlippage,
     };
+};
 
-    return { getModifiedFarmDataByEthBalance, deposit, withdraw, zapIn, zapOut };
-}
+export default sushi;

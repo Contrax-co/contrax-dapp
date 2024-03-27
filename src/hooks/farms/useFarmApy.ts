@@ -1,8 +1,6 @@
 import { useMemo, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { Farm } from "src/types";
-import useWallet from "../useWallet";
-import useFarms from "./useFarms";
 import { fetchApys } from "src/state/apys/apysReducer";
 
 /**
@@ -11,14 +9,12 @@ import { fetchApys } from "src/state/apys/apysReducer";
  * @returns apy
  */
 export const useFarmApys = () => {
-    const { farms } = useFarms();
     const { isLoading, apys, isFetched } = useAppSelector((state) => state.apys);
-    const { networkId, multicallProvider } = useWallet();
     const dispatch = useAppDispatch();
 
     const reloadApys = useCallback(() => {
-        dispatch(fetchApys({ farms, chainId: networkId, multicallProvider }));
-    }, [farms, networkId, dispatch, multicallProvider]);
+        dispatch(fetchApys());
+    }, []);
 
     return { isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading, apys, reloadApys };
 };

@@ -1,10 +1,15 @@
 import SidebarItem from "./SidebarItem";
-import { MdSpaceDashboard } from "react-icons/md";
-import { GiFarmTractor } from "react-icons/gi";
+import { MdSpaceDashboard, MdTransform } from "react-icons/md";
 import { HiDocumentText } from "react-icons/hi";
 import { AiOutlineExport } from "react-icons/ai";
 import { FaExchangeAlt } from "react-icons/fa";
+import { BsCurrencyExchange } from "react-icons/bs";
+import { ImStatsDots } from "react-icons/im";
+import { IoIosFlask } from "react-icons/io";
+import { VscReferences } from "react-icons/vsc";
 import { ReactComponent as EarnIcon } from "src/assets/images/earn.svg";
+import { ReactComponent as DepositIcon } from "src/assets/images/deposit.svg";
+import { ReactComponent as MeshIcon } from "src/assets/images/front.svg";
 import logo from "src/assets/images/logo.png";
 import logo2 from "src/assets/images/logo-4x.png";
 import LightModeToggle from "src/components/LightModeToggle/LightModeToggle";
@@ -13,6 +18,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { RoutesPaths } from "src/config/constants";
 import useApp from "src/hooks/useApp";
 import { Dispatch, SetStateAction } from "react";
+import { FiCommand } from "react-icons/fi";
 
 function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean>> }) {
     const { lightMode } = useApp();
@@ -38,6 +44,13 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
 
                 <SidebarItem
+                    title="Buy"
+                    icon={<BsCurrencyExchange size={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Buy)}
+                    active={pathname === RoutesPaths.Buy}
+                />
+
+                <SidebarItem
                     title="Earn"
                     icon={<EarnIcon height={18} width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Farms)}
@@ -45,29 +58,54 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
 
                 <SidebarItem
-                    title="Exchange"
+                    title="Swap"
                     icon={<FaExchangeAlt size={18} />}
-                    onClick={() => handleNavigation(RoutesPaths.Exchange)}
-                    active={pathname === RoutesPaths.Exchange}
+                    onClick={() => handleNavigation(RoutesPaths.Swap)}
+                    active={pathname === RoutesPaths.Swap}
                 />
-
-                {/* <SidebarItem
-                    title="Create Token"
-                    icon={<GiToken />}
-                    onClick={() => handleNavigation(RoutesPaths.CreateToken)}
-                    active={pathname === RoutesPaths.CreateToken}
-                /> */}
-
-                {/* <SidebarItem
-                    title="Create Pool"
-                    icon={<RiFundsLine />}
-                    onClick={() => handleNavigation(RoutesPaths.CreatePool)}
-                    active={pathname === RoutesPaths.CreatePool}
-                /> */}
-
+                <SidebarItem
+                    title="Bridge"
+                    icon={<MdTransform size={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Bridge)}
+                    active={pathname === RoutesPaths.Bridge}
+                />
+                <SidebarItem
+                    title="Mesh"
+                    icon={<MeshIcon width={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Deposit)}
+                    active={pathname === RoutesPaths.Deposit}
+                />
+                <SidebarItem
+                    title="Vote"
+                    icon={<FiCommand width={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Governance)}
+                    active={pathname === RoutesPaths.Governance}
+                />
+                {process.env.NODE_ENV === "development" && (
+                    <>
+                        <SidebarItem
+                            title="Stats"
+                            icon={<ImStatsDots size={15} />}
+                            onClick={() => handleNavigation(RoutesPaths.Stats)}
+                            active={pathname === RoutesPaths.Stats}
+                        />
+                        <SidebarItem
+                            title="Test"
+                            icon={<IoIosFlask size={18} />}
+                            onClick={() => handleNavigation(RoutesPaths.Test)}
+                            active={pathname === RoutesPaths.Test}
+                        />
+                    </>
+                )}
+                <SidebarItem
+                    title="Referrals"
+                    icon={<VscReferences size={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.ReferralDashboard)}
+                    active={pathname === RoutesPaths.ReferralDashboard}
+                />
                 <SidebarItem
                     title="User Guide"
-                    onClick={() => handleNavigation("https://contrax.gitbook.io/contrax-docs/", "_blank")}
+                    onClick={() => handleNavigation("https://docs.contrax.finance/introduction/", "_blank")}
                     icon={<HiDocumentText size={18} />}
                     icon2={<AiOutlineExport size={12} />}
                 />

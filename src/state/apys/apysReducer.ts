@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { getApy } from "src/api/apy";
+import { fetchApysApi } from "src/api/apy";
 import { AddApyAction, AddApysAction, Apys, FetchApysThunk, StateInterface } from "./types";
 import poolsJson from "src/config/constants/pools.json";
 
@@ -15,18 +15,15 @@ poolsJson.forEach((pool) => {
 
 const initialState: StateInterface = { apys: apyObj, isLoading: false, isFetched: false };
 
-export const fetchApys = createAsyncThunk(
-    "apys/fetchApys",
-    async ({ farms, chainId, multicallProvider }: FetchApysThunk, thunkApi) => {
-        const promises = farms.map((farm) => getApy(farm, chainId, multicallProvider));
-        const res = await Promise.all(promises);
-        const obj: { [farmId: number]: Apys } = {};
-        res.map((apy, index) => {
-            obj[farms[index].id] = apy;
-        });
-        return obj;
-    }
-);
+export const fetchApys = createAsyncThunk("apys/fetchApys", async (_, thunkApi) => {
+    const data = await fetchApysApi();
+    const obj: { [farmId: number]: Apys } = {};
+    data.forEach((vault: any) => {
+        obj[vault.farmId] = vault.apys;
+    });
+
+    return obj;
+});
 
 const apysSlice = createSlice({
     name: "apys",

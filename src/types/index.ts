@@ -1,5 +1,6 @@
 import { Apys } from "src/state/apys/types";
 import { FarmOriginPlatform, FarmType } from "./enums";
+import { FarmDataProcessed } from "src/api/pools/types";
 
 export interface Farm {
     isDeprecated?: boolean;
@@ -43,6 +44,11 @@ export interface Farm {
     zap_symbol: string;
     withdraw_decimals?: number;
     vault_decimals?: number;
+    zap_currencies?: {
+        symbol: string;
+        address: string;
+        decimals: number;
+    }[];
 }
 export interface FarmDetails extends Farm {
     userVaultBalance: number;
@@ -64,85 +70,17 @@ export interface Token {
     token_type: FarmType;
     logo: string;
     logo2?: string;
+    /**
+     * Formatted Balance
+     */
     balance: string;
     usdBalance: string;
     decimals: number;
     network?: string;
+    networkId: number;
+    price: number;
 }
-export interface FarmData {
-    /**
-     * Farm Id
-     */
-    ID: number;
-    /**
-     * When Zapping in deposit column the max amount in token
-     */
-    Max_Zap_Deposit_Balance: string;
-    /**
-     * When Zapping in deposit column the max amount in token in Dollar
-     */
-    Max_Zap_Deposit_Balance_Dollar: string;
-    /**
-     * When Depositing in deposit column the max amount in token
-     */
-    Max_Token_Deposit_Balance: string;
-    /**
-     * When Depositing in deposit column the max amount in token in Dollar
-     */
-    Max_Token_Deposit_Balance_Dollar: string;
-    /**
-     * When Zapping in withdraw column the max amount in token
-     */
-    Max_Zap_Withdraw_Balance: string;
-    /**
-     * When Zapping in withdraw column the max amount in token in Dollar
-     */
-    Max_Zap_Withdraw_Balance_Dollar: string;
-    /**
-     * When Withdrawing in withdraw column the max amount in token
-     */
-    Max_Token_Withdraw_Balance: string;
-    /**
-     * When Withdrawing in withdraw column the max amount in token in Dollar
-     */
-    Max_Token_Withdraw_Balance_Dollar: string;
-    /**
-     * Token address of zapping token in deposit column
-     */
-    Zap_Deposit_Token_Address: string;
-    /**
-     * Token address of depositing token in deposit column
-     */
-    Token_Deposit_Token_Address: string;
-    /**
-     * Token address of zapping token in withdraw column
-     */
-    Zap_Withdraw_Token_Address: string;
-    /**
-     * Token address of withdrawing token in withdraw column
-     */
-    Token_Withdraw_Token_Address: string;
-    /**
-     * Token symbol for zap
-     */
-    Zap_Token_Symbol: string;
-    /**
-     * Token symbol for deposit or withdraw
-     */
-    Token_Token_Symbol: string;
-    /**
-     * Zap Enabled or not, used in showing zap toggle
-     */
-    Zap_Enabled?: boolean;
-    /**
-     * Price of token when depositing or withdrawing
-     */
-    TOKEN_PRICE: number;
-    /**
-     * Price of token which is used in zapping
-     */
-    ZAP_TOKEN_PRICE: number;
-}
+export interface FarmData extends FarmDataProcessed {}
 
 export interface NotifyMessage {
     title: string;
@@ -164,12 +102,201 @@ export interface SuccessMessages {
 
 export interface LoadingMessages {
     approvingZapping: () => NotifyMessage;
-    zapping: (tx: string) => NotifyMessage;
+    zapping: (tx?: string) => NotifyMessage;
     approvingWithdraw: () => NotifyMessage;
     confirmingWithdraw: () => NotifyMessage;
-    withDrawing: (tx: string) => NotifyMessage;
+    withDrawing: (tx?: string) => NotifyMessage;
     approvingDeposit: () => NotifyMessage;
     confirmDeposit: () => NotifyMessage;
-    depositing: (tx: string) => NotifyMessage;
+    depositing: (tx?: string) => NotifyMessage;
     transferingTokens: () => NotifyMessage;
+}
+
+export interface AccountInfo {
+    _id: string;
+    address: string;
+    referralCode?: string;
+    referrer?: AccountInfo;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface AccountDetails extends UserTVL {
+    _id: string;
+    accountInfo: AccountInfo;
+    earnedTrax: string;
+    earnedTraxByReferral: number;
+    traxCalculatedTimeStamp: number;
+    totalEarnedTrax: number;
+    totalEarnedTraxByReferral: number;
+    tvl: number;
+}
+
+export interface UserTVL {
+    id: string;
+    tvl: number;
+    address: string;
+    createdAt: string;
+    updatedAt: string;
+    vaultTvls: UserVVL[];
+}
+
+export interface UserVVL {
+    price: number;
+    usdAmount: number;
+    userBalance: string;
+    vaultAddress: string;
+    _id: string;
+}
+
+export type Order = "" | "-";
+
+export interface WertOptions {
+    /**
+     * Provided when you register as a partner.
+     */
+    partner_id: string;
+    /**
+     * ID of the parent DOM element where you want to integrate the module.
+     */
+    container_id: string;
+    /**
+     * Initialises the module in the sandbox/production environment.
+     */
+    origin?: string;
+    /**
+     * When true, opens the widget in the purchase details screen.
+     */
+    skip_init_navigation?: boolean;
+    /**
+     * Unique identifier for the order which helps you track it and us troubleshoot issues.
+     */
+    click_id?: string;
+    /**
+     * By default, module will use 100% of the width and 100% of the height of the parent element.
+If 'true', width and height options are ignored.
+     */
+    autosize?: boolean;
+    /**
+     * Fixed module width, in pixels.
+     */
+    width?: number;
+    /**
+     * Fixed module height, in pixels.
+     */
+    height?: number;
+    /**
+     * Module will use theme colors as a basis.
+     */
+    theme?: string;
+    /**
+     * Default fiat currency which will be selected when the module opens.
+     */
+    currency?: string;
+    /**
+     * Default amount in fiat currency which will be pre-filled in the module.
+Minimum value is $5.
+     */
+    currency_amount?: number;
+    /**
+     * Default crypto asset that will be selected in the module.
+     */
+    commodity?: string;
+    /**
+     * Network for the default crypto asset.
+     */
+    network?: string;
+    /**
+     * Crypto assets that will be available in the module, as a stringified JSON of an array of objects with commodity and network fields.
+     */
+    commodities?: string;
+    /**
+     * Default crypto amount that will be pre-filled in the module. This option is ignored if currency_amount is set.
+     */
+    commodity_amount?: number;
+    /**
+     * User's wallet address.
+Address is checked for validity based on the chosen crypto commodity. If address is invalid, this option is ignored.
+BTC address format is used as default.
+     */
+    address?: string;
+    /**
+     * URL where user will be redirected from KYC emails to proceed with the payment.
+     */
+    redirect_url?: string;
+    /**
+     * User's email address.
+     */
+    email?: string;
+    /**
+     * Use this if you want to listen to some events in the module and react to them.
+     */
+    listeners?: object;
+    /**
+     * Language of the widget
+     * @example en - for English
+fr - for French
+     */
+    lang?: string;
+    /**
+     * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+     */
+    color_background?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_buttons?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_buttons_text?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_secondary_buttons?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_secondary_buttons_text?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_main_text?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_secondary_text?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_icons?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_links?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_success?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_warning?: string;
+    /**
+ * Color customisation of specific elements of Wert module.
+Go to the module tuner on the partner dashboard to see how each property affects the widget.
+ */
+    color_error?: string;
+    [x: string]: any;
 }

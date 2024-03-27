@@ -1,9 +1,9 @@
 @import "./_mixins.scss";
 
-.center{
+.center {
     display: flex;
     justify-content: center;
-    align-items: center
+    align-items: center;
 }
 
 .custom-button {
@@ -27,14 +27,12 @@
 
 .custom-button:disabled,
 .custom-button[disabled] {
-    @include button();
     color: var(--color_disabled);
     background-color: var(--background_primary);
     cursor: not-allowed;
 }
 .custom-button-light:disabled,
 .custom-button-light[disabled] {
-    @include button();
     color: var(--color_disabled);
     background-color: var(--background_primary);
     cursor: not-allowed;
@@ -47,6 +45,47 @@
     transform: scale(0.95);
 }
 
+.outlinedContainer {
+    background: var(--background_secondary);
+    width: max-content;
+    border-radius: 16px;
+    border: 2px solid var(--color_primary);
+    color: var(--color_text);
+    padding: 16px 20px;
+}
+
+.colorContainer {
+    background: var(--color_primary);
+    color: white;
+    width: max-content;
+    border-radius: 16px;
+    padding: 16px 20px;
+}
+
+a {
+    color: inherit;
+}
+
+p,
+h5,
+h6,
+h4,
+h3,
+h2,
+h1 {
+    margin-block-end: 0;
+    margin-block-start: 0;
+    line-height: normal;
+}
+h4 {
+    font-size: 1.75em;
+}
+h5 {
+    font-size: 1.5em;
+}
+h6 {
+    font-size: 1.25em;
+}
 
 select {
     /* Reset */
@@ -82,6 +121,32 @@ select {
     z-index: 99 !important;
 }
 
-::placeholder{
-  color: #979797
+::placeholder {
+    color: #979797;
+}
+
+[data-rk] ._1am14410 {
+    scrollbar-width: auto;
+}
+
+[data-rk] ._1am14410::-webkit-scrollbar {
+    height: 7px;
+    display: initial;
+}
+
+/* Track */
+[data-rk] ._1am14410::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px #b4b4b4;
+    // border-radius: 10px;
+}
+
+/* Handle */
+[data-rk] ._1am14410::-webkit-scrollbar-thumb {
+    background: grey;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+[data-rk] ._1am14410::-webkit-scrollbar-thumb:hover {
+    background: #b30000;
 }

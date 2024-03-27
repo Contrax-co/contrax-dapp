@@ -32,17 +32,12 @@ function Home() {
                     <TopBar setOpenBurgerMenu={setOpenBurgerMenu} />
                     <Outlet />
                     {supportChat && (
-                        <MdCancel
-                            className="supportChat-close"
-                            color="#414141"
-                            cursor="pointer"
-                            onClick={toggleSupportChat}
-                        />
+                        <MdCancel className="supportChat-close" cursor="pointer" onClick={toggleSupportChat} />
                     )}
                 </div>
             </div>
             {!isOnline && <InternetConnectionModal />}
-            {isError && isOnline && <Maintainance />}
+            {/* {isError && isOnline && <Maintainance />} */}
         </div>
     );
 }

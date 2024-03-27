@@ -3,10 +3,10 @@ import "./App.css";
 import WalletProvider from "./context/WalletProvider";
 import "react-tooltip/dist/react-tooltip.css";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import "./styles/global.scss";
 import { WagmiConfig } from "wagmi";
 import { wagmiClient, chains } from "./config/walletConfig";
 import "@rainbow-me/rainbowkit/styles.css";
+import "./styles/global.scss";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import WalletDisclaimer from "./components/WalletDisclaimer/WalletDisclaimer";
@@ -17,6 +17,7 @@ import useApp from "./hooks/useApp";
 import Body from "./Body";
 import { useDispatch } from "react-redux";
 import { setOffline } from "src/state/internet/internetReducer";
+import { BrowserRouter as Router } from "react-router-dom";
 
 setHook("notifications", useNotifications);
 
@@ -40,7 +41,7 @@ function App() {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <WagmiConfig client={wagmiClient}>
+            <WagmiConfig config={wagmiClient}>
                 <RainbowKitProvider
                     chains={chains}
                     theme={
@@ -58,7 +59,9 @@ function App() {
                     appInfo={{ appName: "Contrax", disclaimer: WalletDisclaimer }}
                 >
                     <WalletProvider>
-                        <Body />
+                        <Router>
+                            <Body />
+                        </Router>
                         <ReactHooksWrapper />
                     </WalletProvider>
                     <ReactQueryDevtools />

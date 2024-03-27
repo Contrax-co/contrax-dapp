@@ -1,40 +1,28 @@
 // @ts-nocheck
-import * as gmx from "./gmx";
-import * as usdcDodo from "./usdcDodo";
-import * as usdtDodo from "./usdtDodo";
-import * as frax from "./frax";
-import * as wethWsteth from "./weth-wsteth";
-import * as wethWbtcSwapfish from "./weth-wbtc-swapfish";
-import * as usdcAgeur from "./usdc-ageur";
-import * as usdcTusd from "./usdc-tusd";
-import * as usdcUsx from "./usdc-usx";
-import * as ethHop from "./ethHop";
+
 import sushi from "./sushi";
 import hop from "./hop";
+import * as gmx from "./gmx";
+import { FarmFunctions } from "./types";
 
-const farmFunctions: { [key: number]: ReturnType<typeof sushi> } = {
+// TODO: find a better way to add farms here, instead of using the farm id manually
+const farmFunctions: { [key: number]: FarmFunctions } = {
     1: sushi(1), // 1: wethDai,
     2: sushi(2), // 2: wethUsdc,
     3: sushi(3), // 3: wethUsdt,
     4: sushi(4), // 4: wethWbtc,
-    5: gmx,
-    6: usdcDodo,
-    7: usdtDodo,
+    5: gmx, // 5: gmx,
     8: sushi(8), // 8: plsWeth,
-    9: frax,
     10: sushi(10), // 10: wethMagic,
-    11: usdcUsx,
-    12: usdcTusd,
-    13: usdcAgeur,
-    14: wethWbtcSwapfish,
-    15: wethWsteth,
-    16: ethHop, // 16: hopEth,
+    16: hop(16), // 16: hopEth,
     17: hop(17), // 17: hopUsdc,
     18: hop(18), // 18: hopUsdt,
     19: hop(19), // 19: hopDai,
     24: sushi(24), // 24: wethDPX,
     25: sushi(25), // 25: wethrDpx,
     26: sushi(26), // 25: wethSushi,
+    27: hop(27), // 18: hoprEth,
+    28: hop(28), // 18: hopMagic,
 
     99: sushi(99), // 10: wethUSDC-deprecated
     100: sushi(100), // 10: wethUSDT-deprecated

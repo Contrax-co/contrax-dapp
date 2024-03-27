@@ -6,6 +6,13 @@ export const ACCOUNT_BALANCE = (currentWallet: string, accountAddress: string, n
     accountAddress,
 ];
 
+export const GET_PRICE_TOKEN = (networkName: string, tokenAddress: string) => [
+    "price",
+    "token",
+    networkName,
+    tokenAddress,
+];
+
 export const FARM_ZAP_IN = (currentWallet: string, networkName: string, farmId: number) => [
     "farm",
     "function",
@@ -50,14 +57,6 @@ export const FARM_DATA = (currentWallet: string, networkName: string, farmId: nu
     currentWallet,
 ];
 
-export const TRANSFER_ETH = (currentWallet: string, networkName: string) => [
-    "eth",
-    "function",
-    "transfer",
-    networkName,
-    currentWallet,
-];
-
 export const TRANSFER_TOKEN = (currentWallet: string, networkName: string) => [
     "token",
     "function",
@@ -65,3 +64,5 @@ export const TRANSFER_TOKEN = (currentWallet: string, networkName: string) => [
     networkName,
     currentWallet,
 ];
+
+export const REFFERED_ACCOUNTS = (currentWallet: string) => ["accounts", "reffered-accounts", currentWallet];

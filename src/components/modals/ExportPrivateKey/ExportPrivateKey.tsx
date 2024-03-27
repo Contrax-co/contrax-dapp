@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import useApp from "src/hooks/useApp";
 import { ModalLayout } from "../ModalLayout/ModalLayout";
 import { TiWarningOutline } from "react-icons/ti";
 import { BiCopy } from "react-icons/bi";
@@ -13,7 +12,6 @@ interface IProps {
 }
 
 export const ExportPrivateKey: FC<IProps> = ({ setOpenModal }) => {
-    const { lightMode } = useApp();
     const [confirm, setConfirm] = useState(false);
     const [show, setShow] = useState(false);
     const [copied, setCopied] = useState(false);

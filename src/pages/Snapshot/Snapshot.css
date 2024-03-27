@@ -1,0 +1,35 @@
+.snapshot-container {
+    color: var(--color_text);
+    overflow: auto;
+    margin: 20px;
+}
+
+.proposal-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding-right: 10px;
+}
+
+.xTrax {
+    color: var(--color_primary);
+    font-weight: 600;
+}
+
+@media (max-width: 1572px) {
+    .proposal-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 738px) {
+    .proposal-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 380px) {
+    .snapshot-container {
+        margin: 17px;
+    }
+}

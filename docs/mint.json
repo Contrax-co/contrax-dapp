@@ -36,7 +36,7 @@
       "name": "Community",
       "icon": "discord",
       "color": "#7289da",
-      "url": "https://discord.gg/rDdvyeWAtt"
+      "url": "https://discord.gg/contrax"
     },
     {
       "name": "Github",
@@ -47,31 +47,50 @@
   ],
   "navigation": [
     {
-      "group": "Getting Started",
+      "group": "Info",
       "pages": [
         "introduction",
-        "start/defi",
-        "start/wallet-setup",
-        "start/wallet-funding",
-        "start/bridge",
-        "start/quickstart"
+        "info/defi",
+        "info/dapp-faq",
+        "info/disclaimers"
       ]
     },
     {
-      "group": "Contrax DApp",
+      "group": "Getting Started",
+      "pages": [
+        "start/quickstart",
+        "start/wallet-setup",
+        {"group": "Wallet Funding",
+        "pages": [
+          "transfer/general",
+          "transfer/coinbase",
+          "transfer/binance",
+          "transfer/cryptocom",
+          "transfer/kraken"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "DApp Pages",
       "pages": [
         "contrax-dapp/dashboard",
         "contrax-dapp/farms",
-        "contrax-dapp/exchange",
-        "contrax-dapp/create-tokens",
-        "contrax-dapp/create-pools",
-        "contrax-dapp/dapp-faq"
+        {"group": "Exchange",
+        "pages": [
+          "contrax-dapp/buy",
+          "contrax-dapp/bridge",
+          "contrax-dapp/swap"
+          ]}
       ]
     },
     {
-      "group": "FAQ",
+      "group": "Smart Contracts",
       "pages": [
-        "FAQ/dapp-faq"
+        "smart-contracts/controllers-zappers", 
+        "smart-contracts/strategies",
+        "smart-contracts/vaults",
+        "smart-contracts/multisig"
       ]
     }
   ],
@@ -83,7 +102,7 @@
   "footerSocials": {
     "twitter": "https://twitter.com/Contrax_Finance",
     "linkedin": "https://www.linkedin.com/company/actioner/",
-    "discord": "https://discord.com/invite/rDdvyeWAtt",
+    "discord": "https://discord.com/invite/contrax",
     "telegram": "https://t.me/Contrax"
   }
 }

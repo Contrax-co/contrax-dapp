@@ -1,17 +1,21 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getEarnings } from "src/api/farms";
 import farmFunctions from "src/api/pools";
 import { sleep, toEth } from "src/utils/common";
-import { StateInterface, FetchFarmDetailsAction, FarmDetails, Earnings, FetchEarningsAction } from "./types";
-import { Contract, BigNumber, utils } from "ethers";
+import {
+    StateInterface,
+    FetchFarmDetailsAction,
+    FarmDetails,
+    Earnings,
+    FetchEarningsAction,
+    FarmDetailInputOptions,
+} from "./types";
+import { Contract, BigNumber } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
 import { erc20ABI } from "wagmi";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
-import { Farm } from "src/types";
-import { getPriceByTime, getPricesByTime } from "src/api/token";
-import { Decimals } from "../decimals/types";
-import { getPricesOfLpByTimestamp, setOldPrices } from "../prices/pricesReducer";
+import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
 import { defaultChainId } from "src/config/constants";
+import { FarmTransactionType } from "src/types/enums";
 
 const initialState: StateInterface = {
     farmDetails: {},
@@ -20,19 +24,44 @@ const initialState: StateInterface = {
     account: "",
     earnings: {},
     isLoadingEarnings: false,
+    farmDetailInputOptions: {
+        transactionType: FarmTransactionType.Deposit,
+        showInUsd: true,
+        currencySymbol: "USDC",
+    },
 };
 
 export const updateFarmDetails = createAsyncThunk(
     "farms/updateFarmDetails",
-    async ({ currentWallet, farms, balances, prices }: FetchFarmDetailsAction, thunkApi) => {
+    async ({ currentWallet, farms, totalSupplies, balances, prices, decimals }: FetchFarmDetailsAction, thunkApi) => {
         if (!currentWallet) return;
-        const data: FarmDetails = {};
-        farms.forEach((farm) => {
-            data[farm.id] = farmFunctions[farm.id]?.getModifiedFarmDataByEthBalance(balances, prices);
-        });
+        try {
+            const data: FarmDetails = {};
+            farms.forEach((farm) => {
+                // @ts-ignore
+                if (farmFunctions[farm.id]?.getProcessedFarmData)
+                    data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(
+                        balances,
+                        prices,
+                        decimals,
+                        totalSupplies[farm.vault_addr]
+                    );
+            });
+            const usdcI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "USDC");
+            const ethI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "ETH");
 
-        thunkApi.dispatch(setAccount(currentWallet));
-        return data;
+            if (
+                Number(data[farms[0].id]?.depositableAmounts[ethI!].amountDollar) >
+                Number(data[farms[0].id]?.depositableAmounts[usdcI!].amountDollar)
+            ) {
+                thunkApi.dispatch(setCurrencySymbol("ETH"));
+            }
+
+            return { data, currentWallet };
+        } catch (error) {
+            console.error(error);
+            thunkApi.rejectWithValue(error);
+        }
     }
 );
 
@@ -55,6 +84,11 @@ export const updateEarnings = createAsyncThunk(
             if (chainId !== defaultChainId) throw new Error("Wrong chain");
             await sleep(6000);
             const earns = await getEarnings(currentWallet);
+            if (!earns) {
+                // throw new Error("No data");
+                return thunkApi.rejectWithValue("");
+            }
+
             const earnings: Earnings = {};
             const balancesPromises: Promise<BigNumber>[] = [];
             const withdrawableLpAmount: { [farmId: number]: string } = {};
@@ -110,11 +144,17 @@ const farmsSlice = createSlice({
         setAccount(state, action: { payload: string }) {
             state.account = action.payload;
         },
+        setFarmDetailInputOptions(state, action: { payload: Partial<FarmDetailInputOptions> }) {
+            state.farmDetailInputOptions = { ...state.farmDetailInputOptions, ...action.payload };
+        },
         reset(state) {
             state.farmDetails = {};
             state.isLoading = false;
             state.isFetched = false;
             state.account = "";
+        },
+        setCurrencySymbol(state, action: { payload: string }) {
+            state.farmDetailInputOptions.currencySymbol = action.payload;
         },
     },
     extraReducers(builder) {
@@ -124,7 +164,8 @@ const farmsSlice = createSlice({
         builder.addCase(updateFarmDetails.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isFetched = true;
-            state.farmDetails = { ...action.payload };
+            state.farmDetails = { ...action.payload!.data };
+            state.account = action.payload!.currentWallet;
         });
         builder.addCase(updateFarmDetails.rejected, (state) => {
             state.isLoading = false;
@@ -146,6 +187,6 @@ const farmsSlice = createSlice({
     },
 });
 
-export const { reset, setAccount } = farmsSlice.actions;
+export const { reset, setAccount, setFarmDetailInputOptions, setCurrencySymbol } = farmsSlice.actions;
 
 export default farmsSlice.reducer;

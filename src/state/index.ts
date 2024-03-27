@@ -11,36 +11,47 @@ import supplyReducer from "./supply/supplyReducer";
 import decimalsReducer from "./decimals/decimalsReducer";
 import errorReducer from "./error/errorReducer";
 import internetReducer from "./internet/internetReducer";
-
-const persistedPricesReducer = persistReducer(
-    { key: "prices", version: 1, storage, blacklist: ["isFetched", "oldPrices"] },
-    pricesReducer
-);
-
-const persistedDecimalReducer = persistReducer({ key: "decimals", version: 1, storage }, decimalsReducer);
-const persistedSettingsReducer = persistReducer(
-    { key: "settings", version: 1, storage, whitelist: ["theme", "supportChat"] },
-    settingsReducer
-);
+import rampReducer from "./ramp/rampReducer";
+import accountReducer from "./account/accountReducer";
+import { getPersistConfig } from "redux-deep-persist";
 
 const rootReducer = combineReducers({
-    settings: persistedSettingsReducer,
+    account: accountReducer,
+    settings: settingsReducer,
     internet: internetReducer,
     error: errorReducer,
-    prices: persistedPricesReducer,
+    prices: pricesReducer,
     apys: apysReducer,
     farms: farmsReducer,
     balances: balancesReducer,
-    decimals: persistedDecimalReducer,
+    decimals: decimalsReducer,
     supply: supplyReducer,
+    ramp: rampReducer,
 });
 
-// const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistConfig = getPersistConfig({
+    key: "root",
+    storage,
+    version: 3,
+    whitelist: [
+        "prices.prices",
+        "decimals.decimals",
+        "settings.theme",
+        "settings.supportChat",
+        "account.earnTraxTermsAgreed",
+        "account.referrerCode",
+        "ramp.bridgeStates.USDC_POLYGON_TO_ARBITRUM_USDC.socketSourceTxHash",
+        "ramp.bridgeStates.ETH_POLYGON_TO_ARBITRUM_ETH.socketSourceTxHash",
+    ],
+    rootReducer, // your root reducer must be also passed here
+});
+
+export const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
     // devTools: process.env.NODE_ENV !== "production",
     devTools: true,
-    reducer: rootReducer,
+    reducer: persistedReducer,
     middleware(getDefaultMiddleware) {
         return getDefaultMiddleware({
             serializableCheck: {

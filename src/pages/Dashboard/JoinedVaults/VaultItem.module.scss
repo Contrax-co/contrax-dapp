@@ -1,0 +1,100 @@
+@font-face {
+    font-family: "Sony Sketch EF";
+    src: url("../../../../src/assets/fonts/Sony_Sketch_EF/Sony_Sketch_EF.ttf") format("truetype");
+}
+.wrapper {
+    position: relative;
+    min-width: calc(25% - 12px);
+    height: 180px;
+}
+.container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    white-space: nowrap;
+    border: 2px solid var(--color_primary);
+    border-radius: 20px;
+    box-sizing: border-box;
+    transform: scale(1);
+    transition-duration: 0.2s;
+    &:hover {
+        transform: scale(1.03);
+    }
+}
+.header {
+    display: flex;
+    align-items: center;
+    .logo1 {
+        width: 60px;
+        height: 60px;
+        border-radius: 999px;
+    }
+    .logo2 {
+        width: 60px;
+        height: 60px;
+        border-radius: 999px;
+        margin-left: -10px;
+    }
+    .name {
+        font-size: 17px;
+        font-weight: 700;
+        margin-left: 10px;
+    }
+}
+.properties {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+.property {
+    display: flex;
+    flex-direction: column;
+    .title {
+        font-size: 15px;
+        color: var(--color_grey);
+    }
+    .value {
+        display: flex;
+        align-items: center;
+    }
+    .xtrax_title {
+        font-size: 18px;
+        font-weight: 600;
+        font-family: "Sony Sketch EF", sans-serif;
+        color: #62cde1;
+    }
+}
+
+@media only screen and (max-width: 2000px) {
+    .wrapper {
+        min-width: calc(33.33% - 10.66px);
+    }
+}
+
+@media only screen and (max-width: 1300px) {
+    .wrapper {
+        min-width: calc(50% - 8px);
+    }
+}
+
+@media only screen and (max-width: 660px) {
+    .wrapper {
+        min-width: 100%;
+    }
+}
+
+@media only screen and (max-width: 430px) {
+    .properties {
+        grid-template-columns: 1fr 1fr;
+    }
+    .wrapper {
+        height: 200px;
+    }
+}

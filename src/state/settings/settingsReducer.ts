@@ -4,6 +4,7 @@ import { StateInterface } from "./types";
 const initialState: StateInterface = {
     theme: "light",
     supportChat: true,
+    connectorId: "",
 };
 
 const settingsSlice = createSlice({
@@ -19,9 +20,12 @@ const settingsSlice = createSlice({
         toggleSupportChat: (state: StateInterface) => {
             state.supportChat = !state.supportChat;
         },
+        setConnectorId: (state: StateInterface, action: PayloadAction<string>) => {
+            state.connectorId = action.payload;
+        },
     },
 });
 
-export const { setSettings, toggleTheme, toggleSupportChat } = settingsSlice.actions;
+export const { setSettings, toggleTheme, toggleSupportChat, setConnectorId } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

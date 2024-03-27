@@ -1,0 +1,149 @@
+@import "./../../styles/mixins";
+
+.container {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    position: relative;
+    min-height: 140px;
+    overflow: hidden;
+    width: calc(100% - 63px);
+    background: url(./polygon.png);
+    background-size: 100% 100%;
+    @include devices(tablet) {
+        min-height: 280px;
+    }
+    @include devices(xlMobile) {
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+}
+.bg {
+    position: absolute;
+    height: 100%;
+    width: auto;
+    left: 0px;
+}
+.logo {
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    width: 100px;
+    z-index: 2;
+}
+.buyButtonWrapper {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    z-index: 2;
+    @include devices(mobile) {
+        right: 50%;
+        transform: translateX(50%);
+    }
+}
+.buyButton {
+    color: var(--color_white);
+    padding: 10px 34px !important;
+    min-height: auto;
+    min-width: auto;
+    font-size: 0.85em;
+    font-weight: 700;
+    border-radius: 12px;
+}
+.textContainer {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    z-index: 1;
+    height: 100%;
+    padding: 30px;
+    color: var(--color_white);
+    h4,
+    p,
+    div {
+        z-index: 1;
+    }
+    .heading {        
+        max-width: 250px;
+        line-height: 1.4em;
+    }
+    .para {
+        padding-left: 85px;
+        margin: auto;
+        color: var(--color_text);
+        font-size: 0.95em;
+    }
+    @include devices(tablet) {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+        .heading {
+            font-size: 1.8em;
+            max-width: 260px;
+        }
+        .para {
+            font-size: 1em;
+        }
+    }
+    @include devices(xlMobile) {
+        flex-flow: column;
+    }
+}
+
+@media only screen and (max-width: 1450px) {
+    .bg {
+        left: -40px;
+    }
+}
+
+@media only screen and (max-width: 1300px) {
+    .bg {
+        left: -90px;
+    }
+    .textContainer {
+        .heading {
+            max-width: 200px;
+            font-size: 1.4em;
+        }
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    .bg {
+        left: -165px;
+    }
+    .textContainer {
+        .heading {
+            max-width: 160px;
+            font-size: 1.3em;
+        }
+        .para {
+            font-size: 0.85em;
+        }
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .bg {
+        left: -380px;
+        top: 0;
+        height: auto;
+    }
+    .textContainer {
+        .heading {
+            max-width: 200px;
+            font-size: 1.4em;
+            color: var(--color_text);
+        }
+        .para {
+            padding-left: 0px;
+        }
+    }
+}
+
+@media only screen and (max-width: 650px) {
+    .bg {
+        left: -400px;
+    }
+}

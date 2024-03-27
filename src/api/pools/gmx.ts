@@ -1,112 +1,119 @@
 import pools from "src/config/constants/pools.json";
-import { Farm, FarmData } from "src/types";
-import { constants, BigNumber, Signer, Contract, utils } from "ethers";
-import { approveErc20, getBalance, getPrice } from "src/api/token";
-import { defaultChainId } from "src/config/constants";
-import { toEth, validateNumberDecimals } from "src/utils/common";
+import { Farm } from "src/types";
+import { BigNumber, Contract, constants } from "ethers";
+import { approveErc20, getBalance } from "src/api/token";
+import { toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
-import { Prices } from "src/state/prices/types";
-import { Balances } from "src/state/balances/types";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
+import {
+    DepositFn,
+    GetFarmDataProcessedFn,
+    SlippageDepositBaseFn,
+    SlippageInBaseFn,
+    SlippageOutBaseFn,
+    SlippageWithdrawBaseFn,
+    TokenAmounts,
+    WithdrawFn,
+    ZapInFn,
+    ZapOutFn,
+} from "./types";
+import { addressesByChainId } from "src/config/constants/contracts";
+import { defaultChainId } from "src/config/constants";
+import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
+import { TenderlySimulateTransactionBody } from "src/types/tenderly";
+import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
 
 const farm = pools.find((farm) => farm.id === 5) as Farm;
-let farmData: FarmData | undefined = undefined;
 
-export const getFarmData = async (
-    provider: MulticallProvider,
-    currentWallet: string,
-    _ethBalance?: BigNumber
-): Promise<FarmData> => {
-    const lpPrice = await getPrice(farm.lp_address, defaultChainId);
-    const lpBalance = await getBalance(farm.lp_address, currentWallet, provider);
-    const vaultBalance = await getBalance(farm.vault_addr, currentWallet, provider);
-    farmData = {
-        Max_Zap_Withdraw_Balance_Dollar: "0",
-        Max_Zap_Withdraw_Balance: "0",
-        Max_Token_Withdraw_Balance: toEth(vaultBalance),
-        Max_Token_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
-        Max_Token_Deposit_Balance: toEth(lpBalance),
-        Max_Token_Deposit_Balance_Dollar: (Number(toEth(lpBalance)) * lpPrice).toString(),
-        Max_Zap_Deposit_Balance_Dollar: "0",
-        Max_Zap_Deposit_Balance: "0",
-        Token_Token_Symbol: farm.name,
-        Zap_Token_Symbol: "",
-        Token_Deposit_Token_Address: farm.lp_address,
-        Token_Withdraw_Token_Address: farm.lp_address,
-        Zap_Deposit_Token_Address: constants.AddressZero,
-        Zap_Withdraw_Token_Address: constants.AddressZero,
-        TOKEN_PRICE: lpPrice,
-        ZAP_TOKEN_PRICE: 0,
-        Zap_Enabled: false,
-        ID: farm.id,
-    };
-    return farmData;
-};
-
-export const getModifiedFarmDataByEthBalance = (balances: Balances, prices: Prices) => {
-    const lpPrice = prices[farm.lp_address];
+export const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
+    const ethPrice = prices[constants.AddressZero];
     const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
-    const lpBalance = BigNumber.from(balances[farm.lp_address]);
+    const vaultTokenPrice = prices[farm.token1];
+    const zapCurriences = farm.zap_currencies;
+    const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
-    const result = {
-        Max_Zap_Withdraw_Balance_Dollar: "0",
-        Max_Zap_Withdraw_Balance: "0",
-        Max_Token_Withdraw_Balance: toEth(vaultBalance),
-        Max_Token_Withdraw_Balance_Dollar: (Number(toEth(vaultBalance)) * lpPrice).toString(),
-        Max_Token_Deposit_Balance: toEth(lpBalance),
-        Max_Token_Deposit_Balance_Dollar: (Number(toEth(lpBalance)) * lpPrice).toString(),
-        Max_Zap_Deposit_Balance_Dollar: "0",
-        Max_Zap_Deposit_Balance: "0",
-        Token_Token_Symbol: farm.name,
-        Zap_Token_Symbol: "",
-        Token_Deposit_Token_Address: farm.lp_address,
-        Token_Withdraw_Token_Address: farm.lp_address,
-        Zap_Deposit_Token_Address: constants.AddressZero,
-        Zap_Withdraw_Token_Address: constants.AddressZero,
-        TOKEN_PRICE: lpPrice,
-        ZAP_TOKEN_PRICE: 0,
-        Zap_Enabled: false,
-        ID: farm.id,
+    let depositableAmounts: TokenAmounts[] = [
+        {
+            tokenAddress: usdcAddress,
+            tokenSymbol: "USDC",
+            amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
+            amountDollar: (
+                Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
+            ).toString(),
+            price: prices[usdcAddress],
+        },
+        {
+            tokenAddress: constants.AddressZero,
+            tokenSymbol: "ETH",
+            amount: toEth(balances[constants.AddressZero]!, 18),
+            amountDollar: (Number(toEth(balances[constants.AddressZero]!, 18)) * ethPrice).toString(),
+            price: ethPrice,
+        },
+    ];
+
+    let withdrawableAmounts: TokenAmounts[] = [
+        {
+            tokenAddress: usdcAddress,
+            tokenSymbol: "USDC",
+            amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / prices[usdcAddress]).toString(),
+            amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
+            price: prices[usdcAddress],
+        },
+        {
+            tokenAddress: constants.AddressZero,
+            tokenSymbol: "ETH",
+            amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / ethPrice).toString(),
+            amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
+            price: ethPrice,
+        },
+    ];
+
+    zapCurriences?.forEach((currency) => {
+        const currencyBalance = BigNumber.from(balances[currency.address]);
+        const currencyPrice = prices[currency.address];
+        depositableAmounts.push({
+            tokenAddress: currency.address,
+            tokenSymbol: currency.symbol,
+            amount: toEth(currencyBalance, decimals[currency.symbol]),
+            amountDollar: (Number(toEth(currencyBalance, decimals[currency.address])) * currencyPrice).toString(),
+            price: prices[currency.address],
+        });
+        withdrawableAmounts.push({
+            tokenAddress: currency.address,
+            tokenSymbol: currency.symbol,
+            amount: (
+                (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
+                prices[currency.address]
+            ).toString(),
+            amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
+            price: prices[currency.address],
+            isPrimaryVault: currency.symbol === farm.name,
+        });
+    });
+
+    return {
+        depositableAmounts,
+        withdrawableAmounts,
+        vaultBalanceFormated: (Number(toEth(vaultTotalSupply ?? 0, farm.decimals)) * vaultTokenPrice).toString(),
+        id: farm.id,
     };
-    return result;
 };
 
-export const deposit = async ({
-    depositAmount,
-    currentWallet,
-    signer,
-    chainId,
-    max,
-    cb,
-}: {
-    depositAmount: number;
-    currentWallet: string;
-    signer?: Signer;
-    chainId: number;
-    max?: boolean;
-    cb?: () => any;
-}) => {
+export const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
+export const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
+
+export const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
+export const zapOutSlippage: SlippageOutBaseFn = (props) => slippageOut({ ...props, farm });
+
+export const deposit: DepositFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
     if (!signer) return;
     let notiId = notifyLoading(loadingMessages.approvingDeposit());
     const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
     try {
         const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
 
-        /*
-         * Execute the actual deposit functionality from smart contract
-         */
-        let formattedBal;
-
         const lpBalance = await getBalance(farm.lp_address, currentWallet, signer.provider!);
-        if (max) {
-            // Deposit all
-            formattedBal = lpBalance;
-        } else {
-            // Deposit
-            formattedBal = utils.parseUnits(validateNumberDecimals(depositAmount, farm.decimals), farm.decimals);
-        }
 
         // approve the vault to spend asset
         await approveErc20(farm.lp_address, farm.vault_addr, lpBalance, currentWallet, signer);
@@ -118,7 +125,7 @@ export const deposit = async ({
         if (max) {
             depositTxn = await vaultContract.depositAll();
         } else {
-            depositTxn = await vaultContract.deposit(formattedBal);
+            depositTxn = await vaultContract.deposit(amountInWei);
         }
 
         dismissNotify(notiId);
@@ -146,35 +153,15 @@ export const deposit = async ({
         dismissNotify(notiId);
         notifyError(errorMessages.generalError(err.reason || err.message));
     }
-    cb && cb();
 };
 
-export const withdraw = async ({
-    withdrawAmount,
-    currentWallet,
-    signer,
-    chainId,
-    max,
-    cb,
-}: {
-    withdrawAmount: number;
-    currentWallet: string;
-    signer?: Signer;
-    chainId: number;
-    max?: boolean;
-    cb?: () => any;
-}) => {
+export const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
     if (!signer) return;
     const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
     const notiId = notifyLoading(loadingMessages.approvingWithdraw());
     try {
         const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
 
-        /*
-         * Execute the actual withdraw functionality from smart contract
-         */
-        let formattedBal;
-        formattedBal = utils.parseUnits(validateNumberDecimals(withdrawAmount, farm.decimals), farm.decimals);
         dismissNotify(notiId);
         notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
@@ -182,7 +169,7 @@ export const withdraw = async ({
         if (max) {
             withdrawTxn = await vaultContract.withdrawAll();
         } else {
-            withdrawTxn = await vaultContract.withdraw(formattedBal);
+            withdrawTxn = await vaultContract.withdraw(amountInWei);
         }
 
         dismissNotify(notiId);
@@ -210,5 +197,87 @@ export const withdraw = async ({
         dismissNotify(notiId);
         notifyError(errorMessages.generalError(err.reason || err.message));
     }
-    cb && cb();
+};
+
+export const depositSlippage: SlippageDepositBaseFn = async ({ farm, currentWallet, signer, amountInWei, max }) => {
+    if (!signer) return BigNumber.from(0);
+    const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+
+    const transaction = {} as Omit<
+        TenderlySimulateTransactionBody,
+        "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
+    >;
+    transaction.from = currentWallet;
+
+    // approve the vault to spend asset
+    transaction.state_overrides = getAllowanceStateOverride([
+        {
+            tokenAddress: farm.lp_address,
+            owner: currentWallet,
+            spender: farm.vault_addr,
+        },
+    ]);
+
+    if (max) {
+        const populated = await vaultContract.populateTransaction.depositAll();
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    } else {
+        const populated = await vaultContract.populateTransaction.deposit(amountInWei);
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    }
+
+    const simulationResult = await simulateTransaction({
+        /* Standard EVM Transaction object */
+        ...transaction,
+        to: farm.vault_addr,
+    });
+
+    const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
+    const difference = BigNumber.from(filteredState.afterChange[currentWallet.toLowerCase()]).sub(
+        BigNumber.from(filteredState.original[currentWallet.toLowerCase()])
+    );
+
+    return difference;
+};
+
+export const withdrawSlippage: SlippageWithdrawBaseFn = async ({
+    amountInWei,
+    currentWallet,
+    signer,
+    chainId,
+    max,
+    farm,
+}) => {
+    if (!signer) return BigNumber.from(0);
+    const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+    const transaction = {} as Omit<
+        TenderlySimulateTransactionBody,
+        "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
+    >;
+    transaction.from = currentWallet;
+    if (max) {
+        const populated = await vaultContract.populateTransaction.withdrawAll();
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    } else {
+        const populated = await vaultContract.populateTransaction.withdraw(amountInWei);
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+    }
+
+    const simulationResult = await simulateTransaction({
+        /* Standard EVM Transaction object */
+        ...transaction,
+        to: farm.vault_addr,
+    });
+    const { added, subtracted } = filterAssetChanges(farm.lp_address, currentWallet, simulationResult.assetChanges);
+    const difference = BigNumber.from(added).sub(subtracted);
+
+    return difference;
 };

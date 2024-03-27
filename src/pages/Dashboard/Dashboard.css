@@ -1,141 +1,317 @@
 .dashboard_top_bg {
-  width: 100%;
-  height: 100vh;
-  padding-bottom: 120px;
-  overflow-y: scroll;
-  overflow-x: hidden;
+    width: 100%;
+    height: 100vh;
+    padding-bottom: 120px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.dashboard_traxEarningEnabled {
+    display: flex;
+    color: var(--color_primary);
+    gap: 5px;
+    font-weight: bold;
+    padding: 4px 12px;
 }
 
 .dashboard_header {
-  padding-top: 5px;
-  padding: 30px;
-  height: 20vh;
-  display: flex;
-  justify-content: space-between;
+    padding-top: 5px;
+    padding: 30px;
+    /* height: 20vh; */
+    display: flex;
+    justify-content: space-between;
+}
+
+.dashboard_header p {
+    margin: 0px;
+}
+
+.dashboard_header_left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .dashboard_right {
-  display: block;
-  margin: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-  width: 300px;
-  border-radius: 15px;
-  color: white;
-  background-color: #012243;
+    display: block;
+    margin: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 300px;
+    border-radius: 15px;
+    color: white;
+    background-color: #012243;
 }
 
 .dashboard_right--light {
-  color: black;
-  background-color: white;
+    color: black;
+    background-color: white;
 }
 
 .dashboard_worth {
-  color: rgb(186, 185, 185);
-  font-size: 16;
+    color: rgb(186, 185, 185);
+    font-size: 16;
 }
 
 .dashboard_worth--light {
-  color: rgb(138, 136, 136);
+    color: rgb(138, 136, 136);
 }
 
 .dashboard_all_prices {
-  vertical-align: top;
-  font-weight: 700;
-  font-size: 20px;
+    vertical-align: top;
+    font-weight: 700;
+    font-size: 20px;
 }
 
 .dashboard_address_header {
-  display: flex;
-  align-items: center;
-  color: white;
+    display: flex;
+    align-items: center;
+    color: white;
+    flex-wrap: wrap;
 }
 
 .dashboard_address_header--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_address_header:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .dashboard_address {
-  color: white;
-  font-size: 20px;
-  font-weight: 700;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
 }
 
 .dashboard_address--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_copy {
-  height: 5px;
-  vertical-align: top;
-  display: flex;
-  align-items: center;
-  color: white;
+    vertical-align: top;
+    display: flex;
+    align-items: center;
+    color: white;
 }
 
 .dashboard_copy:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .dashboard_copy--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_vault_title {
-  padding: 30px;
+    padding: 30px;
 }
 
 .dashboard_title {
-  font-size: 25px;
-  font-weight: 700;
-  color: white;
+    font-size: 25px;
+    font-weight: 700;
+    color: white;
 }
 
 .dashboard_title--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_wallet_title {
-  font-size: 25px;
-  font-weight: 700;
-  color: white;
+    font-size: 25px;
+    font-weight: 700;
+    color: white;
 }
 
 .dashboard_wallet_title--light {
-  color: black;
+    color: black;
 }
 
 .dashboard_section {
-  padding: 30px;
-  padding-top: 20px;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    margin: 30px;
+    border-color: transparent;
+}
+
+.dashboard_tvl_section {
+    margin: 0 30px;
+    margin-top: 20px;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 350px));
+    grid-template-rows: repeat(auto-fit, 140px);
 }
 
 .dashboard-key-icons {
-  display: flex;
-  gap: 16px;
-  padding: 10px 20px;
-  margin-top: 16px;
-  height: fit-content;
-  background: var(--background_secondary);
-  border-radius: 12px;
-  box-shadow: var(--rk-shadows-connectButton);
+    display: flex;
+    gap: 16px;
+    padding: 10px 20px;
+    margin-top: 16px;
+    height: fit-content;
+    background: var(--background_secondary);
+    border-radius: 12px;
+    box-shadow: var(--rk-shadows-connectButton);
+}
+
+.earn_trax_button {
+    font-family: "Poppins";
+    font-size: 16px;
+    padding: 12px 32px !important;
+    min-width: 100px;
+}
+
+.dashboard_video_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+}
+
+.dashboard_video_title {
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--color_primary);
+}
+.dashboard_para {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 50%;
+}
+.dashboard_video_content {
+    font-size: 25px;
+    font-weight: 400;
+}
+
+.dashboard_iframe_video {
+    width: 580px;
+}
+
+@media (max-width: 1460px) {
+    .dashboard_para {
+        min-width: 40%;
+    }
+}
+
+@media (max-width: 1260px) {
+    .dashboard_video_container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 0 50px;
+        gap: 20px;
+    }
+    .dashboard_iframe_video {
+        width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .dashboard_traxEarningEnabled {
+        margin-left: 0px;
+    }
+    .dashboard_traxEnabledTick {
+        font-size: 14px;
+    }
 }
 
 @media (max-height: 600px) {
-  .dashboard_wallet_title {
-    font-size: 20px;
-  }
+    .dashboard_wallet_title {
+        font-size: 20px;
+    }
 
-  .dashboard_address {
-    font-size: 15px;
-  }
+    .dashboard_address {
+        font-size: 15px;
+    }
 
+    .dashboard_copy {
+        height: 0px;
+    }
+}
 
-  .dashboard_copy {
-    height: 0px;
-  }
+@media (max-width: 650px) {
+    .dashboard_tvl_section {
+        flex-wrap: wrap;
+    }
+    .dashboard_traxEnabledTick {
+        margin-left: 0px;
+    }
+    .dashboard_video_title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color_primary);
+    }
+
+    .dashboard_para {
+        min-width: 100%;
+    }
+
+    .dashboard_video_content {
+        font-size: 15px;
+        font-weight: 400;
+    }
+    .dashboard_video_container {
+        display: flex;
+        align-items: center;
+        padding: 0;
+    }
+}
+
+@media (max-width: 500px) {
+    .dashboard-key-icons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    .earn_trax_button {
+        font-size: 14px;
+        padding: 10px 24px !important;
+    }
+}
+
+.animated-border--dark {
+    --border-angle: 0turn;
+    --main-bg: conic-gradient(from var(--border-angle), #012243, #012243 5%, #012243 60%, #012243 95%);
+    border: solid 3px transparent;
+    border-radius: 25px;
+    --gradient-border: conic-gradient(
+        from var(--border-angle),
+        transparent 25%,
+        var(--color_primary),
+        var(--color_primary) 99%,
+        transparent
+    );
+    background: var(--main-bg) padding-box, var(--gradient-border) border-box, var(--main-bg) border-box;
+    background-position: center center;
+    animation: bg-spin 3s linear infinite;
+}
+
+.animated-border {
+    --border-angle: 0turn;
+    --main-bg: conic-gradient(from var(--border-angle), #f5f6fa, #f5f6fa 5%, #f5f6fa 60%, #f5f6fa 95%);
+    border: solid 3px transparent;
+    border-radius: 25px;
+    --gradient-border: conic-gradient(
+        from var(--border-angle),
+        transparent 25%,
+        var(--color_primary),
+        var(--color_primary) 99%,
+        transparent
+    );
+    background: var(--main-bg) padding-box, var(--gradient-border) border-box, var(--main-bg) border-box;
+    background-position: center center;
+    animation: bg-spin 3s linear infinite;
+}
+
+@property --border-angle {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 0turn;
+}
+
+@keyframes bg-spin {
+    to {
+        --border-angle: 1turn;
+    }
 }

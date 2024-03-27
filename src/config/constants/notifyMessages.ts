@@ -36,11 +36,11 @@ export const successMessages: SuccessMessages = {
 
 export const loadingMessages: LoadingMessages = {
     approvingZapping: () => ({
-        title: "Approving zapping!",
+        title: "Approving zap!",
         message: "Please wait...",
     }),
-    zapping: (tx: string) => ({
-        title: "Creating your staking position...",
+    zapping: (tx?: string) => ({
+        title: "Creating your stake position...",
         message: `Please wait...`,
     }),
     approvingWithdraw: () => ({
@@ -51,7 +51,7 @@ export const loadingMessages: LoadingMessages = {
         title: "Confirming Withdraw!",
         message: "Please wait...",
     }),
-    withDrawing: (tx: string) => ({
+    withDrawing: (tx?: string) => ({
         title: "Withdrawing...",
         message: `Please wait...`,
     }),
@@ -63,12 +63,12 @@ export const loadingMessages: LoadingMessages = {
         title: "Confirm Deposit!",
         message: "",
     }),
-    depositing: (tx: string) => ({
-        title: "Withdrawing...",
-        message: `Please wait...`,
+    depositing: (tx?: string) => ({
+        title: "Depositing...",
+        message: `Your deposit is in progress`,
     }),
     transferingTokens: () => ({
         title: "Transferring...",
-        message: "Please wait while we transfer your tokens",
+        message: "Your transfer is in progress",
     }),
 };
