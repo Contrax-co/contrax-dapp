@@ -203,6 +203,13 @@ function Farms() {
                                       setOpenedFarm={setOpenedFarm}
                                   />
                               ))}
+                    <div style={{ textAlign: "center" }}>
+                        <small>
+                            Can't find your vault? It might have been deprecated. You can withdraw from old vaults
+                            here&nbsp;
+                            <a href="https://legacy.contrax.finance">Click Here</a>
+                        </small>
+                    </div>
                 </>
             ) : (
                 <EmptyComponent>Please change network to Arbitrum to access the vaults</EmptyComponent>
