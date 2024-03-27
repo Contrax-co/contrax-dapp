@@ -1,0 +1,54 @@
+version: 0.2
+
+env:
+  secrets-manager: 
+    REACT_APP_WEB3AUTH_CLIENT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WEB3AUTH_CLIENT_ID_PRODUCTION
+    REACT_APP_RAMP_TRANSAK_API_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TRANSAK_RAMP_API_KEY_PRODUCTION
+    REACT_APP_WERT_PARTNER_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WERT_PARTNER_ID_PRODUCTION
+    REACT_APP_SOCKET_API_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:SOCKET_API_KEY_PRODUCTION
+    REACT_APP_SOCKET_BRIDGE_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:SOCKET_BRIDGE_KEY_PRODUCTION
+    REACT_APP_TENDERLY_ACCESS_TOKEN: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TENDERLY_ACCESS_TOKEN
+    REACT_APP_TENDERLY_PROJECT_SLUG: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TENDERLY_PROJECT_SLUG
+    REACT_APP_TENDERLY_USER_NAME: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TENDERLY_USER_NAME
+    REACT_APP_INFURA: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:INFURA_KEY
+    REACT_APP_ALCHEMY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:ALCHEMY_KEY
+    REACT_APP_GATEFI_MERCHANT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:GATEFI_MERCHANT_ID_PRODUCTION
+    REACT_APP_FRONT_URL: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_PROD_URL
+    REACT_APP_FRONT_API_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_PROD_API_KEY
+    REACT_APP_FRONT_CLIENT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_CLIENT_ID
+    REACT_APP_FRONT_URL_SANDBOX: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_SANDBOX_URL
+    REACT_APP_FRONT_API_KEY_SANDBOX: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_SANDBOX_API_KEY
+    REACT_APP_WALLET_CONNECT_PROJECT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WALLET_CONNECT_PROJECT_ID
+
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+  pre_build:
+    commands:
+      - echo Pre build commands started...
+      - yarn set version 3.4.1
+      - echo yarn install started.
+      - yarn install
+      - echo Finished installing packages.
+  build:
+    commands:
+      - echo Generating build directory for react.
+      - yarn build 
+      - echo Finished generating build directory.
+
+  post_build:
+    commands:
+      - echo Deploying to S3 started
+      # copy the contents of /build to S3 bucket
+      - aws s3 sync build s3://legacy.contrax.finance/ --delete --exclude 'index.html' --acl public-read --cache-control 'max-age=860000'
+      - aws s3 sync build s3://legacy.contrax.finance/ --delete --exclude '*' --include 'index.html' --acl public-read --cache-control 'max-age=0'
+      - aws cloudfront create-invalidation --distribution-id EOZ87AHGA3UKB --paths '/*'
+      - echo Deploying to S3 finsihed
+
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: no
+  base-directory: build

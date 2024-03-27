@@ -6,11 +6,12 @@ import { Farm, FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
-import { defaultChainId } from "src/config/constants";
+import { IS_LEGACY, defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import "./Farms.css";
+import DotMenu from "./components/DotMenu";
 
 interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
     apy: number;
@@ -69,6 +70,9 @@ function Farms() {
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Earn</p>
+                {IS_LEGACY && (
+                    <DotMenu openDeprecatedFarm={openDeprecatedFarm} setOpenDeprecatedFarm={setOpenDeprecatedFarm} />
+                )}
             </div>
             {networkId === defaultChainId ? (
                 <>
@@ -199,6 +203,13 @@ function Farms() {
                                       setOpenedFarm={setOpenedFarm}
                                   />
                               ))}
+                    <div style={{ textAlign: "center" }}>
+                        <small>
+                            Can't find your vault? It might have been deprecated. You can withdraw from old vaults
+                            here&nbsp;
+                            <a href="https://legacy.contrax.finance">Click Here</a>
+                        </small>
+                    </div>
                 </>
             ) : (
                 <EmptyComponent>Please change network to Arbitrum to access the vaults</EmptyComponent>
