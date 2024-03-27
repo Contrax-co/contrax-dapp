@@ -6,7 +6,7 @@ import { Farm, FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
-import { defaultChainId } from "src/config/constants";
+import { IS_LEGACY, defaultChainId } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
@@ -25,7 +25,7 @@ function Farms() {
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
     const [openedFarm, setOpenedFarm] = useState<number | undefined>();
-    const [openDeprecatedFarm, setOpenDeprecatedFarm] = useState<boolean>(false);
+    const [openDeprecatedFarm, setOpenDeprecatedFarm] = useState<boolean>(IS_LEGACY);
 
     useEffect(() => {
         if (sortedBuy) {
