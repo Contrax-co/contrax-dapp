@@ -11,6 +11,7 @@ import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import "./Farms.css";
+import DotMenu from "./components/DotMenu";
 
 interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
     apy: number;
@@ -25,7 +26,7 @@ function Farms() {
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
     const [openedFarm, setOpenedFarm] = useState<number | undefined>();
-    const [openDeprecatedFarm, setOpenDeprecatedFarm] = useState<boolean>(IS_LEGACY);
+    const [openDeprecatedFarm, setOpenDeprecatedFarm] = useState<boolean>(false);
 
     useEffect(() => {
         if (sortedBuy) {
@@ -69,6 +70,9 @@ function Farms() {
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Earn</p>
+                {IS_LEGACY && (
+                    <DotMenu openDeprecatedFarm={openDeprecatedFarm} setOpenDeprecatedFarm={setOpenDeprecatedFarm} />
+                )}
             </div>
             {networkId === defaultChainId ? (
                 <>
