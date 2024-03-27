@@ -42,9 +42,9 @@ phases:
     commands:
       - echo Deploying to S3 started
       # copy the contents of /build to S3 bucket
-      - aws s3 sync build s3://staging.contrax.finance/ --delete --exclude 'index.html' --acl public-read --cache-control 'max-age=860000'
-      - aws s3 sync build s3://staging.contrax.finance/ --delete --exclude '*' --include 'index.html' --acl public-read --cache-control 'max-age=0'
-      - aws cloudfront create-invalidation --distribution-id E2XNXLB83HJW1Z --paths '/*'
+      - aws s3 sync build s3://legacy.contrax.finance/ --delete --exclude 'index.html' --acl public-read --cache-control 'max-age=860000'
+      - aws s3 sync build s3://legacy.contrax.finance/ --delete --exclude '*' --include 'index.html' --acl public-read --cache-control 'max-age=0'
+      - aws cloudfront create-invalidation --distribution-id EOZ87AHGA3UKB --paths '/*'
       - echo Deploying to S3 finsihed
 
 artifacts:
@@ -52,9 +52,3 @@ artifacts:
     - '**/*'
   discard-paths: no
   base-directory: build
-  
-
-  
-  
-  
-  
