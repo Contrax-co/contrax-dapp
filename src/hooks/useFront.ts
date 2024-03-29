@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import useWallet from "./useWallet";
 import { FrontConnection, FrontPayload, createFrontConnection } from "@front-finance/link";
-import { executeTransfer, getCatalogLink, getHoldings } from "src/api/front";
+import { executeTransfer, getCatalogLink, getHoldings, getLinkToken } from "src/api/front";
 import { dismissNotify, notifyLoading, notifySuccess } from "src/api/notify";
 import useBalances from "src/hooks/useBalances";
 import { notifyError } from "src/api/notify";
 import { FRONT_CLIENT_ID } from "src/config/constants";
+import { Link, LinkPayload, TransferFinishedPayload, createLink } from "@meshconnect/web-link-sdk";
 
 const useFront = (mfa?: string) => {
     const { currentWallet } = useWallet();
     const [loading, setLoading] = useState(false);
-    const [frontConnection, setFrontConnection] = useState<FrontConnection | null>(null);
+    const [frontConnection, setFrontConnection] = useState<Link | null>(null);
     const [iframeLink, setIframLink] = useState<string>();
     const [authData, setAuthData] = useState<FrontPayload>();
     const { reloadBalances } = useBalances();
@@ -63,16 +64,61 @@ const useFront = (mfa?: string) => {
 
     const handleCreateConnection = async () => {
         setLoading(true);
-        const url = await getCatalogLink(currentWallet);
-        setIframLink(url);
-        setLoading(false);
+        // const url = await getCatalogLink(currentWallet);
+        // setIframLink(url);
+        const connection = createLink({
+            clientId: FRONT_CLIENT_ID,
+            onIntegrationConnected(payload) {
+                console.log("payload =>", payload);
+                setLoading(false);
+                const accessToken = payload.accessToken?.accountTokens[0].accessToken;
+                if (accessToken) {
+                    setAuthData(payload);
+                    let expiresAt = 0;
+                    if (payload.accessToken?.expiresInSeconds) {
+                        expiresAt = Date.now() + payload.accessToken.expiresInSeconds * 1000;
+                    }
+                    localStorage.setItem("front-auth-data", JSON.stringify({ ...payload, expiresAt }));
+                } else {
+                    setAuthData(undefined);
+                    localStorage.removeItem("front-access-token");
+                }
+            },
+            onExit: (error?: string) => {
+                if (error) {
+                    console.error(`[FRONT ERROR] ${error}`);
+                    // localStorage.removeItem("front-access-token");
+                }
+
+                console.info("[FRONT EXIT]");
+            },
+            onTransferFinished: (data) => {
+                console.info("[FRONT TRANSFER SUCCESS]", data);
+                if (data.status === "success") {
+                    notifySuccess({
+                        title: "Transfer Success",
+                        message: "it may take few minutes for tokens to be visible",
+                    });
+                } else {
+                    notifyError({
+                        title: "Transfer Failed",
+                        message: data.errorMessage || "Something went wrong!",
+                    });
+                }
+                reloadBalances();
+            },
+        });
+        const linkToken = await getLinkToken(currentWallet);
+        console.log("linkToken =>", linkToken);
+        // @ts-ignore
+        connection.openLink(linkToken!);
     };
 
     useEffect(() => {
         setFrontConnection(
-            createFrontConnection({
+            createLink({
                 clientId: FRONT_CLIENT_ID,
-                onBrokerConnected: (authData) => {
+                onIntegrationConnected: (authData) => {
                     console.info("[FRONT SUCCESS]", authData);
                     // const accessToken = authData.accessToken?.accountTokens[0].accessToken;
                     // if (accessToken) {
@@ -113,18 +159,6 @@ const useFront = (mfa?: string) => {
             })
         );
     }, []);
-
-    useEffect(() => {
-        if (iframeLink) {
-            frontConnection?.openPopup(iframeLink);
-            // frontConnection?.openLink()
-        }
-        return () => {
-            if (iframeLink) {
-                frontConnection?.closePopup();
-            }
-        };
-    }, [frontConnection, iframeLink]);
 
     // useEffect(() => {
     //     const authData = localStorage.getItem("front-auth-data");
