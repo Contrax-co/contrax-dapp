@@ -8,6 +8,10 @@ import { ReactComponent as BinanceSvg } from "src/assets/images/binance.svg";
 import { ReactComponent as BitstampSvg } from "src/assets/images/bitstamp.svg";
 import { ReactComponent as BittrexSvg } from "src/assets/images/bittrex.svg";
 import Mfa from "./Mfa";
+import { Link, LinkPayload, TransferFinishedPayload, createLink } from "@meshconnect/web-link-sdk";
+import { FRONT_CLIENT_ID } from "src/config/constants";
+import { getLinkToken } from "src/api/front";
+import useWallet from "src/hooks/useWallet";
 
 interface IProps {}
 
@@ -35,6 +39,7 @@ const Front: React.FC<IProps> = () => {
                         <BinanceSvg />
                     </div> */}
                 </div>
+
                 <button
                     onClick={handleCreateConnection}
                     disabled={loading}
@@ -56,7 +61,7 @@ const Front: React.FC<IProps> = () => {
             </div>
             <div>{/* <iframe src={iframeLink} style={{ width: 380, height: 700 }}></iframe> */}</div>
 
-            {/* {authData?.accessToken && (
+            {authData?.accessToken && (
                 <div className={styles.tokenBalancesContainer}>
                     <h2 className={styles.balanceHeading}>{authData?.accessToken?.brokerName} Token Balances</h2>
                     <div className={styles.tokensWrapper}>
@@ -75,7 +80,8 @@ const Front: React.FC<IProps> = () => {
                                         {ethers.utils.commify(Number(token.balance).toString())}
                                     </p>
                                 </div>
-                                <p className={styles.usdBalance}>
+                                {/* <p className={styles.usdBalance}>
+                                    
                                     {Number(token.usdAmount)
                                         .toLocaleString("en-US", {
                                             style: "currency",
@@ -83,13 +89,13 @@ const Front: React.FC<IProps> = () => {
                                             minimumFractionDigits: 3,
                                         })
                                         .slice(0, -1)}
-                                </p>
+                                </p> */}
                             </div>
                         ))}
                     </div>
                 </div>
-            )} */}
-            {/* {mfaRequired && <Mfa setMfa={setMfa} loading={loading} handleTransfer={handleTransfer} />} */}
+            )}
+            {mfaRequired && <Mfa setMfa={setMfa} loading={loading} handleTransfer={handleTransfer} />}
         </div>
     );
 };

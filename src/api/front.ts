@@ -172,3 +172,12 @@ export const executeTransfer = async (args: {
         return { status: "failed" };
     }
 };
+
+export const getLinkToken = async (userId: string) => {
+    try {
+        const res = await frontApi.post("/api/v1/linkToken", { userId });
+        return res.data?.content?.linkToken as string;
+    } catch (error) {
+        return { status: "failed" };
+    }
+};
