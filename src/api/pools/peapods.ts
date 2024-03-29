@@ -265,7 +265,7 @@ let peapods = function (farmId: number): FarmFunctions {
         return difference;
     };
 
-    const zapIn: ZapInFn = (props) => zapInBase({ ...props, tokenIn: farm.token1, farm });
+    const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
     const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
 
     const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
