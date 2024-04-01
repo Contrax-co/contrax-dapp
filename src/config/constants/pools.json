@@ -444,7 +444,8 @@
       "address":"0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
       "decimals": 18
     }],
-    "apTkn": "0x8cb10b11fad33cfe4758dc9977d74ce7d2fb4609"
+    "apTkn": "0x8cb10b11fad33cfe4758dc9977d74ce7d2fb4609",
+    "isDeprecated":true
   },
   {
     "id": 30,
@@ -478,7 +479,8 @@
       "address":"0xf0cb2dc0db5e6c66B9a70Ac27B06b878da017028",
       "decimals": 9
     }],
-    "apTkn": "0xeb1a8f8ea373536600082ba9ae2db97327513f7d"
+    "apTkn": "0xeb1a8f8ea373536600082ba9ae2db97327513f7d",
+    "isDeprecated":true
   },
   {
     "id": 31,
@@ -512,6 +514,7 @@
       "address":"0x02f92800F57BCD74066F5709F1Daa1A4302Df875",
       "decimals": 18
     }],
-    "apTkn": "0x6a02f704890f507f13d002f2785ca7ba5bfcc8f7"
+    "apTkn": "0x6a02f704890f507f13d002f2785ca7ba5bfcc8f7",
+    "isDeprecated":true
   }
 ]
