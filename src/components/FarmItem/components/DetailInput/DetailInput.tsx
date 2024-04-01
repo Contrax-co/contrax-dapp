@@ -31,7 +31,6 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         setMax,
         handleInput,
         handleSubmit,
-
         fetchingSlippage,
         handleToggleShowInUsdc,
         isLoadingFarm,
@@ -83,6 +82,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
             handleSubmit();
         }
     };
+
     return (
         <form
             className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
