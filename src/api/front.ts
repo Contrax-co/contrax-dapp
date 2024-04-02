@@ -184,6 +184,11 @@ export const getLinkToken = async (userId: string) => {
                         symbol: "USDC",
                         address: userId,
                     },
+                    {
+                        networkId: "a34f2431-0ddd-4de4-bc22-4a8143287aeb",
+                        symbol: "ETH",
+                        address: userId,
+                    },
                 ],
             },
             fundingOptions: {
