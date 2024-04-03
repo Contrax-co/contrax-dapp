@@ -51,6 +51,12 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
 
                 <SidebarItem
+                    title="Import Crypto"
+                    icon={<MeshIcon width={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Mesh)}
+                    active={pathname === RoutesPaths.Mesh}
+                />
+                <SidebarItem
                     title="Earn"
                     icon={<EarnIcon height={18} width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Farms)}
@@ -68,12 +74,6 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     icon={<MdTransform size={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Bridge)}
                     active={pathname === RoutesPaths.Bridge}
-                />
-                <SidebarItem
-                    title="Mesh"
-                    icon={<MeshIcon width={18} />}
-                    onClick={() => handleNavigation(RoutesPaths.Deposit)}
-                    active={pathname === RoutesPaths.Deposit}
                 />
                 <SidebarItem
                     title="Vote"
