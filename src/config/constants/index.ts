@@ -6,7 +6,7 @@ export const RoutesPaths = {
     Swap: "/swap",
     Bridge: "/bridge",
     Buy: "/buy",
-    Deposit: "/deposit",
+    Mesh: "/import-crypto",
     Stats: "/stats",
     Governance: "/governance",
     ReferralDashboard: "/referral-dashboard",
