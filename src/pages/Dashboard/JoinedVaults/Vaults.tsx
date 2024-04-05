@@ -12,16 +12,16 @@ interface Props {}
 
 const Vaults: React.FC<Props> = () => {
     const { lightMode } = useApp();
-    const { networkId, currentWallet } = useWallet();
+    const { chainId, currentWallet } = useWallet();
     const { vaults, isLoading } = useVaults();
 
     return currentWallet ? (
         <div
             className={`${styles.vaults_container}`}
-            style={networkId === defaultChainId && !isLoading && vaults.length > 0 ? undefined : { display: "block" }}
+            style={chainId === defaultChainId && !isLoading && vaults.length > 0 ? undefined : { display: "block" }}
         >
             {!isLoading ? (
-                networkId === defaultChainId ? (
+                chainId === defaultChainId ? (
                     vaults.length > 0 ? (
                         vaults.map((vault) => <VaultItem vault={vault} key={vault.id} />)
                     ) : (

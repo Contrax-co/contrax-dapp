@@ -12,7 +12,7 @@ import { useDecimals } from "./useDecimals";
 const useTotalSupplies = () => {
     const { farms } = useFarms();
     const { isLoading, totalSupplies, isFetched } = useAppSelector((state) => state.supply);
-    const { networkId, multicallProvider } = useWallet();
+    const { chainId, multicallProvider } = useWallet();
     const dispatch = useAppDispatch();
     const {
         decimals,
@@ -23,7 +23,7 @@ const useTotalSupplies = () => {
 
     const reloadSupplies = useCallback(() => {
         dispatch(fetchTotalSupplies({ farms, multicallProvider }));
-    }, [farms, networkId, dispatch]);
+    }, [farms, chainId, dispatch]);
 
     const formattedSupplies = useMemo(() => {
         let b: { [key: string]: number | undefined } = {};

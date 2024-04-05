@@ -8,10 +8,7 @@ import useWallet from "./useWallet";
 import { constants, utils } from "ethers";
 import { CHAIN_ID, FarmType } from "src/types/enums";
 import { useDecimals } from "./useDecimals";
-import useBridge from "./bridge/useBridge";
-import { addressesByChainId } from "src/config/constants/contracts";
 import { defaultChainId } from "src/config/constants";
-import { BridgeDirection } from "src/state/ramp/types";
 import arbTokens from "src/config/constants/tokens";
 
 const ethAddress = constants.AddressZero;
@@ -31,15 +28,12 @@ export const useTokens = () => {
     const { farms } = useFarms();
     const {
         balance: ethBalance,
-        networkId,
+        chainId,
         currentWallet,
         mainnetBalance,
         polygonBalance,
         arbitrumBalance,
     } = useWallet();
-    const { formattedBalance: polygonUsdcBalance, usdAmount: polygonUsdAmount } = useBridge(
-        BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC
-    );
     const [tokens, setTokens] = useState<Token[]>([]);
     const [lpTokens, setLpTokens] = useState<Token[]>([]);
     const { decimals } = useDecimals();
@@ -264,32 +258,10 @@ export const useTokens = () => {
             networkId: CHAIN_ID.ARBITRUM,
         };
 
-        const polygonUsdc: Token = {
-            address: addressesByChainId[CHAIN_ID.POLYGON].usdcAddress,
-            token_type: FarmType.normal,
-            balance:
-                Number(polygonUsdcBalance) < 1
-                    ? noExponents(Number(polygonUsdcBalance).toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(Number(polygonUsdcBalance), tokenBalDecimalPlaces).toString(),
-            decimals: 6,
-            logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png",
-            name: "USDC",
-            network: "Polygon",
-            usdBalance:
-                (polygonUsdAmount &&
-                    (polygonUsdAmount < 1
-                        ? noExponents(polygonUsdAmount.toPrecision(2)).slice(0, -1)
-                        : toFixedFloor(polygonUsdAmount, usdBalDecimalPlaces).toString())) ||
-                "0",
-            price: polygonUsdAmount / Number(polygonUsdcBalance),
-            networkId: CHAIN_ID.POLYGON,
-        };
-
-        if (Number(polygonUsdc.usdBalance) >= 0.5) tokens.unshift(polygonUsdc);
-        if (Number(arbBalance.usdBalance) >= 0.5 && networkId === CHAIN_ID.ARBITRUM) tokens.unshift(arbBalance);
-        if (Number(matic.usdBalance) >= 0.5 && networkId === CHAIN_ID.POLYGON) tokens.unshift(matic);
-        if (Number(ethMainnet.usdBalance) >= 0.5 && networkId === CHAIN_ID.MAINNET) tokens.unshift(ethMainnet);
-        if (Number(traxToken.balance) >= 0.5 && networkId === CHAIN_ID.ARBITRUM) tokens.unshift(traxToken);
+        if (Number(arbBalance.usdBalance) >= 0.5 && chainId === CHAIN_ID.ARBITRUM) tokens.unshift(arbBalance);
+        if (Number(matic.usdBalance) >= 0.5 && chainId === CHAIN_ID.POLYGON) tokens.unshift(matic);
+        if (Number(ethMainnet.usdBalance) >= 0.5 && chainId === CHAIN_ID.MAINNET) tokens.unshift(ethMainnet);
+        if (Number(traxToken.balance) >= 0.5 && chainId === CHAIN_ID.ARBITRUM) tokens.unshift(traxToken);
         setTokens(tokens);
         setLpTokens(lpTokens);
     }, [
@@ -298,13 +270,11 @@ export const useTokens = () => {
         tokenAddresses,
         lpAddresses,
         ethBalance,
-        networkId,
+        chainId,
         formattedBalances,
         polygonBalance,
         mainnetBalance,
-        polygonUsdcBalance,
         arbitrumBalance,
-        polygonUsdAmount,
     ]);
 
     const UIState = useMemo(() => {

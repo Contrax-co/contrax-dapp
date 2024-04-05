@@ -7,7 +7,6 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { ChainProviderFn, WalletClient, configureChains, createConfig, useWalletClient } from "wagmi";
-import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
@@ -38,6 +37,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { type PublicClient, usePublicClient } from "wagmi";
 import { type HttpTransport } from "viem";
+import { EthersProviderAdapter } from "@alchemy/aa-ethers";
 
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
@@ -131,33 +131,33 @@ const PrivateKeyProvider = new EthereumPrivateKeyProvider({
     },
 });
 
-export async function getWeb3AuthProvider(config: {
-    chainId: number;
-    rpc: string;
-    name: string;
-    tickerName: string;
-    ticker: string;
-    blockExplorer: string;
-    pkey: string;
-}) {
-    const PrivateKeyProvider = new EthereumPrivateKeyProvider({
-        config: {
-            chainConfig: {
-                chainId: "0x" + config.chainId.toString(16),
-                rpcTarget: config.rpc,
-                displayName: config.name,
-                tickerName: config.tickerName,
-                ticker: config.ticker,
-                blockExplorerUrl: config.blockExplorer,
-                chainNamespace: CHAIN_NAMESPACES.EIP155,
-            },
-        },
-    });
-    await PrivateKeyProvider.setupProvider(config.pkey);
-    const provider = new providers.Web3Provider(PrivateKeyProvider.provider!);
-    provider.pollingInterval = POLLING_INTERVAL;
-    return provider;
-}
+// export async function getWeb3AuthProvider(config: {
+//     chainId: number;
+//     rpc: string;
+//     name: string;
+//     tickerName: string;
+//     ticker: string;
+//     blockExplorer: string;
+//     pkey: string;
+// }) {
+//     const PrivateKeyProvider = new EthereumPrivateKeyProvider({
+//         config: {
+//             chainConfig: {
+//                 chainId: "0x" + config.chainId.toString(16),
+//                 rpcTarget: config.rpc,
+//                 displayName: config.name,
+//                 tickerName: config.tickerName,
+//                 ticker: config.ticker,
+//                 blockExplorerUrl: config.blockExplorer,
+//                 chainNamespace: CHAIN_NAMESPACES.EIP155,
+//             },
+//         },
+//     });
+//     await PrivateKeyProvider.setupProvider(config.pkey);
+//     const provider = new providers.Web3Provider(PrivateKeyProvider.provider!);
+//     provider.pollingInterval = POLLING_INTERVAL;
+//     return provider;
+// }
 
 const openloginAdapter = new OpenloginAdapter({
     privateKeyProvider: PrivateKeyProvider,
@@ -334,8 +334,7 @@ export function publicClientToProvider(publicClient: PublicClient) {
 }
 
 /** Hook to convert a viem Public Client to an ethers.js Provider. */
-export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
-    const publicClient = usePublicClient({ chainId });
+export function useEthersProvider(publicClient: PublicClient) {
     return useMemo(() => publicClientToProvider(publicClient), [publicClient]);
 }
 
@@ -347,9 +346,12 @@ export function walletClientToSigner(walletClient: WalletClient) {
         ensAddress: chain.contracts?.ensRegistry?.address,
     };
     const provider = new providers.Web3Provider(transport, network);
-    provider.pollingInterval = POLLING_INTERVAL;
-    const signer = provider.getSigner(account.address);
-    return signer;
+
+    // @ts-ignore
+    const realSigner = EthersProviderAdapter.fromEthersProvider(provider).connectToAccount(walletClient);
+    // provider.pollingInterval = POLLING_INTERVAL;
+    // const signer = provider.getSigner(account.address);
+    return realSigner;
 }
 
 export function walletClientToWeb3Provider(walletClient: WalletClient) {
@@ -365,12 +367,11 @@ export function walletClientToWeb3Provider(walletClient: WalletClient) {
 }
 
 /** Hook to convert a viem Wallet Client to an ethers.js Signer. */
-export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
-    const { data: walletClient } = useWalletClient({ chainId });
+export function useEthersSigner(walletClient?: WalletClient) {
     return useMemo(() => (walletClient ? walletClientToSigner(walletClient) : undefined), [walletClient]);
 }
+
 /** Hook to convert a viem Wallet Client to an ethers.js Web3Provider. */
-export function useEthersWeb3Provider({ chainId }: { chainId?: number } = {}) {
-    const { data: walletClient } = useWalletClient({ chainId });
+export function useEthersWeb3Provider(walletClient?: WalletClient) {
     return useMemo(() => (walletClient ? walletClientToWeb3Provider(walletClient) : undefined), [walletClient]);
 }

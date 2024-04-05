@@ -17,7 +17,7 @@ export const TokenBalances: FC<IProps> = () => {
     const { tokens, lpTokens, isLoading, UIState } = useTokens();
     const navigate = useNavigate();
     const [selectedToken, setSelectedToken] = useState<Token>();
-    const { networkId } = useWallet();
+    const { chainId } = useWallet();
 
     const handleCloseModal = useCallback(() => setSelectedToken(undefined), [setSelectedToken]);
 
@@ -51,7 +51,7 @@ export const TokenBalances: FC<IProps> = () => {
                                 key={i}
                                 className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
                                 onClick={() =>
-                                    networkId === token.networkId
+                                    chainId === token.networkId
                                         ? setSelectedToken(token)
                                         : navigate("/exchange/?tab=Bridge")
                                 }
@@ -99,7 +99,7 @@ export const TokenBalances: FC<IProps> = () => {
                                     key={i}
                                     className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
                                     onClick={() =>
-                                        networkId === token.networkId
+                                        chainId === token.networkId
                                             ? setSelectedToken(token)
                                             : navigate("/exchange/?tab=Bridge")
                                     }

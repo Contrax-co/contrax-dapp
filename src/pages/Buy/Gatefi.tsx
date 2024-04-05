@@ -2,28 +2,15 @@ import React, { useState } from "react";
 import styles from "./Buy.module.scss";
 import useWallet from "src/hooks/useWallet";
 import { GateFiDisplayModeEnum, GateFiSDK } from "@gatefi/js-sdk";
-import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
-import useBridge from "src/hooks/bridge/useBridge";
 import { GATEFI_MERCHANT_ID } from "src/config/constants";
 import useApp from "src/hooks/useApp";
-import { BridgeDirection } from "src/state/ramp/types";
-import { TiWarningOutline } from "react-icons/ti";
 
 interface IProps {}
 
 const Gatefi: React.FC<IProps> = () => {
     const { currentWallet } = useWallet();
     const { lightMode } = useApp();
-    // const { startBridging, isLoading, usdAmount } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
     const [gateFiInstance, setGateFiInstance] = useState<GateFiSDK>();
-    // const [initialUsdAmount, setInitialUsdAmount] = useState(usdAmount);
-
-    // React.useEffect(() => {
-    //     if (usdAmount !== initialUsdAmount && !isLoading && usdAmount > 1) {
-    //         startBridging();
-    //         setInitialUsdAmount(usdAmount);
-    //     }
-    // }, [initialUsdAmount, startBridging, isLoading, usdAmount]);
 
     React.useEffect(() => {
         let instance = new GateFiSDK({

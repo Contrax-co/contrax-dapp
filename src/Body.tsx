@@ -12,7 +12,6 @@ import useTotalSupplies from "./hooks/useTotalSupplies";
 import { useDecimals } from "./hooks/useDecimals";
 import Buy from "./pages/Buy/Buy";
 import useAccountData from "./hooks/useAccountData";
-import useBridge from "./hooks/bridge/useBridge";
 import Stats from "./pages/Stats/Stats";
 import Front from "./pages/Front/Front";
 import { RoutesPaths } from "./config/constants";
@@ -31,13 +30,6 @@ function Body() {
     const { reloadSupplies } = useTotalSupplies();
     const { reloadFarmData } = useFarmDetails();
     const { fetchAccountData } = useAccountData();
-    const { isBridgePending } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
-    const { isBridgePending: isBridgePendingEth } = useBridge(BridgeDirection.ETH_POLYGON_TO_ARBITRUM_ETH);
-
-    useEffect(() => {
-        isBridgePending();
-        isBridgePendingEth();
-    }, []);
 
     useEffect(() => {
         fetchAccountData();
