@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 export interface Addresses {
     factoryAddress: string;
     wethAddress: string;
@@ -9,6 +11,7 @@ export interface Addresses {
     swapfishMasterChef?: string;
     nativeUsdAddress?: string;
     arbitrumAddress?: string;
+    paymasterAddress?: Address;
 }
 
 const arbitrumAddresses: Addresses = {
@@ -22,6 +25,7 @@ const arbitrumAddresses: Addresses = {
     swapfishMasterChef: "0x33141e87ad2DFae5FBd12Ed6e61Fa2374aAeD029",
     nativeUsdAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     arbitrumAddress: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+    paymasterAddress: "0x75688705486405550239134Aa01e80E739f3b459",
 };
 
 const polygonAddresses: Addresses = {

@@ -7,7 +7,7 @@ import useWallet from "./useWallet";
  * Will return constants values according to connected chain network
  */
 const useConstants = () => {
-    const { networkId: CHAIN_ID } = useWallet();
+    const { chainId: CHAIN_ID } = useWallet();
     const NETWORK_NAME = getNetworkName(CHAIN_ID) || "";
     const CONTRACTS = addressesByChainId[CHAIN_ID] || "";
     const BLOCK_EXPLORER_URL = blockExplorersByChainId[CHAIN_ID] || "";

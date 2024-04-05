@@ -18,7 +18,7 @@ export interface ZapOut {
 }
 
 const useZapOut = (farm: Farm) => {
-    const { signer, currentWallet, networkId: chainId } = useWallet();
+    const { signer, currentWallet, chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances, balances } = useBalances();
     const { decimals } = useDecimals();

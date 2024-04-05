@@ -14,7 +14,7 @@ import { toEth } from "src/utils/common";
 import usePriceOfTokens from "../usePriceOfTokens";
 
 const useWithdraw = (farm: Farm) => {
-    const { signer, currentWallet, networkId: chainId } = useWallet();
+    const { signer, currentWallet, chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();

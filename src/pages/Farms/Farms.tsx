@@ -21,7 +21,7 @@ interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
 function Farms() {
     const { lightMode } = useApp();
     const { farms } = useFarms();
-    const { networkId, currentWallet } = useWallet();
+    const { chainId, currentWallet } = useWallet();
     const { apys } = useFarmApys();
     const { farmDetails } = useFarmDetails();
     const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
@@ -37,7 +37,7 @@ function Farms() {
 
     useEffect(() => {
         setSortedBuy(undefined);
-    }, [networkId]);
+    }, [chainId]);
 
     const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDataExtended, b: FarmDataExtended) =>
         (decOrder ? 1 : -1) *
@@ -73,7 +73,7 @@ function Farms() {
                 <p>Earn</p>
                 {IS_LEGACY && <VaultsWithFundsToggle />}
             </div>
-            {networkId === defaultChainId ? (
+            {chainId === defaultChainId ? (
                 <>
                     <div className={`farm_table_header ${lightMode && "farm_table_header_light"}`}>
                         <p className="item_asset" style={{ marginLeft: 20 }}>

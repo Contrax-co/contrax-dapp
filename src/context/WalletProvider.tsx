@@ -20,13 +20,28 @@ import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
 import { useDispatch } from "react-redux";
 import { setConnectorId } from "src/state/settings/settingsReducer";
-import { GasSponsoredSigner } from "src/utils/gasSponsoredSigner";
-import { useAppSelector } from "src/state";
-import { getWeb3AuthProvider } from "src/config/walletConfig";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { CHAIN_ID } from "src/types/enums";
 import { useEthersProvider, useEthersSigner } from "src/config/walletConfig";
 import { getTokenPricesBackend } from "src/api/token";
+import {
+    ENTRYPOINT_ADDRESS_V06,
+    SmartAccountClient,
+    UserOperation,
+    createSmartAccountClient,
+    walletClientToSmartAccountSigner,
+} from "permissionless";
+import {
+    BiconomySmartAccount,
+    KernelEcdsaSmartAccount,
+    signerToBiconomySmartAccount,
+    signerToEcdsaKernelSmartAccount,
+} from "permissionless/accounts";
+import { Address, PublicClient, Transport, createPublicClient, http } from "viem";
+import axios from "axios";
+import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
+import { arbitrum, mainnet, polygon, gnosis, fantom } from "wagmi/chains";
+import { EthersProviderAdapter } from "@alchemy/aa-ethers";
 
 interface IWalletContext {
     /**
@@ -46,11 +61,6 @@ interface IWalletContext {
     connectWallet: () => void;
 
     /**
-     * The current chain id in number form e.g 5
-     */
-    networkId: number;
-
-    /**
      * Disconnect wallet and logout user
      * @returns void
      */
@@ -65,18 +75,16 @@ interface IWalletContext {
      * Balance of the native eth that the user has
      */
     balance: number;
-    switchNetworkAsync: ((chainId_?: number | undefined) => Promise<Chain>) | undefined;
-    chains: Chain[];
+    setChainId: (x: number) => void;
     getPkey: () => Promise<string>;
     multicallProvider: providers.MulticallProvider;
-    getWeb3AuthSigner: (chainId?: number, defaultSigner?: ethers.Signer) => Promise<ethers.ethers.Signer | undefined>;
-    isWeb3AuthWallet: boolean;
     polygonBalance?: BalanceResult;
     mainnetBalance?: BalanceResult;
     arbitrumBalance?: BalanceResult;
     domainName: null | string;
-    mainnetMulticallProvider: providers.MulticallProvider;
-    polygonMulticallProvider: providers.MulticallProvider;
+    chainId: number;
+    walletClient?: SmartAccountClient<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>;
+    publicClient: PublicClient;
 }
 
 type BalanceResult = {
@@ -93,28 +101,6 @@ export const WalletContext = React.createContext<IWalletContext>({} as IWalletCo
 interface IProps {
     children: React.ReactNode;
 }
-
-const useWaleltSigner = () => {
-    const _signer = useEthersSigner();
-    const [signer, setSigner] = useState<ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer>();
-    const { connectorId } = useAppSelector((state) => state.settings);
-
-    useEffect(() => {
-        const setupSigner = async () => {
-            if (web3AuthConnectorId === connectorId) {
-                // @ts-ignore
-                const privateKey = await _signer?.provider?.provider?.request({ method: "eth_private_key" });
-                if (privateKey) setSigner(new GasSponsoredSigner(privateKey, _signer?.provider));
-            } else {
-                // @ts-ignore
-                setSigner(_signer);
-            }
-        };
-
-        setupSigner();
-    }, [_signer, web3AuthConnectorId, connectorId]);
-    return signer;
-};
 
 const useNativeBalance = (chainId: number): BalanceResult => {
     const { data: price } = useQuery({
@@ -155,29 +141,96 @@ const useNativeBalance = (chainId: number): BalanceResult => {
     };
 };
 
-const useMulticallProvider = (chainId?: number) => {
-    const provider = useEthersProvider({ chainId });
+const useMulticallProvider = (
+    provider: ethers.ethers.providers.JsonRpcProvider | ethers.ethers.providers.FallbackProvider
+) => {
     const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
     useEffect(() => {
         setMulticallProvider(getMulticallProvider(provider));
-    }, [provider, chainId]);
+    }, [provider]);
     return multicallProvider;
 };
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
-    const provider = useEthersProvider();
-    const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
-    const mainnetMulticallProvider = useMulticallProvider(CHAIN_ID.MAINNET);
-    const polygonMulticallProvider = useMulticallProvider(CHAIN_ID.POLYGON);
+    const { data: eoaWalletClient } = useWalletClient();
+    const [smartAccount, setSmartAccount] =
+        useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>>();
+    const [isSponsored] = useState(true);
+    const [gasInErc20] = useState(false);
+    const [chainId, setChainId] = useState(CHAIN_ID.ARBITRUM);
+    const chain = useMemo(() => {
+        switch (chainId) {
+            case CHAIN_ID.ARBITRUM:
+                return arbitrum;
+            case CHAIN_ID.POLYGON:
+                return polygon;
+            case CHAIN_ID.MAINNET:
+                return mainnet;
+            default:
+                return arbitrum;
+        }
+    }, [chainId]);
+    const publicClient = useMemo(() => {
+        return createPublicClient({
+            chain,
+            transport: http(),
+            batch: {
+                multicall: {
+                    batchSize: 2048,
+                    wait: 500,
+                },
+            },
+        });
+    }, [chain]);
+    const provider = useEthersProvider(publicClient);
+    const multicallProvider = useMulticallProvider(provider);
     const { balances } = useBalances();
-    const signer = useWaleltSigner();
 
-    const { switchNetworkAsync, chains } = useSwitchNetwork();
+    const sponsorUserOperation = async (args: {
+        userOperation: UserOperation<"v0.6">;
+    }): Promise<{
+        callGasLimit: bigint;
+        verificationGasLimit: bigint;
+        preVerificationGas: bigint;
+        paymasterAndData: Address;
+    }> => {
+        let userOperation = { ...args.userOperation };
+        Object.entries(userOperation).forEach(([key, val]) => {
+            if (typeof val === "bigint") {
+                // @ts-ignore
+                userOperation[key] = val.toString();
+            }
+        });
+        const res = await axios.post(paymastersByChainId[chainId], {
+            id: 0,
+            jsonrpc: "2.0",
+            method: "pm_sponsorUserOperation",
+            params: [userOperation, ENTRYPOINT_ADDRESS_V06, { type: gasInErc20 ? "erc20Token" : "ether" }],
+        });
+        return res.data.result;
+    };
+
+    const smartAccountClient = useMemo(() => {
+        if (!smartAccount) return undefined;
+        return createSmartAccountClient({
+            account: smartAccount,
+            entryPoint: ENTRYPOINT_ADDRESS_V06,
+            chain: arbitrum,
+            bundlerTransport: http(bundlersByChainId[chainId]),
+            middleware: isSponsored
+                ? {
+                      sponsorUserOperation,
+                  }
+                : undefined,
+            cacheTime: undefined,
+        });
+    }, [smartAccount, sponsorUserOperation]);
+
+    // @ts-ignore
+    const signer = useEthersSigner(smartAccountClient);
     const dispatch = useDispatch();
-    const { address: currentWallet, connector, isConnecting } = useAccount();
+    const { address: eoaWallet, connector, isConnecting } = useAccount();
     const { disconnect } = useDisconnect();
-    const { chain } = useNetwork();
-    const [networkId, setNetworkId] = React.useState<number>(defaultChainId);
     const { openConnectModal } = useConnectModal();
     const polygonBalance = useNativeBalance(CHAIN_ID.POLYGON);
     const mainnetBalance = useNativeBalance(CHAIN_ID.MAINNET);
@@ -191,14 +244,17 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     async function logout() {
         disconnect();
+        setSmartAccount(undefined);
     }
 
     const displayAccount = React.useMemo(
         () =>
-            currentWallet
-                ? `${currentWallet?.substring(0, 6)}...${currentWallet?.substring(currentWallet.length - 5)}`
+            smartAccount?.address
+                ? `${smartAccount.address.substring(0, 6)}...${smartAccount.address.substring(
+                      smartAccount.address.length - 5
+                  )}`
                 : "",
-        [currentWallet]
+        [smartAccount]
     );
 
     const balance = useMemo(
@@ -216,45 +272,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             // notifyError(errorMessages.privateKeyError());
         }
     };
-
-    const getWeb3AuthSigner = React.useCallback(
-        async (chainId?: number, defaultSigner?: ethers.Signer) => {
-            if (web3AuthConnectorId !== getConnectorId()) return defaultSigner || signer;
-            // @ts-ignore
-            const pkey = await getPkey();
-            const chain = chains.find((c) => c.id === chainId);
-            const _provider = await getWeb3AuthProvider({
-                chainId: chain?.id!,
-                blockExplorer: chain?.blockExplorers?.default.url!,
-                name: chain?.name!,
-                rpc: chain?.rpcUrls.default.http[0]!,
-                ticker: chain?.nativeCurrency.symbol!,
-                tickerName: chain?.nativeCurrency.name!,
-                pkey,
-            });
-
-            const privateKey = await _provider.provider.request!({ method: "eth_private_key" });
-            if (!privateKey) {
-                console.log("%cPrivate key not found", "color: magenta;");
-                return defaultSigner || signer;
-            }
-            return new GasSponsoredSigner(privateKey, _provider);
-        },
-        [signer, getConnectorId()]
-    );
-
-    React.useEffect(() => {
-        if (chain) {
-            setNetworkId(chain.id);
-        }
-        if (!currentWallet) {
-            setNetworkId(defaultChainId);
-        }
-    }, [chain]);
-
-    React.useEffect(() => {
-        setMulticallProvider(getMulticallProvider(provider));
-    }, [provider]);
 
     React.useEffect(() => {
         dispatch(setConnectorId(connector?.id || ""));
@@ -288,49 +305,56 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     }, [isConnecting]);
 
     React.useEffect(() => {
-        if (currentWallet) {
-            resolveDomainFromAddress(currentWallet).then((res) => {
+        if (smartAccount?.address) {
+            resolveDomainFromAddress(smartAccount.address).then((res) => {
                 setDomainName(res);
             });
         } else {
             setDomainName(null);
         }
-    }, [currentWallet]);
+    }, [smartAccount]);
+
+    useEffect(() => {
+        (async function () {
+            if (!eoaWalletClient || !publicClient) {
+                setSmartAccount(undefined);
+                return;
+            }
+            const smartAccountSigner = walletClientToSmartAccountSigner(eoaWalletClient);
+            const smartAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
+                entryPoint: ENTRYPOINT_ADDRESS_V06,
+                signer: smartAccountSigner,
+                // index: 0n,
+            });
+            setSmartAccount(smartAccount);
+        })();
+    }, [eoaWalletClient, publicClient]);
 
     return (
         <WalletContext.Provider
             value={{
-                currentWallet: currentWallet || "",
+                currentWallet: smartAccount?.address || "",
                 // currentWallet: "0x1C9057544409046f82d7d47332383a6780763EAF",
                 // currentWallet: "0x6403e9d6141fb36B76521871e986d68FebBda064",
                 // currentWallet: "0x74541e279fe87135e43D390aA5eaB8486fb185B9",
                 // currentWallet: "0x240AEDcD6A9fD9f3CA1fE0ED2e122dA87f5836f1",
                 // currentWallet: "0x71dde932c6fdfd6a2b2e9d2f4f1a2729a3d05981",
-                // currentWallet: "0xa5c863ee37aa829FD07634826e4F45bc601D8Dea",
-                // currentWallet: "0x59da55D936A86C203C17bC8037EE745008843694",
-                // currentWallet: "0xa5c863ee37aa829FD07634826e4F45bc601D8Dea",
-                // currentWallet: "0x9da847cD29d0da97fBFAEe0692d336857CF00cd3",
-                // currentWallet: "0x59da55D936A86C203C17bC8037EE745008843694",
-
+                chainId,
                 connectWallet,
-                networkId,
                 logout,
                 domainName,
                 displayAccount,
                 signer,
                 provider,
                 balance,
-                switchNetworkAsync,
-                chains,
                 getPkey,
                 multicallProvider,
-                getWeb3AuthSigner,
-                isWeb3AuthWallet: web3AuthConnectorId === getConnectorId(),
+                publicClient,
+                walletClient: smartAccountClient,
                 polygonBalance,
                 mainnetBalance,
                 arbitrumBalance,
-                mainnetMulticallProvider,
-                polygonMulticallProvider,
+                setChainId,
             }}
         >
             {children}
