@@ -5,7 +5,6 @@ import { useIsMutating } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { TRANSFER_TOKEN } from "src/config/constants/query";
 import useConstants from "./useConstants";
-import { BigNumber, Contract, constants } from "ethers";
 import useBalances from "./useBalances";
 import { errorMessages } from "src/config/constants/notifyMessages";
 import { awaitTransaction, getConnectorId, subtractGas } from "src/utils/common";
@@ -14,14 +13,14 @@ import { web3AuthConnectorId } from "src/config/constants";
 import { isGasSponsored } from "src/api";
 
 const useTransfer = () => {
-    const { signer, currentWallet } = useWallet();
+    const { currentWallet, client, isSponsored } = useWallet();
     const { NETWORK_NAME } = useConstants();
 
-    const _transferEth = async ({ to, amount, max }: { to: string; amount: BigNumber; max?: boolean }) => {
-        if (!signer) return;
-        const balance = await signer.getBalance();
+    const _transferEth = async ({ to, amount, max }: { to: string; amount: bigint; max?: boolean }) => {
+        if (!client.wallet || !currentWallet) return;
+        const balance = await client.public.getBalance({ address: currentWallet });
         if (max) amount = balance;
-        if (getConnectorId() !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
+        if (!isSponsored) {
             const afterGasCut = await subtractGas(
                 amount,
                 signer,

@@ -1,10 +1,10 @@
 import { useMemo, useCallback, useEffect } from "react";
 import useWallet from "src/hooks/useWallet";
-import * as ethers from "ethers";
 import useFarms from "./farms/useFarms";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { fetchBalances, reset } from "src/state/balances/balancesReducer";
 import { useDecimals } from "./useDecimals";
+import { formatUnits, zeroAddress } from "viem";
 
 /**
  * Returns balances for all tokens
@@ -43,7 +43,7 @@ const useBalances = () => {
                 b[key] = undefined;
                 return;
             }
-            const formattedBal = Number(ethers.utils.formatUnits(value, decimals[key]));
+            const formattedBal = Number(formatUnits(BigInt(value), decimals[key] || 18));
             b[key] = formattedBal;
             return;
         });
@@ -51,12 +51,12 @@ const useBalances = () => {
     }, [balances]);
 
     useEffect(() => {
-        if (currentWallet === "" && Object.values(balances).length > 0) {
+        if (!currentWallet && Object.values(balances).length > 0) {
             dispatch(reset());
         }
     }, [currentWallet, balances]);
 
-    const ethBalance = useMemo(() => ethers.BigNumber.from(balances[ethers.constants.AddressZero] || 0), [balances]);
+    const ethBalance = useMemo(() => BigInt(balances[zeroAddress] || "0"), [balances]);
 
     return {
         balances,

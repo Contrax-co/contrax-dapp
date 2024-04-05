@@ -3,7 +3,6 @@ import useNotify from "src/hooks/useNotify";
 import { commify } from "ethers/lib/utils.js";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 import useWallet from "src/hooks/useWallet";
-import { getPriceFromHopLp, getPriceFromUsdcPair, getPriceFromWethPair } from "src/utils/pair";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
@@ -21,7 +20,6 @@ const Test = () => {
         const wethAddr = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
         const hEthAddr = "0xDa7c0de432a9346bB6e96aC74e3B61A36d8a77eB";
         const arbAddr = "0x912CE59144191C1204E64559FE8253a0e49E6548";
-        await getPriceFromUsdcPair(multicallProvider, wethAddr);
         // get Arb price
         // await getPriceFromUsdcPair(multicallProvider, arbAddr);
         // get Weth and hEth Price

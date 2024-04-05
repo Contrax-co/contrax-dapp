@@ -1,10 +1,10 @@
 import { useMemo, useCallback } from "react";
 import useWallet from "src/hooks/useWallet";
-import * as ethers from "ethers";
 import useFarms from "./farms/useFarms";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { fetchTotalSupplies } from "src/state/supply/supplyReducer";
 import { useDecimals } from "./useDecimals";
+import { formatUnits } from "viem";
 
 /**
  * Returns total supply for all tokens
@@ -33,7 +33,7 @@ const useTotalSupplies = () => {
                 b[key] = undefined;
                 return;
             }
-            const formattedBal = Number(ethers.utils.formatUnits(value, decimals[key]));
+            const formattedBal = Number(formatUnits(BigInt(value || "0"), decimals[key] || 18));
             b[key] = formattedBal;
             return;
         });
