@@ -81,11 +81,18 @@ interface TokenList {
     symbol: string;
 }
 
+interface ApprovalData {
+    allowanceTarget: Address;
+    approvalTokenAddress: Address;
+    minimumApprovalAmount: string;
+    owner: string;
+}
+
 interface BuildTxResponse {
     approvalData: ApprovalData;
     chainId: number;
-    txData: string;
-    txTarget: string;
+    txData: Address;
+    txTarget: Address;
     txType: string;
     userTxIndex: number;
     userTxType: string;
@@ -149,10 +156,10 @@ const parseError = (error: ErrorObj) => {
 export const getRoute = async (
     fromChainId: number,
     toChainId: number,
-    fromTokenAddress: string,
-    toTokenAddress: string,
+    fromTokenAddress: Address,
+    toTokenAddress: Address,
     fromAmount: string,
-    userAddress: string
+    userAddress: Address
 ) => {
     const res = await socketTechApi.get(
         `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true&excludeBridges=stargate`
@@ -171,9 +178,8 @@ export const getRoute = async (
         if (!priceRes?.[String(fromChainId)][fromTokenAddress as Address]) {
             throw new Error(`Error in getting price for bridge`);
         }
-        // @ts-expect-error
         const price = priceRes[String(fromChainId)][fromTokenAddress]!;
-        const usdAmount = Number(toEth(err.minAmount, res.data.result.fromAsset.decimals)) * price;
+        const usdAmount = Number(toEth(BigInt(err.minAmount), res.data.result.fromAsset.decimals)) * price;
 
         if (!route)
             throw new Error(`Please bridge $${usdAmount.toFixed(2)} ${res.data.result.fromAsset.symbol} or more!`);

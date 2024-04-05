@@ -1,6 +1,9 @@
 import { Apys } from "src/state/apys/types";
 import { FarmOriginPlatform, FarmType } from "./enums";
 import { FarmDataProcessed } from "src/api/pools/types";
+import { PublicClient, Transport, Chain } from "viem";
+import { ENTRYPOINT_ADDRESS_V06, SmartAccountClient } from "permissionless";
+import { KernelEcdsaSmartAccount } from "permissionless/accounts";
 
 export interface Farm {
     isDeprecated?: boolean;
@@ -299,4 +302,14 @@ Go to the module tuner on the partner dashboard to see how each property affects
  */
     color_error?: string;
     [x: string]: any;
+}
+
+export interface IClients {
+    wallet: SmartAccountClient<
+        typeof ENTRYPOINT_ADDRESS_V06,
+        Transport,
+        Chain,
+        KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>
+    >;
+    public: PublicClient;
 }

@@ -64,8 +64,6 @@
     "sass": "^1.62.1",
     "styled-components": "^5.3.6",
     "sweetalert": "^2.1.2",
-    "typescript": "4.8.4",
-    "typescript-plugin-css-modules": "^4.1.1",
     "uuid": "^9.0.0",
     "viem": "^2.9.9",
     "wagmi": "^1.3.9",
@@ -119,6 +117,8 @@
     "stream-http": "^3.2.0",
     "string_decoder": "^1.3.0",
     "ts-prune": "^0.10.3",
+    "typescript": "^5.4.4",
+    "typescript-plugin-css-modules": "^5.1.0",
     "url": "^0.11.0"
   },
   "resolutions": {

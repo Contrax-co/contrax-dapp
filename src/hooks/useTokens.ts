@@ -5,13 +5,13 @@ import useFarms from "./farms/useFarms";
 import useBalances from "./useBalances";
 import usePriceOfTokens from "./usePriceOfTokens";
 import useWallet from "./useWallet";
-import { constants, utils } from "ethers";
 import { CHAIN_ID, FarmType } from "src/types/enums";
 import { useDecimals } from "./useDecimals";
 import { defaultChainId } from "src/config/constants";
 import arbTokens from "src/config/constants/tokens";
+import { getAddress, zeroAddress } from "viem";
 
-const ethAddress = constants.AddressZero;
+
 const tokenBalDecimalPlaces = 3;
 const usdBalDecimalPlaces = 2;
 
@@ -136,7 +136,7 @@ export const useTokens = () => {
             });
 
         const lpTokens: Token[] = lpAddresses.map(({ address, decimals }) => {
-            const farm = farms.find((farm) => utils.getAddress(farm.lp_address) === address);
+            const farm = farms.find((farm) => getAddress(farm.lp_address) === address);
             let obj: Token = {
                 address: address,
                 decimals: decimals,
@@ -197,7 +197,7 @@ export const useTokens = () => {
         //             : toFixedFloor(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
         // };
         const matic: Token = {
-            address: ethAddress,
+            address: zeroAddress,
             token_type: FarmType.normal,
             balance:
                 Number(polygonBalance?.formatted) < 1
@@ -218,7 +218,7 @@ export const useTokens = () => {
         };
 
         const ethMainnet: Token = {
-            address: ethAddress,
+            address: zeroAddress,
             token_type: FarmType.normal,
             balance:
                 Number(mainnetBalance?.formatted) < 1
@@ -238,7 +238,7 @@ export const useTokens = () => {
             networkId: CHAIN_ID.MAINNET,
         };
         const arbBalance: Token = {
-            address: ethAddress,
+            address: zeroAddress,
             token_type: FarmType.normal,
             balance:
                 Number(arbitrumBalance?.formatted) < 1
