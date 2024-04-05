@@ -3,6 +3,9 @@ import { Contract, providers, BigNumber, Signer, constants } from "ethers";
 import { Address, erc20ABI } from "wagmi";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { backendApi } from ".";
+import { PublicClient, WalletClient, getContract, maxUint256 } from "viem";
+import { waitForTransactionReceipt } from "viem/actions";
+import { IClients } from "src/types";
 
 export const getSpecificTokenPrice = async (tokenAddress: Address, chainId: number) => {
     const res = await getTokenPricesBackend();
@@ -62,36 +65,45 @@ export const getBalance = async (
 };
 
 export const approveErc20 = async (
-    contractAddress: string,
-    spender: string,
-    amount: BigNumber | string,
-    currentWallet: string,
-    signer: Signer
+    contractAddress: Address,
+    spender: Address,
+    amount: bigint,
+    currentWallet: Address,
+    client: IClients
 ) => {
-    const contract = new Contract(contractAddress, erc20ABI, signer);
+    const contract = getContract({
+        abi: erc20ABI,
+        address: contractAddress,
+        client,
+    });
+
     // check allowance
-    const allowance = await contract.allowance(currentWallet, spender);
+    const allowance = await contract.read.allowance([currentWallet, spender]);
     // if allowance is lower than amount, approve
-    if (BigNumber.from(amount).gt(allowance)) {
-        // approve
-        return await awaitTransaction(contract.approve(spender, constants.MaxUint256));
+    if (amount > allowance) {
+        return await awaitTransaction(contract.write.approve([spender, maxUint256]), client);
     }
     // if already approved just return status as true
     return { status: true };
 };
 
 export const checkApproval = async (
-    contractAddress: string,
-    spender: string,
-    amount: BigNumber | string,
-    currentWallet: string,
-    signer: Signer | providers.Provider
+    contractAddress: Address,
+    spender: Address,
+    amount: bigint,
+    currentWallet: Address,
+    publicClient: PublicClient
 ) => {
-    const contract = new Contract(contractAddress, erc20ABI, signer);
+    const contract = getContract({
+        abi: erc20ABI,
+        address: contractAddress,
+        client: { public: publicClient },
+    });
     // check allowance
-    const allowance = await contract.allowance(currentWallet, spender);
+    const allowance = await contract.read.allowance([currentWallet, spender]);
+
     // if allowance is lower than amount, approve
-    if (BigNumber.from(amount).gt(allowance)) {
+    if (amount > allowance) {
         // approve
         return false;
     }

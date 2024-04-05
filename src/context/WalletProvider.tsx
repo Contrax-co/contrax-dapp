@@ -41,18 +41,18 @@ import { Address, PublicClient, Transport, createPublicClient, http } from "viem
 import axios from "axios";
 import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
 import { arbitrum, mainnet, polygon, gnosis, fantom } from "wagmi/chains";
-import { EthersProviderAdapter } from "@alchemy/aa-ethers";
+import { IClients } from "src/types";
 
 interface IWalletContext {
     /**
      * The current connect wallet address
      */
-    currentWallet: string;
+    currentWallet?: Address;
 
     /**
      * The current connected wallet address truncated
      */
-    displayAccount: string;
+    displayAccount?: Address;
 
     /**
      * Connect wallet modal open for connecting any wallet
@@ -65,11 +65,11 @@ interface IWalletContext {
      * @returns void
      */
     logout: () => void;
-    signer?: ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer;
-    provider:
-        | ethers.ethers.providers.Web3Provider
-        | ethers.ethers.providers.JsonRpcProvider
-        | ethers.ethers.providers.Provider;
+    // signer?: ethers.ethers.providers.JsonRpcSigner | ethers.ethers.Signer;
+    // provider:
+    //     | ethers.ethers.providers.Web3Provider
+    //     | ethers.ethers.providers.JsonRpcProvider
+    //     | ethers.ethers.providers.Provider;
 
     /**
      * Balance of the native eth that the user has
@@ -83,8 +83,16 @@ interface IWalletContext {
     arbitrumBalance?: BalanceResult;
     domainName: null | string;
     chainId: number;
-    walletClient?: SmartAccountClient<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>;
-    publicClient: PublicClient;
+    isSponsored: boolean;
+    client: {
+        wallet?: SmartAccountClient<
+            typeof ENTRYPOINT_ADDRESS_V06,
+            Transport,
+            Chain,
+            KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>
+        >;
+        public: PublicClient;
+    };
 }
 
 type BalanceResult = {
@@ -129,7 +137,7 @@ const useNativeBalance = (chainId: number): BalanceResult => {
         }
     }, [chainId, balances, mainnetBalances, polygonBalances]);
 
-    const formatted = useMemo(() => toEth(balance || 0), [balance]);
+    const formatted = useMemo(() => toEth(BigInt(balance || "0") || 0n), [balance]);
     const usdAmount = useMemo(() => (price || 0) * Number(formatted), [price, formatted]);
 
     return {
@@ -176,8 +184,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             transport: http(),
             batch: {
                 multicall: {
-                    batchSize: 2048,
-                    wait: 500,
+                    batchSize: 4096,
+                    wait: 250,
                 },
             },
         });
@@ -333,7 +341,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     return (
         <WalletContext.Provider
             value={{
-                currentWallet: smartAccount?.address || "",
+                currentWallet: smartAccount?.address,
                 // currentWallet: "0x1C9057544409046f82d7d47332383a6780763EAF",
                 // currentWallet: "0x6403e9d6141fb36B76521871e986d68FebBda064",
                 // currentWallet: "0x74541e279fe87135e43D390aA5eaB8486fb185B9",
@@ -343,17 +351,18 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 connectWallet,
                 logout,
                 domainName,
-                displayAccount,
-                signer,
-                provider,
+                displayAccount: displayAccount as Address,
                 balance,
                 getPkey,
                 multicallProvider,
-                publicClient,
-                walletClient: smartAccountClient,
+                client: {
+                    public: publicClient,
+                    wallet: smartAccountClient,
+                },
                 polygonBalance,
                 mainnetBalance,
                 arbitrumBalance,
+                isSponsored,
                 setChainId,
             }}
         >

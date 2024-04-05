@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { useFeeData } from "wagmi";
 import { MAX_GAS_UNITS_PER_TRANSACTION } from "src/config/constants";
-import { BigNumber } from "ethers";
 import { errorMessages } from "src/config/constants/notifyMessages";
 import { notifyError } from "src/api/notify";
 import useBalances from "./useBalances";
@@ -11,7 +10,7 @@ export const useEstimateGasFee = () => {
     const { ethBalance } = useBalances();
     const isBalanceTooLow = useCallback(() => {
         // return false;
-        if (data && data.gasPrice && ethBalance.gt(data.gasPrice * BigInt(MAX_GAS_UNITS_PER_TRANSACTION))) {
+        if (data && data.gasPrice && ethBalance > data.gasPrice * BigInt(MAX_GAS_UNITS_PER_TRANSACTION)) {
             return false;
         }
         notifyError(errorMessages.insufficientGas());

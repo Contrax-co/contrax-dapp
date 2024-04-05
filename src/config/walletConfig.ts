@@ -37,7 +37,6 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { type PublicClient, usePublicClient } from "wagmi";
 import { type HttpTransport } from "viem";
-import { EthersProviderAdapter } from "@alchemy/aa-ethers";
 
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
