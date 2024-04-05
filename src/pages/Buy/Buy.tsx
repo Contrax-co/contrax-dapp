@@ -22,7 +22,6 @@ const Buy: React.FC<IProps> = () => {
     const [params, setSearchParams] = useSearchParams();
     const { reloadBalances, balances } = useBalances();
     const { fetchAccountData } = useAccountData();
-    // const { lock } = useBridge();
 
     // Reload Balances every time this component unmounts
     React.useEffect(() => {

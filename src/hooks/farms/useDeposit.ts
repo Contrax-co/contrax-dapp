@@ -19,7 +19,7 @@ interface Deposit {
 }
 
 const useDeposit = (farm: Farm) => {
-    const { signer, currentWallet, networkId: chainId } = useWallet();
+    const { signer, currentWallet, chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();

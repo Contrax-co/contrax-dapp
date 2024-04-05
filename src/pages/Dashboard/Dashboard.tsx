@@ -15,7 +15,6 @@ import { MdOutlineQrCode2 } from "react-icons/md";
 import { ExportPrivateKey } from "src/components/modals/ExportPrivateKey/ExportPrivateKey";
 import { ExportPublicKey } from "src/components/modals/ExportPublicKey/ExportPublicKey";
 import SupportChatToggle from "src/components/SupportChatToggle/SupportChatToggle";
-import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import ReferralLink from "src/components/ReferralLink/ReferralLink";
 import ReferBanner from "src/components/ReferBanner/ReferBanner";
 import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
@@ -24,7 +23,6 @@ import { WrongNetwork } from "src/components/WrongNetwork/WrongNetwork";
 import ReferralEarning from "./ReferralEarning/ReferralEarning";
 import { TraxEarning } from "./TraxEarning/TraxEarning";
 import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
-import BridgeEthBtn from "src/components/BridgeEthBtn/BridgeEthBtn";
 import SwapUSDCBtn from "src/components/SwapUSDCBtn/SwapUSDCBtn";
 import { EarnTrax } from "src/components/modals/EarnTrax/EarnTrax";
 import tickIcon from "src/assets/images/tick-blue.svg";
@@ -41,7 +39,7 @@ function Dashboard() {
     const { lightMode } = useApp();
     const { earnTraxTermsAgreed } = useAppSelector((state) => state.account);
     const { vaults, isFetched } = useVaults();
-    const { currentWallet, displayAccount, signer, networkId, domainName } = useWallet();
+    const { currentWallet, displayAccount, signer, chainId, domainName } = useWallet();
     const [congModel, setCongModel] = useState(false);
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
@@ -161,7 +159,7 @@ function Dashboard() {
                     <div className={`dashboard_section outlinedContainer`}>
                         <TokenBalances />
                     </div>
-                    {networkId === CHAIN_ID.ARBITRUM ? (
+                    {chainId === CHAIN_ID.ARBITRUM ? (
                         <div className={`dashboard_section outlinedContainer`}>
                             {isFetched ? (
                                 <>

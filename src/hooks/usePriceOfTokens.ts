@@ -7,12 +7,12 @@ import useFarms from "./farms/useFarms";
 const usePriceOfTokens = () => {
     const { farms } = useFarms();
     const { isLoading, prices, isFetched } = useAppSelector((state) => state.prices);
-    const { networkId } = useWallet();
+    const { chainId } = useWallet();
     const dispatch = useAppDispatch();
 
     const reloadPrices = useCallback(() => {
-        dispatch(updatePrices({ chainId: networkId }));
-    }, [farms, networkId, dispatch]);
+        dispatch(updatePrices({ chainId: chainId }));
+    }, [farms, chainId, dispatch]);
 
     return { prices, isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading, reloadPrices };
 };
