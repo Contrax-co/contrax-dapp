@@ -9,8 +9,8 @@ import { dismissNotify, notifyError, notifyLoading, notifySuccess } from "src/ap
 import { v4 as uuid } from "uuid";
 import { BigNumber } from "ethers";
 
-const usdcAddr = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
-const nativeUsdAddr = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+const usdcAddr = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+const usdceAddress = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 
 const useSwapUsdcNative = () => {
     const { currentWallet, signer } = useWallet();
@@ -25,12 +25,13 @@ const useSwapUsdcNative = () => {
             const { approvalData, route } = await getRoute(
                 CHAIN_ID.ARBITRUM,
                 CHAIN_ID.ARBITRUM,
-                nativeUsdAddr,
+                usdceAddress,
                 usdcAddr,
-                swapAmount ? swapAmount.toString() : balances[nativeUsdAddr]!,
+                swapAmount ? swapAmount.toString() : balances[usdceAddress]!,
                 currentWallet
             );
-            notifyLoading({ title: "Swapping", message: `Approving Native USDC - 1/3` }, { id: notiId });
+            notifyLoading({ title: "Swapping", message: `Approving USDC.e - 1/3` }, { id: notiId });
+            console.log("approvalData", approvalData);
             await approveErc20(
                 approvalData.approvalTokenAddress,
                 approvalData.allowanceTarget,
@@ -49,7 +50,7 @@ const useSwapUsdcNative = () => {
             notifyLoading({ title: "Swapping", message: `Sending swap transaction - 3/3` }, { id: notiId });
             const { error, status } = await awaitTransaction(signer?.sendTransaction(tx));
             if (status) {
-                notifySuccess({ title: "Success!", message: "Native USDC converted to USDC" });
+                notifySuccess({ title: "Success!", message: "USDC.e converted to USDC" });
             } else {
                 notifyError({ title: "Error!", message: error });
             }
@@ -62,7 +63,7 @@ const useSwapUsdcNative = () => {
         }
     };
 
-    const formattedBalance = useMemo(() => Number(toEth(balances[nativeUsdAddr] || "0", 6)), [balances]);
+    const formattedBalance = useMemo(() => Number(toEth(balances[usdceAddress] || "0", 6)), [balances]);
     return { initateSwap, formattedBalance, loading };
 };
 

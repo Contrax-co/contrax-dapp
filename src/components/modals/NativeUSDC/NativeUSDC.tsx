@@ -24,7 +24,7 @@ const NativeUSDC: React.FC<IProps> = ({ handleClose, handleInitateSwap, formatte
     return (
         <ModalLayout onClose={handleClose} className={styles.borderClass}>
             <div className={styles.container}>
-                <h1 className={styles.nativeHeading}>Swap Native USDC to USDC.e</h1>
+                <h1 className={styles.nativeHeading}>Swap USDC.e to USDC</h1>
                 <div></div>
                 <div className={styles.inputContainer}>
                     <div className={styles.inputWrapper}>
@@ -41,8 +41,9 @@ const NativeUSDC: React.FC<IProps> = ({ handleClose, handleInitateSwap, formatte
                         Max
                     </button>
                 </div>
+                <p className={styles.usdceBalance}>USDC.e Balance: ${formattedBalance}</p>
                 <p className={styles.para2}>
-                    Contrax vaults use USDC.e Type how much you want to swap, or click max to swap it all.
+                    Contrax vaults use USDC. Type how much you want to swap, or click max to swap it all.
                 </p>
                 <div className={styles.btnContainer}>
                     <button
