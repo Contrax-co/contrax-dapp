@@ -27,6 +27,7 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     29: peapods(29), // 29: apGmx,
     30: peapods(30), // 29: apOhm,
     31: peapods(31), // 29: apPeas,
+    32: peapods(32), // 29: apPeasApOhm,
 
     99: sushi(99), // 99: wethUSDC-deprecated
     100: sushi(100), // 100: wethUSDT-deprecated
