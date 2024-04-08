@@ -162,7 +162,7 @@ export const getConnectorId = () => {
 
 export const subtractGas = async (
     amountInWei: bigint,
-    client: IClients,
+    client: Pick<IClients, "public">,
     estimatedTx: Promise<bigint>,
     showError: boolean = true,
     _balance: bigint | undefined = undefined
