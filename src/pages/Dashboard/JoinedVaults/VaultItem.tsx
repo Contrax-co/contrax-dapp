@@ -37,6 +37,8 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
 
                     {vault.alt2 ? <img className={styles.logo2} alt={vault.alt2} src={vault.logo2} /> : null}
 
+                    <img className={styles.platformLogo} src={vault.platform_logo} alt={vault.originPlatform} />
+
                     <p className={styles.name}>{vault.name}</p>
                 </div>
                 <div className={styles.properties}>

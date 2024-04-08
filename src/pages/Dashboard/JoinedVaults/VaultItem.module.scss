@@ -32,6 +32,7 @@
 .header {
     display: flex;
     align-items: center;
+    position: relative;
     .logo1 {
         width: 60px;
         height: 60px;
@@ -70,6 +71,14 @@
         font-family: "Sony Sketch EF", sans-serif;
         color: #62cde1;
     }
+}
+
+.platformLogo {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    left: 45px;
+    bottom: 0px;
 }
 
 @media only screen and (max-width: 2000px) {
