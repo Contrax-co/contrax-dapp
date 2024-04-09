@@ -55,7 +55,7 @@ const useZapIn = (farm: Farm) => {
             max,
             token,
         });
-        const afterDepositAmount = Number(toEth(difference)) * prices[farm.vault_addr];
+        const afterDepositAmount = Number(toEth(difference, farm.decimals)) * prices[farm.vault_addr];
         const beforeDepositAmount = zapAmount * prices[token];
         let slippage = (1 - afterDepositAmount / beforeDepositAmount) * 100;
         if (slippage < 0) slippage = 0;

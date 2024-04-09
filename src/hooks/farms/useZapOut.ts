@@ -33,7 +33,7 @@ const useZapOut = (farm: Farm) => {
     };
 
     const slippageZapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
-        let amountInWei = toWei(withdrawAmt, decimals[farm.lp_address]);
+        let amountInWei = toWei(withdrawAmt, farm.decimals);
 
         //  @ts-ignore
         const difference = await farmFunctions[farm.id]?.zapOutSlippage({
