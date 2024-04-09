@@ -269,7 +269,7 @@ let peapods = function (farmId: number): FarmFunctions {
     };
 
     const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
-    const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
+    const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, farm });
 
     const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
     const zapOutSlippage: SlippageOutBaseFn = (props) => slippageOut({ ...props, farm });

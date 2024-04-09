@@ -102,7 +102,7 @@ export const filterAssetChanges = (tokenAddress: string, walletAddress: string, 
         }
     });
 
-    return { added, subtracted };
+    return { added, subtracted, difference: added - subtracted };
 };
 
 export const filterBalanceChanges = (walletAddress: string, balanceChanges: BalanceDiffs[]) => {
@@ -172,5 +172,3 @@ export const simulateTransaction = async (
 
     return processedResponse;
 };
-
-
