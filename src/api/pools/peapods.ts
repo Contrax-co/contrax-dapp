@@ -60,15 +60,18 @@ let peapods = function (farmId: number): FarmFunctions {
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: ((Number(toEth(vaultBalance)) * vaultTokenPrice) / prices[usdcAddress]).toString(),
-                amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
+                amount: (
+                    (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
+                    prices[usdcAddress]
+                ).toString(),
+                amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: prices[usdcAddress],
             },
             {
                 tokenAddress: constants.AddressZero,
                 tokenSymbol: "ETH",
-                amount: ((Number(toEth(vaultBalance)) * vaultTokenPrice) / ethPrice).toString(),
-                amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
+                amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / ethPrice).toString(),
+                amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: ethPrice,
             },
         ];
@@ -266,7 +269,7 @@ let peapods = function (farmId: number): FarmFunctions {
     };
 
     const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
-    const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, tokenIn: farm.token1, farm });
+    const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, farm });
 
     const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
     const zapOutSlippage: SlippageOutBaseFn = (props) => slippageOut({ ...props, farm });

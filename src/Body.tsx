@@ -101,7 +101,7 @@ function Body() {
             <Route path={RoutesPaths.Home} element={<Home />}>
                 <Route path="" element={<Dashboard />} />
                 <Route
-                    path={RoutesPaths.Deposit}
+                    path={RoutesPaths.Mesh}
                     element={
                         <SignInRequiredWrapper>
                             <Front />
