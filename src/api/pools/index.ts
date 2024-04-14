@@ -5,6 +5,7 @@ import hop from "./hop";
 import * as gmx from "./gmx";
 import { FarmFunctions } from "./types";
 import peapods from "./peapods";
+import steer from "./steer";
 
 // TODO: find a better way to add farms here, instead of using the farm id manually
 const farmFunctions: { [key: number]: FarmFunctions } = {
@@ -37,6 +38,9 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     102: sushi(102), // 102: wethMagic-deprecated
     103: sushi(103), // 103: wethDAI-deprecated
     104: sushi(104), // 104: wethPLS-deprecated
+
+    35: steer(35), // 35: USDT-USDC.e
+    36: steer(36), // 36: USDC-USDC.e
 };
 
 export default farmFunctions;
