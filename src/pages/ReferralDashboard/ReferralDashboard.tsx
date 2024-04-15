@@ -63,7 +63,7 @@ const ReferralDashboard: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.mainHeading}>Intract Referral Contest! 🎉</h1>
+            {/* <h1 className={styles.mainHeading}>Intract Referral Contest! 🎉</h1>
             <h2 className={styles.subHeading}>$500 in prizes for top 3 referrers. Contest ends March 13th</h2>
             <section className={styles.paraSection}>
                 <p className={styles.para}>
@@ -138,7 +138,7 @@ const ReferralDashboard: React.FC = () => {
                     )}
                 </div>
             </section>
-            <br />
+            <br /> */}
             <h1 className={styles.mainHeading}>🥇 Current Standings</h1>
             <br />
             <div className={styles.topRow}>

@@ -51,7 +51,7 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
 
                 <SidebarItem
-                    title="Import Crypto"
+                    title="Import"
                     icon={<MeshIcon width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Mesh)}
                     active={pathname === RoutesPaths.Mesh}
