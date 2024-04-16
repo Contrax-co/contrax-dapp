@@ -36,6 +36,9 @@ const useZapIn = (farm: Farm) => {
             chainId,
             max,
             token,
+            prices,
+            // @ts-ignore
+            decimals,
         });
 
         reloadBalances();
