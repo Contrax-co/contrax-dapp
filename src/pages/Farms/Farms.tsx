@@ -13,6 +13,7 @@ import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import "./Farms.css";
 import DotMenu from "./components/DotMenu";
 import { DeprecatedToggle } from "./components/DeprecatedToggle";
+import InfoText from "src/components/InfoText/InfoText";
 
 interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
     apy: number;
@@ -207,6 +208,12 @@ function Farms() {
                                       setOpenedFarm={setOpenedFarm}
                                   />
                               ))}
+                    <InfoText
+                        style={{ marginTop: 20 }}
+                        text={
+                            "Vaults in advanced section are subject to impermanent loss risk. Use at your own discretion."
+                        }
+                    />
                     <div style={{ textAlign: "center" }}>
                         <small>
                             Can't find your vault? It might have been deprecated. You can withdraw from old vaults
