@@ -11,6 +11,8 @@ export interface ZapInArgs {
     max?: boolean;
     token: string;
     balances: Balances;
+    prices?: Prices;
+    decimals?: Decimals;
     currentWallet: string;
     tokenIn?: string;
 }

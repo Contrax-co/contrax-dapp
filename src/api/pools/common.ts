@@ -188,6 +188,8 @@ export const zapInSteerBase: ZapInBaseFn = async ({
     chainId,
     max,
     tokenIn,
+    prices,
+    decimals,
 }) => {
     if (!signer) return;
     const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
@@ -200,10 +202,22 @@ export const zapInSteerBase: ZapInBaseFn = async ({
             amountInWei = balances[token] ?? "0";
         }
         amountInWei = BigNumber.from(amountInWei);
-        const token0Amount = amountInWei.div(2);
-        const token1Amount = amountInWei.sub(token0Amount);
 
-        //#endregion
+        //#region Token Amounts
+        const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+        const steerVaultTokens: string[] = await vaultContract.steerVaultTokens();
+        const getTotalAmounts: BigNumber[] = await vaultContract.getTotalAmounts();
+
+        const token0Staked =
+            prices![steerVaultTokens[0]] * Number(toEth(getTotalAmounts[0], decimals![steerVaultTokens[0]]));
+        const token1Staked =
+            prices![steerVaultTokens[1]] * Number(toEth(getTotalAmounts[1], decimals![steerVaultTokens[1]]));
+
+        const token0Amount = amountInWei
+            .mul(((token0Staked / (token0Staked + token1Staked)) * 10 ** 12).toFixed())
+            .div(10 ** 12);
+        const token1Amount = amountInWei.sub(token0Amount);
+        //#endregion Token Amounts
 
         // #region Approve
         // first approve tokens, if zap is not in eth
