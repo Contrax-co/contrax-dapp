@@ -66,6 +66,7 @@ let steer = function (farmId: number): FarmFunctions {
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: prices[usdcAddress],
+                isPrimaryVault: true,
             },
             {
                 tokenAddress: constants.AddressZero,
@@ -75,29 +76,6 @@ let steer = function (farmId: number): FarmFunctions {
                 price: ethPrice,
             },
         ];
-
-        zapCurriences?.forEach((currency) => {
-            const currencyBalance = BigNumber.from(balances[currency.address]);
-            const currencyPrice = prices[currency.address];
-            depositableAmounts.push({
-                tokenAddress: currency.address,
-                tokenSymbol: currency.symbol,
-                amount: toEth(currencyBalance, decimals[currency.symbol]),
-                amountDollar: (Number(toEth(currencyBalance, decimals[currency.address])) * currencyPrice).toString(),
-                price: prices[currency.address],
-            });
-            withdrawableAmounts.push({
-                tokenAddress: currency.address,
-                tokenSymbol: currency.symbol,
-                amount: (
-                    (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[currency.address]
-                ).toString(),
-                amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-                price: prices[currency.address],
-                isPrimaryVault: currency.symbol === farm.name,
-            });
-        });
 
         const result = {
             depositableAmounts,
