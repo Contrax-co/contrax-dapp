@@ -97,12 +97,12 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                         />
                     </>
                 )}
-                <SidebarItem
+                {/* <SidebarItem
                     title="Referrals"
                     icon={<VscReferences size={18} />}
                     onClick={() => handleNavigation(RoutesPaths.ReferralDashboard)}
                     active={pathname === RoutesPaths.ReferralDashboard}
-                />
+                /> */}
                 <SidebarItem
                     title="User Guide"
                     onClick={() => handleNavigation("https://docs.contrax.finance/introduction/", "_blank")}
