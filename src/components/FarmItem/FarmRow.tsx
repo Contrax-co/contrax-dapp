@@ -150,7 +150,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                             }
                         >
                             <div className={"xTranxBoosted"} onClick={() => window.open(xTraxTokenomics, "_blank")}>
-                                <img src={fire} alt="fire" />
+                                {/* <img src={fire} alt="fire" /> */}
                                 <p className={"paraxTrax"}>xTRAX Boosted!</p>
                             </div>
                         </a>
@@ -255,7 +255,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                 }
                             >
                                 <div className={"xTranxBoosted"} onClick={() => window.open(xTraxTokenomics, "_blank")}>
-                                    <img src={fire} alt="fire" />
+                                    {/* <img src={fire} alt="fire" /> */}
                                     <p className={"paraxTrax"}>xTRAX Boosted!</p>
                                 </div>
                             </a>
