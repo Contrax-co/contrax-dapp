@@ -57,6 +57,9 @@ const useZapIn = (farm: Farm) => {
             chainId,
             max,
             token,
+            prices,
+            // @ts-ignore
+            decimals,
         });
         const afterDepositAmount = Number(toEth(difference, farm.decimals)) * prices[farm.vault_addr];
         const beforeDepositAmount = zapAmount * prices[token];
