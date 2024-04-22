@@ -1,4 +1,4 @@
-import { erc20ABI } from "wagmi";
+import { erc20Abi } from "viem";
 import { prepareSendTransaction, sendTransaction } from "@wagmi/core";
 import useWallet from "./useWallet";
 import { useIsMutating } from "@tanstack/react-query";

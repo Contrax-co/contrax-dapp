@@ -16,13 +16,6 @@ interface Asset {
     chainAgnosticId: string | null;
 }
 
-interface ApprovalData {
-    minimumApprovalAmount: string;
-    approvalTokenAddress: string;
-    allowanceTarget: string;
-    owner: string;
-}
-
 interface GasFees {
     gasAmount: string;
     gasLimit: number;
@@ -166,6 +159,7 @@ export const getRoute = async (
     );
     const errors: ErrorObj = res.data.result.bridgeRouteErrors;
     const routes = res.data.result.routes as Route[];
+    // @ts-ignore
     const route = routes.find((e) => e.userTxs.some((tx) => tx.approvalData.allowanceTarget !== ""));
     // routes.find((route) => route.usedBridgeNames[0] !== "connext" && route.usedBridgeNames[0] !== "hop") ||
     // routes.find((route) => route.usedBridgeNames[0] !== "connext") ||

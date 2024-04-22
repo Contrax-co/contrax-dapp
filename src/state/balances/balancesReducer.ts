@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { constants, Contract, utils } from "ethers";
-import { erc20ABI } from "wagmi";
+import { Address, erc20Abi, getAddress, getContract, zeroAddress } from "viem";
 import { StateInterface, UpdateBalancesActionPayload, UpdatePolygonBalancesActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
 import { defaultChainId } from "src/config/constants";
@@ -16,15 +15,21 @@ const initialState: StateInterface = {
 
 export const fetchPolygonBalances = createAsyncThunk(
     "balances/fetchPolygonBalances",
-    async ({ multicallProvider, account, addresses }: UpdatePolygonBalancesActionPayload, thunkApi) => {
+    async ({ publicClient, account, addresses }: UpdatePolygonBalancesActionPayload, thunkApi) => {
         // console.log("fetchPolygonBalances");
         // console.trace();
         let promises = addresses.map((address) =>
-            new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
+            getContract({
+                abi: erc20Abi,
+                address: address as Address,
+                client: {
+                    public: publicClient,
+                },
+            }).read.balanceOf([account as Address])
         );
 
         const [maticBalance, ...balancesResponse] = await Promise.all([
-            multicallProvider.getBalance(account),
+            publicClient.getBalance({ address: account as Address }),
             ...promises,
         ]);
 
@@ -33,12 +38,12 @@ export const fetchPolygonBalances = createAsyncThunk(
             return accum;
         }, {});
 
-        balances[constants.AddressZero] = maticBalance.toString();
+        balances[zeroAddress] = maticBalance.toString();
 
         // create address checksum
         const checksummed: { [key: string]: string } = {};
         Object.entries(balances).forEach(([key, value]) => {
-            checksummed[utils.getAddress(key)] = value;
+            checksummed[getAddress(key)] = value;
         });
 
         return checksummed;
@@ -47,13 +52,19 @@ export const fetchPolygonBalances = createAsyncThunk(
 
 export const fetchMainnetBalances = createAsyncThunk(
     "balances/fetchMainnetBalances",
-    async ({ multicallProvider, account, addresses }: UpdatePolygonBalancesActionPayload, thunkApi) => {
+    async ({ publicClient, account, addresses }: UpdatePolygonBalancesActionPayload, thunkApi) => {
         let promises = addresses.map((address) =>
-            new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
+            getContract({
+                abi: erc20Abi,
+                address: address as Address,
+                client: {
+                    public: publicClient,
+                },
+            }).read.balanceOf([account as Address])
         );
 
         const [ethBalance, ...balancesResponse] = await Promise.all([
-            multicallProvider.getBalance(account),
+            publicClient.getBalance({ address: account as Address }),
             ...promises,
         ]);
 
@@ -62,12 +73,12 @@ export const fetchMainnetBalances = createAsyncThunk(
             return accum;
         }, {});
 
-        balances[constants.AddressZero] = ethBalance.toString();
+        balances[zeroAddress] = ethBalance.toString();
 
         // create address checksum
         const checksummed: { [key: string]: string } = {};
         Object.entries(balances).forEach(([key, value]) => {
-            checksummed[utils.getAddress(key)] = value;
+            checksummed[getAddress(key)] = value;
         });
 
         return checksummed;
@@ -76,7 +87,7 @@ export const fetchMainnetBalances = createAsyncThunk(
 
 export const fetchBalances = createAsyncThunk(
     "balances/fetchBalances",
-    async ({ farms, multicallProvider, account }: UpdateBalancesActionPayload, thunkApi) => {
+    async ({ farms, publicClient, account }: UpdateBalancesActionPayload, thunkApi) => {
         const addresses = new Set<string>();
         farms.forEach((farm) => {
             addresses.add(farm.lp_address.toLowerCase());
@@ -89,23 +100,30 @@ export const fetchBalances = createAsyncThunk(
         });
         const addressesArray = Array.from(addresses);
         let promises = addressesArray.map((address) =>
-            new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
+            getContract({
+                abi: erc20Abi,
+                address: address as Address,
+                client: {
+                    public: publicClient,
+                },
+            }).read.balanceOf([account as Address])
         );
         promises = [...promises];
+
         const [ethBalance, ...balancesResponse] = await Promise.all([
-            multicallProvider.getBalance(account),
+            publicClient.getBalance({ address: account as Address }),
             ...promises,
         ]);
         const balances = balancesResponse.reduce((accum: { [key: string]: string }, balance, index) => {
             accum[addressesArray[index]] = balance.toString();
             return accum;
         }, {});
-        balances[constants.AddressZero] = ethBalance.toString();
+        balances[zeroAddress] = ethBalance.toString();
 
         // create address checksum
         const checksummed: { [key: string]: string } = {};
         Object.entries(balances).forEach(([key, value]) => {
-            checksummed[utils.getAddress(key)] = value;
+            checksummed[getAddress(key)] = value;
         });
         thunkApi.dispatch(setAccount(account));
         return checksummed;

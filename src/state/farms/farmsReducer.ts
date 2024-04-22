@@ -12,7 +12,7 @@ import {
 } from "./types";
 import { Contract, BigNumber } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
-import { erc20ABI } from "wagmi";
+import { erc20Abi } from "viem";
 import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
 import { IS_LEGACY, defaultChainId } from "src/config/constants";
 import { FarmTransactionType } from "src/types/enums";

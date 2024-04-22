@@ -3,16 +3,7 @@ import * as ethers from "ethers";
 import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
-import {
-    usePublicClient,
-    useWalletClient,
-    useAccount,
-    useDisconnect,
-    useNetwork,
-    useSwitchNetwork,
-    Chain,
-    useBalance,
-} from "wagmi";
+import { usePublicClient, useWalletClient, useAccount, useDisconnect, useConnectors } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { getConnectorId, getNetworkName, resolveDomainFromAddress, toEth } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
@@ -37,7 +28,7 @@ import {
     signerToBiconomySmartAccount,
     signerToEcdsaKernelSmartAccount,
 } from "permissionless/accounts";
-import { Address, PublicClient, Transport, createPublicClient, http } from "viem";
+import { Address, Chain, PublicClient, Transport, createPublicClient, http } from "viem";
 import axios from "axios";
 import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
 import { arbitrum, mainnet, polygon, gnosis, fantom } from "wagmi/chains";
@@ -93,6 +84,8 @@ interface IWalletContext {
         >;
         public: PublicClient;
     };
+    publicClientMainnet: PublicClient;
+    publicClientPolygon: PublicClient;
 }
 
 type BalanceResult = {
@@ -163,7 +156,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const { data: eoaWalletClient } = useWalletClient();
     const [smartAccount, setSmartAccount] =
         useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>>();
-    const [isSponsored] = useState(true);
+    const [isSponsored] = useState(false);
     const [gasInErc20] = useState(false);
     const [chainId, setChainId] = useState(CHAIN_ID.ARBITRUM);
     const chain = useMemo(() => {
@@ -190,6 +183,31 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             },
         });
     }, [chain]);
+    const publicClientMainnet = useMemo(() => {
+        return createPublicClient({
+            chain: mainnet,
+            transport: http(),
+            batch: {
+                multicall: {
+                    batchSize: 4096,
+                    wait: 250,
+                },
+            },
+        });
+    }, [chain]);
+    const publicClientPolygon = useMemo(() => {
+        return createPublicClient({
+            chain: polygon,
+            transport: http(),
+            batch: {
+                multicall: {
+                    batchSize: 4096,
+                    wait: 250,
+                },
+            },
+        });
+    }, [chain]);
+
     const provider = useEthersProvider(publicClient);
     const multicallProvider = useMulticallProvider(provider);
     const { balances } = useBalances();
@@ -198,6 +216,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         userOperation: UserOperation<"v0.6">;
     }): Promise<{
         callGasLimit: bigint;
+
         verificationGasLimit: bigint;
         preVerificationGas: bigint;
         paymasterAndData: Address;
@@ -270,6 +289,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         [balances]
     );
 
+    const currentWallet = useMemo(() => smartAccount?.address, [smartAccount]);
+    // console.log("currentWallet =>", currentWallet);
+
     const getPkey = async () => {
         try {
             // @ts-ignore
@@ -337,11 +359,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             setSmartAccount(smartAccount);
         })();
     }, [eoaWalletClient, publicClient]);
-
     return (
         <WalletContext.Provider
             value={{
-                currentWallet: smartAccount?.address,
+                currentWallet,
                 // currentWallet: "0x1C9057544409046f82d7d47332383a6780763EAF",
                 // currentWallet: "0x6403e9d6141fb36B76521871e986d68FebBda064",
                 // currentWallet: "0x74541e279fe87135e43D390aA5eaB8486fb185B9",
@@ -359,6 +380,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                     public: publicClient,
                     wallet: smartAccountClient,
                 },
+                publicClientMainnet,
+                publicClientPolygon,
                 polygonBalance,
                 mainnetBalance,
                 arbitrumBalance,

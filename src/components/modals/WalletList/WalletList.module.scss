@@ -1,0 +1,12 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/_mixins.scss";
+
+.container {
+    padding: 40px 60px 50px;
+    @include devices(tablet) {
+        width: initial;
+    }
+    @include devices(mobile) {
+        padding: 18px 45px 30px;
+    }
+}

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Contract, utils } from "ethers";
-import { erc20ABI } from "wagmi";
+import { erc20Abi } from "viem";
 import { StateInterface, UpdateBalancesActionPayload, TotalSupplies } from "./types";
 import tokens from "src/config/constants/tokens";
 import { defaultChainId } from "src/config/constants";
