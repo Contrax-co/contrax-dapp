@@ -1,5 +1,6 @@
 import { Farm } from "src/types";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
+import { PublicClient } from "viem";
 
 export interface StateInterface {
     balances: Balances;
@@ -13,12 +14,12 @@ export interface StateInterface {
 export interface UpdateBalancesActionPayload {
     account: string;
     farms: Farm[];
-    multicallProvider: MulticallProvider;
+    publicClient: PublicClient;
 }
 export interface UpdatePolygonBalancesActionPayload {
     account: string;
     addresses: string[];
-    multicallProvider: MulticallProvider;
+    publicClient: PublicClient;
 }
 
 export interface Balances {

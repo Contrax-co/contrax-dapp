@@ -1,9 +1,8 @@
 import { awaitTransaction } from "src/utils/common";
 import { Contract, providers, BigNumber, Signer, constants } from "ethers";
-import { Address, erc20ABI } from "wagmi";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { backendApi } from ".";
-import { PublicClient, WalletClient, getContract, maxUint256 } from "viem";
+import { PublicClient, Address, erc20Abi, getContract, maxUint256 } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { IClients } from "src/types";
 
@@ -72,7 +71,7 @@ export const approveErc20 = async (
     client: IClients
 ) => {
     const contract = getContract({
-        abi: erc20ABI,
+        abi: erc20Abi,
         address: contractAddress,
         client,
     });
@@ -95,7 +94,7 @@ export const checkApproval = async (
     publicClient: PublicClient
 ) => {
     const contract = getContract({
-        abi: erc20ABI,
+        abi: erc20Abi,
         address: contractAddress,
         client: { public: publicClient },
     });

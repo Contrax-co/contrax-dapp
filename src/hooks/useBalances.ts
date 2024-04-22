@@ -20,7 +20,7 @@ const useBalances = () => {
         polygonBalances,
         mainnetBalances,
     } = useAppSelector((state) => state.balances);
-    const { chainId, multicallProvider, currentWallet } = useWallet();
+    const { chainId, client, currentWallet } = useWallet();
     const {
         decimals,
         isFetched: isDecimalsFetched,
@@ -31,7 +31,8 @@ const useBalances = () => {
 
     const reloadBalances = useCallback(() => {
         if (currentWallet) {
-            dispatch(fetchBalances({ farms, multicallProvider, account: currentWallet }));
+            console.log("fetching");
+            dispatch(fetchBalances({ farms, publicClient: client.public, account: currentWallet }));
         }
     }, [farms, currentWallet, chainId]);
 
@@ -51,10 +52,10 @@ const useBalances = () => {
     }, [balances]);
 
     useEffect(() => {
-        if (!currentWallet && Object.values(balances).length > 0) {
+        if (!currentWallet) {
             dispatch(reset());
         }
-    }, [currentWallet, balances]);
+    }, [currentWallet]);
 
     const ethBalance = useMemo(() => BigInt(balances[zeroAddress] || "0"), [balances]);
 

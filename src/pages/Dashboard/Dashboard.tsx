@@ -39,7 +39,7 @@ function Dashboard() {
     const { lightMode } = useApp();
     const { earnTraxTermsAgreed } = useAppSelector((state) => state.account);
     const { vaults, isFetched } = useVaults();
-    const { currentWallet, displayAccount, signer, chainId, domainName } = useWallet();
+    const { currentWallet, displayAccount, chainId, domainName, client } = useWallet();
     const [congModel, setCongModel] = useState(false);
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
@@ -48,15 +48,17 @@ function Dashboard() {
     const { BLOCK_EXPLORER_URL } = useConstants();
 
     const copy = () => {
-        setCopied(true);
-        copyToClipboard(currentWallet, () => setCopied(false));
+        if (currentWallet) {
+            setCopied(true);
+            copyToClipboard(currentWallet, () => setCopied(false));
+        }
     };
 
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
             <div className={`dashboard_header ${lightMode && "dashboard_header--light"}`}>
                 <div className="dashboard_header_left">
-                    <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet)} />
+                    <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet || "0x")} />
 
                     {currentWallet ? (
                         <>
@@ -108,7 +110,7 @@ function Dashboard() {
 
                 <div className="dashboard-key-icons" style={currentWallet ? {} : { display: "flex" }}>
                     <SupportChatToggle />
-                    {signer && (
+                    {client?.wallet && (
                         <>
                             <FaKey
                                 color={lightMode ? "var(--color_grey)" : "#ffffff"}
