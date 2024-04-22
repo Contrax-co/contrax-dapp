@@ -9,6 +9,7 @@ import { dismissNotify, notifyError, notifyLoading, notifySuccess } from "src/ap
 import { v4 as uuid } from "uuid";
 import { BigNumber } from "ethers";
 import { IClients } from "src/types";
+import { addressesByChainId } from "src/config/constants/contracts";
 
 const usdcAddr = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
 const usdceAddress = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
@@ -72,7 +73,10 @@ const useSwapUsdcNative = () => {
         }
     };
 
-    const formattedBalance = useMemo(() => Number(toEth(BigInt(balances[nativeUsdAddr] || "0"), 6)), [balances]);
+    const formattedBalance = useMemo(
+        () => Number(toEth(BigInt(balances[addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress!] || "0"), 6)),
+        [balances]
+    );
     return { initateSwap, formattedBalance, loading };
 };
 
