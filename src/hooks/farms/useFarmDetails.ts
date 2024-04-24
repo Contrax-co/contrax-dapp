@@ -18,7 +18,7 @@ const useFarmDetails = () => {
     );
     const { decimals } = useDecimals();
 
-    const { chainId, currentWallet, multicallProvider } = useWallet();
+    const { chainId, currentWallet, client } = useWallet();
     const dispatch = useAppDispatch();
 
     const reloadFarmData = useCallback(() => {
@@ -31,7 +31,7 @@ const useFarmDetails = () => {
                     decimals,
                     prices,
                     balances,
-                    multicallProvider,
+                    publicClient: client.public,
                     totalSupplies,
                     chainId: chainId,
                 })
@@ -47,7 +47,7 @@ const useFarmDetails = () => {
         decimals,
         isBalancesFetched,
         isPricesFetched,
-        multicallProvider,
+        client.public,
         totalSupplies,
     ]);
 
