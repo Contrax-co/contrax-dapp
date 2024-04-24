@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { constants, Contract, utils } from "ethers";
-import { erc20Abi } from "viem";
+import { Address, erc20Abi, getAddress, getContract, zeroAddress } from "viem";
 import { Decimals, StateInterface, UpdateDecimalsActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
 import { defaultChainId } from "src/config/constants";
@@ -9,7 +8,7 @@ const initialState: StateInterface = { decimals: {}, isLoading: false, isFetched
 
 export const fetchDecimals = createAsyncThunk(
     "decimals/fetchDecimals",
-    async ({ farms, multicallProvider }: UpdateDecimalsActionPayload) => {
+    async ({ farms, publicClient }: UpdateDecimalsActionPayload) => {
         const addresses = new Set<string>();
         farms.forEach((farm) => {
             addresses.add(farm.lp_address.toLowerCase());
@@ -22,16 +21,24 @@ export const fetchDecimals = createAsyncThunk(
         });
         const addressesArray = Array.from(addresses);
 
-        let promises = addressesArray.map((address) => new Contract(address, erc20ABI, multicallProvider).decimals());
+        let promises = addressesArray.map((address) =>
+            getContract({
+                abi: erc20Abi,
+                address: address as Address,
+                client: {
+                    public: publicClient,
+                },
+            }).read.decimals()
+        );
 
         const decimalsResponses = await Promise.all(promises);
 
         const decimals: Decimals = decimalsResponses.reduce((accum, decimals, index) => {
-            accum[utils.getAddress(addressesArray[index])] = decimals;
+            accum[getAddress(addressesArray[index])] = decimals;
             return accum;
-        }, {});
+        }, {} as Decimals);
 
-        decimals[constants.AddressZero] = 18;
+        decimals[zeroAddress] = 18;
 
         return decimals;
     }

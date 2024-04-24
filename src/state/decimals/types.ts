@@ -1,5 +1,5 @@
 import { Farm } from "src/types";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
+import { PublicClient } from "viem";
 
 export interface StateInterface {
     decimals: Partial<Decimals>;
@@ -9,7 +9,7 @@ export interface StateInterface {
 
 export interface UpdateDecimalsActionPayload {
     farms: Farm[];
-    multicallProvider: MulticallProvider;
+    publicClient: PublicClient;
 }
 
 export interface Decimals {

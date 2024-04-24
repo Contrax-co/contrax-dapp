@@ -1,12 +1,9 @@
 import { useMemo } from "react";
-import { arbitrum, mainnet, polygon } from "wagmi/chains";
-import { injected, safe, walletConnect } from "wagmi/connectors";
+import { arbitrum, mainnet, polygon } from "viem/chains";
 import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
-import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { createConfig, useWalletClient } from "wagmi";
 import {
     ALCHEMY_KEY,
     INFURA_KEY,
@@ -15,6 +12,7 @@ import {
     isDev,
     walletConnectProjectId,
 } from "./constants";
+import { Web3Auth } from "@web3auth/modal";
 import googleIcon from "./../assets/images/google-logo.svg";
 import facebookIcon from "./../assets/images/facebook-icon.svg";
 import discordIcon from "./../assets/images/discordapp-icon.svg";
@@ -22,6 +20,9 @@ import githubIcon from "./../assets/images/github-icon.svg";
 import twitterIcon from "./../assets/images/twitter-icon.svg";
 import { providers } from "ethers";
 import { PublicClient, WalletClient, http, type HttpTransport } from "viem";
+import { MetamaskAdapter } from "@web3auth/metamask-adapter";
+import { WalletConnectModal } from "@walletconnect/modal";
+import { getWalletConnectV2Settings, WalletConnectV2Adapter } from "@web3auth/wallet-connect-v2-adapter";
 
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
@@ -29,22 +30,6 @@ export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 const clientId = WEB3AUTH_CLIENT_ID as string;
 // arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
 // arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
-
-// Instantiating Web3Auth
-const web3AuthInstance = new Web3AuthNoModal({
-    clientId,
-    web3AuthNetwork: "cyan",
-    // sessionTime: 604800, // 7 days
-    chainConfig: {
-        chainNamespace: CHAIN_NAMESPACES.EIP155,
-        chainId: "0x" + arbitrum.id.toString(16),
-        rpcTarget: ARBITRUM_MAINNET,
-        displayName: arbitrum.name,
-        tickerName: arbitrum.nativeCurrency.name,
-        ticker: arbitrum.nativeCurrency.symbol,
-        blockExplorerUrl: "https://arbiscan.io/",
-    },
-});
 
 const PrivateKeyProvider = new EthereumPrivateKeyProvider({
     config: {
@@ -60,6 +45,13 @@ const PrivateKeyProvider = new EthereumPrivateKeyProvider({
     },
 });
 
+// Instantiating Web3Auth
+export const web3AuthInstance = new Web3Auth({
+    clientId,
+    web3AuthNetwork: "cyan",
+    privateKeyProvider: PrivateKeyProvider,
+});
+
 const openloginAdapter = new OpenloginAdapter({
     privateKeyProvider: PrivateKeyProvider,
     // sessionTime: 604800,
@@ -70,19 +62,48 @@ const openloginAdapter = new OpenloginAdapter({
         replaceUrlOnRedirect: false,
     },
 });
-
-web3AuthInstance.configureAdapter(openloginAdapter);
-function getWeb3authConnector() {
-    return (walletDetails: any) => {
-        const connector = Web3AuthConnector({
-            web3AuthInstance,
-            loginParams: {
-                loginProvider: "google",
+const metamaskAdapter = new MetamaskAdapter({
+    clientId,
+    sessionTime: 3600, // 1 hour in seconds
+    web3AuthNetwork: "cyan",
+});
+const defaultWcSettings = {
+    adapterSettings: {
+        walletConnectInitOptions: {
+            projectId: "bb20b40a5d133af4db2d40117f6184a7",
+            relayUrl: "wss://relay.walletconnect.com",
+            metadata: {
+                name: "Contrax",
+                description: "Contrax",
+                url: "http://localhost:3000",
+                icons: ["http://localhost:3000/favicon.ico"],
             },
-        });
-        return (config: any) => ({ ...connector(config) });
-    };
-}
+        },
+    },
+    loginSettings: {
+        optionalNamespaces: {
+            eip155: {
+                methods: ["eth_sendTransaction", "eth_sign", "personal_sign", "eth_signTypedData"],
+                chains: ["eip155:270689"],
+                events: ["chainChanged", "accountsChanged"],
+            },
+        },
+    },
+};
+
+// const walletConnectModal = new WalletConnectModal({ projectId: walletConnectProjectId });
+// const walletConnectV2Adapter = new WalletConnectV2Adapter({
+//     clientId,
+//     web3AuthNetwork: "cyan",
+//     adapterSettings: {
+//         qrcodeModal: walletConnectModal,
+//         ...defaultWcSettings.adapterSettings,
+//     },
+//     loginSettings: { ...defaultWcSettings.loginSettings },
+// });
+// web3AuthInstance.configureAdapter(walletConnectV2Adapter);
+web3AuthInstance.configureAdapter(openloginAdapter);
+web3AuthInstance.configureAdapter(metamaskAdapter);
 
 // const connectors = connectorsForWallets([
 //     {
@@ -175,31 +196,31 @@ function getWeb3authConnector() {
 //     },
 // ]);
 
-export const wagmiClient = createConfig({
-    connectors: [
-        injected(),
-        safe(),
-        walletConnect({ projectId: walletConnectProjectId }),
-        Web3AuthConnector({
-            web3AuthInstance,
-            loginParams: {
-                loginProvider: "google",
-            },
-        }),
-    ],
-    chains: [arbitrum, mainnet, polygon],
-    transports: {
-        [arbitrum.id]: http(ALCHEMY_KEY ? `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}` : undefined),
-        [mainnet.id]: http(),
-        [polygon.id]: http(),
-    },
-    batch: {
-        multicall: {
-            batchSize: 2048,
-            wait: 500,
-        },
-    },
-});
+// export const wagmiClient = createConfig({
+//     connectors: [
+//         injected(),
+//         safe(),
+//         walletConnect({ projectId: walletConnectProjectId }),
+//         Web3AuthConnector({
+//             web3AuthInstance,
+//             loginParams: {
+//                 loginProvider: "google",
+//             },
+//         }),
+//     ],
+//     chains: [arbitrum, mainnet, polygon],
+//     transports: {
+//         [arbitrum.id]: http(ALCHEMY_KEY ? `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}` : undefined),
+//         [mainnet.id]: http(),
+//         [polygon.id]: http(),
+//     },
+//     batch: {
+//         multicall: {
+//             batchSize: 2048,
+//             wait: 500,
+//         },
+//     },
+// });
 export const web3authProvider = web3AuthInstance.provider;
 
 export function publicClientToProvider(publicClient: PublicClient) {
