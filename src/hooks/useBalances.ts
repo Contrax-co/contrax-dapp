@@ -28,10 +28,8 @@ const useBalances = () => {
         isFetching: isDecimalsFetching,
     } = useDecimals();
     const dispatch = useAppDispatch();
-
     const reloadBalances = useCallback(() => {
         if (currentWallet) {
-            console.log("fetching");
             dispatch(fetchBalances({ farms, publicClient: client.public, account: currentWallet }));
         }
     }, [farms, currentWallet, chainId]);
