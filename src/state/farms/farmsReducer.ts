@@ -12,7 +12,7 @@ import {
 } from "./types";
 import { Contract, BigNumber } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
-import { erc20Abi } from "viem";
+import { Address, erc20Abi, getContract } from "viem";
 import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
 import { IS_LEGACY, defaultChainId } from "src/config/constants";
 import { FarmTransactionType } from "src/types/enums";
@@ -68,16 +68,7 @@ export const updateFarmDetails = createAsyncThunk(
 export const updateEarnings = createAsyncThunk(
     "farms/updateEarnings",
     async (
-        {
-            currentWallet,
-            farms,
-            decimals,
-            prices,
-            balances,
-            multicallProvider,
-            totalSupplies,
-            chainId,
-        }: FetchEarningsAction,
+        { currentWallet, farms, decimals, prices, balances, totalSupplies, publicClient, chainId }: FetchEarningsAction,
         thunkApi
     ) => {
         try {
@@ -90,12 +81,23 @@ export const updateEarnings = createAsyncThunk(
             }
 
             const earnings: Earnings = {};
-            const balancesPromises: Promise<BigNumber>[] = [];
+            const balancesPromises: Promise<bigint>[] = [];
             const withdrawableLpAmount: { [farmId: number]: string } = {};
             farms.forEach((farm) => {
-                balancesPromises.push(new Contract(farm.vault_addr, VaultAbi, multicallProvider).balance());
                 balancesPromises.push(
-                    new Contract(farm.lp_address, erc20ABI, multicallProvider).balanceOf(farm.vault_addr)
+                    getContract({
+                        address: farm.vault_addr as Address,
+                        abi: VaultAbi,
+                        client: publicClient,
+                    }).read.balance() as Promise<bigint>
+                );
+
+                balancesPromises.push(
+                    getContract({
+                        address: farm.lp_address as Address,
+                        abi: erc20Abi,
+                        client: publicClient,
+                    }).read.balanceOf([farm.vault_addr as Address]) as Promise<bigint>
                 );
             });
             const vaultBalancesResponse = await Promise.all(balancesPromises);
@@ -103,25 +105,23 @@ export const updateEarnings = createAsyncThunk(
                 const balance = vaultBalancesResponse[i];
                 const b = vaultBalancesResponse[i + 1];
 
-                let r = balance.mul(balances[farms[i / 2].vault_addr]!);
-                if (totalSupplies[farms[i / 2].vault_addr] !== "0") r = r.div(totalSupplies[farms[i / 2].vault_addr]!);
-                if (b.lt(r)) {
-                    const _withdraw = r.sub(b);
-                    const _after = b.add(_withdraw);
-                    const _diff = _after.sub(b);
-                    if (_diff.lt(_withdraw)) {
-                        r = b.add(_diff);
+                let r = balance * BigInt(balances[farms[i / 2].vault_addr]!);
+                if (totalSupplies[farms[i / 2].vault_addr] !== "0")
+                    r = r / BigInt(totalSupplies[farms[i / 2].vault_addr]!);
+                if (b < r) {
+                    const _withdraw = r - b;
+                    const _after = b + _withdraw;
+                    const _diff = _after - b;
+                    if (_diff < _withdraw) {
+                        r = b + _diff;
                     }
                 }
                 withdrawableLpAmount[farms[i / 2].id] = r.toString();
             }
             earns.forEach((item) => {
                 const farm = farms.find((farm) => farm.vault_addr.toLowerCase() === item.vaultAddress)!;
-                const earnedTokens = (
-                    BigInt(item.withdraw) +
-                    BigInt(withdrawableLpAmount[farm.id]) -
-                    BigInt(item.deposit)
-                ).toString();
+                const earnedTokens =
+                    BigInt(item.withdraw) + BigInt(withdrawableLpAmount[farm.id]) - BigInt(item.deposit);
                 earnings[farm.id] = Number(toEth(earnedTokens, decimals[farm.lp_address])) * prices[farm.lp_address]!;
                 if (earnings[farm.id] < 0.0001) earnings[farm.id] = 0;
             });

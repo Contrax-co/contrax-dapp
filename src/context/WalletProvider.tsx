@@ -208,7 +208,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             },
         });
     }, [chain]);
-
+console.log("publicClient =>", publicClient);
     const provider = useEthersProvider(publicClient);
     const multicallProvider = useMulticallProvider(provider);
     const { balances } = useBalances();
