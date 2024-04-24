@@ -1,5 +1,4 @@
 import { ReactComponent as WalletSvg } from "src/assets/images/walletSvg.svg";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styles from "./NotSignedIn.module.scss";
 import { FC } from "react";
 
@@ -21,7 +20,8 @@ export const NotSignedIn: FC<Props> = ({
             <WalletSvg className={styles.walletIcon} />
             <p className={styles.disclaimer}>{heading}</p>
             <p className={styles.description}>{description}</p>
-            <ConnectButton label={buttonText} />
+            {/* TODO: add connect button */}
+            {/* <ConnectButton label={buttonText} /> */}
         </div>
     );
 };

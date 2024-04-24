@@ -3,8 +3,6 @@ import * as ethers from "ethers";
 import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
-import { usePublicClient, useWalletClient, useAccount, useDisconnect, useConnectors } from "wagmi";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { getConnectorId, getNetworkName, resolveDomainFromAddress, toEth } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
@@ -13,13 +11,14 @@ import { useDispatch } from "react-redux";
 import { setConnectorId } from "src/state/settings/settingsReducer";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { CHAIN_ID } from "src/types/enums";
-import { useEthersProvider, useEthersSigner } from "src/config/walletConfig";
+import { useEthersProvider, useEthersSigner, web3AuthInstance } from "src/config/walletConfig";
 import { getTokenPricesBackend } from "src/api/token";
 import {
     ENTRYPOINT_ADDRESS_V06,
     SmartAccountClient,
     UserOperation,
     createSmartAccountClient,
+    providerToSmartAccountSigner,
     walletClientToSmartAccountSigner,
 } from "permissionless";
 import {
@@ -28,11 +27,12 @@ import {
     signerToBiconomySmartAccount,
     signerToEcdsaKernelSmartAccount,
 } from "permissionless/accounts";
-import { Address, Chain, PublicClient, Transport, createPublicClient, http } from "viem";
+import { Address, Chain, PublicClient, Transport, WalletClient, createPublicClient, http } from "viem";
 import axios from "axios";
 import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
-import { arbitrum, mainnet, polygon, gnosis, fantom } from "wagmi/chains";
+import { arbitrum, mainnet, polygon, gnosis, fantom } from "viem/chains";
 import { IClients } from "src/types";
+import { WALLET_ADAPTERS } from "@web3auth/base";
 
 interface IWalletContext {
     /**
@@ -67,7 +67,7 @@ interface IWalletContext {
      */
     balance: number;
     setChainId: (x: number) => void;
-    getPkey: () => Promise<string>;
+    getPkey: () => Promise<string | undefined>;
     multicallProvider: providers.MulticallProvider;
     polygonBalance?: BalanceResult;
     mainnetBalance?: BalanceResult;
@@ -153,9 +153,9 @@ const useMulticallProvider = (
 };
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
-    const { data: eoaWalletClient } = useWalletClient();
     const [smartAccount, setSmartAccount] =
         useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>>();
+    const [isConnecting, setIsConnecting] = useState(false);
     const [isSponsored] = useState(false);
     const [gasInErc20] = useState(false);
     const [chainId, setChainId] = useState(CHAIN_ID.ARBITRUM);
@@ -181,6 +181,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                     wait: 250,
                 },
             },
+            cacheTime: undefined,
         });
     }, [chain]);
     const publicClientMainnet = useMemo(() => {
@@ -256,21 +257,34 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     // @ts-ignore
     const signer = useEthersSigner(smartAccountClient);
     const dispatch = useDispatch();
-    const { address: eoaWallet, connector, isConnecting } = useAccount();
-    const { disconnect } = useDisconnect();
-    const { openConnectModal } = useConnectModal();
     const polygonBalance = useNativeBalance(CHAIN_ID.POLYGON);
     const mainnetBalance = useNativeBalance(CHAIN_ID.MAINNET);
     const arbitrumBalance = useNativeBalance(CHAIN_ID.ARBITRUM);
     const [domainName, setDomainName] = useState<null | string>(null);
-    const connectWallet = async () => {
-        if (openConnectModal) openConnectModal();
 
-        return false;
+    const connectWallet = async () => {
+        try {
+            if (!web3AuthInstance.connected) {
+                await web3AuthInstance.connect();
+            }
+
+            const smartAccountSigner = await providerToSmartAccountSigner(web3AuthInstance.provider as any);
+
+            const smartAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
+                entryPoint: ENTRYPOINT_ADDRESS_V06,
+                signer: smartAccountSigner,
+                // index: 0n,
+            });
+            setSmartAccount(smartAccount);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsConnecting(false);
+        }
     };
 
     async function logout() {
-        disconnect();
+        web3AuthInstance.logout();
         setSmartAccount(undefined);
     }
 
@@ -294,18 +308,13 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     const getPkey = async () => {
         try {
-            // @ts-ignore
-            const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
-            return pkey;
+            const pkey = await web3AuthInstance.provider?.request({ method: "eth_private_key" });
+            return pkey as string;
         } catch (error) {
             console.warn("Pkey: Not web3auth signer!");
             // notifyError(errorMessages.privateKeyError());
         }
     };
-
-    React.useEffect(() => {
-        dispatch(setConnectorId(connector?.id || ""));
-    }, [connector]);
 
     React.useEffect(() => {
         const int = setInterval(async () => {
@@ -345,20 +354,21 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     }, [smartAccount]);
 
     useEffect(() => {
-        (async function () {
-            if (!eoaWalletClient || !publicClient) {
-                setSmartAccount(undefined);
-                return;
+        const init = async () => {
+            try {
+                await web3AuthInstance.initModal();
+
+                if (web3AuthInstance.connected) {
+                    connectWallet();
+                }
+            } catch (error) {
+                console.error(error);
             }
-            const smartAccountSigner = walletClientToSmartAccountSigner(eoaWalletClient);
-            const smartAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
-                entryPoint: ENTRYPOINT_ADDRESS_V06,
-                signer: smartAccountSigner,
-                // index: 0n,
-            });
-            setSmartAccount(smartAccount);
-        })();
-    }, [eoaWalletClient, publicClient]);
+        };
+
+        init();
+    }, []);
+
     return (
         <WalletContext.Provider
             value={{

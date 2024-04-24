@@ -1,7 +1,6 @@
 import snapshot from "@snapshot-labs/snapshot.js";
 import { SNAPSHOT_APP_NAME, SNAPSHOT_HUB_URL, SNAPSHOT_SPACE_ID } from "src/config/constants";
 import { useEthersWeb3Provider } from "src/config/walletConfig";
-import { useAccount } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
 import { SnapshotSpace, SnapshotSpaceProposal, SnapshotSpaceVote } from "src/types/snapshot";
 import { getSnapshotSpace, getSnapshotSpaceProposals, getSnapshotSpaceProposalsVotesByAddress } from "src/api/snapshot";
@@ -12,9 +11,8 @@ const client = new snapshot.Client712(SNAPSHOT_HUB_URL);
 
 export const useSnapshotJoinSpace = () => {
     const [loadingJoinSpace, setLoadingJoinSpace] = useState(false);
-
+    const { currentWallet: address } = useWallet();
     const provider = useEthersWeb3Provider();
-    const { address } = useAccount();
 
     const joinSpace = async () => {
         if (!provider || !address) return;
@@ -119,7 +117,7 @@ export const useSnapshotSpaceProposals = () => {
 export const useSnapshotVote = () => {
     const provider = useEthersWeb3Provider();
     const [loadingVote, setloadingVote] = useState(false);
-    const { address } = useAccount();
+    const { currentWallet: address } = useWallet();
     const { notifyError, notifyLoading, notifySuccess, dismissNotify } = useNotify();
 
     const vote = async (proposalId: string, choiceNumber: number, choice: string) => {

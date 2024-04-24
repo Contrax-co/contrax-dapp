@@ -3,12 +3,8 @@ import "./App.css";
 import WalletProvider from "./context/WalletProvider";
 import "react-tooltip/dist/react-tooltip.css";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import "@rainbow-me/rainbowkit/styles.css";
 import "./styles/global.scss";
-import { WagmiProvider } from "wagmi";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
-import { wagmiClient } from "./config/walletConfig";
 import WalletDisclaimer from "./components/WalletDisclaimer/WalletDisclaimer";
 import { ReactHooksWrapper, setHook } from "react-hooks-outside";
 import { useNotifications } from "reapop";
@@ -40,33 +36,15 @@ function App() {
     }, [supportChat]);
 
     return (
-        <WagmiProvider config={wagmiClient}>
-            <QueryClientProvider client={queryClient}>
-                <RainbowKitProvider
-                    theme={
-                        lightMode
-                            ? lightTheme({
-                                  accentColor: "var(--color_primary)",
-                                  accentColorForeground: "white",
-                              })
-                            : darkTheme({
-                                  accentColor: "var(--color_primary)",
-                                  accentColorForeground: "white",
-                              })
-                    }
-                    showRecentTransactions={false}
-                    appInfo={{ appName: "Contrax", disclaimer: WalletDisclaimer }}
-                >
-                    <WalletProvider>
-                        <Router>
-                            <Body />
-                        </Router>
-                        <ReactHooksWrapper />
-                    </WalletProvider>
-                    <ReactQueryDevtools />
-                </RainbowKitProvider>
-            </QueryClientProvider>
-        </WagmiProvider>
+        <QueryClientProvider client={queryClient}>
+            <WalletProvider>
+                <Router>
+                    <Body />
+                </Router>
+                <ReactHooksWrapper />
+            </WalletProvider>
+            <ReactQueryDevtools />
+        </QueryClientProvider>
     );
 }
 

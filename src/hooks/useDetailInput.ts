@@ -6,7 +6,6 @@ import useZapOut from "src/hooks/farms/useZapOut";
 import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
-import { useEstimateGasFee } from "src/hooks/useEstmaiteGasFee";
 import useWallet from "src/hooks/useWallet";
 import { useAppDispatch, useAppSelector } from "src/state";
 import usePriceOfTokens from "./usePriceOfTokens";
@@ -28,7 +27,6 @@ export const useDetailInput = (farm: Farm) => {
         dispatch(setFarmDetailInputOptions({ showInUsd: val }));
     };
 
-    const { isBalanceTooLow } = useEstimateGasFee();
     const { prices } = usePriceOfTokens();
     const { isLoading: isZapping, zapInAsync, slippageZapIn } = useZapIn(farm);
     const { isLoading: isDepositing, depositAsync, slippageDeposit } = useDeposit(farm);
