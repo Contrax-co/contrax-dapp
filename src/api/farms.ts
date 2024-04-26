@@ -28,7 +28,6 @@ export const getEarnings = async (userAddress: string) => {
                 }
               }`,
         });
-        console.log("res.data =>", res.data);
         return res.data.data.user?.earn as Response[];
     } catch (err: any) {
         console.error(err);

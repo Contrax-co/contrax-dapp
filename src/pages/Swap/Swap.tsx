@@ -6,11 +6,12 @@ import useApp from "src/hooks/useApp";
 import { SwapWidget, darkTheme, lightTheme } from "@uniswap/widgets";
 import "@uniswap/widgets/fonts.css";
 import "./Swap.css";
+import { getEip1193Provider } from "src/utils/Eip1193Provider";
 
 interface IProps {}
 
 const Swap: React.FC<IProps> = () => {
-    const { connectWallet, signer: wagmiSigner } = useWallet();
+    const { connectWallet, client } = useWallet();
     const { reloadBalances } = useBalances();
     const { lightMode } = useApp();
 
@@ -32,7 +33,7 @@ const Swap: React.FC<IProps> = () => {
                         : { ...darkTheme, accent: "#63cce0", accentSoft: "#dcf9ff" }
                 }
                 // @ts-ignore
-                provider={wagmiSigner?.provider}
+                provider={getEip1193Provider(client)}
                 onConnectWalletClick={connectWallet}
                 onTxSuccess={reloadBalances}
                 tokenList={uniswapTokens}

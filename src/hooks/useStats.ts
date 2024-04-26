@@ -15,7 +15,6 @@ export const useStats = () => {
     const { isLoading, error, data, isFetching } = useQuery({
         queryKey: ["stats/tvl", page, sortBy, order, search],
         queryFn: () => fetchUserTVLs(page, sortBy, order, search),
-        keepPreviousData: true,
     });
 
     const { data: activeUsers } = useQuery({
@@ -56,6 +55,6 @@ export const useStats = () => {
         search,
         setSearch,
         isLoading: isLoading || isFetching,
-        error: error as string,
+        error: error as unknown as string,
     };
 };

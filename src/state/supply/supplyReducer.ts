@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Contract, utils } from "ethers";
-import { erc20Abi } from "viem";
+import { Address, erc20Abi, getAddress, getContract } from "viem";
 import { StateInterface, UpdateBalancesActionPayload, TotalSupplies } from "./types";
 import tokens from "src/config/constants/tokens";
 import { defaultChainId } from "src/config/constants";
@@ -9,7 +9,7 @@ const initialState: StateInterface = { totalSupplies: {}, isLoading: false, isFe
 
 export const fetchTotalSupplies = createAsyncThunk(
     "supply/fetchTotalSupplies",
-    async ({ farms, multicallProvider }: UpdateBalancesActionPayload, thunkApi) => {
+    async ({ farms, client }: UpdateBalancesActionPayload, thunkApi) => {
         const addresses = new Set<string>();
         farms.forEach((farm) => {
             addresses.add(farm.vault_addr.toLowerCase());
@@ -20,19 +20,23 @@ export const fetchTotalSupplies = createAsyncThunk(
         });
         const addressesArray = Array.from(addresses);
         let promises = addressesArray.map((address) =>
-            new Contract(address, erc20ABI, multicallProvider).totalSupply()
+            getContract({
+                address: address as Address,
+                abi: erc20Abi,
+                client,
+            }).read.totalSupply()
         );
         promises = [...promises];
         const balancesResponse = await Promise.all([...promises]);
         const balances: TotalSupplies = balancesResponse.reduce((accum, balance, index) => {
             accum[addressesArray[index]] = balance.toString();
             return accum;
-        }, {});
+        }, {} as TotalSupplies);
 
         // create address checksum
         const checksummed: { [key: string]: string } = {};
         Object.entries(balances).forEach(([key, value]) => {
-            checksummed[utils.getAddress(key)] = value;
+            checksummed[getAddress(key)] = value;
         });
         return checksummed;
     }

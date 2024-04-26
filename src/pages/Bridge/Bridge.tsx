@@ -3,9 +3,10 @@ import { Bridge as SocketBridge } from "@socket.tech/plugin";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import useWallet from "src/hooks/useWallet";
-import { useEthersSigner } from "src/config/walletConfig";
+import { useEthersSigner, walletClientToSigner } from "src/config/walletConfig";
 import { SOCKET_BRIDGE_KEY, defaultChainId } from "src/config/constants";
 import "./Bridge.css";
+import { getEip1193Provider } from "src/utils/Eip1193Provider";
 
 const darkSocketTheme = {
     width: 360,
@@ -38,7 +39,7 @@ const lightSocketTheme = {
 const Bridge = () => {
     const { reloadBalances } = useBalances();
     const { lightMode } = useApp();
-    const { currentWallet, signer, setChainId } = useWallet();
+    const { currentWallet, client, setChainId } = useWallet();
 
     React.useEffect(() => reloadBalances, []);
 
@@ -47,7 +48,8 @@ const Bridge = () => {
         return (
             <div className="BridgeContainer">
                 <SocketBridge
-                    provider={signer?.provider}
+                    // @ts-ignore
+                    provider={getEip1193Provider(client)}
                     onSourceNetworkChange={(network) => {
                         setChainId(network.chainId);
                     }}
@@ -72,8 +74,8 @@ const Bridge = () => {
                     //     "refuel-bridge",
                     // ]}
                     // excludeBridges={[]}
-                    defaultSourceNetwork={1}
-                    defaultDestNetwork={defaultChainId}
+                    defaultSourceNetwork={defaultChainId}
+                    defaultDestNetwork={1}
                     // enableSameChainSwaps
                     // sourceNetworks={[1, 137, defaultChainId]}
                     // destNetworks={[1, 137, defaultChainId]}

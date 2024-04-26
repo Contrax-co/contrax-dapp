@@ -5,9 +5,12 @@ import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 import useWallet from "src/hooks/useWallet";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
-import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
+import { addressesByChainId } from "src/config/constants/contracts";
+import { CHAIN_ID } from "src/types/enums";
+import { Address, erc20Abi, getContract } from "viem";
 
 const Test = () => {
+    const { client, currentWallet } = useWallet();
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
     const [modelOpen, setModelOpen] = useState(false);
@@ -16,10 +19,19 @@ const Test = () => {
     const { multicallProvider } = useWallet();
 
     const fn = async () => {
-        const usdtAddr = "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9";
-        const wethAddr = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
-        const hEthAddr = "0xDa7c0de432a9346bB6e96aC74e3B61A36d8a77eB";
-        const arbAddr = "0x912CE59144191C1204E64559FE8253a0e49E6548";
+        if (!currentWallet) return;
+        console.log(
+            "addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress =>",
+            addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress
+        );
+        const contract = getContract({
+            address: addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress as Address,
+            abi: erc20Abi,
+            client,
+        });
+        const allowance = await contract.read.allowance([currentWallet, "0x1A4f0075987f557AE59caF559Dc7c98Ee86A8D1f"]);
+        console.log("allowance =>", allowance);
+        await contract.write.approve(["0x1A4f0075987f557AE59caF559Dc7c98Ee86A8D1f", 0n]);
         // get Arb price
         // await getPriceFromUsdcPair(multicallProvider, arbAddr);
         // get Weth and hEth Price

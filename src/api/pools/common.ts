@@ -1,14 +1,7 @@
 import { Farm } from "src/types";
 import { BigNumber, Signer, Contract, utils, constants } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
-import {
-    awaitTransaction,
-    getConnectorId,
-    isZeroDevSigner,
-    subtractGas,
-    toEth,
-    validateNumberDecimals,
-} from "src/utils/common";
+import { awaitTransaction, getConnectorId, subtractGas, toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
@@ -39,6 +32,7 @@ import {
     simulateTransaction,
 } from "../tenderly";
 import merge from "lodash.merge";
+import { Address, encodeFunctionData, getContract, zeroAddress } from "viem";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -46,29 +40,31 @@ export const zapInBase: ZapInBaseFn = async ({
     balances,
     token,
     currentWallet,
-    signer,
+    client,
     chainId,
     max,
     tokenIn,
 }) => {
-    if (!signer) return;
-    const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
-    const wethAddress = addressesByChainId[chainId].wethAddress;
+    const zapperContract = getContract({
+        address: farm.zapper_addr as Address,
+        abi: farm.zapper_abi,
+        client,
+    });
+    const wethAddress = addressesByChainId[chainId].wethAddress as Address;
     let zapperTxn;
     let notiId;
     try {
         //#region Select Max
         if (max) {
-            amountInWei = balances[token] ?? "0";
+            amountInWei = BigInt(balances[token] ?? "0");
         }
-        amountInWei = BigNumber.from(amountInWei);
         //#endregion
 
         // #region Approve
         // first approve tokens, if zap is not in eth
         if (token !== constants.AddressZero) {
             notiId = notifyLoading(loadingMessages.approvingZapping());
-            const response = await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, signer);
+            const response = await approveErc20(token, farm.zapper_addr as Address, amountInWei, currentWallet, client);
             if (!response.status) throw new Error("Error approving vault!");
             dismissNotify(notiId);
         }
@@ -87,12 +83,18 @@ export const zapInBase: ZapInBaseFn = async ({
             // if we are using zero dev, don't bother
             const connectorId = getConnectorId();
             if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-                const balance = BigNumber.from(balances[constants.AddressZero]);
+                const balance = BigInt(balances[zeroAddress] || "0");
                 const afterGasCut = await subtractGas(
                     amountInWei,
-                    signer,
-                    zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
+                    client,
+                    client.wallet.estimateTxGas({
+                        to: farm.zapper_addr,
                         value: balance,
+                        data: encodeFunctionData({
+                            abi: farm.zapper_abi,
+                            functionName: "zapInETH",
+                            args: [farm.vault_addr, 0, token],
+                        }),
                     })
                 );
                 if (!afterGasCut) {
@@ -104,16 +106,18 @@ export const zapInBase: ZapInBaseFn = async ({
             //#endregion
 
             zapperTxn = await awaitTransaction(
-                zapperContract.zapInETH(farm.vault_addr, 0, token, {
+                zapperContract.write.zapInETH([farm.vault_addr, 0, token], {
                     value: amountInWei,
-                })
+                }),
+                client
             );
         }
         // token zap
         else {
-            const tx = zapperContract.populateTransaction.zapIn(farm.vault_addr, 0, token, amountInWei);
-
-            zapperTxn = await awaitTransaction(zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei));
+            zapperTxn = await awaitTransaction(
+                zapperContract.write.zapIn([farm.vault_addr, 0, token, amountInWei]),
+                client
+            );
         }
 
         if (!zapperTxn.status) {
@@ -131,18 +135,21 @@ export const zapInBase: ZapInBaseFn = async ({
     }
 };
 
-export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, signer, chainId, max }) => {
-    if (!signer) return;
-    const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
+export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, client, chainId, max }) => {
+    const zapperContract = getContract({
+        address: farm.zapper_addr as Address,
+        abi: farm.zapper_abi,
+        client,
+    });
     let notiId = notifyLoading(loadingMessages.approvingWithdraw());
     try {
-        const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer.provider!);
+        const vaultBalance = await getBalance(farm.vault_addr, currentWallet, client);
 
         //#region Approve
-        if (!(await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, signer)).status)
+        if (!(await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, client)).status)
             throw new Error("Error approving vault!");
 
-        if (!(await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, signer)).status)
+        if (!(await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, client)).status)
             throw new Error("Error approving lp!");
 
         dismissNotify(notiId);
@@ -157,11 +164,13 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         }
         if (token === constants.AddressZero) {
             withdrawTxn = await awaitTransaction(
-                zapperContract.zapOutAndSwapEth(farm.vault_addr, max ? vaultBalance : amountInWei, 0)
+                zapperContract.write.zapOutAndSwapEth([farm.vault_addr, max ? vaultBalance : amountInWei, 0n]),
+                client
             );
         } else {
             withdrawTxn = await awaitTransaction(
-                zapperContract.zapOutAndSwap(farm.vault_addr, max ? vaultBalance : amountInWei, token, 0)
+                zapperContract.write.zapOutAndSwap([farm.vault_addr, max ? vaultBalance : amountInWei, token, 0]),
+                client
             );
         }
 
@@ -181,9 +190,14 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
 };
 
 export const slippageIn: SlippageInBaseFn = async (args) => {
-    let { amountInWei, balances, chainId, currentWallet, token, max, signer, tokenIn, farm } = args;
-    const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
-    const wethAddress = addressesByChainId[chainId].wethAddress;
+    let { amountInWei, balances, chainId, currentWallet, token, max, client, tokenIn, farm } = args;
+
+    const zapperContract = getContract({
+        address: farm.zapper_addr as Address,
+        abi: farm.zapper_abi,
+        client,
+    });
+    const wethAddress = addressesByChainId[chainId].wethAddress as Address;
 
     const transaction = {} as Omit<
         TenderlySimulateTransactionBody,
@@ -192,9 +206,9 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     transaction.from = currentWallet;
 
     if (max) {
-        amountInWei = balances[token] ?? "0";
+        amountInWei = BigInt(balances[token] ?? "0");
     }
-    amountInWei = BigNumber.from(amountInWei);
+    amountInWei = amountInWei;
     if (token !== constants.AddressZero) {
         transaction.state_overrides = getAllowanceStateOverride([
             {
@@ -225,30 +239,45 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         //#region Gas Logic
         // if we are using zero dev, don't bother
         const connectorId = getConnectorId();
-        // Check if max to subtract gas, cause we want simulations to work for amount which exceeds balance
-        // And subtract gas won't work cause it estimates gas for tx, and tx will fail insufficent balance
-        if ((connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) && max) {
-            const balance = BigNumber.from(balances[constants.AddressZero]);
+        if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
+            const balance = BigInt(balances[zeroAddress] || "0");
             const afterGasCut = await subtractGas(
                 amountInWei,
-                signer!,
-                zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
+                client!,
+                client.wallet.estimateTxGas({
+                    to: farm.zapper_addr,
                     value: balance,
+                    data: encodeFunctionData({
+                        abi: farm.zapper_abi,
+                        functionName: "zapInETH",
+                        args: [farm.vault_addr, 0, token],
+                    }),
                 })
             );
-            if (!afterGasCut) return BigNumber.from(0);
+            if (!afterGasCut) return 0n;
             amountInWei = afterGasCut;
         }
         //#endregion
-
-        const populated = await zapperContract.populateTransaction.zapInETH(farm.vault_addr, 0, token, {
+        const populated = {
+            data: encodeFunctionData({
+                abi: farm.zapper_abi,
+                functionName: "zapInETH",
+                args: [farm.vault_addr, 0, token],
+            }),
             value: amountInWei,
-        });
+        };
 
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     } else {
-        const populated = await zapperContract.populateTransaction.zapIn(farm.vault_addr, 0, token, amountInWei);
+        const populated = {
+            data: encodeFunctionData({
+                abi: farm.zapper_abi,
+                functionName: "zapIn",
+                args: [farm.vault_addr, 0, token, amountInWei],
+            }),
+            value: "0",
+        };
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     }
@@ -270,20 +299,17 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     //     BigNumber.from(filteredState.original[farm.vault_addr.toLowerCase()])
     // );
     // const difference = BigNumber.from(assetChanges.added);
-    return BigNumber.from(assetChanges.difference);
+    return assetChanges.difference;
 };
 
-export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max, amountInWei, currentWallet }) => {
-    const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
+export const slippageOut: SlippageOutBaseFn = async ({ client, farm, token, max, amountInWei, currentWallet }) => {
     const transaction = {} as Omit<
         TenderlySimulateTransactionBody,
         "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
     >;
     transaction.from = currentWallet;
-    const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer?.provider!);
-    if (max) {
-        amountInWei = vaultBalance;
-    }
+    const vaultBalance = await getBalance(farm.vault_addr, currentWallet, client);
+
     //#region Approve
     transaction.state_overrides = getAllowanceStateOverride([
         {
@@ -310,18 +336,26 @@ export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max,
     //#region Zapping Out
 
     if (token === constants.AddressZero) {
-        const populated = await zapperContract.populateTransaction.zapOutAndSwapEth(farm.vault_addr, amountInWei, 0);
+        const populated = {
+            data: encodeFunctionData({
+                abi: farm.zapper_abi,
+                functionName: "zapOutAndSwapEth",
+                args: [farm.vault_addr, max ? vaultBalance : amountInWei, 0],
+            }),
+            value: "0",
+        };
 
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     } else {
-        const populated = await zapperContract.populateTransaction.zapOutAndSwap(
-            farm.vault_addr,
-            amountInWei,
-            token,
-            0
-        );
-
+        const populated = {
+            data: encodeFunctionData({
+                abi: farm.zapper_abi,
+                functionName: "zapOutAndSwap",
+                args: [farm.vault_addr, max ? vaultBalance : amountInWei, token, 0],
+            }),
+            value: "0",
+        };
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     }
@@ -333,13 +367,13 @@ export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max,
         to: farm.zapper_addr,
     });
     console.log("simulationResult =>", simulationResult);
-    let difference = BigNumber.from(0);
-    if (token === constants.AddressZero) {
+    let difference = 0n;
+    if (token === zeroAddress) {
         const { before, after } = filterBalanceChanges(currentWallet, simulationResult.balanceDiff);
-        difference = BigNumber.from(after).sub(before || "0");
+        difference = after - before;
     } else {
         const { added, subtracted } = filterAssetChanges(token, currentWallet, simulationResult.assetChanges);
-        difference = BigNumber.from(added).sub(subtracted);
+        difference = added - subtracted;
     }
 
     return difference;

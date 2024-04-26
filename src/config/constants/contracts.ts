@@ -1,16 +1,16 @@
 import { Address } from "viem";
 
 export interface Addresses {
-    factoryAddress: string;
-    wethAddress: string;
-    sushiAddress: string;
-    dodoTokenAddress: string;
-    dodoMineAddress: string;
-    usdcAddress: string;
-    usdtAddress: string;
-    swapfishMasterChef?: string;
-    nativeUsdAddress?: string;
     arbitrumAddress?: string;
+    factoryAddress: Address;
+    wethAddress: Address;
+    sushiAddress: Address;
+    dodoTokenAddress: Address;
+    dodoMineAddress: Address;
+    usdcAddress: Address;
+    usdtAddress: Address;
+    swapfishMasterChef?: Address;
+    nativeUsdAddress?: Address;
     paymasterAddress?: Address;
 }
 
@@ -29,14 +29,14 @@ const arbitrumAddresses: Addresses = {
 };
 
 const polygonAddresses: Addresses = {
-    factoryAddress: "",
+    factoryAddress: "" as Address,
     wethAddress: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
-    sushiAddress: "",
-    dodoMineAddress: "",
-    dodoTokenAddress: "",
+    sushiAddress: "" as Address,
+    dodoMineAddress: "" as Address,
+    dodoTokenAddress: "" as Address,
     usdcAddress: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
-    usdtAddress: "",
-    swapfishMasterChef: "",
+    usdtAddress: "" as Address,
+    swapfishMasterChef: "" as Address,
 };
 
 export const addressesByChainId: { [key: number]: Addresses } = {

@@ -1,7 +1,7 @@
 import { Apys } from "src/state/apys/types";
 import { FarmOriginPlatform, FarmType } from "./enums";
 import { FarmDataProcessed } from "src/api/pools/types";
-import { PublicClient, Transport, Chain } from "viem";
+import { PublicClient, Transport, Chain, Address } from "viem";
 import { ENTRYPOINT_ADDRESS_V06, SmartAccountClient } from "permissionless";
 import { KernelEcdsaSmartAccount } from "permissionless/accounts";
 
@@ -25,9 +25,9 @@ export interface Farm {
     platform_logo: string;
     pair1: string;
     pair2?: string;
-    token1: string;
-    token2?: string;
-    zapper_addr: string;
+    token1: Address;
+    token2?: Address;
+    zapper_addr: Address;
     zapper_abi: any;
     alt1: string;
     alt2?: string;
@@ -37,11 +37,11 @@ export interface Farm {
     rewards1_alt: string;
     rewards2?: string;
     rewards2_alt?: string;
-    lp_address: string;
+    lp_address: Address;
     decimals: number;
     decimals1?: number;
     decimals2?: number;
-    vault_addr: string;
+    vault_addr: Address;
     vault_abi: any;
     lp_abi: any;
     zap_symbol: string;
@@ -49,7 +49,7 @@ export interface Farm {
     vault_decimals?: number;
     zap_currencies?: {
         symbol: string;
-        address: string;
+        address: Address;
         decimals: number;
     }[];
 }
@@ -303,6 +303,11 @@ Go to the module tuner on the partner dashboard to see how each property affects
     color_error?: string;
     [x: string]: any;
 }
+export interface EstimateTxGasArgs {
+    data: Address;
+    to: Address;
+    value?: bigint;
+}
 
 export interface IClients {
     wallet: SmartAccountClient<
@@ -310,6 +315,6 @@ export interface IClients {
         Transport,
         Chain,
         KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>
-    >;
+    > & { estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint> };
     public: PublicClient;
 }
