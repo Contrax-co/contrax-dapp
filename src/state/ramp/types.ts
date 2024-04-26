@@ -1,6 +1,7 @@
-import { BigNumber, Signer, constants, ethers } from "ethers";
 import { addressesByChainId } from "src/config/constants/contracts";
+import { IClients } from "src/types";
 import { CHAIN_ID } from "src/types/enums";
+import { Address, WalletClient, getAddress, zeroAddress } from "viem";
 
 export enum BridgeDirection {
     USDC_POLYGON_TO_ARBITRUM_USDC = "USDC_POLYGON_TO_ARBITRUM_USDC",
@@ -31,11 +32,11 @@ export enum BridgeStatus {
 }
 
 export interface PolyUsdcToArbUsdcArgs {
-    polygonSigner: Signer;
-    currentWallet: string;
+    polygonClient: IClients;
+    currentWallet: Address;
     refechBalance: Function;
     direction: BridgeDirection;
-    polygonUSDCAmount?: BigNumber;
+    polygonUSDCAmount?: bigint;
 }
 
 export const BridgeChainInfo = {
@@ -56,8 +57,8 @@ export const BridgeChainInfo = {
         destinationChain: "ARBITRUM",
         sourceChainId: CHAIN_ID.POLYGON,
         dstChainId: CHAIN_ID.ARBITRUM,
-        sourceAddress: ethers.utils.getAddress("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"),
-        dstAddress: constants.AddressZero,
+        sourceAddress: getAddress("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"),
+        dstAddress: zeroAddress,
         sourceName: "ETH",
         dstName: "ETH",
         sourceDecimals: 18,

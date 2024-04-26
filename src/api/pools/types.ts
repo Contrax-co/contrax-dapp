@@ -2,42 +2,43 @@ import { BigNumber, Signer } from "ethers";
 import { Balances } from "src/state/balances/types";
 import { Decimals } from "src/state/decimals/types";
 import { Prices } from "src/state/prices/types";
-import { Farm } from "src/types";
+import { Farm, IClients } from "src/types";
+import { Address } from "viem";
 
 export interface ZapInArgs {
-    amountInWei: string | BigNumber;
-    signer?: Signer;
+    amountInWei: bigint;
     chainId: number;
     max?: boolean;
-    token: string;
+    token: Address;
     balances: Balances;
     prices?: Prices;
     decimals?: Decimals;
-    currentWallet: string;
-    tokenIn?: string;
+    currentWallet: Address;
+    tokenIn?: Address;
+    client: IClients;
 }
 
 export interface ZapOutArgs {
-    amountInWei: string | BigNumber;
-    currentWallet: string;
-    signer?: Signer;
+    amountInWei: bigint;
+    currentWallet: Address;
+    client: IClients;
     chainId: number;
     max?: boolean;
-    token: string;
+    token: Address;
 }
 
 export interface DepositArgs {
-    amountInWei: string | BigNumber;
-    currentWallet: string;
-    signer?: Signer;
+    amountInWei: bigint;
+    currentWallet: Address;
+    client: IClients;
     chainId: number;
     max?: boolean;
 }
 
 export interface WithdrawArgs {
-    amountInWei: string | BigNumber;
-    currentWallet: string;
-    signer?: Signer;
+    amountInWei: bigint;
+    currentWallet: Address;
+    client: IClients;
     chainId: number;
     max?: boolean;
 }
@@ -45,7 +46,7 @@ export interface WithdrawArgs {
 export interface TokenAmounts {
     amount: string;
     amountDollar: string;
-    tokenAddress: string;
+    tokenAddress: Address;
     tokenSymbol: string;
     price: number;
     /**
@@ -63,13 +64,13 @@ export interface FarmDataProcessed {
 }
 
 export type DepositFn = (args: DepositArgs) => Promise<void>;
-export type SlippageDepositBaseFn = (args: DepositArgs & { farm: Farm }) => Promise<BigNumber>;
+export type SlippageDepositBaseFn = (args: DepositArgs & { farm: Farm }) => Promise<bigint>;
 export type WithdrawFn = (args: WithdrawArgs) => Promise<void>;
-export type SlippageWithdrawBaseFn = (args: WithdrawArgs & { farm: Farm }) => Promise<BigNumber>;
+export type SlippageWithdrawBaseFn = (args: WithdrawArgs & { farm: Farm }) => Promise<bigint>;
 export type ZapInFn = (args: ZapInArgs) => Promise<void>;
 export type ZapInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<void>;
-export type SlippageInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<BigNumber>;
-export type SlippageOutBaseFn = (args: ZapOutArgs & { farm: Farm; balances: Balances }) => Promise<BigNumber>;
+export type SlippageInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<bigint>;
+export type SlippageOutBaseFn = (args: ZapOutArgs & { farm: Farm; balances: Balances }) => Promise<bigint>;
 export type ZapOutFn = (args: ZapOutArgs) => Promise<void>;
 export type ZapOutBaseFn = (args: ZapOutArgs & { farm: Farm }) => Promise<void>;
 export type GetFarmDataProcessedFn = (

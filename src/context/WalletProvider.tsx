@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import { setConnectorId } from "src/state/settings/settingsReducer";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { CHAIN_ID } from "src/types/enums";
-import { useEthersProvider, useEthersSigner, web3AuthInstance } from "src/config/walletConfig";
+import { bundlerClient, useEthersProvider, useEthersSigner, web3AuthInstance } from "src/config/walletConfig";
 import { getTokenPricesBackend } from "src/api/token";
 import {
     ENTRYPOINT_ADDRESS_V06,
@@ -27,12 +27,11 @@ import {
     signerToBiconomySmartAccount,
     signerToEcdsaKernelSmartAccount,
 } from "permissionless/accounts";
-import { Address, Chain, PublicClient, Transport, WalletClient, createPublicClient, http } from "viem";
+import { Address, Chain, EIP1193Provider, PublicClient, Transport, WalletClient, createPublicClient, http } from "viem";
 import axios from "axios";
 import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
 import { arbitrum, mainnet, polygon, gnosis, fantom } from "viem/chains";
-import { IClients } from "src/types";
-import { WALLET_ADAPTERS } from "@web3auth/base";
+import { EstimateTxGasArgs, IClients } from "src/types";
 
 interface IWalletContext {
     /**
@@ -75,15 +74,7 @@ interface IWalletContext {
     domainName: null | string;
     chainId: number;
     isSponsored: boolean;
-    client: {
-        wallet?: SmartAccountClient<
-            typeof ENTRYPOINT_ADDRESS_V06,
-            Transport,
-            Chain,
-            KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>
-        >;
-        public: PublicClient;
-    };
+    client: IClients;
     publicClientMainnet: PublicClient;
     publicClientPolygon: PublicClient;
 }
@@ -156,7 +147,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [smartAccount, setSmartAccount] =
         useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>>();
     const [isConnecting, setIsConnecting] = useState(false);
-    const [isSponsored] = useState(false);
+    const [isSponsored] = useState(true);
     const [gasInErc20] = useState(false);
     const [chainId, setChainId] = useState(CHAIN_ID.ARBITRUM);
     const chain = useMemo(() => {
@@ -208,7 +199,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             },
         });
     }, [chain]);
-console.log("publicClient =>", publicClient);
     const provider = useEthersProvider(publicClient);
     const multicallProvider = useMulticallProvider(provider);
     const { balances } = useBalances();
@@ -240,7 +230,7 @@ console.log("publicClient =>", publicClient);
 
     const smartAccountClient = useMemo(() => {
         if (!smartAccount) return undefined;
-        return createSmartAccountClient({
+        const smartAccountClient = createSmartAccountClient({
             account: smartAccount,
             entryPoint: ENTRYPOINT_ADDRESS_V06,
             chain: arbitrum,
@@ -251,11 +241,36 @@ console.log("publicClient =>", publicClient);
                   }
                 : undefined,
             cacheTime: undefined,
-        });
+        }).extend((client) => ({
+            // TODO: All estimategas queries should be passed through here
+            // We should account for sponsorships, erc20gas, eoa, etc
+            estimateTxGas: async (args: EstimateTxGasArgs) => {
+                if (isSponsored) return 0n;
+                const callData = await smartAccountClient.account.encodeCallData({
+                    data: args.data,
+                    to: args.to,
+                    value: args.value || 0n,
+                });
+                const userOp = await client.prepareUserOperationRequest({
+                    userOperation: {
+                        callData,
+                    },
+                });
+                const estimate = await bundlerClient.estimateUserOperationGas({
+                    userOperation: userOp,
+                });
+                const totalEstimatedGasLimit =
+                    estimate.callGasLimit + estimate.preVerificationGas + estimate.verificationGasLimit;
+                return totalEstimatedGasLimit;
+            },
+        }));
+        return smartAccountClient;
     }, [smartAccount, sponsorUserOperation]);
 
-    // @ts-ignore
-    const signer = useEthersSigner(smartAccountClient);
+    // const arbEipProvider = useMemo(() => {
+    //     return getEip1193Provider({ public: publicClient, wallet: smartAccountClient });
+    // }, [smartAccountClient, publicClient]);
+
     const dispatch = useDispatch();
     const polygonBalance = useNativeBalance(CHAIN_ID.POLYGON);
     const mainnetBalance = useNativeBalance(CHAIN_ID.MAINNET);
@@ -356,6 +371,18 @@ console.log("publicClient =>", publicClient);
     useEffect(() => {
         const init = async () => {
             try {
+                // const walletConnectModal = new WalletConnectModal({ projectId: walletConnectProjectId });
+                // const walletConnectV2Adapter = new WalletConnectV2Adapter({
+                //     clientId,
+                //     web3AuthNetwork: "cyan",
+                //     adapterSettings: {
+                //         qrcodeModal: walletConnectModal,
+                //         ...defaultWcSettings.adapterSettings,
+                //     },
+                //     loginSettings: { ...defaultWcSettings.loginSettings },
+                // });
+                // web3AuthInstance.configureAdapter(walletConnectV2Adapter);
+
                 await web3AuthInstance.initModal();
 
                 if (web3AuthInstance.connected) {
@@ -388,7 +415,7 @@ console.log("publicClient =>", publicClient);
                 multicallProvider,
                 client: {
                     public: publicClient,
-                    wallet: smartAccountClient,
+                    wallet: smartAccountClient!,
                 },
                 publicClientMainnet,
                 publicClientPolygon,

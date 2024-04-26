@@ -1,3 +1,4 @@
+// @ts-nocheck
 import pools from "src/config/constants/pools.json";
 import { Farm } from "src/types";
 import { BigNumber, Contract, constants } from "ethers";

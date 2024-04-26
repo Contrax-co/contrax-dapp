@@ -115,21 +115,21 @@ export const useDetailInput = (farm: Farm) => {
                 if (depositable?.tokenAddress === farm.lp_address) {
                     const res = await slippageDeposit({ depositAmount: amnt, max });
                     console.log(res);
-                    _slippage = res.slippage;
+                    _slippage = res?.slippage ?? NaN;
                 } else {
                     const res = await slippageZapIn({ zapAmount: amnt, max, token: depositable?.tokenAddress! });
                     console.log(res);
-                    _slippage = res.slippage;
+                    _slippage = res?.slippage ?? NaN;
                 }
             } else {
                 if (withdrawable?.tokenAddress === farm.lp_address) {
                     const res = await slippageWithdraw({ withdrawAmount: amnt, max });
                     console.log(res);
-                    _slippage = res.slippage;
+                    _slippage = res?.slippage ?? NaN;
                 } else {
                     const res = await slippageZapOut({ withdrawAmt: amnt, max, token: withdrawable?.tokenAddress! });
                     console.log(res);
-                    _slippage = res.slippage;
+                    _slippage = res?.slippage ?? NaN;
                 }
             }
             if (_slippage.toString())

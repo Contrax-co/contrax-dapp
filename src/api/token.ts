@@ -33,33 +33,27 @@ export const getTokenPricesBackend = async (
 };
 
 export const getBalance = async (
-    tokenAddress: string,
-    address: string,
-    multicallProvider: MulticallProvider | providers.Provider | Signer
-): Promise<BigNumber> => {
+    tokenAddress: Address,
+    address: Address,
+    client: Pick<IClients, "public">
+): Promise<bigint> => {
     try {
         if (tokenAddress === constants.AddressZero) {
-            // @ts-ignore
-            if (multicallProvider._isSigner) {
-                // @ts-ignore
-                const res = await multicallProvider.getBalance();
-                return res;
-            } else {
-                const res = await multicallProvider.getBalance(address);
-                return res;
-            }
+            const res = await client.public.getBalance({ address });
+            return res;
         }
-        const contract = new Contract(
-            tokenAddress,
-            ["function balanceOf(address) view returns (uint)"],
-            multicallProvider
-        );
-        const balancePromise = contract.balanceOf(address);
+        const contract = getContract({
+            address: tokenAddress,
+            abi: erc20Abi,
+            client,
+        });
+
+        const balancePromise = contract.read.balanceOf([address]);
         const balance = await balancePromise;
         return balance;
     } catch (error) {
         console.error(error);
-        return BigNumber.from(0);
+        return 0n;
     }
 };
 
