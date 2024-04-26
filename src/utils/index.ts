@@ -1,6 +1,6 @@
 import { TokenInfo } from "@uniswap/widgets";
-import { ethers } from "ethers";
 import { Farm } from "src/types";
+import { getAddress } from "viem";
 
 export const copyToClipboard = (text: string, cb: Function | null = null) => {
     navigator.clipboard.writeText(text);
@@ -13,8 +13,8 @@ export const getTokenListForUniswapDeprecated = (farms: Farm[]) => {
     const tokenList: TokenInfo[] = [];
     for (let i = 0; i < farms.length; i++) {
         const farm = farms[i];
-        farm.token1 = ethers.utils.getAddress(farm.token1);
-        if (farm.token2) farm.token2 = ethers.utils.getAddress(farm.token2);
+        farm.token1 = getAddress(farm.token1);
+        if (farm.token2) farm.token2 = getAddress(farm.token2);
         // for token 1
         {
             const token1 = {

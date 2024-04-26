@@ -1,4 +1,4 @@
-import { Farm } from "src/types";
+import { Farm, IClients } from "src/types";
 import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 
 export interface StateInterface {
@@ -9,7 +9,7 @@ export interface StateInterface {
 
 export interface UpdateBalancesActionPayload {
     farms: Farm[];
-    multicallProvider: MulticallProvider;
+    client: Omit<IClients, "wallet">;
 }
 
 export interface TotalSupplies {

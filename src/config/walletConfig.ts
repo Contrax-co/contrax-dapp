@@ -21,8 +21,10 @@ import twitterIcon from "./../assets/images/twitter-icon.svg";
 import { providers } from "ethers";
 import { PublicClient, WalletClient, http, type HttpTransport } from "viem";
 import { MetamaskAdapter } from "@web3auth/metamask-adapter";
-import { WalletConnectModal } from "@walletconnect/modal";
 import { getWalletConnectV2Settings, WalletConnectV2Adapter } from "@web3auth/wallet-connect-v2-adapter";
+import { ENTRYPOINT_ADDRESS_V06, createBundlerClient } from "permissionless";
+import { bundlersByChainId } from "./constants/urls";
+import { CHAIN_ID } from "src/types/enums";
 
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
@@ -50,6 +52,12 @@ export const web3AuthInstance = new Web3Auth({
     clientId,
     web3AuthNetwork: "cyan",
     privateKeyProvider: PrivateKeyProvider,
+});
+
+export const bundlerClient = createBundlerClient({
+    chain: arbitrum,
+    transport: http(bundlersByChainId[CHAIN_ID.ARBITRUM]),
+    entryPoint: ENTRYPOINT_ADDRESS_V06,
 });
 
 const openloginAdapter = new OpenloginAdapter({
@@ -90,16 +98,17 @@ const defaultWcSettings = {
 };
 
 // const walletConnectModal = new WalletConnectModal({ projectId: walletConnectProjectId });
-// const walletConnectV2Adapter = new WalletConnectV2Adapter({
-//     clientId,
-//     web3AuthNetwork: "cyan",
-//     adapterSettings: {
-//         qrcodeModal: walletConnectModal,
-//         ...defaultWcSettings.adapterSettings,
-//     },
-//     loginSettings: { ...defaultWcSettings.loginSettings },
-// });
-// web3AuthInstance.configureAdapter(walletConnectV2Adapter);
+const walletConnectV2Adapter = new WalletConnectV2Adapter({
+    clientId,
+    web3AuthNetwork: "cyan",
+    adapterSettings: {
+        // qrcodeModal: walletConnectModal,
+        ...defaultWcSettings.adapterSettings,
+    },
+    loginSettings: { ...defaultWcSettings.loginSettings },
+});
+
+web3AuthInstance.configureAdapter(walletConnectV2Adapter);
 web3AuthInstance.configureAdapter(openloginAdapter);
 web3AuthInstance.configureAdapter(metamaskAdapter);
 
@@ -250,12 +259,12 @@ export function useEthersProvider(publicClient: PublicClient) {
 export function walletClientToSigner(walletClient: WalletClient) {
     const { account, chain, transport } = walletClient;
     const network = {
-        chainId: chain?.id ?? arbitrum.id,
-        name: chain?.name ?? arbitrum.name,
+        chainId: chain?.id,
+        name: chain?.name,
         ensAddress: chain?.contracts?.ensRegistry?.address,
     };
+    // @ts-ignore
     const provider = new providers.Web3Provider(transport, network);
-
     const signer = provider.getSigner(account!.address);
     return signer;
 }

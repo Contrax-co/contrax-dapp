@@ -10,15 +10,16 @@ import useTotalSupplies from "../useTotalSupplies";
 import { useDecimals } from "../useDecimals";
 import { toEth, toWei } from "src/utils/common";
 import usePriceOfTokens from "../usePriceOfTokens";
+import { Address } from "viem";
 
 export interface ZapOut {
     withdrawAmt: number;
     max?: boolean;
-    token: string;
+    token: Address;
 }
 
 const useZapOut = (farm: Farm) => {
-    const { signer, currentWallet, chainId } = useWallet();
+    const { client, currentWallet, chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances, balances } = useBalances();
     const { decimals } = useDecimals();
@@ -26,13 +27,15 @@ const useZapOut = (farm: Farm) => {
     const { reloadSupplies } = useTotalSupplies();
 
     const _zapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
+        if (!currentWallet) return;
         let amountInWei = toWei(withdrawAmt, farm.decimals);
-        await farmFunctions[farm.id].zapOut({ amountInWei, currentWallet, signer, chainId, max, token });
+        await farmFunctions[farm.id].zapOut({ amountInWei, currentWallet, client, chainId, max, token });
         reloadBalances();
         reloadSupplies();
     };
 
     const slippageZapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
+        if (!currentWallet) return;
         let amountInWei = toWei(withdrawAmt, farm.decimals);
 
         //  @ts-ignore
@@ -40,7 +43,7 @@ const useZapOut = (farm: Farm) => {
             currentWallet,
             amountInWei,
             balances,
-            signer,
+            client,
             chainId,
             max,
             token,
@@ -58,10 +61,10 @@ const useZapOut = (farm: Farm) => {
         status,
     } = useMutation({
         mutationFn: _zapOut,
-        mutationKey: FARM_ZAP_OUT(currentWallet, NETWORK_NAME, farm?.id || 0),
+        mutationKey: FARM_ZAP_OUT(currentWallet!, NETWORK_NAME, farm?.id || 0),
     });
 
-    const zapOutIsMutating = useIsMutating(FARM_ZAP_OUT(currentWallet, NETWORK_NAME, farm?.id || 0));
+    const zapOutIsMutating = useIsMutating({ mutationKey: FARM_ZAP_OUT(currentWallet!, NETWORK_NAME, farm?.id || 0) });
 
     /**
      * True if any zap function is runnning

@@ -11,15 +11,16 @@ import { useDecimals } from "../useDecimals";
 import { toWei } from "src/utils/common";
 import usePriceOfTokens from "../usePriceOfTokens";
 import { toEth } from "./../../utils/common";
+import { Address } from "viem";
 
 export interface ZapIn {
     zapAmount: number;
     max?: boolean;
-    token: string;
+    token: Address;
 }
 
 const useZapIn = (farm: Farm) => {
-    const { signer, currentWallet, chainId } = useWallet();
+    const { client, currentWallet, chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances, balances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
@@ -27,12 +28,13 @@ const useZapIn = (farm: Farm) => {
     const { prices } = usePriceOfTokens();
 
     const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
+        if (!currentWallet || !client.wallet) return;
         let amountInWei = toWei(zapAmount, decimals[token]);
         await farmFunctions[farm.id].zapIn({
             currentWallet,
             amountInWei,
             balances,
-            signer,
+            client,
             chainId,
             max,
             token,
@@ -46,6 +48,7 @@ const useZapIn = (farm: Farm) => {
     };
 
     const slippageZapIn = async ({ zapAmount, max, token }: ZapIn) => {
+        if (!currentWallet || !client.wallet) return;
         let amountInWei = toWei(zapAmount, decimals[token]);
 
         //  @ts-ignore
@@ -53,7 +56,7 @@ const useZapIn = (farm: Farm) => {
             currentWallet,
             amountInWei,
             balances,
-            signer,
+            client,
             chainId,
             max,
             token,
@@ -87,10 +90,10 @@ const useZapIn = (farm: Farm) => {
         status,
     } = useMutation({
         mutationFn: _zapIn,
-        mutationKey: FARM_ZAP_IN(currentWallet, NETWORK_NAME, farm?.id || 0),
+        mutationKey: FARM_ZAP_IN(currentWallet!, NETWORK_NAME, farm?.id || 0),
     });
 
-    const zapInIsMutating = useIsMutating(FARM_ZAP_IN(currentWallet, NETWORK_NAME, farm?.id || 0));
+    const zapInIsMutating = useIsMutating({ mutationKey: FARM_ZAP_IN(currentWallet!, NETWORK_NAME, farm?.id || 0) });
 
     /**
      * True if any zap function is runnning

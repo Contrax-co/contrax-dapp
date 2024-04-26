@@ -125,7 +125,7 @@ export const filterAssetChanges = (tokenAddress: string, walletAddress: string, 
 export const filterBalanceChanges = (walletAddress: string, balanceChanges: BalanceDiffs[]) => {
     const change = balanceChanges.find((item) => item.address.toLowerCase() === walletAddress.toLowerCase());
 
-    return { before: change?.original, after: change?.dirty };
+    return { before: BigInt(change?.original || 0), after: BigInt(change?.dirty || 0) };
 };
 
 // #endregion Utility functions

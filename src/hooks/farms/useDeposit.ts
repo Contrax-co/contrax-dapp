@@ -3,15 +3,14 @@ import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import { Farm } from "src/types";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
-import { FARM_DATA, FARM_DEPOSIT } from "src/config/constants/query";
+import { FARM_DEPOSIT } from "src/config/constants/query";
 import farmFunctions from "src/api/pools";
-import { queryClient } from "src/config/reactQuery";
 import useBalances from "../useBalances";
 import useTotalSupplies from "../useTotalSupplies";
-import { utils } from "ethers";
 import { useDecimals } from "../useDecimals";
 import usePriceOfTokens from "../usePriceOfTokens";
 import { toEth } from "src/utils/common";
+import { parseUnits } from "viem";
 
 interface Deposit {
     depositAmount: number;
@@ -19,7 +18,7 @@ interface Deposit {
 }
 
 const useDeposit = (farm: Farm) => {
-    const { signer, currentWallet, chainId } = useWallet();
+    const { client, currentWallet, chainId } = useWallet();
     const { NETWORK_NAME } = useConstants();
     const { reloadBalances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
@@ -27,19 +26,21 @@ const useDeposit = (farm: Farm) => {
     const { prices } = usePriceOfTokens();
 
     const _deposit = async ({ depositAmount, max }: Deposit) => {
-        let amountInWei = utils.parseUnits(depositAmount.toString(), decimals[farm.lp_address]);
-        await farmFunctions[farm.id].deposit({ amountInWei, currentWallet, signer, chainId, max });
+        if (!currentWallet) return;
+        let amountInWei = parseUnits(depositAmount.toString(), decimals[farm.lp_address] || 18);
+        await farmFunctions[farm.id].deposit({ amountInWei, currentWallet, client, chainId, max });
         reloadBalances();
         reloadSupplies();
     };
 
     const slippageDeposit = async ({ depositAmount, max }: Deposit) => {
-        let amountInWei = utils.parseUnits(depositAmount.toString(), decimals[farm.lp_address]);
+        if (!currentWallet) return;
+        let amountInWei = parseUnits(depositAmount.toString(), decimals[farm.lp_address] || 18);
         //  @ts-ignore
         const difference = await farmFunctions[farm.id]?.depositSlippage({
             amountInWei,
             currentWallet,
-            signer,
+            client,
             chainId,
             max,
             farm,
@@ -58,10 +59,12 @@ const useDeposit = (farm: Farm) => {
         status,
     } = useMutation({
         mutationFn: _deposit,
-        mutationKey: FARM_DEPOSIT(currentWallet, NETWORK_NAME, farm?.id || 0),
+        mutationKey: FARM_DEPOSIT(currentWallet!, NETWORK_NAME, farm?.id || 0),
     });
 
-    const depositInIsMutating = useIsMutating(FARM_DEPOSIT(currentWallet, NETWORK_NAME, farm?.id || 0));
+    const depositInIsMutating = useIsMutating({
+        mutationKey: FARM_DEPOSIT(currentWallet!, NETWORK_NAME, farm?.id || 0),
+    });
 
     /**
      * True if any deposit function is runnning
