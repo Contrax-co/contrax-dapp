@@ -68,7 +68,7 @@ export interface Vault extends Farm {
 }
 
 export interface Token {
-    address: string;
+    address: Address;
     name: string;
     token_type: FarmType;
     logo: string;
