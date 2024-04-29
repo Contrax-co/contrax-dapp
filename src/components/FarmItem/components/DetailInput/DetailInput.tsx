@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "src/state";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmDetailInputOptions } from "src/state/farms/types";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
+import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
 
 interface Props {
     farm: Farm;
@@ -23,6 +24,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const { transactionType, currencySymbol } = useAppSelector((state) => state.farms.farmDetailInputOptions);
     const [showSlippageModal, setShowSlippageModal] = useState(false);
+    const [showNotSlipageModal, setShowNotSlipageModal] = useState(false);
     const {
         amount,
         showInUsd,
@@ -78,6 +80,8 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         e.preventDefault();
         if (slippage && slippage > 2) {
             setShowSlippageModal(true);
+        } else if (!slippage) {
+            setShowNotSlipageModal(true);
         } else {
             handleSubmit();
         }
@@ -152,6 +156,14 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     }}
                     handleSubmit={handleSubmit}
                     percentage={slippage || 0}
+                />
+            )}
+            {showNotSlipageModal && (
+                <SlippageNotCalculate
+                    handleClose={() => {
+                        setShowNotSlipageModal(false);
+                    }}
+                    handleSubmit={handleSubmit}
                 />
             )}
         </form>
