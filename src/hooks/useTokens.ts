@@ -9,8 +9,7 @@ import { CHAIN_ID, FarmType } from "src/types/enums";
 import { useDecimals } from "./useDecimals";
 import { defaultChainId } from "src/config/constants";
 import arbTokens from "src/config/constants/tokens";
-import { getAddress, zeroAddress } from "viem";
-
+import { Address, getAddress, zeroAddress } from "viem";
 
 const tokenBalDecimalPlaces = 3;
 const usdBalDecimalPlaces = 2;
@@ -40,7 +39,7 @@ export const useTokens = () => {
 
     const tokenAddresses = useMemo(() => {
         const set = new Set<string>();
-        const arr: { address: string; decimals: number }[] = [];
+        const arr: { address: Address; decimals: number }[] = [];
         for (const farm of farms) {
             set.add(farm.token1);
             if (farm.token2) set.add(farm.token2);
@@ -49,7 +48,7 @@ export const useTokens = () => {
             const farm = farms.find((farm) => farm.token1 === address || farm.token2 === address);
             const decimal = decimals[address] || 18;
             if (farm) {
-                arr.push({ address, decimals: decimal });
+                arr.push({ address: address as Address, decimals: decimal });
             }
         });
         return arr;
@@ -58,7 +57,7 @@ export const useTokens = () => {
     const lpAddresses = useMemo(() => {
         const set = new Set<string>();
 
-        const arr: { address: string; decimals: number }[] = [];
+        const arr: { address: Address; decimals: number }[] = [];
         for (const farm of farms) {
             if (farm.name !== "GMX") set.add(farm.lp_address);
         }
@@ -69,7 +68,7 @@ export const useTokens = () => {
         set.forEach((address) => {
             const farm = farms.find((farm) => farm.lp_address === address);
             if (farm) {
-                arr.push({ address, decimals: farm.decimals });
+                arr.push({ address: address as Address, decimals: farm.decimals });
             }
         });
         return arr;

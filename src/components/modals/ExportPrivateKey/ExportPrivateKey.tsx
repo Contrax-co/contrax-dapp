@@ -24,7 +24,7 @@ export const ExportPrivateKey: FC<IProps> = ({ setOpenModal }) => {
 
     const handleShow = async () => {
         const pKey = await getPkey();
-        setPrivateKey(pKey);
+        setPrivateKey(pKey || "");
         setShow((prev) => !prev);
     };
     const copy = () => {

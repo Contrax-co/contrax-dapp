@@ -1,23 +1,39 @@
 {
   "compilerOptions": {
-    "target": "es2020",
     "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "node",
+    "target": "ES2020",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "ESNext"
+    ],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
+    "composite": true,
     "isolatedModules": true,
     "noEmit": true,
+    "useDefineForClassFields": true,
     "baseUrl": ".",
-    "plugins": [{ "name": "typescript-plugin-css-modules" }],
-    "types": ["src/decs2.d.ts"]
-  }, 
-  "include": ["src", "public/service-worker.ts", "public/service-worker.js"]
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ],
+    "types": [
+      "./src/decs2.d.ts",
+      "vite-plugin-svgr/client"
+    ]
+  },
+  "include": [
+    "src",
+    "vite.config.ts"
+  ]
 }

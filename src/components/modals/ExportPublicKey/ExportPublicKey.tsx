@@ -19,7 +19,7 @@ export const ExportPublicKey: FC<IProps> = ({ setOpenModal }) => {
 
     const copy = () => {
         setCopied(true);
-        copyToClipboard(currentWallet, () => setCopied(false));
+        copyToClipboard(currentWallet!, () => setCopied(false));
     };
 
     return (
@@ -46,7 +46,7 @@ export const ExportPublicKey: FC<IProps> = ({ setOpenModal }) => {
             </div>
             <div className={styles.qrCode}>
                 <QRCode
-                    value={currentWallet}
+                    value={currentWallet!}
                     size={200}
                     bgColor={lightMode ? "#fff" : "#012243"}
                     fgColor={lightMode ? "#000" : "#fff"}

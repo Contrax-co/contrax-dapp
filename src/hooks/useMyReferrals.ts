@@ -7,9 +7,8 @@ export const useMyReferrals = () => {
     const { currentWallet } = useWallet();
 
     const { isLoading, error, data, isFetching } = useQuery({
-        queryKey: REFFERED_ACCOUNTS(currentWallet),
-        queryFn: () => fetchReferrals(currentWallet),
-        keepPreviousData: true,
+        queryKey: REFFERED_ACCOUNTS(currentWallet!),
+        queryFn: () => fetchReferrals(currentWallet!),
         enabled: !!currentWallet,
     });
 

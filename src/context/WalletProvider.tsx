@@ -266,7 +266,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                     estimate.callGasLimit + estimate.preVerificationGas + estimate.verificationGasLimit;
                 return totalEstimatedGasLimit;
             },
-            signTypedData: async (args) => {
+            signTypedData: async (args: any) => {
                 return await smartAccount.signTypedData({
                     domain: args.domain,
                     types: args.types,

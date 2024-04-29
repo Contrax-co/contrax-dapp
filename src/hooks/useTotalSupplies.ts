@@ -12,7 +12,7 @@ import { formatUnits } from "viem";
 const useTotalSupplies = () => {
     const { farms } = useFarms();
     const { isLoading, totalSupplies, isFetched } = useAppSelector((state) => state.supply);
-    const { chainId, multicallProvider } = useWallet();
+    const { chainId, client } = useWallet();
     const dispatch = useAppDispatch();
     const {
         decimals,
@@ -22,7 +22,7 @@ const useTotalSupplies = () => {
     } = useDecimals();
 
     const reloadSupplies = useCallback(() => {
-        dispatch(fetchTotalSupplies({ farms, multicallProvider }));
+        dispatch(fetchTotalSupplies({ farms, client }));
     }, [farms, chainId, dispatch]);
 
     const formattedSupplies = useMemo(() => {
