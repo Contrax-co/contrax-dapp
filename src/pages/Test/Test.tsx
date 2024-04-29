@@ -6,6 +6,7 @@ import useWallet from "src/hooks/useWallet";
 import { getPriceFromHopLp, getPriceFromUsdcPair, getPriceFromWethPair } from "src/utils/pair";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
+import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
 
 const Test = () => {
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
@@ -100,6 +101,13 @@ const Test = () => {
             </button>
             <button
                 onClick={() => {
+                    setModelOpen(true);
+                }}
+            >
+                slippage model open
+            </button>
+            <button
+                onClick={() => {
                     set1ModelOpen(true);
                 }}
             >
@@ -108,6 +116,12 @@ const Test = () => {
             <br />
             {platformTVL && <h1>Platform TVL: ${commify(platformTVL.toFixed(0))}</h1>}
             <iframe src={url} style={{ width: 400, height: 700 }}></iframe>
+            {modelOpen && (
+                <SlippageNotCalculate
+                    handleClose={() => setModelOpen(false)}
+                    handleSubmit={() => set1ModelOpen(false)}
+                />
+            )}
         </div>
     );
 };
