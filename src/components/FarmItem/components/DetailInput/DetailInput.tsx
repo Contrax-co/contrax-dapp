@@ -80,7 +80,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         e.preventDefault();
         if (slippage && slippage > 2) {
             setShowSlippageModal(true);
-        } else if (!slippage) {
+        } else if (slippage === undefined) {
             setShowNotSlipageModal(true);
         } else {
             handleSubmit();
