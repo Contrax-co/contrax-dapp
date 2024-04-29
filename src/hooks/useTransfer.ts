@@ -1,32 +1,28 @@
-import { erc20Abi } from "viem";
-import { prepareSendTransaction, sendTransaction } from "@wagmi/core";
+import { Address, erc20Abi, getContract, zeroAddress } from "viem";
 import useWallet from "./useWallet";
 import { useIsMutating } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { TRANSFER_TOKEN } from "src/config/constants/query";
 import useConstants from "./useConstants";
-import useBalances from "./useBalances";
 import { errorMessages } from "src/config/constants/notifyMessages";
 import { awaitTransaction, getConnectorId, subtractGas } from "src/utils/common";
-import { notifyError } from "src/api/notify";
-import { web3AuthConnectorId } from "src/config/constants";
-import { isGasSponsored } from "src/api";
 
 const useTransfer = () => {
     const { currentWallet, client, isSponsored } = useWallet();
     const { NETWORK_NAME } = useConstants();
 
-    const _transferEth = async ({ to, amount, max }: { to: string; amount: bigint; max?: boolean }) => {
+    const _transferEth = async ({ to, amount, max }: { to: Address; amount: bigint; max?: boolean }) => {
         if (!client.wallet || !currentWallet) return;
         const balance = await client.public.getBalance({ address: currentWallet });
         if (max) amount = balance;
         if (!isSponsored) {
             const afterGasCut = await subtractGas(
                 amount,
-                signer,
-                signer.estimateGas({
-                    to,
+                client,
+                client.wallet.estimateTxGas({
+                    to: to,
                     value: amount,
+                    data: "0x",
                 }),
                 false,
                 balance
@@ -37,10 +33,11 @@ const useTransfer = () => {
             amount = afterGasCut;
         }
         const response = await awaitTransaction(
-            signer?.sendTransaction({
+            client.wallet.sendTransaction({
                 to,
                 value: amount,
-            })
+            }),
+            client
         );
         return response;
     };
@@ -51,33 +48,34 @@ const useTransfer = () => {
         amount,
         max,
     }: {
-        tokenAddress: string;
-        to: string;
-        amount: BigNumber;
+        tokenAddress: Address;
+        to: Address;
+        amount: bigint;
         max?: boolean;
     }) => {
-        const contract = new Contract(tokenAddress, erc20ABI, signer);
+        if (!currentWallet) return;
+        const contract = getContract({
+            address: tokenAddress,
+            abi: erc20Abi,
+            client,
+        });
         if (max) {
-            amount = await contract.balanceOf(currentWallet);
+            amount = await contract.read.balanceOf([currentWallet]);
         }
-        const tx = await contract.populateTransaction.transfer(to, amount);
-        console.log(tx);
-        const response = await awaitTransaction(contract.transfer(to, amount));
+        const response = await awaitTransaction(contract.write.transfer([to, amount]), client);
         return response;
     };
 
-    const _transfer = async (transferInfo: { tokenAddress: string; to: string; amount: BigNumber; max?: boolean }) => {
-        return transferInfo.tokenAddress === constants.AddressZero
-            ? _transferEth(transferInfo)
-            : _transferToken(transferInfo);
+    const _transfer = async (transferInfo: { tokenAddress: Address; to: Address; amount: bigint; max?: boolean }) => {
+        return transferInfo.tokenAddress === zeroAddress ? _transferEth(transferInfo) : _transferToken(transferInfo);
     };
 
     const { mutateAsync: transfer } = useMutation({
         mutationFn: _transfer,
-        mutationKey: TRANSFER_TOKEN(currentWallet, NETWORK_NAME),
+        mutationKey: TRANSFER_TOKEN(currentWallet!, NETWORK_NAME),
     });
 
-    const isMutatingToken = useIsMutating(TRANSFER_TOKEN(currentWallet, NETWORK_NAME));
+    const isMutatingToken = useIsMutating({ mutationKey: TRANSFER_TOKEN(currentWallet!, NETWORK_NAME) });
 
     return { transfer, isLoading: isMutatingToken > 0 };
 };

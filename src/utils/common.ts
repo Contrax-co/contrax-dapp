@@ -13,9 +13,9 @@ const web3Name = createWeb3Name();
 export const resolveEnsDomain = async (str: string) => {
     let addr = null;
     try {
-        addr = getAddress(str);
+        addr = getAddress(str) as Address;
     } catch {
-        addr = await web3Name.getAddress(str);
+        addr = (await web3Name.getAddress(str)) as Address;
     }
     return addr;
 };

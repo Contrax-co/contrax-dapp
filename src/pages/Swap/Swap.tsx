@@ -41,7 +41,6 @@ const Swap: React.FC<IProps> = () => {
                 onConnectWalletClick={connectWallet}
                 onTxSuccess={reloadBalances}
                 tokenList={uniswapTokens}
-                tokenList={uniswapTokens}
                 permit2={true}
             />
         </div>

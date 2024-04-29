@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Bridge as SocketBridge } from "@socket.tech/plugin";
+// import { Bridge as SocketBridge } from "@socket.tech/plugin";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import useWallet from "src/hooks/useWallet";
@@ -51,7 +51,8 @@ const Bridge = () => {
     else
         return (
             <div className="BridgeContainer">
-                <SocketBridge
+                Not Available
+                {/* <SocketBridge
                     // @ts-ignore
                     provider={provider}
                     onSourceNetworkChange={(network) => {
@@ -84,7 +85,7 @@ const Bridge = () => {
                     // sourceNetworks={[1, 137, defaultChainId]}
                     // destNetworks={[1, 137, defaultChainId]}
                     customize={lightMode ? lightSocketTheme : darkSocketTheme}
-                />
+                /> */}
             </div>
         );
 };
