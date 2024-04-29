@@ -7,10 +7,10 @@ import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageW
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
-import { Address, erc20Abi, getContract } from "viem";
+import { Address, erc20Abi, getContract, maxUint256 } from "viem";
 
 const Test = () => {
-    const { client, currentWallet } = useWallet();
+    const { client, currentWallet, smartAccount } = useWallet();
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
     const [modelOpen, setModelOpen] = useState(false);
@@ -20,18 +20,82 @@ const Test = () => {
 
     const fn = async () => {
         if (!currentWallet) return;
-        console.log(
-            "addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress =>",
-            addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress
-        );
+        const sign = await client.wallet?.signTypedData({
+            types: {
+                PermitSingle: [
+                    {
+                        name: "details",
+                        type: "PermitDetails",
+                    },
+                    {
+                        name: "spender",
+                        type: "address",
+                    },
+                    {
+                        name: "sigDeadline",
+                        type: "uint256",
+                    },
+                ],
+                PermitDetails: [
+                    {
+                        name: "token",
+                        type: "address",
+                    },
+                    {
+                        name: "amount",
+                        type: "uint160",
+                    },
+                    {
+                        name: "expiration",
+                        type: "uint48",
+                    },
+                    {
+                        name: "nonce",
+                        type: "uint48",
+                    },
+                ],
+                EIP712Domain: [
+                    {
+                        name: "name",
+                        type: "string",
+                    },
+                    {
+                        name: "chainId",
+                        type: "uint256",
+                    },
+                    {
+                        name: "verifyingContract",
+                        type: "address",
+                    },
+                ],
+            },
+            domain: {
+                name: "Permit2",
+                chainId: "42161",
+                verifyingContract: "0x000000000022d473030f116ddee9f6b43ac78ba3",
+            },
+            primaryType: "PermitSingle",
+            message: {
+                details: {
+                    token: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+                    amount: "1461501637330902918203684832716283019655932542975",
+                    expiration: "1716971111",
+                    nonce: "0",
+                },
+                spender: "0x5e325eda8064b456f4781070c0738d849c824258",
+                sigDeadline: "1714380911",
+            },
+        });
+        console.log("sign =>", sign);
         const contract = getContract({
-            address: addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress as Address,
+            address: addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress as Address,
             abi: erc20Abi,
             client,
         });
-        const allowance = await contract.read.allowance([currentWallet, "0x1A4f0075987f557AE59caF559Dc7c98Ee86A8D1f"]);
-        console.log("allowance =>", allowance);
-        await contract.write.approve(["0x1A4f0075987f557AE59caF559Dc7c98Ee86A8D1f", 0n]);
+        // const allowance = await contract.read.allowance([currentWallet, "0x1A4f0075987f557AE59caF559Dc7c98Ee86A8D1f"]);
+        // console.log("allowance =>", allowance);
+        // const hash = await contract.write.approve(["0x75688705486405550239134Aa01e80E739f3b459", maxUint256]);
+        // console.log(hash);
         // get Arb price
         // await getPriceFromUsdcPair(multicallProvider, arbAddr);
         // get Weth and hEth Price
