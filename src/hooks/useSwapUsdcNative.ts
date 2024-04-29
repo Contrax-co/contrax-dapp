@@ -74,7 +74,7 @@ const useSwapUsdcNative = () => {
     };
 
     const formattedBalance = useMemo(
-        () => Number(toEth(BigInt(balances[addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress!] || "0"), 6)),
+        () => Number(toEth(BigInt(balances[addressesByChainId[CHAIN_ID.ARBITRUM].bridgedUsdAddress!] || "0"), 6)),
         [balances]
     );
     return { initateSwap, formattedBalance, loading };

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import * as ethers from "ethers";
 import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
@@ -77,6 +77,7 @@ interface IWalletContext {
     client: IClients;
     publicClientMainnet: PublicClient;
     publicClientPolygon: PublicClient;
+    smartAccount?: KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>;
 }
 
 type BalanceResult = {
@@ -203,30 +204,32 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const multicallProvider = useMulticallProvider(provider);
     const { balances } = useBalances();
 
-    const sponsorUserOperation = async (args: {
-        userOperation: UserOperation<"v0.6">;
-    }): Promise<{
-        callGasLimit: bigint;
-
-        verificationGasLimit: bigint;
-        preVerificationGas: bigint;
-        paymasterAndData: Address;
-    }> => {
-        let userOperation = { ...args.userOperation };
-        Object.entries(userOperation).forEach(([key, val]) => {
-            if (typeof val === "bigint") {
-                // @ts-ignore
-                userOperation[key] = val.toString();
-            }
-        });
-        const res = await axios.post(paymastersByChainId[chainId], {
-            id: 0,
-            jsonrpc: "2.0",
-            method: "pm_sponsorUserOperation",
-            params: [userOperation, ENTRYPOINT_ADDRESS_V06, { type: gasInErc20 ? "erc20Token" : "ether" }],
-        });
-        return res.data.result;
-    };
+    const sponsorUserOperation = useCallback(
+        async (args: {
+            userOperation: UserOperation<"v0.6">;
+        }): Promise<{
+            callGasLimit: bigint;
+            verificationGasLimit: bigint;
+            preVerificationGas: bigint;
+            paymasterAndData: Address;
+        }> => {
+            let userOperation = { ...args.userOperation };
+            Object.entries(userOperation).forEach(([key, val]) => {
+                if (typeof val === "bigint") {
+                    // @ts-ignore
+                    userOperation[key] = val.toString();
+                }
+            });
+            const res = await axios.post(paymastersByChainId[chainId], {
+                id: 0,
+                jsonrpc: "2.0",
+                method: "pm_sponsorUserOperation",
+                params: [userOperation, ENTRYPOINT_ADDRESS_V06, { type: gasInErc20 ? "erc20Token" : "ether" }],
+            });
+            return res.data.result;
+        },
+        [gasInErc20, chainId]
+    );
 
     const smartAccountClient = useMemo(() => {
         if (!smartAccount) return undefined;
@@ -263,10 +266,25 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                     estimate.callGasLimit + estimate.preVerificationGas + estimate.verificationGasLimit;
                 return totalEstimatedGasLimit;
             },
+            signTypedData: async (args) => {
+                return await smartAccount.signTypedData({
+                    domain: args.domain,
+                    types: args.types,
+                    message: args.message,
+                    primaryType: args.primaryType,
+                });
+            },
         }));
         return smartAccountClient;
     }, [smartAccount, sponsorUserOperation]);
 
+    const client = useMemo(
+        () => ({
+            public: publicClient,
+            wallet: smartAccountClient!,
+        }),
+        [publicClient, smartAccountClient]
+    );
     // const arbEipProvider = useMemo(() => {
     //     return getEip1193Provider({ public: publicClient, wallet: smartAccountClient });
     // }, [smartAccountClient, publicClient]);
@@ -407,16 +425,14 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 // currentWallet: "0x71dde932c6fdfd6a2b2e9d2f4f1a2729a3d05981",
                 chainId,
                 connectWallet,
+                smartAccount,
                 logout,
                 domainName,
                 displayAccount: displayAccount as Address,
                 balance,
                 getPkey,
                 multicallProvider,
-                client: {
-                    public: publicClient,
-                    wallet: smartAccountClient!,
-                },
+                client,
                 publicClientMainnet,
                 publicClientPolygon,
                 polygonBalance,

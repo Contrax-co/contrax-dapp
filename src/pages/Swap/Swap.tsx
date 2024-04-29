@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import uniswapTokens from "./uniswapTokens.json";
 import useWallet from "src/hooks/useWallet";
 import useBalances from "src/hooks/useBalances";
@@ -14,6 +14,10 @@ const Swap: React.FC<IProps> = () => {
     const { connectWallet, client } = useWallet();
     const { reloadBalances } = useBalances();
     const { lightMode } = useApp();
+
+    const provider = useMemo(() => {
+        return getEip1193Provider(client);
+    }, [client]);
 
     React.useEffect(() => reloadBalances, []);
 
@@ -33,9 +37,10 @@ const Swap: React.FC<IProps> = () => {
                         : { ...darkTheme, accent: "#63cce0", accentSoft: "#dcf9ff" }
                 }
                 // @ts-ignore
-                provider={getEip1193Provider(client)}
+                provider={provider}
                 onConnectWalletClick={connectWallet}
                 onTxSuccess={reloadBalances}
+                tokenList={uniswapTokens}
                 tokenList={uniswapTokens}
                 permit2={true}
             />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Bridge as SocketBridge } from "@socket.tech/plugin";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
@@ -41,6 +41,10 @@ const Bridge = () => {
     const { lightMode } = useApp();
     const { currentWallet, client, setChainId } = useWallet();
 
+    const provider = useMemo(() => {
+        return getEip1193Provider(client);
+    }, [client]);
+
     React.useEffect(() => reloadBalances, []);
 
     if (!SOCKET_BRIDGE_KEY) return null;
@@ -49,7 +53,7 @@ const Bridge = () => {
             <div className="BridgeContainer">
                 <SocketBridge
                     // @ts-ignore
-                    provider={getEip1193Provider(client)}
+                    provider={provider}
                     onSourceNetworkChange={(network) => {
                         setChainId(network.chainId);
                     }}
