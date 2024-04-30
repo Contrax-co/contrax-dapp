@@ -39,13 +39,13 @@ export const getEip1193Provider = (client: IClients): ethers.providers.Web3Provi
                         // obj.domain.chainId = BigInt(obj.domain.chainId);
                         // obj.message.details.amount = BigInt(obj.message.details.amount);
                         // console.log("obj =>", obj);
-                        // convertMultipleToBigInt(obj, [
-                        //     "domain.chainId",
-                        //     "message.details.amount",
-                        //     "message.details.expiration",
-                        //     "message.details.nonce",
-                        //     "message.sigDeadline",
-                        // ]);
+                        convertMultipleToBigInt(obj, [
+                            "domain.chainId",
+                            "message.details.amount",
+                            "message.details.expiration",
+                            "message.details.nonce",
+                            "message.sigDeadline",
+                        ]);
                         console.log("obj =>", obj);
                         const sig = await client.wallet.signTypedData(obj);
                         console.log("sig =>", sig);
