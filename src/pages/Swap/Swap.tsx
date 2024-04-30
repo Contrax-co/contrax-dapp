@@ -7,6 +7,7 @@ import { SwapWidget, darkTheme, lightTheme } from "@uniswap/widgets";
 import "@uniswap/widgets/fonts.css";
 import "./Swap.css";
 import { getEip1193Provider } from "src/utils/Eip1193Provider";
+import TokenList from "@uniswap/default-token-list";
 
 interface IProps {}
 
@@ -38,9 +39,11 @@ const Swap: React.FC<IProps> = () => {
                 }
                 // @ts-ignore
                 provider={provider}
-                onConnectWalletClick={connectWallet}
+                // onConnectWalletClick={connectWallet}
                 onTxSuccess={reloadBalances}
                 tokenList={uniswapTokens}
+                // defaultChainId={"42161"}
+                // tokenList={TokenList.tokens}
                 permit2={true}
             />
         </div>
