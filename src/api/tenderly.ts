@@ -54,6 +54,18 @@ export const getAllowanceStateOverride = (data: { tokenAddress: string; owner: s
     return overrides;
 };
 
+export const getTokenBalanceStateOverride = (data: { tokenAddress: string; owner: string; balance?: string }) => {
+    let overrides: SimulationParametersOverrides = {};
+    const max = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+    overrides[data.tokenAddress] = {
+        state: {
+            [`balanceAndBlacklistStates[${data.owner.toLowerCase()}]`]: data.balance || max,
+            [`balances[${data.owner.toLowerCase()}]`]: data.balance || max,
+        },
+    };
+    return overrides;
+};
+
 const mapToEncodedOverrides = (stateOverrides: StateOverride): EncodedStateOverride => {
     return Object.keys(stateOverrides)
         .map((address) => address.toLowerCase())
@@ -143,6 +155,16 @@ export const simulateTransaction = async (
             Object.keys(x).forEach((key: string) => {
                 // @ts-ignore
                 body.state_objects[key] = x[key];
+            });
+        });
+    }
+    if (data.balance_overrides) {
+        Object.entries(data.balance_overrides).forEach(([address, newBalance]) => {
+            // @ts-ignore
+            Object.assign(body.state_objects, {
+                [address]: {
+                    balance: newBalance,
+                },
             });
         });
     }

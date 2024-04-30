@@ -18,7 +18,13 @@ import {
 } from "./types";
 import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
-import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
+import {
+    filterAssetChanges,
+    filterStateDiff,
+    getAllowanceStateOverride,
+    getTokenBalanceStateOverride,
+    simulateTransaction,
+} from "../tenderly";
 import { isGasSponsored } from "..";
 import { zapOutBase, slippageOut } from "./common";
 
@@ -240,6 +246,15 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     spender: farm.zapper_addr,
                 },
             ]);
+            transaction.state_overrides[token] = getTokenBalanceStateOverride({
+                owner: currentWallet,
+                tokenAddress: token,
+                balance: amountInWei.toString(),
+            })[token];
+        } else {
+            transaction.balance_overrides = {
+                [currentWallet]: amountInWei.toString(),
+            };
         }
 
         if (token === constants.AddressZero) {
@@ -250,7 +265,9 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             //#region Gas Logic
             // if we are using zero dev, don't bother
             const connectorId = getConnectorId();
-            if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
+            // Check if max to subtract gas, cause we want simulations to work for amount which exceeds balance
+            // And subtract gas won't work cause it estimates gas for tx, and tx will fail insufficent balance
+            if ((connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) && max) {
                 const balance = BigNumber.from(balances[constants.AddressZero]);
                 const afterGasCut = await subtractGas(
                     amountInWei,
@@ -263,7 +280,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 amountInWei = afterGasCut;
             }
             //#endregion
-
             const populated = await zapperContract.populateTransaction.zapInETH(
                 farm.vault_addr,
                 0,

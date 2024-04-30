@@ -42,6 +42,9 @@ export interface TenderlySimulateTransactionBody {
     value?: string;
 
     state_overrides?: SimulationParametersOverrides;
+    balance_overrides?: {
+        [address: string]: string;
+    };
 
     state_objects?: {
         [key: string]: {
