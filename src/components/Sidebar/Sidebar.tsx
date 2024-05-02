@@ -92,8 +92,8 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                         <SidebarItem
                             title="Test"
                             icon={<IoIosFlask size={18} />}
-                            onClick={() => handleNavigation(RoutesPaths.Test)}
-                            active={pathname === RoutesPaths.Test}
+                            onClick={() => handleNavigation(RoutesPaths.Test_pro_max)}
+                            active={pathname === RoutesPaths.Test_pro_max}
                         />
                     </>
                 )}

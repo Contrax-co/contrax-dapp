@@ -11,6 +11,7 @@ export const RoutesPaths = {
     Governance: "/governance",
     ReferralDashboard: "/referral-dashboard",
     Test: "/Test",
+    Test_pro_max: "/test_pro_max",
 };
 
 export const SNAPSHOT_SPACE_ID = "contrax.eth";
