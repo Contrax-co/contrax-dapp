@@ -126,7 +126,9 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
             <button
                 className={`custom-button ${lightMode && "custom-button-light"}`}
                 type="submit"
-                disabled={parseFloat(amount) <= 0 || isNaN(parseFloat(amount)) || isLoadingTransaction}
+                disabled={
+                    parseFloat(amount) <= 0 || isNaN(parseFloat(amount)) || isLoadingTransaction || fetchingSlippage
+                }
             >
                 {!currentWallet
                     ? "Please Login"
