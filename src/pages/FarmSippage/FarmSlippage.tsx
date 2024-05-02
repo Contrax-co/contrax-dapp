@@ -7,8 +7,7 @@ const FarmSlippage: React.FC = () => {
     return (
         <div className={`farmslip ${lightMode && "farmslip--light"}`}>
             <div className={`farmslip_header ${lightMode && "farmslip_header--light"}`}>
-                <p>Slippage :-</p>
-                {/* <p>{`(on 1000$)`}</p> */}
+                <p>Slippage :</p>
             </div>
             <div className={`farmslip_table_header ${lightMode && "farmslip_table_header_light"}`}>
                 <p className="item_asset" style={{ marginLeft: 20 }}>
