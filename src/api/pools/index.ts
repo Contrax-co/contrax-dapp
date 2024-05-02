@@ -41,6 +41,8 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
 
     35: steer(35), // 35: USDT-USDC.e
     36: steer(36), // 36: USDC-USDC.e
+    37: steer(37), // 36: WETH-USDC.e
+    38: steer(38), // 36: WETH-SUSHI
 };
 
 export default farmFunctions;
