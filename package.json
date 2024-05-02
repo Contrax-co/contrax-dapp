@@ -40,6 +40,7 @@
     "ethers": "^5.7.2",
     "graphql": "^16.6.0",
     "jotai-immer": "^0.2.0",
+    "lodash.merge": "^4.6.2",
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -104,6 +105,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash.merge": "^4.6.9",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",

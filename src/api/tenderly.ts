@@ -57,7 +57,7 @@ export const getAllowanceStateOverride = (data: { tokenAddress: string; owner: s
 export const getTokenBalanceStateOverride = (data: { tokenAddress: string; owner: string; balance?: string }) => {
     let overrides: SimulationParametersOverrides = {};
     const max = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
-    overrides[data.tokenAddress] = {
+    overrides[data.tokenAddress.toLowerCase()] = {
         state: {
             [`balanceAndBlacklistStates[${data.owner.toLowerCase()}]`]: data.balance || max,
             [`balances[${data.owner.toLowerCase()}]`]: data.balance || max,

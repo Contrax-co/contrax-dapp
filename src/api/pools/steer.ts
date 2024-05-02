@@ -27,6 +27,7 @@ import {
 } from "../tenderly";
 import { isGasSponsored } from "..";
 import { zapOutBase, slippageOut } from "./common";
+import merge from "lodash.merge";
 
 let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
@@ -237,7 +238,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             .div(10 ** 12);
         const token1Amount = amountInWei.sub(token0Amount);
         //#endregion Token Amounts
-
         if (token !== constants.AddressZero) {
             transaction.state_overrides = getAllowanceStateOverride([
                 {
@@ -246,11 +246,14 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     spender: farm.zapper_addr,
                 },
             ]);
-            transaction.state_overrides[token] = getTokenBalanceStateOverride({
-                owner: currentWallet,
-                tokenAddress: token,
-                balance: amountInWei.toString(),
-            })[token];
+            merge(
+                transaction.state_overrides,
+                getTokenBalanceStateOverride({
+                    owner: currentWallet,
+                    tokenAddress: token,
+                    balance: amountInWei.toString(),
+                })
+            );
         } else {
             transaction.balance_overrides = {
                 [currentWallet]: amountInWei.toString(),

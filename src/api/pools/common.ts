@@ -38,6 +38,7 @@ import {
     getTokenBalanceStateOverride,
     simulateTransaction,
 } from "../tenderly";
+import merge from "lodash.merge";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -202,11 +203,14 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
                 spender: farm.zapper_addr,
             },
         ]);
-        transaction.state_overrides[token] = getTokenBalanceStateOverride({
-            owner: currentWallet,
-            tokenAddress: token,
-            balance: amountInWei.toString(),
-        })[token];
+        merge(
+            transaction.state_overrides,
+            getTokenBalanceStateOverride({
+                owner: currentWallet,
+                tokenAddress: token,
+                balance: amountInWei.toString(),
+            })
+        );
     } else {
         transaction.balance_overrides = {
             [currentWallet]: amountInWei.toString(),
