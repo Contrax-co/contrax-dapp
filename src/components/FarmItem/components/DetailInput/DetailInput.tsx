@@ -135,6 +135,8 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     : parseFloat(amount) > 0
                     ? parseFloat(amount) > parseFloat(maxBalance)
                         ? "Insufficent Balance"
+                        : fetchingSlippage
+                        ? "Simulating..."
                         : transactionType === FarmTransactionType.Deposit
                         ? "Deposit"
                         : "Withdraw"
