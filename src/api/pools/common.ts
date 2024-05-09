@@ -35,8 +35,10 @@ import {
     filterBalanceChanges,
     filterStateDiff,
     getAllowanceStateOverride,
+    getTokenBalanceStateOverride,
     simulateTransaction,
 } from "../tenderly";
+import merge from "lodash.merge";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -201,6 +203,18 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
                 spender: farm.zapper_addr,
             },
         ]);
+        merge(
+            transaction.state_overrides,
+            getTokenBalanceStateOverride({
+                owner: currentWallet,
+                tokenAddress: token,
+                balance: amountInWei.toString(),
+            })
+        );
+    } else {
+        transaction.balance_overrides = {
+            [currentWallet]: amountInWei.toString(),
+        };
     }
 
     if (token === constants.AddressZero) {
@@ -211,7 +225,9 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         //#region Gas Logic
         // if we are using zero dev, don't bother
         const connectorId = getConnectorId();
-        if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
+        // Check if max to subtract gas, cause we want simulations to work for amount which exceeds balance
+        // And subtract gas won't work cause it estimates gas for tx, and tx will fail insufficent balance
+        if ((connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) && max) {
             const balance = BigNumber.from(balances[constants.AddressZero]);
             const afterGasCut = await subtractGas(
                 amountInWei,
@@ -243,18 +259,18 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         to: farm.zapper_addr,
     });
     console.log({ simulationResult });
-    // const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
+    const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
     // const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
     const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
-    const difference = BigNumber.from(filteredState.afterChange[args.currentWallet.toLowerCase()]).sub(
-        BigNumber.from(filteredState.original[args.currentWallet.toLowerCase()])
-    );
+    // const difference = BigNumber.from(filteredState.afterChange[args.currentWallet.toLowerCase()]).sub(
+    //     BigNumber.from(filteredState.original[args.currentWallet.toLowerCase()])
+    // );
     // const filteredState = filterStateDiff(farm.lp_address, "_balances", simulationResult.stateDiffs);
     // const difference = BigNumber.from(filteredState.afterChange[farm.vault_addr.toLowerCase()]).sub(
     //     BigNumber.from(filteredState.original[farm.vault_addr.toLowerCase()])
     // );
     // const difference = BigNumber.from(assetChanges.added);
-    return difference;
+    return BigNumber.from(assetChanges.difference);
 };
 
 export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max, amountInWei, currentWallet }) => {

@@ -5,6 +5,71 @@ import { toEth } from "src/utils/common";
 import { getTokenPricesBackend } from "./token";
 import { Address } from "viem";
 
+interface Asset {
+    chainId: number;
+    address: string;
+    symbol: string;
+    name: string;
+    decimals: number;
+    icon: string;
+    logoURI: string;
+    chainAgnosticId: string | null;
+}
+
+interface ApprovalData {
+    minimumApprovalAmount: string;
+    approvalTokenAddress: string;
+    allowanceTarget: string;
+    owner: string;
+}
+
+interface GasFees {
+    gasAmount: string;
+    gasLimit: number;
+    asset: Asset;
+    feesInUsd: number;
+}
+
+interface Protocol {
+    name: string;
+    displayName: string;
+    icon: string;
+}
+
+interface UserTx {
+    userTxType: string;
+    txType: string;
+    swapSlippage: number;
+    chainId: number;
+    protocol: Protocol;
+    fromAsset: Asset;
+    approvalData: ApprovalData;
+    fromAmount: string;
+    toAsset: Asset;
+    toAmount: string;
+    minAmountOut: string;
+    gasFees: GasFees;
+    sender: string;
+    recipient: string;
+    userTxIndex: number;
+}
+
+interface Route {
+    routeId: string;
+    isOnlySwapRoute: boolean;
+    fromAmount: string;
+    toAmount: string;
+    sender: string;
+    recipient: string;
+    totalUserTx: number;
+    totalGasFeesInUsd: number;
+    userTxs: UserTx[];
+    usedDexName: string;
+    outputValueInUsd: number;
+    receivedValueInUsd: number;
+    inputValueInUsd: number;
+}
+
 interface TokenList {
     address: string;
     chainAgnosticId: unknown;
@@ -14,13 +79,6 @@ interface TokenList {
     logoURI: string;
     name: string;
     symbol: string;
-}
-
-interface ApprovalData {
-    allowanceTarget: string;
-    approvalTokenAddress: string;
-    minimumApprovalAmount: string;
-    owner: string;
 }
 
 interface BuildTxResponse {
@@ -100,11 +158,11 @@ export const getRoute = async (
         `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true&excludeBridges=stargate`
     );
     const errors: ErrorObj = res.data.result.bridgeRouteErrors;
-    const routes = res.data.result.routes as any[];
-    const route =
-        // routes.find((route) => route.usedBridgeNames[0] !== "connext" && route.usedBridgeNames[0] !== "hop") ||
-        // routes.find((route) => route.usedBridgeNames[0] !== "connext") ||
-        routes[0];
+    const routes = res.data.result.routes as Route[];
+    const route = routes.find((e) => e.userTxs.some((tx) => tx.approvalData.allowanceTarget !== ""));
+    // routes.find((route) => route.usedBridgeNames[0] !== "connext" && route.usedBridgeNames[0] !== "hop") ||
+    // routes.find((route) => route.usedBridgeNames[0] !== "connext") ||
+    // routes[0];
 
     if (!route) {
         const err = parseError(errors);

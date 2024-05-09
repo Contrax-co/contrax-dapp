@@ -58,7 +58,7 @@
 
 .supportChat-close {
     position: fixed;
-    bottom: 4.5em;
+    bottom: 120px;
     right: 1.6em;
     z-index: 2000;
     background-color: white;
@@ -68,6 +68,7 @@
 
 .chaport-container .chaport-launcher .chaport-launcher-button {
     right: 2.5em !important;
+    bottom: 70px !important;
 }
 
 .chaport-launcher-operator-photo {

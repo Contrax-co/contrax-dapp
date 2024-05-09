@@ -172,3 +172,31 @@ export const executeTransfer = async (args: {
         return { status: "failed" };
     }
 };
+
+export const getLinkToken = async (userId: string) => {
+    try {
+        const res = await frontApi.post("/api/v1/linkToken", {
+            userId,
+            transferOptions: {
+                toAddresses: [
+                    {
+                        networkId: "a34f2431-0ddd-4de4-bc22-4a8143287aeb",
+                        symbol: "USDC",
+                        address: userId,
+                    },
+                    {
+                        networkId: "a34f2431-0ddd-4de4-bc22-4a8143287aeb",
+                        symbol: "ETH",
+                        address: userId,
+                    },
+                ],
+            },
+            fundingOptions: {
+                enabled: true,
+            },
+        });
+        return res.data?.content?.linkToken as string;
+    } catch (error) {
+        return { status: "failed" };
+    }
+};

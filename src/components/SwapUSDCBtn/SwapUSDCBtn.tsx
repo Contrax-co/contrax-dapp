@@ -22,7 +22,7 @@ const SwapUSDCBtn: React.FC<IProps> = ({ showDisclaimer }) => {
             <div className={styles.labeledButton}>
                 <div>
                     <h3 className={styles.usdcAmount}>
-                        Native USDC: <b>${customCommify(formattedBalance)}</b>
+                        USDC.e: <b>${customCommify(formattedBalance)}</b>
                     </h3>
                 </div>
             </div>
@@ -41,7 +41,7 @@ const SwapUSDCBtn: React.FC<IProps> = ({ showDisclaimer }) => {
             </div>
             <p className={styles.disclaimer}>
                 <TiWarningOutline size={12} className={styles.disclaimerLogo} />
-                This will swap your entire Native USDC balance over to USDC.
+                This will swap your entire USDC.e balance over to USDC.
             </p>
             {nativeModal && (
                 <NativeUSDC

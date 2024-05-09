@@ -26,14 +26,14 @@ const useZapOut = (farm: Farm) => {
     const { reloadSupplies } = useTotalSupplies();
 
     const _zapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
-        let amountInWei = toWei(withdrawAmt, decimals[farm.lp_address]);
+        let amountInWei = toWei(withdrawAmt, farm.decimals);
         await farmFunctions[farm.id].zapOut({ amountInWei, currentWallet, signer, chainId, max, token });
         reloadBalances();
         reloadSupplies();
     };
 
     const slippageZapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
-        let amountInWei = toWei(withdrawAmt, decimals[farm.lp_address]);
+        let amountInWei = toWei(withdrawAmt, farm.decimals);
 
         //  @ts-ignore
         const difference = await farmFunctions[farm.id]?.zapOutSlippage({

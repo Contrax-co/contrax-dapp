@@ -51,6 +51,12 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                 />
 
                 <SidebarItem
+                    title="Import"
+                    icon={<MeshIcon width={18} />}
+                    onClick={() => handleNavigation(RoutesPaths.Mesh)}
+                    active={pathname === RoutesPaths.Mesh}
+                />
+                <SidebarItem
                     title="Earn"
                     icon={<EarnIcon height={18} width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Farms)}
@@ -70,12 +76,6 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     active={pathname === RoutesPaths.Bridge}
                 />
                 <SidebarItem
-                    title="Mesh"
-                    icon={<MeshIcon width={18} />}
-                    onClick={() => handleNavigation(RoutesPaths.Deposit)}
-                    active={pathname === RoutesPaths.Deposit}
-                />
-                <SidebarItem
                     title="Vote"
                     icon={<FiCommand width={18} />}
                     onClick={() => handleNavigation(RoutesPaths.Governance)}
@@ -92,17 +92,17 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                         <SidebarItem
                             title="Test"
                             icon={<IoIosFlask size={18} />}
-                            onClick={() => handleNavigation(RoutesPaths.Test)}
-                            active={pathname === RoutesPaths.Test}
+                            onClick={() => handleNavigation(RoutesPaths.Test_pro_max)}
+                            active={pathname === RoutesPaths.Test_pro_max}
                         />
                     </>
                 )}
-                <SidebarItem
+                {/* <SidebarItem
                     title="Referrals"
                     icon={<VscReferences size={18} />}
                     onClick={() => handleNavigation(RoutesPaths.ReferralDashboard)}
                     active={pathname === RoutesPaths.ReferralDashboard}
-                />
+                /> */}
                 <SidebarItem
                     title="User Guide"
                     onClick={() => handleNavigation("https://docs.contrax.finance/introduction/", "_blank")}

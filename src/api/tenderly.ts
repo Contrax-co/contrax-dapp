@@ -45,10 +45,24 @@ export const getAllowanceStateOverride = (data: { tokenAddress: string; owner: s
                     "115792089237316195423570985008687907853269984665640564039457584007913129639935",
                 [`allowances[${item.owner.toLowerCase()}][${item.spender.toLowerCase()}]`]:
                     "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+                [`allowed[${item.owner.toLowerCase()}][${item.spender.toLowerCase()}]`]:
+                    "115792089237316195423570985008687907853269984665640564039457584007913129639935",
             },
         };
     });
 
+    return overrides;
+};
+
+export const getTokenBalanceStateOverride = (data: { tokenAddress: string; owner: string; balance?: string }) => {
+    let overrides: SimulationParametersOverrides = {};
+    const max = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+    overrides[data.tokenAddress.toLowerCase()] = {
+        state: {
+            [`balanceAndBlacklistStates[${data.owner.toLowerCase()}]`]: data.balance || max,
+            [`balances[${data.owner.toLowerCase()}]`]: data.balance || max,
+        },
+    };
     return overrides;
 };
 
@@ -102,7 +116,7 @@ export const filterAssetChanges = (tokenAddress: string, walletAddress: string, 
         }
     });
 
-    return { added, subtracted };
+    return { added, subtracted, difference: added - subtracted };
 };
 
 export const filterBalanceChanges = (walletAddress: string, balanceChanges: BalanceDiffs[]) => {
@@ -144,6 +158,16 @@ export const simulateTransaction = async (
             });
         });
     }
+    if (data.balance_overrides) {
+        Object.entries(data.balance_overrides).forEach(([address, newBalance]) => {
+            // @ts-ignore
+            Object.assign(body.state_objects, {
+                [address]: {
+                    balance: newBalance,
+                },
+            });
+        });
+    }
 
     const res = await tenderlyApi.post("simulate", body);
     let processedResponse = {
@@ -172,5 +196,3 @@ export const simulateTransaction = async (
 
     return processedResponse;
 };
-
-

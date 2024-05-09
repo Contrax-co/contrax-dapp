@@ -45,7 +45,7 @@ const Buy: React.FC<IProps> = () => {
         if (tab) setTab(tab as Tab);
         else
             setSearchParams((params) => {
-                params.set("tab", Tab.Unlimint);
+                params.set("tab", Tab.Transak);
                 return params;
             });
     }, [params]);

@@ -2,20 +2,29 @@ import React, { useState } from "react";
 import styles from "./Front.module.scss";
 import useApp from "src/hooks/useApp";
 import useFront from "src/hooks/useFront";
-import { ethers } from "ethers";
-import { ReactComponent as AlpacaSvg } from "src/assets/images/alpaca.svg";
-import { ReactComponent as BinanceSvg } from "src/assets/images/binance.svg";
-import { ReactComponent as BitstampSvg } from "src/assets/images/bitstamp.svg";
-import { ReactComponent as BittrexSvg } from "src/assets/images/bittrex.svg";
-import Mfa from "./Mfa";
+// import { ethers } from "ethers";
+// import { ReactComponent as AlpacaSvg } from "src/assets/images/alpaca.svg";
+// import { ReactComponent as BinanceSvg } from "src/assets/images/binance.svg";
+// import { ReactComponent as BitstampSvg } from "src/assets/images/bitstamp.svg";
+// import { ReactComponent as BittrexSvg } from "src/assets/images/bittrex.svg";
+// import Mfa from "./Mfa";
+// import { Link, LinkPayload, TransferFinishedPayload, createLink } from "@meshconnect/web-link-sdk";
+// import { FRONT_CLIENT_ID } from "src/config/constants";
+// import { getLinkToken } from "src/api/front";
+// import useWallet from "src/hooks/useWallet";
 
 interface IProps {}
 
 const Front: React.FC<IProps> = () => {
     const { lightMode } = useApp();
     const [mfa, setMfa] = useState("");
-    const { handleCreateConnection, handleTransfer, holdings, loading, authData, mfaRequired, iframeLink } =
-        useFront(mfa);
+    const {
+        handleCreateConnection,
+        // handleTransfer, holdings,
+        loading,
+        authData,
+        //  mfaRequired, iframeLink
+    } = useFront(mfa);
 
     return (
         <div className={styles.container}>
@@ -35,6 +44,7 @@ const Front: React.FC<IProps> = () => {
                         <BinanceSvg />
                     </div> */}
                 </div>
+
                 <button
                     onClick={handleCreateConnection}
                     disabled={loading}
@@ -55,8 +65,8 @@ const Front: React.FC<IProps> = () => {
                 </div> */}
             </div>
             <div>{/* <iframe src={iframeLink} style={{ width: 380, height: 700 }}></iframe> */}</div>
-
-            {/* {authData?.accessToken && (
+            {/* 
+            {authData?.accessToken && (
                 <div className={styles.tokenBalancesContainer}>
                     <h2 className={styles.balanceHeading}>{authData?.accessToken?.brokerName} Token Balances</h2>
                     <div className={styles.tokensWrapper}>
@@ -88,8 +98,8 @@ const Front: React.FC<IProps> = () => {
                         ))}
                     </div>
                 </div>
-            )} */}
-            {/* {mfaRequired && <Mfa setMfa={setMfa} loading={loading} handleTransfer={handleTransfer} />} */}
+            )}
+            {mfaRequired && <Mfa setMfa={setMfa} loading={loading} handleTransfer={handleTransfer} />} */}
         </div>
     );
 };

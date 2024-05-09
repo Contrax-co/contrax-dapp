@@ -18,6 +18,7 @@ import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmTransactionType } from "src/types/enums";
 import useTrax from "src/hooks/useTrax";
 
+const xTraxTokenomics = "https://contraxfi.medium.com/contrax-initial-tokenomics-837d062596a4";
 interface Props {
     farm: Farm;
     openedFarm: number | undefined;
@@ -41,13 +42,13 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const estimateTrax = useMemo(() => getTraxApy(farm.vault_addr), [getTraxApy, farm]);
 
     const handleClick = (e: any) => {
-        if (e.target.tagName === "svg" || e.target.tagName === "path") {
-            // Clicked for tooltip
-        } else {
-            setDropDown((prev) => !prev);
-            dispatch(setFarmDetailInputOptions({ transactionType: FarmTransactionType.Deposit }));
-            if (farm) setOpenedFarm(openedFarm === farm.id ? undefined : farm.id);
-        }
+        // if (e.target.tagName === "svg" || e.target.tagName === "path") {
+        //     // Clicked for tooltip
+        // } else {
+        setDropDown((prev) => !prev);
+        dispatch(setFarmDetailInputOptions({ transactionType: FarmTransactionType.Deposit }));
+        if (farm) setOpenedFarm(openedFarm === farm.id ? undefined : farm.id);
+        // }
     };
 
     useEffect(() => {
@@ -138,21 +139,18 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                     ? estimateTrax !== "0"
                                         ? `<p>
                                     Pre-farm rate: <b>${estimateTrax}</b> xTRAX<br/>
-                            <a href="https://github.com" target="_blank">Click to learn more </a>
+                            <a href="${xTraxTokenomics}" target="_blank">Click to learn more </a>
                                         </p>
                                         `
                                         : `<p>xTrax rate will soon be available<br/>
-                                        <a href="https://github.com" target="_blank">Click to learn more </a></p>`
+                                        <a href="${xTraxTokenomics}" target="_blank">Click to learn more </a></p>`
                                     : `<p>
                                     Stake to earn xTRAX. <br/>
-                            <a href="https://github.com" target="_blank">Click to learn more </a></p>`
+                            <a href="${xTraxTokenomics}" target="_blank">Click to learn more </a></p>`
                             }
                         >
-                            <div
-                                className={"xTranxBoosted"}
-                                onClick={() => window.open("https://github.com", "_blank")}
-                            >
-                                <img src={fire} alt="fire" />
+                            <div className={"xTranxBoosted"} onClick={() => window.open(xTraxTokenomics, "_blank")}>
+                                {/* <img src={fire} alt="fire" /> */}
                                 <p className={"paraxTrax"}>xTRAX Boosted!</p>
                             </div>
                         </a>
@@ -247,20 +245,17 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                         ? estimateTrax !== "0"
                                             ? `<p>
                                         Pre-farm rate: <b>${estimateTrax}</b> xTRAX<br/>
-                            <a href="https://github.com" target="_blank">Click to learn more </a>
+                            <a href="${xTraxTokenomics}" target="_blank">Click to learn more </a>
                                         </p>
                                         `
-                                            : `<p>xTrax rate will soon be available<br/><a href="https://github.com" target="_blank">Click to learn more </a></p>`
+                                            : `<p>xTrax rate will soon be available<br/><a href="${xTraxTokenomics}" target="_blank">Click to learn more </a></p>`
                                         : `<p>
                                         Stake to earn xTRAX. <br/>
-                                <a href="https://github.com" target="_blank">Click to learn more </a></p>`
+                                <a href="${xTraxTokenomics}" target="_blank">Click to learn more </a></p>`
                                 }
                             >
-                                <div
-                                    className={"xTranxBoosted"}
-                                    onClick={() => window.open("https://github.com", "_blank")}
-                                >
-                                    <img src={fire} alt="fire" />
+                                <div className={"xTranxBoosted"} onClick={() => window.open(xTraxTokenomics, "_blank")}>
+                                    {/* <img src={fire} alt="fire" /> */}
                                     <p className={"paraxTrax"}>xTRAX Boosted!</p>
                                 </div>
                             </a>

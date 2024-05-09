@@ -284,6 +284,7 @@ export const useTokens = () => {
             price: polygonUsdAmount / Number(polygonUsdcBalance),
             networkId: CHAIN_ID.POLYGON,
         };
+
         if (Number(polygonUsdc.usdBalance) >= 0.5) tokens.unshift(polygonUsdc);
         if (Number(arbBalance.usdBalance) >= 0.5 && networkId === CHAIN_ID.ARBITRUM) tokens.unshift(arbBalance);
         if (Number(matic.usdBalance) >= 0.5 && networkId === CHAIN_ID.POLYGON) tokens.unshift(matic);

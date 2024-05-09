@@ -1,0 +1,97 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/_mixins.scss";
+
+.modal {
+    border: 6px solid #e54b4b;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 540px;
+    @include devices(tablet) {
+        width: 100%;
+    }
+
+    img {
+        margin-top: 16px;
+        margin-bottom: 16px;
+
+        @include devices(tablet) {
+            margin-top: 5px;
+        }
+    }
+    .warningText {
+        font-size: 1.4rem;
+        line-height: 2rem;
+        font-weight: 400;
+        text-align: center;
+        color: var(--color_grey);
+        @include devices(tablet) {
+            font-size: 1.1rem;
+            line-height: 1.5rem;
+        }
+        @include devices(mobile) {
+            font-size: 0.8rem;
+        }
+    }
+    .StillText {
+        font-size: 1.8rem;
+        line-height: 2rem;
+        font-weight: 400;
+        color: #000000 !important;
+        text-align: center;
+        padding-top: 1.3rem;
+        color: var(--color_grey);
+        @include devices(tablet) {
+            font-size: 1.3rem;
+            line-height: 0.5rem;
+        }
+        @include devices(mobile) {
+            font-size: 1rem;
+        }
+    }
+    .cancelButton {
+        background: #f5f6fa;
+        padding: 10px 25px;
+        min-width: 200px;
+        border-radius: 33px;
+        color: #000000 !important;
+        font-size: 1.2rem;
+        font-weight: 500;
+        font-family: "Poppins";
+        cursor: pointer;
+        @include devices(mobile) {
+            min-width: 130px;
+            font-size: 0.9rem;
+            padding: 10px 15px;
+        }
+    }
+    .continueButton {
+        background: #e54b4b;
+        padding: 10px 25px;
+        min-width: 200px;
+        border-radius: 33px;
+        color: #fff !important;
+        font-size: 1.2rem;
+        font-weight: 500;
+        font-family: "Poppins";
+        cursor: pointer;
+        @include devices(mobile) {
+            min-width: 130px;
+            font-size: 0.9rem;
+            padding: 10px 15px;
+        }
+    }
+    .buttonContainer {
+        margin-top: 2.5rem;
+        display: flex;
+        gap: 16px;
+        @include devices(tablet) {
+            gap: 8px;
+            margin-top: 1.5rem;
+        }
+    }
+}

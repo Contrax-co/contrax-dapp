@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "src/state";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmDetailInputOptions } from "src/state/farms/types";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
+import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
 
 interface Props {
     farm: Farm;
@@ -23,6 +24,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
     const { transactionType, currencySymbol } = useAppSelector((state) => state.farms.farmDetailInputOptions);
     const [showSlippageModal, setShowSlippageModal] = useState(false);
+    const [showNotSlipageModal, setShowNotSlipageModal] = useState(false);
     const {
         amount,
         showInUsd,
@@ -31,7 +33,6 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         setMax,
         handleInput,
         handleSubmit,
-
         fetchingSlippage,
         handleToggleShowInUsdc,
         isLoadingFarm,
@@ -79,10 +80,13 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         e.preventDefault();
         if (slippage && slippage > 2) {
             setShowSlippageModal(true);
+        } else if (slippage === undefined) {
+            setShowNotSlipageModal(true);
         } else {
             handleSubmit();
         }
     };
+
     return (
         <form
             className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
@@ -122,13 +126,17 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
             <button
                 className={`custom-button ${lightMode && "custom-button-light"}`}
                 type="submit"
-                disabled={parseFloat(amount) <= 0 || isNaN(parseFloat(amount)) || isLoadingTransaction}
+                disabled={
+                    parseFloat(amount) <= 0 || isNaN(parseFloat(amount)) || isLoadingTransaction || fetchingSlippage
+                }
             >
                 {!currentWallet
                     ? "Please Login"
                     : parseFloat(amount) > 0
                     ? parseFloat(amount) > parseFloat(maxBalance)
                         ? "Insufficent Balance"
+                        : fetchingSlippage
+                        ? "Simulating..."
                         : transactionType === FarmTransactionType.Deposit
                         ? "Deposit"
                         : "Withdraw"
@@ -141,7 +149,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     {fetchingSlippage ? (
                         <Skeleton w={50} h={20} style={{}} />
                     ) : (
-                        `~${slippage?.toString() && !isNaN(slippage) ? (slippage / 2)?.toFixed(2) : "- "}%`
+                        `~${slippage?.toString() && !isNaN(slippage) ? slippage?.toFixed(2) : "- "}%`
                     )}
                 </p>
             </div>
@@ -151,7 +159,15 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                         setShowSlippageModal(false);
                     }}
                     handleSubmit={handleSubmit}
-                    percentage={(slippage || 0) / 2}
+                    percentage={slippage || 0}
+                />
+            )}
+            {showNotSlipageModal && (
+                <SlippageNotCalculate
+                    handleClose={() => {
+                        setShowNotSlipageModal(false);
+                    }}
+                    handleSubmit={handleSubmit}
                 />
             )}
         </form>
