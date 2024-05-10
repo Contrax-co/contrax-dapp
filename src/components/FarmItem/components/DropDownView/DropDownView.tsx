@@ -12,11 +12,14 @@ import "./DropDownView.css";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmDetailInputOptions } from "src/state/farms/types";
+import { IS_LEGACY } from "src/config/constants";
 
 export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [showMoreDetail, setShowMoreDetail] = useState(false);
-    const transactionType = useAppSelector((state) => state.farms.farmDetailInputOptions.transactionType);
+    const transactionType = useAppSelector((state) =>
+        IS_LEGACY ? FarmTransactionType.Withdraw : state.farms.farmDetailInputOptions.transactionType
+    );
     const dispatch = useAppDispatch();
 
     const setFarmOptions = (opt: Partial<FarmDetailInputOptions>) => {

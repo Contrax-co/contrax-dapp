@@ -6,7 +6,7 @@ import { Farm, FarmData } from "src/types";
 import { FarmTableColumns } from "src/types/enums";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
-import { IS_LEGACY, defaultChainId } from "src/config/constants";
+import { IS_LEGACY, defaultChainId, isDev } from "src/config/constants";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
@@ -72,7 +72,7 @@ function Farms() {
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Earn</p>
-                {IS_LEGACY && (
+                {isDev && (
                     <DeprecatedToggle
                         openDeprecatedFarm={openDeprecatedFarm}
                         setOpenDeprecatedFarm={setOpenDeprecatedFarm}
