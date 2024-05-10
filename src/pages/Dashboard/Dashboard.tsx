@@ -33,6 +33,7 @@ import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/Success
 import { TraxApy } from "./TraxApy/TraxApy";
 import { useVaults } from "src/hooks/useVaults";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
+import DeprecatedWithdraw from "src/components/DeprecatedWithdraw/DeprecatedWithdraw";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -139,6 +140,7 @@ function Dashboard() {
 
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
+                <DeprecatedWithdraw />
                 {earnTraxTermsAgreed && (
                     <>
                         <TraxEarning />
