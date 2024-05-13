@@ -40,9 +40,10 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     104: sushi(104), // 104: wethPLS-deprecated
 
     35: steer(35), // 35: USDT-USDC.e
-    36: steer(36), // 36: USDC-USDC.e
+    36: steer(36), // 36: USDC-USDC.e-deprecated
     37: steer(37), // 36: WETH-USDC.e
     38: steer(38), // 36: WETH-SUSHI
+    39: steer(39), // 36: USDC-USDC.e
 };
 
 export default farmFunctions;

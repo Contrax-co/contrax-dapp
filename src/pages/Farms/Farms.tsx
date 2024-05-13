@@ -12,7 +12,7 @@ import { useFarmApys } from "src/hooks/farms/useFarmApy";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import "./Farms.css";
 import DotMenu from "./components/DotMenu";
-import { DeprecatedToggle } from "./components/DeprecatedToggle";
+import { VaultsWithFundsToggle } from "./components/VaultsWithFundsToggle";
 import InfoText from "src/components/InfoText/InfoText";
 
 interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, Farm {
@@ -28,7 +28,6 @@ function Farms() {
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
     const [openedFarm, setOpenedFarm] = useState<number | undefined>();
-    const [openDeprecatedFarm, setOpenDeprecatedFarm] = useState<boolean>(IS_LEGACY);
 
     useEffect(() => {
         if (sortedBuy) {
@@ -72,12 +71,7 @@ function Farms() {
         <div className={`farms ${lightMode && "farms--light"}`}>
             <div className={`farm_header ${lightMode && "farm_header--light"}`}>
                 <p>Earn</p>
-                {isDev && (
-                    <DeprecatedToggle
-                        openDeprecatedFarm={openDeprecatedFarm}
-                        setOpenDeprecatedFarm={setOpenDeprecatedFarm}
-                    />
-                )}
+                {IS_LEGACY && <VaultsWithFundsToggle />}
             </div>
             {networkId === defaultChainId ? (
                 <>
@@ -124,7 +118,7 @@ function Farms() {
                     {sortedFarms
                         ? sortedFarms
                               .filter((farm) => farm.token_type === "Token")
-                              .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
+                              .filter((farm) => (IS_LEGACY ? farm.isDeprecated : !farm.isDeprecated))
                               .map((farm, index) => (
                                   <FarmRow
                                       key={index + "nowallet"}
@@ -135,7 +129,7 @@ function Farms() {
                               ))
                         : farms
                               .filter((farm) => farm.token_type === "Token")
-                              .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
+                              .filter((farm) => (IS_LEGACY ? farm.isDeprecated : !farm.isDeprecated))
                               .map((farm, index) => (
                                   <FarmRow
                                       key={index + "nowallet"}
@@ -188,7 +182,7 @@ function Farms() {
                     {sortedFarms
                         ? sortedFarms
                               .filter((farm) => farm.token_type === "LP Token")
-                              .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
+                              .filter((farm) => (IS_LEGACY ? farm.isDeprecated : !farm.isDeprecated))
                               .map((farm, index) => (
                                   <FarmRow
                                       key={index + "nowallet"}
@@ -199,7 +193,7 @@ function Farms() {
                               ))
                         : farms
                               .filter((farm) => farm.token_type === "LP Token")
-                              .filter((farm) => (openDeprecatedFarm ? farm.isDeprecated : !farm.isDeprecated))
+                              .filter((farm) => (IS_LEGACY ? farm.isDeprecated : !farm.isDeprecated))
                               .map((farm, index) => (
                                   <FarmRow
                                       key={index + "nowallet"}
