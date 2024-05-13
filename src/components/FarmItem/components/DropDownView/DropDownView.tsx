@@ -32,12 +32,16 @@ export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
                 <div className="type_tab">
                     <Tabs>
                         <PoolButton
-                            onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Deposit })}
+                            onClick={() =>
+                                !IS_LEGACY && setFarmOptions({ transactionType: FarmTransactionType.Deposit })
+                            }
                             description={FarmTransactionType.Deposit}
                             active={transactionType === FarmTransactionType.Deposit}
                         />
                         <PoolButton
-                            onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Withdraw })}
+                            onClick={() =>
+                                !IS_LEGACY && setFarmOptions({ transactionType: FarmTransactionType.Withdraw })
+                            }
                             description={FarmTransactionType.Withdraw}
                             active={transactionType === FarmTransactionType.Withdraw}
                         />
@@ -45,13 +49,13 @@ export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
                 </div>
                 <div className="type_selector">
                     <p
-                        onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Deposit })}
+                        onClick={() => !IS_LEGACY && setFarmOptions({ transactionType: FarmTransactionType.Deposit })}
                         className={transactionType === FarmTransactionType.Deposit ? "active" : ""}
                     >
                         {FarmTransactionType.Deposit}
                     </p>
                     <p
-                        onClick={() => setFarmOptions({ transactionType: FarmTransactionType.Withdraw })}
+                        onClick={() => !IS_LEGACY && setFarmOptions({ transactionType: FarmTransactionType.Withdraw })}
                         className={transactionType === FarmTransactionType.Withdraw ? "active" : ""}
                     >
                         {FarmTransactionType.Withdraw}
