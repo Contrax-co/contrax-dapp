@@ -3,15 +3,12 @@ import styles from "./DeprecatedWithdraw.module.scss";
 import { TiWarningOutline } from "react-icons/ti";
 import { customCommify } from "src/utils/common";
 import { useVaults } from "src/hooks/useVaults";
+import { IS_LEGACY } from "src/config/constants";
 
 interface IProps {}
 
 const DeprecatedWithdraw: React.FC<IProps> = () => {
     const { vaults, isLoading } = useVaults();
-    console.log(
-        "vaults =>",
-        vaults.filter((item) => item.isDeprecated)
-    );
 
     const totalBalance = useMemo(() => {
         return vaults
@@ -21,7 +18,7 @@ const DeprecatedWithdraw: React.FC<IProps> = () => {
             }, 0);
     }, [vaults]);
 
-    return totalBalance > 0.1 ? (
+    return !IS_LEGACY && totalBalance > 0.1 ? (
         <div className={`outlinedContainer ${styles.container}`}>
             <div className={styles.labeledButton}>
                 <div>
@@ -33,7 +30,7 @@ const DeprecatedWithdraw: React.FC<IProps> = () => {
             <div className={styles.btnContainer}>
                 <button
                     className={`custom-button ${styles.bridgeButton}`}
-                    onClick={() => window.open("https://legacy.contrax.finance", "_blank")}
+                    onClick={() => window.open("https://legacy.contrax.finance/earn", "_blank")}
                     disabled={false}
                 >
                     Withdraw
