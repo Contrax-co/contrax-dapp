@@ -208,19 +208,23 @@ function Farms() {
                                       setOpenedFarm={setOpenedFarm}
                                   />
                               ))}
-                    <InfoText
-                        style={{ marginTop: 20 }}
-                        text={
-                            "Vaults in advanced section are subject to impermanent loss risk. Use at your own discretion."
-                        }
-                    />
-                    <div style={{ textAlign: "center" }}>
-                        <small>
-                            Can't find your vault? It might have been deprecated. You can withdraw from old vaults
-                            here&nbsp;
-                            <a href="https://legacy.contrax.finance">Click Here</a>
-                        </small>
-                    </div>
+                    {!IS_LEGACY && (
+                        <>
+                            <InfoText
+                                style={{ marginTop: 20 }}
+                                text={
+                                    "Vaults in advanced section are subject to impermanent loss risk. Use at your own discretion."
+                                }
+                            />
+                            <div style={{ textAlign: "center" }}>
+                                <small>
+                                    Can't find your vault? It might have been deprecated. You can withdraw from old
+                                    vaults here&nbsp;
+                                    <a href="https://legacy.contrax.finance">Click Here</a>
+                                </small>
+                            </div>
+                        </>
+                    )}
                 </>
             ) : (
                 <EmptyComponent>Please change network to Arbitrum to access the vaults</EmptyComponent>

@@ -17,6 +17,7 @@ import fire from "src/assets/images/fire.png";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmTransactionType } from "src/types/enums";
 import useTrax from "src/hooks/useTrax";
+import { IS_LEGACY } from "src/config/constants";
 
 const xTraxTokenomics = "https://contraxfi.medium.com/contrax-initial-tokenomics-837d062596a4";
 interface Props {
@@ -55,6 +56,8 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
         if (openedFarm !== farm?.id && dropDown) setDropDown(false);
         // if(!dropDown && openedFarm === farm?.id) setOpenedFarm(undefined)
     }, [openedFarm, dropDown, farm?.id]);
+
+    if (IS_LEGACY && parseFloat(farmData?.withdrawableAmounts[0].amountDollar || "0") < 0.01) return null;
 
     return isLoading ? (
         <FarmRowSkeleton farm={farm} lightMode={lightMode} />
