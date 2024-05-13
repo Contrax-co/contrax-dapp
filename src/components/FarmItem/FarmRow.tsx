@@ -39,6 +39,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const key4 = uuid();
     const dispatch = useAppDispatch();
     const { getTraxApy } = useTrax();
+    const showVaultsWithFunds = useAppSelector((state) => state.settings.showVaultsWithFunds);
 
     const estimateTrax = useMemo(() => getTraxApy(farm.vault_addr), [getTraxApy, farm]);
 
@@ -57,11 +58,11 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
         // if(!dropDown && openedFarm === farm?.id) setOpenedFarm(undefined)
     }, [openedFarm, dropDown, farm?.id]);
 
-    if (IS_LEGACY && parseFloat(farmData?.withdrawableAmounts[0].amountDollar || "0") < 0.01) return null;
+    if (isLoading) return <FarmRowSkeleton farm={farm} lightMode={lightMode} />;
 
-    return isLoading ? (
-        <FarmRowSkeleton farm={farm} lightMode={lightMode} />
-    ) : (
+    if (showVaultsWithFunds && parseFloat(farmData?.withdrawableAmounts[0].amountDollar || "0") < 0.01) return null;
+
+    return (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
             <div className="farm_table_row" key={farm?.id} onClick={handleClick}>
                 {farm.isDeprecated && <DeprecatedChip top="20px" right="26px" />}
