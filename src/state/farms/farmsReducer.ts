@@ -14,7 +14,7 @@ import { Contract, BigNumber } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
 import { erc20ABI } from "wagmi";
 import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
-import { defaultChainId } from "src/config/constants";
+import { IS_LEGACY, defaultChainId } from "src/config/constants";
 import { FarmTransactionType } from "src/types/enums";
 
 const initialState: StateInterface = {
@@ -146,6 +146,7 @@ const farmsSlice = createSlice({
         },
         setFarmDetailInputOptions(state, action: { payload: Partial<FarmDetailInputOptions> }) {
             state.farmDetailInputOptions = { ...state.farmDetailInputOptions, ...action.payload };
+            if (IS_LEGACY) state.farmDetailInputOptions.transactionType = FarmTransactionType.Withdraw;
         },
         reset(state) {
             state.farmDetails = {};
