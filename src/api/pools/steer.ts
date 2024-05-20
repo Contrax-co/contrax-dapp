@@ -116,8 +116,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
 
             //#region Token Amounts
             const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
-            const steerVaultTokens: string[] = await vaultContract.steerVaultTokens();
-            const getTotalAmounts: BigNumber[] = await vaultContract.getTotalAmounts();
+            const steerVaultTokens: string[] = await zapperContract.steerVaultTokens(farm.vault_addr);
+            const getTotalAmounts: BigNumber[] = await zapperContract.getTotalAmounts(farm.vault_addr);
 
             const token0Staked =
                 prices![steerVaultTokens[0]] * Number(toEth(getTotalAmounts[0], decimals![steerVaultTokens[0]]));
@@ -225,8 +225,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
 
         //#region Token Amounts
         const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
-        const steerVaultTokens: string[] = await vaultContract.steerVaultTokens();
-        const getTotalAmounts: BigNumber[] = await vaultContract.getTotalAmounts();
+        const steerVaultTokens: string[] = await zapperContract.steerVaultTokens(farm.vault_addr);
+        const getTotalAmounts: BigNumber[] = await zapperContract.getTotalAmounts(farm.vault_addr);
 
         const token0Staked =
             prices![steerVaultTokens[0]] * Number(toEth(getTotalAmounts[0], decimals![steerVaultTokens[0]]));
