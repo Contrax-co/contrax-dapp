@@ -2,7 +2,7 @@ import pools from "src/config/constants/pools.json";
 import { Farm } from "src/types";
 import { constants, BigNumber, Signer, Contract, utils } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
-import { toEth, validateNumberDecimals } from "src/utils/common";
+import { awaitTransaction, getConnectorId, subtractGas, toEth, validateNumberDecimals } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
@@ -18,14 +18,46 @@ import {
     SlippageWithdrawBaseFn,
     TokenAmounts,
     WithdrawFn,
+    ZapInBaseFn,
     ZapInFn,
     ZapOutFn,
 } from "./types";
-import { defaultChainId } from "src/config/constants";
+import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
-import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
+import {
+    filterAssetChanges,
+    filterStateDiff,
+    getAllowanceStateOverride,
+    getTokenBalanceStateOverride,
+    simulateTransaction,
+} from "../tenderly";
+import { isGasSponsored } from "..";
+import { FarmType } from "src/types/enums";
+import merge from "lodash.merge";
 
+const apAbi = [
+    {
+        inputs: [],
+        name: "getAllAssets",
+        outputs: [
+            {
+                components: [
+                    { internalType: "address", name: "token", type: "address" },
+                    { internalType: "uint256", name: "weighting", type: "uint256" },
+                    { internalType: "uint256", name: "basePriceUSDX96", type: "uint256" },
+                    { internalType: "address", name: "c1", type: "address" },
+                    { internalType: "uint256", name: "q1", type: "uint256" },
+                ],
+                internalType: "struct IDecentralizedIndex.IndexAssetInfo[]",
+                name: "",
+                type: "tuple[]",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+] as const;
 let peapods = function (farmId: number): FarmFunctions {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
 
@@ -39,15 +71,6 @@ let peapods = function (farmId: number): FarmFunctions {
 
         let depositableAmounts: TokenAmounts[] = [
             {
-                tokenAddress: usdcAddress,
-                tokenSymbol: "USDC",
-                amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
-                amountDollar: (
-                    Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
-                ).toString(),
-                price: prices[usdcAddress],
-            },
-            {
                 tokenAddress: constants.AddressZero,
                 tokenSymbol: "ETH",
                 amount: toEth(balances[constants.AddressZero]!, 18),
@@ -55,19 +78,30 @@ let peapods = function (farmId: number): FarmFunctions {
                 price: ethPrice,
             },
         ];
-
-        let withdrawableAmounts: TokenAmounts[] = [
-            {
+        if (farm.token_type === FarmType.normal)
+            depositableAmounts.push({
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: (
-                    (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[usdcAddress]
+                amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
+                amountDollar: (
+                    Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
                 ).toString(),
-                amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: prices[usdcAddress],
-            },
+            });
+
+        let withdrawableAmounts: TokenAmounts[] = [
+            // {
+            //     tokenAddress: usdcAddress,
+            //     tokenSymbol: "USDC",
+            //     amount: (
+            //         (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
+            //         prices[usdcAddress]
+            //     ).toString(),
+            //     amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
+            //     price: prices[usdcAddress],
+            // },
             {
+                isPrimaryVault: true,
                 tokenAddress: constants.AddressZero,
                 tokenSymbol: "ETH",
                 amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / ethPrice).toString(),
@@ -268,8 +302,145 @@ let peapods = function (farmId: number): FarmFunctions {
         return difference;
     };
 
-    const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
-    const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, farm });
+    const zapInBaseLp: ZapInBaseFn = async ({
+        farm,
+        amountInWei,
+        balances,
+        token,
+        currentWallet,
+        signer,
+        chainId,
+        max,
+        tokenIn,
+    }) => {
+        if (!signer) return;
+        const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
+        let zapperTxn;
+        let notiId;
+        try {
+            //#region Select Max
+            if (max) {
+                amountInWei = balances[token] ?? "0";
+            }
+            amountInWei = BigNumber.from(amountInWei);
+            //#endregion
+
+            const apContract = new Contract(farm.token1, apAbi, signer);
+            const [[tokenIn]] = await apContract.getAllAssets();
+
+            // #region Zapping In
+            notiId = notifyLoading(loadingMessages.zapping());
+
+            // use weth address as tokenId, but in case of some farms (e.g: hop)
+            // we need the token of liquidity pair, so use tokenIn if provided
+            token = tokenIn;
+
+            //#region Gas Logic
+            // if we are using zero dev, don't bother
+            const connectorId = getConnectorId();
+            if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
+                const balance = BigNumber.from(balances[constants.AddressZero]);
+                const afterGasCut = await subtractGas(
+                    amountInWei,
+                    signer,
+                    zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
+                        value: balance,
+                    })
+                );
+                if (!afterGasCut) {
+                    notiId && dismissNotify(notiId);
+                    return;
+                }
+                amountInWei = afterGasCut;
+            }
+            //#endregion
+
+            zapperTxn = await awaitTransaction(
+                zapperContract.zapInETH(farm.vault_addr, 0, token, {
+                    value: amountInWei,
+                })
+            );
+
+            if (!zapperTxn.status) {
+                throw new Error(zapperTxn.error);
+            } else {
+                dismissNotify(notiId);
+                notifySuccess(successMessages.zapIn());
+            }
+            // #endregion
+        } catch (error: any) {
+            console.log(error);
+            let err = JSON.parse(JSON.stringify(error));
+            notiId && dismissNotify(notiId);
+            notifyError(errorMessages.generalError(error.message || err.reason || err.message));
+        }
+    };
+    const slippageInLp: SlippageInBaseFn = async (args) => {
+        let { amountInWei, balances, chainId, currentWallet, token, max, signer, farm } = args;
+        const zapperContract = new Contract(farm.zapper_addr, farm.zapper_abi, signer);
+        const apContract = new Contract(farm.token1, apAbi, signer);
+        const [[tokenIn]] = await apContract.getAllAssets();
+        console.log("tokenIn =>", tokenIn);
+        const transaction = {} as Omit<
+            TenderlySimulateTransactionBody,
+            "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
+        >;
+        transaction.from = currentWallet;
+
+        if (max) {
+            amountInWei = balances[token] ?? "0";
+        }
+        amountInWei = BigNumber.from(amountInWei);
+
+        transaction.balance_overrides = {
+            [currentWallet]: amountInWei.toString(),
+        };
+
+        // use weth address as tokenId, but in case of some farms (e.g: hop)
+        // we need the token of liquidity pair, so use tokenIn if provided
+        token = tokenIn;
+
+        //#region Gas Logic
+        // if we are using zero dev, don't bother
+        const connectorId = getConnectorId();
+        // Check if max to subtract gas, cause we want simulations to work for amount which exceeds balance
+        // And subtract gas won't work cause it estimates gas for tx, and tx will fail insufficent balance
+        if ((connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) && max) {
+            const balance = BigNumber.from(balances[constants.AddressZero]);
+            const afterGasCut = await subtractGas(
+                amountInWei,
+                signer!,
+                zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
+                    value: balance,
+                })
+            );
+            if (!afterGasCut) return BigNumber.from(0);
+            amountInWei = afterGasCut;
+        }
+        //#endregion
+
+        const populated = await zapperContract.populateTransaction.zapInETH(farm.vault_addr, 0, token, {
+            value: amountInWei,
+        });
+
+        transaction.input = populated.data || "";
+        transaction.value = populated.value?.toString();
+        console.log(transaction, farm);
+        const simulationResult = await simulateTransaction({
+            /* Standard EVM Transaction object */
+            ...transaction,
+            to: farm.zapper_addr,
+        });
+        console.log({ simulationResult });
+        const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
+
+        return BigNumber.from(assetChanges.difference);
+    };
+
+    const zapIn: ZapInFn = (props) =>
+        farm.token_type === FarmType.normal ? zapInBase({ ...props, farm }) : zapInBaseLp({ ...props, farm });
+    const zapInSlippage: SlippageInBaseFn = (props) =>
+        farm.token_type === FarmType.normal ? slippageIn({ ...props, farm }) : slippageInLp({ ...props, farm });
 
     const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
     const zapOutSlippage: SlippageOutBaseFn = (props) => slippageOut({ ...props, farm });
