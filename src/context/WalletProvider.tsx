@@ -149,7 +149,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>>();
     const [isConnecting, setIsConnecting] = useState(false);
     const [isSponsored] = useState(true);
-    const [gasInErc20] = useState(false);
+    const [gasInErc20] = useState(true);
     const [chainId, setChainId] = useState(CHAIN_ID.ARBITRUM);
     const chain = useMemo(() => {
         switch (chainId) {
