@@ -61,7 +61,7 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: prices[usdcAddress],
-                isPrimaryVault: "USDC" === farm.name,
+                isPrimaryVault: "USDC.e" === farm.name,
             },
             {
                 tokenAddress: constants.AddressZero,
