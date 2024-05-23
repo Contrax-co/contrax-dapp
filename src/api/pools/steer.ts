@@ -28,7 +28,6 @@ import { isGasSponsored } from "..";
 import { zapOutBase, slippageOut } from "./common";
 import merge from "lodash.merge";
 import { Address, encodeFunctionData, getContract, zeroAddress } from "viem";
-import { bundlerClient } from "src/config/walletConfig";
 
 let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
     const farm = pools.find((farm) => farm.id === farmId) as Farm;
