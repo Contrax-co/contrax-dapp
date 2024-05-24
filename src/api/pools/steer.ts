@@ -123,9 +123,9 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 client,
             });
             // @ts-ignore
-            const steerVaultTokens = (await zapperContract.read.steerVaultTokens(farm.vault_addr)) as Address[];
+            const steerVaultTokens = (await zapperContract.read.steerVaultTokens([farm.vault_addr])) as Address[];
             // @ts-ignore
-            const getTotalAmounts = (await zapperContract.read.getTotalAmounts(farm.vault_addr)) as bigint[];
+            const getTotalAmounts = (await zapperContract.read.getTotalAmounts([farm.vault_addr])) as bigint[];
 
             const token0Staked =
                 prices![steerVaultTokens[0]] * Number(toEth(getTotalAmounts[0], decimals![steerVaultTokens[0]]));
@@ -218,12 +218,13 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
     const slippageIn: SlippageInBaseFn = async (args) => {
         let { amountInWei, balances, chainId, currentWallet, token, max, client, tokenIn, farm, decimals, prices } =
             args;
+
         const zapperContract = getContract({
             address: farm.zapper_addr as Address,
             abi: farm.zapper_abi,
             client,
         });
-
+        console.log("zapperContract =>", zapperContract);
         const wethAddress = addressesByChainId[chainId].wethAddress as Address;
 
         const transaction = {} as Omit<
@@ -242,10 +243,13 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             abi: farm.vault_abi,
             client,
         });
+        console.log("vaultContract =>", vaultContract);
         // @ts-ignore
-        const steerVaultTokens: string[] = (await zapperContract.read.steerVaultTokens(farm.vault_addr)) as unknown;
+        const steerVaultTokens: string[] = (await zapperContract.read.steerVaultTokens([farm.vault_addr])) as unknown;
+        console.log("steerVaultTokens =>", steerVaultTokens);
         // @ts-ignore
-        const getTotalAmounts: bigint[] = (await zapperContract.read.getTotalAmounts(farm.vault_addr)) as unknown;
+        const getTotalAmounts: bigint[] = (await zapperContract.read.getTotalAmounts([farm.vault_addr])) as unknown;
+        console.log("getTotalAmounts =>", getTotalAmounts);
 
         const token0Staked =
             prices![steerVaultTokens[0]] * Number(toEth(getTotalAmounts[0], decimals![steerVaultTokens[0]]));
