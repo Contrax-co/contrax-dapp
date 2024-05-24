@@ -78,28 +78,8 @@ let peapods = function (farmId: number): FarmFunctions {
                 price: ethPrice,
             },
         ];
-        if (farm.token_type === FarmType.normal)
-            depositableAmounts.push({
-                tokenAddress: usdcAddress,
-                tokenSymbol: "USDC",
-                amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
-                amountDollar: (
-                    Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
-                ).toString(),
-                price: prices[usdcAddress],
-            });
 
         let withdrawableAmounts: TokenAmounts[] = [
-            // {
-            //     tokenAddress: usdcAddress,
-            //     tokenSymbol: "USDC",
-            //     amount: (
-            //         (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-            //         prices[usdcAddress]
-            //     ).toString(),
-            //     amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-            //     price: prices[usdcAddress],
-            // },
             {
                 isPrimaryVault: true,
                 tokenAddress: constants.AddressZero,
@@ -109,6 +89,27 @@ let peapods = function (farmId: number): FarmFunctions {
                 price: ethPrice,
             },
         ];
+        if (farm.token_type === FarmType.normal) {
+            depositableAmounts.push({
+                tokenAddress: usdcAddress,
+                tokenSymbol: "USDC",
+                amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
+                amountDollar: (
+                    Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
+                ).toString(),
+                price: prices[usdcAddress],
+            });
+            withdrawableAmounts.push({
+                tokenAddress: usdcAddress,
+                tokenSymbol: "USDC",
+                amount: (
+                    (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
+                    prices[usdcAddress]
+                ).toString(),
+                amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
+                price: prices[usdcAddress],
+            });
+        }
 
         zapCurriences?.forEach((currency) => {
             const currencyBalance = BigNumber.from(balances[currency.address]);
