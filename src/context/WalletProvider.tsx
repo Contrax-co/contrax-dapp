@@ -27,7 +27,19 @@ import {
     signerToBiconomySmartAccount,
     signerToEcdsaKernelSmartAccount,
 } from "permissionless/accounts";
-import { Address, Chain, EIP1193Provider, PublicClient, Transport, WalletClient, createPublicClient, http } from "viem";
+import {
+    Account,
+    Address,
+    Chain,
+    EIP1193Provider,
+    PublicClient,
+    Transport,
+    WalletClient,
+    createPublicClient,
+    createWalletClient,
+    custom,
+    http,
+} from "viem";
 import axios from "axios";
 import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
 import { arbitrum, mainnet, polygon, gnosis, fantom } from "viem/chains";
@@ -78,6 +90,7 @@ interface IWalletContext {
     publicClientMainnet: PublicClient;
     publicClientPolygon: PublicClient;
     smartAccount?: KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>;
+    web3AuthClient: WalletClient<Transport, Chain, Account> | null;
 }
 
 type BalanceResult = {
@@ -203,6 +216,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useEthersProvider(publicClient);
     const multicallProvider = useMulticallProvider(provider);
     const { balances } = useBalances();
+    const [web3AuthClient, setWeb3AuthClient] = useState<WalletClient | null>(null);
 
     const sponsorUserOperation = useCallback(
         async (args: {
@@ -303,6 +317,13 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
             const smartAccountSigner = await providerToSmartAccountSigner(web3AuthInstance.provider as any);
 
+            setWeb3AuthClient(
+                createWalletClient({
+                    account: smartAccountSigner.address,
+                    transport: custom(web3AuthInstance.provider!),
+                    chain: arbitrum,
+                })
+            );
             const smartAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
                 entryPoint: ENTRYPOINT_ADDRESS_V06,
                 signer: smartAccountSigner,
@@ -440,6 +461,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 arbitrumBalance,
                 isSponsored,
                 setChainId,
+                web3AuthClient: web3AuthClient as any,
             }}
         >
             {children}

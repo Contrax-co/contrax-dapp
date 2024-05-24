@@ -8,6 +8,7 @@ import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/Success
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
 import { Address, erc20Abi, getContract, maxUint256 } from "viem";
+import useVaultMigrate from "src/hooks/useVaultMigrate";
 
 const Test = () => {
     const { client, currentWallet, smartAccount } = useWallet();
@@ -18,6 +19,7 @@ const Test = () => {
     const { platformTVL } = usePlatformTVL();
     const { multicallProvider } = useWallet();
 
+    const { migrate } = useVaultMigrate();
     const fn = async () => {
         if (!currentWallet) return;
         const contract = getContract({
@@ -39,6 +41,7 @@ const Test = () => {
     return (
         <div style={{ color: "red" }}>
             Test
+            <button onClick={() => migrate()}>Migrate</button>
             <button onClick={fn}>Click Me</button>
             <button
                 onClick={() => {
