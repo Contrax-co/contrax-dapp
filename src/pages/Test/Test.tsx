@@ -123,12 +123,6 @@ const Test = () => {
             <br />
             {platformTVL && <h1>Platform TVL: ${commify(platformTVL.toFixed(0))}</h1>}
             <iframe src={url} style={{ width: 400, height: 700 }}></iframe>
-            {modelOpen && (
-                <SlippageNotCalculate
-                    handleClose={() => setModelOpen(false)}
-                    handleSubmit={() => set1ModelOpen(false)}
-                />
-            )}
         </div>
     );
 };
