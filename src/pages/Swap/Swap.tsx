@@ -44,7 +44,7 @@ const Swap: React.FC<IProps> = () => {
                 tokenList={uniswapTokens}
                 // defaultChainId={"42161"}
                 // tokenList={TokenList.tokens}
-                permit2={true}
+                permit2={false}
             />
         </div>
     );
