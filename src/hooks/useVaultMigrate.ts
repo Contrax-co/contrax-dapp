@@ -1,12 +1,8 @@
 import { useMemo } from "react";
-import useBalances from "./useBalances";
-import { useVaults } from "./useVaults";
 import useFarms from "./farms/useFarms";
 import useWallet from "./useWallet";
-import { web3AuthInstance } from "src/config/walletConfig";
-import { ethers } from "ethers";
 import { useQuery } from "@tanstack/react-query";
-import { erc20Abi, getContract } from "viem";
+import { Address, erc20Abi, getContract } from "viem";
 import { estimateGas, getBalance, getGasPrice, waitForTransactionReceipt } from "viem/actions";
 import useNotify from "./useNotify";
 
@@ -14,12 +10,27 @@ const useVaultMigrate = () => {
     const { farms } = useFarms();
     const { web3AuthClient, currentWallet } = useWallet();
     const { notifyLoading, dismissNotify, notifySuccess, notifyError } = useNotify();
+    const tokenAddress = useMemo(() => {
+        const tokenAddress = new Set<Address>();
+        farms.forEach((farm) => {
+            tokenAddress.add(farm.token1);
+            if (farm.token2) tokenAddress.add(farm.token2);
+            tokenAddress.add(farm.lp_address);
+            tokenAddress.add(farm.vault_addr);
+            if (farm.zap_currencies) {
+                farm.zap_currencies.forEach((item) => {
+                    tokenAddress.add(item.address);
+                });
+            }
+        });
+        return Array.from(tokenAddress);
+    }, [farms]);
     const { data, refetch } = useQuery({
         queryKey: ["wallet", "web3auth", "balances", "vault"],
         queryFn: async () => {
-            const promises = farms.map((item) =>
+            const promises = tokenAddress.map((item) =>
                 getContract({
-                    address: item.vault_addr,
+                    address: item,
                     abi: erc20Abi,
                     client: {
                         public: web3AuthClient!,
@@ -30,34 +41,27 @@ const useVaultMigrate = () => {
             return balances;
         },
         select(data) {
-            return farms.map((item, i) => ({
-                vaultAddress: item.vault_addr,
-                balance: data[i],
-            }));
+            return tokenAddress
+                .map((item, i) => ({
+                    tokenAddress: item,
+                    balance: data[i],
+                }))
+                .filter((ele) => ele.balance > 0);
         },
         enabled: !!web3AuthClient,
         refetchInterval: 1000 * 60 * 2,
     });
-    const totalVaults = useMemo(
-        () =>
-            data?.reduce((acc, curr) => {
-                // const bal = BigInt(balances[curr.vault_addr] || 0);
-                if (curr.balance > 0) return acc + 1;
-                else return acc;
-            }, 0),
-        [data]
-    );
+
     const migrate = async () => {
         if (!data || !currentWallet || !web3AuthClient) return;
-        const id = notifyLoading("Migrating...", `Migrating 1/${totalVaults} vaults`);
+        const id = notifyLoading("Migrating...", `Migrating 1/${data.length}`);
         try {
-            const filtered = data.filter((ele) => ele.balance > 0);
-            for (let i = 0; i < filtered.length; i++) {
-                const item = filtered[i];
-                notifyLoading("Migrating...", `Migrating ${i + 1}/${filtered.length} vaults`, { id });
+            for (let i = 0; i < data.length; i++) {
+                const item = data[i];
+                notifyLoading("Migrating...", `Migrating ${i + 1}/${data.length} vaults`, { id });
                 if (item.balance > 0) {
                     const hash = await getContract({
-                        address: item.vaultAddress,
+                        address: item.tokenAddress,
                         abi: erc20Abi,
                         client: {
                             wallet: web3AuthClient,
@@ -76,7 +80,7 @@ const useVaultMigrate = () => {
                 to: currentWallet,
             });
             const gasPrice = await getGasPrice(web3AuthClient);
-            const gasToRemove = gasLimit * gasPrice * 2n;
+            const gasToRemove = gasLimit * gasPrice * 5n;
             const hash = await web3AuthClient.sendTransaction({
                 to: currentWallet,
                 value: bal - gasToRemove,
@@ -84,7 +88,7 @@ const useVaultMigrate = () => {
             await waitForTransactionReceipt(web3AuthClient, {
                 hash,
             });
-            notifySuccess("Success!", `Migrated ${totalVaults} vaults`);
+            notifySuccess("Success!", `Migrated All`);
         } catch (error: any) {
             console.error(error);
             notifyError("Error!", error.details || error.reason || error.shortMessage || error.message);
@@ -93,6 +97,6 @@ const useVaultMigrate = () => {
         refetch();
     };
 
-    return { totalVaults, migrate };
+    return { migrate, data };
 };
 export default useVaultMigrate;
