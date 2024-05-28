@@ -25,4 +25,7 @@ export default defineConfig({
             transformMixedEsModules: true,
         },
     },
+    optimizeDeps: {
+        exclude: ["./src/pages/Swap/uniswapTokens.json"],
+    },
 });
