@@ -34,6 +34,7 @@ import { Skeleton } from "src/components/Skeleton/Skeleton";
 import DeprecatedWithdraw from "src/components/DeprecatedWithdraw/DeprecatedWithdraw";
 import ArbitriumBalances from "src/components/ArbitriumBalances/ArbitriumBalances";
 import BoostedApy from "src/components/BoostedApy/BoostedApy";
+import OneClickMigrate from "src/components/OneClickMigrate/OneClickMigrate";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -143,6 +144,7 @@ function Dashboard() {
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
                 <DeprecatedWithdraw />
+                <OneClickMigrate />
                 {earnTraxTermsAgreed && (
                     <>
                         <TraxEarning />
