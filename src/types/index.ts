@@ -311,14 +311,11 @@ export interface EstimateTxGasArgs {
 
 export interface IClients {
     wallet:
-        | (
-              | SmartAccountClient<
-                    typeof ENTRYPOINT_ADDRESS_V06,
-                    Transport,
-                    Chain,
-                    KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>
-                >
-              | WalletClient<Transport, Chain, Account>
-          ) & { estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint> };
+        | SmartAccountClient<
+              typeof ENTRYPOINT_ADDRESS_V06,
+              Transport,
+              Chain,
+              KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>
+          > & { estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint> };
     public: PublicClient;
 }
