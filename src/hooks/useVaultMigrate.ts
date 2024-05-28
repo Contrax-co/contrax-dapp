@@ -8,7 +8,7 @@ import useNotify from "./useNotify";
 
 const useVaultMigrate = () => {
     const { farms } = useFarms();
-    const { web3AuthClient, currentWallet } = useWallet();
+    const { web3AuthClient, client, currentWallet } = useWallet();
     const { notifyLoading, dismissNotify, notifySuccess, notifyError } = useNotify();
     const [isLoading, setIsLoading] = useState(false);
     const tokenAddress = useMemo(() => {
@@ -35,7 +35,7 @@ const useVaultMigrate = () => {
                     address: item,
                     abi: erc20Abi,
                     client: {
-                        public: web3AuthClient!,
+                        public: client.public,
                     },
                 }).read.balanceOf([web3AuthClient!.account!.address])
             );

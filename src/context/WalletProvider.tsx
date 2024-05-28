@@ -44,6 +44,7 @@ import axios from "axios";
 import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
 import { arbitrum, mainnet, polygon, gnosis, fantom } from "viem/chains";
 import { EstimateTxGasArgs, IClients } from "src/types";
+import { estimateGas } from "viem/actions";
 
 interface IWalletContext {
     /**
@@ -91,6 +92,7 @@ interface IWalletContext {
     publicClientPolygon: PublicClient;
     smartAccount?: KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>;
     web3AuthClient: WalletClient<Transport, Chain, Account> | null;
+    isSocial: boolean;
 }
 
 type BalanceResult = {
@@ -162,6 +164,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>>();
     const [isConnecting, setIsConnecting] = useState(false);
     const [isSponsored] = useState(true);
+    const [isSocial, setIsSocial] = useState(false);
+    const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
     const [gasInErc20] = useState(false);
     const [chainId, setChainId] = useState(CHAIN_ID.ARBITRUM);
     const chain = useMemo(() => {
@@ -216,7 +220,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useEthersProvider(publicClient);
     const multicallProvider = useMulticallProvider(provider);
     const { balances } = useBalances();
-    const [web3AuthClient, setWeb3AuthClient] = useState<WalletClient | null>(null);
+    const [web3AuthClient, setWeb3AuthClient] = useState<WalletClient<Transport, Chain, Account> | null>(null);
 
     const sponsorUserOperation = useCallback(
         async (args: {
@@ -295,13 +299,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const client = useMemo(
         () => ({
             public: publicClient,
-            wallet: smartAccountClient!,
+            wallet: isSocial ? smartAccountClient! : web3AuthClient!,
         }),
-        [publicClient, smartAccountClient]
+        [publicClient, smartAccountClient, web3AuthClient]
     );
-    // const arbEipProvider = useMemo(() => {
-    //     return getEip1193Provider({ public: publicClient, wallet: smartAccountClient });
-    // }, [smartAccountClient, publicClient]);
 
     const dispatch = useDispatch();
     const polygonBalance = useNativeBalance(CHAIN_ID.POLYGON);
@@ -314,22 +315,35 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             if (!web3AuthInstance.connected) {
                 await web3AuthInstance.connect();
             }
-
+            const _isSocial = web3AuthInstance.connectedAdapterName === "openlogin";
+            setIsSocial(_isSocial);
             const smartAccountSigner = await providerToSmartAccountSigner(web3AuthInstance.provider as any);
-
             setWeb3AuthClient(
                 createWalletClient({
                     account: smartAccountSigner.address,
                     transport: custom(web3AuthInstance.provider!),
                     chain: arbitrum,
-                })
+                }).extend((client: WalletClient) => ({
+                    estimateTxGas: async (args: EstimateTxGasArgs) => {
+                        return await estimateGas(client, {
+                            data: args.data,
+                            to: args.to,
+                            value: args.value,
+                        });
+                    },
+                }))
             );
-            const smartAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
-                entryPoint: ENTRYPOINT_ADDRESS_V06,
-                signer: smartAccountSigner,
-                // index: 0n,
-            });
-            setSmartAccount(smartAccount);
+            if (_isSocial) {
+                const smartAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
+                    entryPoint: ENTRYPOINT_ADDRESS_V06,
+                    signer: smartAccountSigner,
+                    // index: 0n,
+                });
+                setSmartAccount(smartAccount);
+                setCurrentWallet(smartAccount.address);
+            } else {
+                setCurrentWallet(smartAccountSigner.address);
+            }
         } catch (error) {
             console.error(error);
         } finally {
@@ -339,26 +353,21 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     async function logout() {
         web3AuthInstance.logout();
-        setSmartAccount(undefined);
+        setCurrentWallet(undefined);
     }
 
     const displayAccount = React.useMemo(
         () =>
-            smartAccount?.address
-                ? `${smartAccount.address.substring(0, 6)}...${smartAccount.address.substring(
-                      smartAccount.address.length - 5
-                  )}`
+            currentWallet
+                ? `${currentWallet.substring(0, 6)}...${currentWallet.substring(currentWallet.length - 5)}`
                 : "",
-        [smartAccount]
+        [currentWallet]
     );
 
     const balance = useMemo(
         () => Number(ethers.utils.formatUnits(balances[ethers.constants.AddressZero] || 0, 18)),
         [balances]
     );
-
-    const currentWallet = useMemo(() => smartAccount?.address, [smartAccount]);
-    // console.log("currentWallet =>", currentWallet);
 
     const getPkey = async () => {
         try {
@@ -446,6 +455,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 // currentWallet: "0x71dde932c6fdfd6a2b2e9d2f4f1a2729a3d05981",
                 chainId,
                 connectWallet,
+                isSocial,
                 smartAccount,
                 logout,
                 domainName,
@@ -453,6 +463,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 balance,
                 getPkey,
                 multicallProvider,
+                // @ts-expect-error
                 client,
                 publicClientMainnet,
                 publicClientPolygon,

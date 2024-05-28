@@ -1,7 +1,7 @@
 import { Apys } from "src/state/apys/types";
 import { FarmOriginPlatform, FarmType } from "./enums";
 import { FarmDataProcessed } from "src/api/pools/types";
-import { PublicClient, Transport, Chain, Address } from "viem";
+import { PublicClient, Transport, Chain, Address, WalletClient, Account } from "viem";
 import { ENTRYPOINT_ADDRESS_V06, SmartAccountClient } from "permissionless";
 import { KernelEcdsaSmartAccount } from "permissionless/accounts";
 
@@ -310,11 +310,15 @@ export interface EstimateTxGasArgs {
 }
 
 export interface IClients {
-    wallet: SmartAccountClient<
-        typeof ENTRYPOINT_ADDRESS_V06,
-        Transport,
-        Chain,
-        KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>
-    > & { estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint> };
+    wallet:
+        | (
+              | SmartAccountClient<
+                    typeof ENTRYPOINT_ADDRESS_V06,
+                    Transport,
+                    Chain,
+                    KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>
+                >
+              | WalletClient<Transport, Chain, Account>
+          ) & { estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint> };
     public: PublicClient;
 }

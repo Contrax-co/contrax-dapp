@@ -5,7 +5,7 @@ export const getEip1193Provider = (client: IClients): ethers.providers.Web3Provi
     return new ethers.providers.Web3Provider({
         // @ts-ignore
         request: async ({ method, params, ...rest }: { method: string; params: any }) => {
-            console.log("method, params =>", method, params, rest);
+            // console.log("method, params =>", method, params, rest);
 
             switch (method) {
                 case "eth_chainId":
@@ -23,6 +23,7 @@ export const getEip1193Provider = (client: IClients): ethers.providers.Web3Provi
                         value: params[0].value || 0n,
                     });
                 case "eth_sendTransaction":
+                    // @ts-ignore
                     return await client.wallet.sendTransaction({
                         data: params[0].data,
                         to: params[0].to,
