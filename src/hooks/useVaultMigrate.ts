@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import useFarms from "./farms/useFarms";
 import useWallet from "./useWallet";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ const useVaultMigrate = () => {
     const { farms } = useFarms();
     const { web3AuthClient, currentWallet } = useWallet();
     const { notifyLoading, dismissNotify, notifySuccess, notifyError } = useNotify();
+    const [isLoading, setIsLoading] = useState(false);
     const tokenAddress = useMemo(() => {
         const tokenAddress = new Set<Address>();
         farms.forEach((farm) => {
@@ -25,6 +26,7 @@ const useVaultMigrate = () => {
         });
         return Array.from(tokenAddress);
     }, [farms]);
+
     const { data, refetch } = useQuery({
         queryKey: ["wallet", "web3auth", "balances", "vault"],
         queryFn: async () => {
@@ -55,6 +57,7 @@ const useVaultMigrate = () => {
     const migrate = async () => {
         if (!data || !currentWallet || !web3AuthClient) return;
         const id = notifyLoading("Migrating...", `Migrating 1/${data.length}`);
+        setIsLoading(true);
         try {
             for (let i = 0; i < data.length; i++) {
                 const item = data[i];
@@ -95,8 +98,9 @@ const useVaultMigrate = () => {
         }
         dismissNotify(id);
         refetch();
+        setIsLoading(true);
     };
 
-    return { migrate, data };
+    return { migrate, data, isLoading };
 };
 export default useVaultMigrate;
