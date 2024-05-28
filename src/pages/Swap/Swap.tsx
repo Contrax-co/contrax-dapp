@@ -79,7 +79,6 @@ const Swap: React.FC<IProps> = () => {
                     })();
                 }}
                 onInitialSwapQuote={(trade) => {
-                    console.log("  trade.routes =>", trade.routes);
                     setInputToken(
                         trade.routes[0].input.isNative ? zeroAddress : (trade.routes[0].input.address as Address)
                     );
