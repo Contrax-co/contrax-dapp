@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import useFarms from "./farms/useFarms";
 import useWallet from "./useWallet";
 import { useQuery } from "@tanstack/react-query";
-import { Address, erc20Abi, getContract } from "viem";
+import { Address, erc20Abi, getContract, zeroAddress } from "viem";
 import { estimateGas, getBalance, getGasPrice, waitForTransactionReceipt } from "viem/actions";
 import useNotify from "./useNotify";
 
@@ -40,14 +40,16 @@ const useVaultMigrate = () => {
                 }).read.balanceOf([web3AuthClient!.account!.address])
             );
             const balances = await Promise.all(promises);
-            return balances;
+            const ethBal = await client.public.getBalance({ address: web3AuthClient!.account!.address });
+            return { tokenBalances: balances, ethBal };
         },
         select(data) {
             return tokenAddress
                 .map((item, i) => ({
                     tokenAddress: item,
-                    balance: data[i],
+                    balance: data.tokenBalances[i],
                 }))
+                .concat([{ tokenAddress: zeroAddress, balance: data.ethBal }])
                 .filter((ele) => ele.balance > 0);
         },
         enabled: !!web3AuthClient,
@@ -61,7 +63,8 @@ const useVaultMigrate = () => {
         try {
             for (let i = 0; i < data.length; i++) {
                 const item = data[i];
-                notifyLoading("Migrating...", `Migrating ${i + 1}/${data.length} vaults`, { id });
+                if (item.tokenAddress === zeroAddress) continue;
+                notifyLoading("Migrating...", `Migrating ${i + 1}/${data.length}`, { id });
                 if (item.balance > 0) {
                     const hash = await getContract({
                         address: item.tokenAddress,
@@ -83,7 +86,8 @@ const useVaultMigrate = () => {
                 to: currentWallet,
             });
             const gasPrice = await getGasPrice(web3AuthClient);
-            const gasToRemove = gasLimit * gasPrice * 5n;
+            const gasToRemove = gasLimit * gasPrice * 6n;
+
             const hash = await web3AuthClient.sendTransaction({
                 to: currentWallet,
                 value: bal - gasToRemove,
