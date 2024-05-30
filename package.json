@@ -46,7 +46,7 @@
     "jotai-immer": "^0.2.0",
     "lodash.merge": "^4.6.2",
     "moment": "^2.29.4",
-    "permissionless": "^0.1.20",
+    "permissionless": "^0.1.29",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-google-charts": "^4.0.0",

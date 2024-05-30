@@ -9571,7 +9571,7 @@ __metadata:
     lodash.merge: ^4.6.2
     moment: ^2.29.4
     os-browserify: ^0.3.0
-    permissionless: ^0.1.20
+    permissionless: ^0.1.29
     prettier: ^2.8.1
     process: ^0.11.10
     react: ^18.2.0
@@ -16634,12 +16634,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"permissionless@npm:^0.1.20":
-  version: 0.1.20
-  resolution: "permissionless@npm:0.1.20"
+"permissionless@npm:^0.1.29":
+  version: 0.1.29
+  resolution: "permissionless@npm:0.1.29"
   peerDependencies:
     viem: ^2.9.17
-  checksum: fbca80358260dfbb0cde000dd81fd9e9dcae28770d28ab2e82e1068cb017e96fb483cd14eb5aff57d0af3e6ac170cad5238e46ebd16af290b4dd2ed8b80d28f0
+  checksum: b18bec3ff4985380aa32794b9992364f513d322f3b5ec7d09bc5c30a73a99c1a3e677139b5e02bdc61ef32109bc543956a56b73d5de5f7672e01a63c97d97205
   languageName: node
   linkType: hard
 

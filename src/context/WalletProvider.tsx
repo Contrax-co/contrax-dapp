@@ -14,7 +14,7 @@ import { CHAIN_ID } from "src/types/enums";
 import { bundlerClient, useEthersProvider, useEthersSigner, web3AuthInstance } from "src/config/walletConfig";
 import { getTokenPricesBackend } from "src/api/token";
 import {
-    ENTRYPOINT_ADDRESS_V06,
+    ENTRYPOINT_ADDRESS_V07,
     SmartAccountClient,
     UserOperation,
     createSmartAccountClient,
@@ -90,7 +90,7 @@ interface IWalletContext {
     client: IClients;
     publicClientMainnet: PublicClient;
     publicClientPolygon: PublicClient;
-    smartAccount?: KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>;
+    smartAccount?: KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V07, Transport, Chain>;
     web3AuthClient: WalletClient<Transport, Chain, Account> | null;
     isSocial: boolean;
 }
@@ -161,9 +161,9 @@ const useMulticallProvider = (
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [smartAccount, setSmartAccount] =
-        useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V06, Transport, Chain>>();
+        useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V07, Transport, Chain>>();
     const [isConnecting, setIsConnecting] = useState(false);
-    const [isSponsored] = useState(true);
+    const [isSponsored] = useState(false);
     const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
     const [gasInErc20] = useState(false);
@@ -224,13 +224,18 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     const sponsorUserOperation = useCallback(
         async (args: {
-            userOperation: UserOperation<"v0.6">;
+            userOperation: UserOperation<"v0.7">;
         }): Promise<{
             callGasLimit: bigint;
             verificationGasLimit: bigint;
             preVerificationGas: bigint;
-            paymasterAndData: Address;
+            paymaster: Address;
+            paymasterVerificationGasLimit: bigint;
+            paymasterPostOpGasLimit: bigint;
+            paymasterData: Address;
         }> => {
+            // if (!gasInErc20) {
+            console.log("userOperation =>", args);
             let userOperation = { ...args.userOperation };
             Object.entries(userOperation).forEach(([key, val]) => {
                 if (typeof val === "bigint") {
@@ -242,9 +247,36 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 id: 0,
                 jsonrpc: "2.0",
                 method: "pm_sponsorUserOperation",
-                params: [userOperation, ENTRYPOINT_ADDRESS_V06, { type: gasInErc20 ? "erc20Token" : "ether" }],
+                params: [userOperation, ENTRYPOINT_ADDRESS_V07, { type: gasInErc20 ? "erc20Token" : "ether" }],
             });
-            return res.data.result;
+            const dt = res.data.result;
+
+            return {
+                callGasLimit: BigInt(dt.callGasLimit),
+                paymaster: dt.paymaster,
+                paymasterData: dt.paymasterData,
+                paymasterPostOpGasLimit: BigInt(dt.paymasterPostOpGasLimit),
+                paymasterVerificationGasLimit: BigInt(dt.paymasterVerificationGasLimit),
+                preVerificationGas: BigInt(dt.preVerificationGas),
+                verificationGasLimit: BigInt(dt.verificationGasLimit),
+            };
+            // } else {
+            //     console.log("for estimate", {
+            //         ...args.userOperation,
+            //         paymaster: "0x6704c15a9ff4baf50b44f4652851f848b3bffdc4",
+            //     });
+            //     const gasEstimates = await bundlerClient.estimateUserOperationGas({
+            //         userOperation: {
+            //             ...args.userOperation,
+            //             paymaster: "0x6704c15a9ff4baf50b44f4652851f848b3bffdc4",
+            //         },
+            //     });
+
+            //     return {
+            //         ...gasEstimates,
+            //         paymaster: "0x6704c15a9ff4baf50b44f4652851f848b3bffdc4",
+            //     };
+            // }
         },
         [gasInErc20, chainId]
     );
@@ -253,7 +285,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         if (!smartAccount) return undefined;
         const smartAccountClient = createSmartAccountClient({
             account: smartAccount,
-            entryPoint: ENTRYPOINT_ADDRESS_V06,
+            entryPoint: ENTRYPOINT_ADDRESS_V07,
             chain: arbitrum,
             bundlerTransport: http(bundlersByChainId[chainId]),
             middleware: isSponsored
@@ -335,7 +367,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             );
             if (_isSocial) {
                 const smartAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
-                    entryPoint: ENTRYPOINT_ADDRESS_V06,
+                    entryPoint: ENTRYPOINT_ADDRESS_V07,
                     signer: smartAccountSigner,
                     // index: 0n,
                 });
