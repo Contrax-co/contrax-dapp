@@ -3,9 +3,9 @@ export const blockExplorersByChainId: { [key: number]: string } = {
 };
 
 export const paymastersByChainId: { [key: number]: string } = {
-    // 42161: "https://paymaster-rpc-4c40f40c9737.herokuapp.com/jrpc/42161",
+    42161: "https://paymaster-rpc-4c40f40c9737.herokuapp.com/jrpc/42161",
     // 42161: "http://localhost:8000/jrpc/42161",
-    42161: "http://localhost:8000/jrpc/42161",
+    // 42161: "http://localhost:8000/jrpc/42161",
 };
 
 export const bundlersByChainId: { [key: number]: string } = {
