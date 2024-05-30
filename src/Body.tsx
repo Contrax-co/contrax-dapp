@@ -22,7 +22,7 @@ import { SignInRequiredWrapper } from "./components/SignInRequiredWrapper/SignIn
 import { BridgeDirection } from "./state/ramp/types";
 import { Snapshot } from "./pages/Snapshot/Snapshot";
 import ReferralDashboard from "./pages/ReferralDashboard/ReferralDashboard";
-import FarmSlippage from "./pages/FarmSippage/FarmSlippage";
+import FarmSlippage from "./pages/FarmSippage/FarmInfo";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
