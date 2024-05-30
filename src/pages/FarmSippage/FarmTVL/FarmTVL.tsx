@@ -8,34 +8,45 @@ import styles from "./FarmTVL.module.scss";
 import uuid from "react-uuid";
 import useFarms from "src/hooks/farms/useFarms";
 import { Farm } from "src/types";
+import useWallet from "src/hooks/useWallet";
+import { BsClipboardData } from "react-icons/bs";
 
 export const FarmTVL: React.FC = () => {
     const { farms } = useFarms();
+    const { currentWallet } = useWallet();
 
     return (
         <table className={styles.table}>
-            <thead>
-                <tr className={styles.header}>
-                    <th>
-                        <div className={styles.tableData + " " + styles.heading}>Vault</div>
-                    </th>
-                    <th>
-                        <div className={styles.tableData + " " + styles.heading} style={{ marginLeft: "5%" }}>
-                            TVL in pool
-                        </div>
-                    </th>
-                    <th>
-                        <div className={styles.tableData + " " + styles.heading} style={{ marginLeft: "5%" }}>
-                            TVL in underlying
-                        </div>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {farms.map((farm) => (
-                    <FarmTVLRow key={uuid()} farm={farm} />
-                ))}
-            </tbody>
+            {currentWallet ? (
+                <>
+                    <thead>
+                        <tr className={styles.header}>
+                            <th>
+                                <div className={styles.tableData + " " + styles.heading}>Vault</div>
+                            </th>
+                            <th>
+                                <div className={styles.tableData + " " + styles.heading} style={{ marginLeft: "5%" }}>
+                                    TVL in pool
+                                </div>
+                            </th>
+                            <th>
+                                <div className={styles.tableData + " " + styles.heading} style={{ marginLeft: "5%" }}>
+                                    TVL in underlying
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <>
+                            {farms.map((farm) => (
+                                <FarmTVLRow key={uuid()} farm={farm} />
+                            ))}
+                        </>
+                    </tbody>
+                </>
+            ) : (
+                <EmptyTable />
+            )}
         </table>
     );
 };
@@ -43,7 +54,6 @@ export const FarmTVL: React.FC = () => {
 const FarmTVLRow: React.FC<{ farm: Farm }> = ({ farm }) => {
     const lpAddress = getLpAddressForFarmsPrice([farm])[0];
     const { formattedSupplies } = useTotalSupplies();
-    const { lightMode } = useApp();
 
     const {
         prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
@@ -82,5 +92,14 @@ const FarmTVLRow: React.FC<{ farm: Farm }> = ({ farm }) => {
                 </div>
             </td>
         </tr>
+    );
+};
+
+const EmptyTable = () => {
+    return (
+        <div className={styles.emptyTable}>
+            <BsClipboardData size={36} className={styles.icon} />
+            <p className={styles.disclaimer}>No Data Available</p>
+        </div>
     );
 };

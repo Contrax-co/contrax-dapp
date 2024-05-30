@@ -25,7 +25,6 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
     const { lightMode } = useApp();
     const navigate = useNavigate();
     const { pathname } = useLocation();
-    const { currentWallet } = useWallet();
 
     const handleNavigation = (route: string, target?: string) => {
         if (target) window.open(route, target);
@@ -91,14 +90,12 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                             onClick={() => handleNavigation(RoutesPaths.Stats)}
                             active={pathname === RoutesPaths.Stats}
                         />
-                        {currentWallet && (
-                            <SidebarItem
-                                title="Test"
-                                icon={<IoIosFlask size={18} />}
-                                onClick={() => handleNavigation(RoutesPaths.Test_pro_max)}
-                                active={pathname === RoutesPaths.Test_pro_max}
-                            />
-                        )}
+                        <SidebarItem
+                            title="Test"
+                            icon={<IoIosFlask size={18} />}
+                            onClick={() => handleNavigation(RoutesPaths.Test_pro_max)}
+                            active={pathname === RoutesPaths.Test_pro_max}
+                        />
                     </>
                 )}
                 {/* <SidebarItem
