@@ -19,11 +19,13 @@ import { RoutesPaths } from "src/config/constants";
 import useApp from "src/hooks/useApp";
 import { Dispatch, SetStateAction } from "react";
 import { FiCommand } from "react-icons/fi";
+import useWallet from "src/hooks/useWallet";
 
 function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean>> }) {
     const { lightMode } = useApp();
     const navigate = useNavigate();
     const { pathname } = useLocation();
+    const { currentWallet } = useWallet();
 
     const handleNavigation = (route: string, target?: string) => {
         if (target) window.open(route, target);
@@ -89,12 +91,14 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                             onClick={() => handleNavigation(RoutesPaths.Stats)}
                             active={pathname === RoutesPaths.Stats}
                         />
-                        <SidebarItem
-                            title="Test"
-                            icon={<IoIosFlask size={18} />}
-                            onClick={() => handleNavigation(RoutesPaths.Test_pro_max)}
-                            active={pathname === RoutesPaths.Test_pro_max}
-                        />
+                        {currentWallet && (
+                            <SidebarItem
+                                title="Test"
+                                icon={<IoIosFlask size={18} />}
+                                onClick={() => handleNavigation(RoutesPaths.Test_pro_max)}
+                                active={pathname === RoutesPaths.Test_pro_max}
+                            />
+                        )}
                     </>
                 )}
                 {/* <SidebarItem
