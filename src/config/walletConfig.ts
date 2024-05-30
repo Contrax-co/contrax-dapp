@@ -22,7 +22,7 @@ import { providers } from "ethers";
 import { PublicClient, WalletClient, http, type HttpTransport } from "viem";
 import { MetamaskAdapter } from "@web3auth/metamask-adapter";
 import { getWalletConnectV2Settings, WalletConnectV2Adapter } from "@web3auth/wallet-connect-v2-adapter";
-import { ENTRYPOINT_ADDRESS_V06, createBundlerClient } from "permissionless";
+import { ENTRYPOINT_ADDRESS_V07, createBundlerClient } from "permissionless";
 import { bundlersByChainId } from "./constants/urls";
 import { CHAIN_ID } from "src/types/enums";
 
@@ -57,7 +57,7 @@ export const web3AuthInstance = new Web3Auth({
 export const bundlerClient = createBundlerClient({
     chain: arbitrum,
     transport: http(bundlersByChainId[CHAIN_ID.ARBITRUM]),
-    entryPoint: ENTRYPOINT_ADDRESS_V06,
+    entryPoint: ENTRYPOINT_ADDRESS_V07,
 });
 
 const openloginAdapter = new OpenloginAdapter({
