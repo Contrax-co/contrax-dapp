@@ -69,6 +69,11 @@
     color: black;
 }
 
+.pair {
+    display: flex;
+    gap: 20px;
+}
+
 .farmslip_table_pool {
     background-color: #012243;
     border-radius: 20px;
@@ -99,6 +104,15 @@
 
 .deposit {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.innerContainer {
+    display: flex;
+    align-items: center;
     gap: 10px;
 }
 

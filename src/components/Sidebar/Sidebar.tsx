@@ -19,6 +19,7 @@ import { RoutesPaths } from "src/config/constants";
 import useApp from "src/hooks/useApp";
 import { Dispatch, SetStateAction } from "react";
 import { FiCommand } from "react-icons/fi";
+import useWallet from "src/hooks/useWallet";
 
 function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean>> }) {
     const { lightMode } = useApp();
