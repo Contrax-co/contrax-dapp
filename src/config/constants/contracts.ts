@@ -12,6 +12,7 @@ export interface Addresses {
     swapfishMasterChef?: Address;
     bridgedUsdAddress?: Address;
     paymasterAddress?: Address;
+    universalPaymaster?: Address;
 }
 
 const arbitrumAddresses: Addresses = {
@@ -27,6 +28,7 @@ const arbitrumAddresses: Addresses = {
     arbitrumAddress: "0x912CE59144191C1204E64559FE8253a0e49E6548",
     bridgedUsdAddress: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
     paymasterAddress: "0x75688705486405550239134Aa01e80E739f3b459",
+    universalPaymaster: "0xDACDA34b8b3d9dF839F14e87699e594329FD0a83",
 };
 
 const polygonAddresses: Addresses = {
