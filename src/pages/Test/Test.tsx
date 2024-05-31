@@ -29,7 +29,10 @@ const Test = () => {
         });
         // const allowance = await contract.read.allowance([currentWallet, "0x1A4f0075987f557AE59caF559Dc7c98Ee86A8D1f"]);
         // console.log("allowance =>", allowance);
-        const hash = await contract.write.approve(["0x6704c15a9ff4baf50b44f4652851f848b3bffdc4", maxUint256]);
+        const hash = await contract.write.approve([
+            addressesByChainId[CHAIN_ID.ARBITRUM].universalPaymaster!,
+            maxUint256,
+        ]);
         console.log(hash);
         // get Arb price
         // await getPriceFromUsdcPair(multicallProvider, arbAddr);

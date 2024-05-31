@@ -4,9 +4,21 @@ import { errorMessages } from "src/config/constants/notifyMessages";
 import store from "src/state";
 import { Farm, IClients } from "src/types";
 import { createWeb3Name } from "@web3-name-sdk/core";
-import { Address, getAddress, TransactionReceipt, parseUnits, formatUnits, zeroAddress } from "viem";
+import {
+    Address,
+    getAddress,
+    TransactionReceipt,
+    parseUnits,
+    formatUnits,
+    zeroAddress,
+    getContract,
+    erc20Abi,
+    maxUint256,
+} from "viem";
 
 import { waitForTransactionReceipt } from "viem/actions";
+import { addressesByChainId } from "src/config/constants/contracts";
+import { CHAIN_ID } from "src/types/enums";
 
 const web3Name = createWeb3Name();
 
@@ -196,4 +208,42 @@ export const customCommify = (
         .slice(0, minimumFractionDigits === 0 ? -2 : -1);
 
     return amount;
+};
+
+async function* checkForPaymasterApprovalGenerator(client: IClients) {
+    let txCount = 0;
+    while (true) {
+        if (txCount === 10) {
+            txCount = 0;
+            console.log(`%cChecking USDC allowance, Paymaster`, "color: green;");
+            const contract = getContract({
+                address: addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress as Address,
+                abi: erc20Abi,
+                client,
+            });
+            const allowance = await contract.read.allowance([
+                client.wallet.account.address!,
+                addressesByChainId[CHAIN_ID.ARBITRUM].universalPaymaster!,
+            ]);
+            if (allowance >= parseUnits("10", 6)) yield true;
+            else {
+                const hash = await contract.write.approve([
+                    addressesByChainId[CHAIN_ID.ARBITRUM].universalPaymaster!,
+                    maxUint256,
+                ]);
+                await waitForTransactionReceipt(client.public, { hash });
+                console.log(`%cUSDC approved, Paymaster`, "color: green;");
+                yield true;
+            }
+        } else {
+            txCount++;
+            yield true;
+        }
+    }
+}
+let paymasterApprovalCheckIterator: ReturnType<typeof checkForPaymasterApprovalGenerator>;
+export const checkPaymasterApproval = async (client?: IClients) => {
+    if (!paymasterApprovalCheckIterator && client)
+        paymasterApprovalCheckIterator = checkForPaymasterApprovalGenerator(client);
+    else await paymasterApprovalCheckIterator.next();
 };
