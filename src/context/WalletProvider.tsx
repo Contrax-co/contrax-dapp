@@ -1,37 +1,27 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import * as ethers from "ethers";
-import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
 import { useQuery } from "@tanstack/react-query";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
-import { getConnectorId, getNetworkName, resolveDomainFromAddress, toEth } from "src/utils/common";
+import { checkPaymasterApproval, getNetworkName, resolveDomainFromAddress, toEth } from "src/utils/common";
 import { getMulticallProvider } from "src/config/multicall";
 import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
 import { useDispatch } from "react-redux";
-import { setConnectorId } from "src/state/settings/settingsReducer";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { CHAIN_ID } from "src/types/enums";
-import { bundlerClient, useEthersProvider, useEthersSigner, web3AuthInstance } from "src/config/walletConfig";
+import { bundlerClient, useEthersProvider, web3AuthInstance } from "src/config/walletConfig";
 import { getTokenPricesBackend } from "src/api/token";
 import {
     ENTRYPOINT_ADDRESS_V07,
-    SmartAccountClient,
     UserOperation,
     createSmartAccountClient,
     providerToSmartAccountSigner,
-    walletClientToSmartAccountSigner,
 } from "permissionless";
-import {
-    BiconomySmartAccount,
-    KernelEcdsaSmartAccount,
-    signerToBiconomySmartAccount,
-    signerToEcdsaKernelSmartAccount,
-} from "permissionless/accounts";
+import { KernelEcdsaSmartAccount, signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
 import {
     Account,
     Address,
     Chain,
-    EIP1193Provider,
     PublicClient,
     Transport,
     WalletClient,
@@ -42,7 +32,7 @@ import {
 } from "viem";
 import axios from "axios";
 import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
-import { arbitrum, mainnet, polygon, gnosis, fantom } from "viem/chains";
+import { arbitrum, mainnet, polygon } from "viem/chains";
 import { EstimateTxGasArgs, IClients } from "src/types";
 import { estimateGas } from "viem/actions";
 
@@ -163,7 +153,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [smartAccount, setSmartAccount] =
         useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V07, Transport, Chain>>();
     const [isConnecting, setIsConnecting] = useState(false);
-    const [isSponsored] = useState(false);
+    const [isSponsored] = useState(true);
     const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
     const [gasInErc20] = useState(false);
@@ -234,7 +224,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             paymasterPostOpGasLimit: bigint;
             paymasterData: Address;
         }> => {
-            // if (!gasInErc20) {
+            if (gasInErc20) await checkPaymasterApproval();
             console.log("userOperation =>", args);
             let userOperation = { ...args.userOperation };
             Object.entries(userOperation).forEach(([key, val]) => {
@@ -260,23 +250,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 preVerificationGas: BigInt(dt.preVerificationGas),
                 verificationGasLimit: BigInt(dt.verificationGasLimit),
             };
-            // } else {
-            //     console.log("for estimate", {
-            //         ...args.userOperation,
-            //         paymaster: "0x6704c15a9ff4baf50b44f4652851f848b3bffdc4",
-            //     });
-            //     const gasEstimates = await bundlerClient.estimateUserOperationGas({
-            //         userOperation: {
-            //             ...args.userOperation,
-            //             paymaster: "0x6704c15a9ff4baf50b44f4652851f848b3bffdc4",
-            //         },
-            //     });
-
-            //     return {
-            //         ...gasEstimates,
-            //         paymaster: "0x6704c15a9ff4baf50b44f4652851f848b3bffdc4",
-            //     };
-            // }
         },
         [gasInErc20, chainId]
     );
@@ -325,6 +298,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 });
             },
         }));
+        checkPaymasterApproval({ public: publicClient, wallet: smartAccountClient });
         return smartAccountClient;
     }, [smartAccount, sponsorUserOperation]);
 
@@ -451,18 +425,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     useEffect(() => {
         const init = async () => {
             try {
-                // const walletConnectModal = new WalletConnectModal({ projectId: walletConnectProjectId });
-                // const walletConnectV2Adapter = new WalletConnectV2Adapter({
-                //     clientId,
-                //     web3AuthNetwork: "cyan",
-                //     adapterSettings: {
-                //         qrcodeModal: walletConnectModal,
-                //         ...defaultWcSettings.adapterSettings,
-                //     },
-                //     loginSettings: { ...defaultWcSettings.loginSettings },
-                // });
-                // web3AuthInstance.configureAdapter(walletConnectV2Adapter);
-
                 await web3AuthInstance.initModal();
 
                 if (web3AuthInstance.connected) {
