@@ -295,6 +295,14 @@ export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max,
             spender: farm.zapper_addr,
         },
     ]);
+    merge(
+        transaction.state_overrides,
+        getTokenBalanceStateOverride({
+            owner: currentWallet,
+            tokenAddress: farm.vault_addr,
+            balance: amountInWei.toString(),
+        })
+    );
     //#endregion
 
     //#region Zapping Out
