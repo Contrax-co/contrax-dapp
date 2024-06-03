@@ -9,11 +9,26 @@ import { useState } from "react";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
+import { getLpAddressForFarmsPrice } from "src/utils/common";
+import useTotalSupplies from "src/hooks/useTotalSupplies";
 
 const SlippageFarm = () => {
+    const { lightMode } = useApp();
     const { farms } = useFarms();
     return (
         <>
+            <div className={`farmslip_table_header ${lightMode && "farmslip_table_header_light"}`}>
+                <p className="item_asset" style={{ marginLeft: 20 }}>
+                    Vaults
+                </p>
+                <p>
+                    <span>TVL in pool</span>
+                </p>
+                <p className={`header_deposite`}>
+                    <span>TVL in underlying pool</span>
+                </p>
+            </div>
             {farms.map((farm) => (
                 <SlippageFarmRow key={farm.id} farm={farm} />
             ))}
@@ -24,6 +39,12 @@ const SlippageFarm = () => {
 const SlippageFarmRow: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [dropDown, setDropDown] = useState(false);
+    const lpAddress = getLpAddressForFarmsPrice([farm])[0];
+    const { formattedSupplies } = useTotalSupplies();
+
+    const {
+        prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
+    } = usePriceOfTokens();
     return (
         <>
             <div
@@ -31,7 +52,7 @@ const SlippageFarmRow: React.FC<{ farm: Farm }> = ({ farm }) => {
                 style={{ padding: "30px" }}
             >
                 <div className={"slippageContainer"}>
-                    <div className="title_container">
+                    <div className="title_container titleContainerSlippage" style={{ width: "100%" }}>
                         <div className="pair">
                             <img alt={farm?.alt1} src={farm?.logo1} height={50} width={50} />
                             {farm.logo2 ? <img alt={farm?.alt1} src={farm?.logo2} height={50} width={50} /> : undefined}
@@ -45,6 +66,22 @@ const SlippageFarmRow: React.FC<{ farm: Farm }> = ({ farm }) => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div style={{ width: "100%", textAlign: "center" }}>
+                        {formattedSupplies[farm.vault_addr] &&
+                            (formattedSupplies[farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                                maximumFractionDigits: 0,
+                            })}
+                    </div>
+                    <div style={{ width: "100%", textAlign: "center" }}>
+                        {formattedSupplies[farm.lp_address] &&
+                            (formattedSupplies[farm.lp_address]! * lpPrice).toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                                maximumFractionDigits: 0,
+                            })}
                     </div>
                     <img
                         src={downArrow}

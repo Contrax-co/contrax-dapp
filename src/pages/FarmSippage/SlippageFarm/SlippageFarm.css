@@ -1,6 +1,6 @@
 .slippageContainer {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -8,5 +8,13 @@
     display: flex;
     gap: 30%;
     align-items: center;
+    width: 100%;
+}
+
+.titleContainerSlippage {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    flex: auto;
     width: 100%;
 }
