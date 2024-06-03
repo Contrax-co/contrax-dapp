@@ -3,3 +3,10 @@
     justify-content: center;
     align-items: center;
 }
+
+.slippageIndividual {
+    display: flex;
+    gap: 30%;
+    align-items: center;
+    width: 100%;
+}

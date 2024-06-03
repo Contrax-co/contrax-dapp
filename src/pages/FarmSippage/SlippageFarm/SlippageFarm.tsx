@@ -1,12 +1,14 @@
 import useFarms from "src/hooks/farms/useFarms";
 import useApp from "src/hooks/useApp";
-import { useSlippageDeposit } from "src/hooks/useSlippageDeposit";
+import { useSlippageDeposit, useSlippageWithdraw } from "src/hooks/useSlippage";
 import { Farm } from "src/types";
 import { zeroAddress } from "viem";
 import downArrow from "../../../assets/images/down-arrow.png";
 import "./SlippageFarm.css";
 import { useState } from "react";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
+import { addressesByChainId } from "src/config/constants/contracts";
+import { CHAIN_ID } from "src/types/enums";
 
 const SlippageFarm = () => {
     const { farms } = useFarms();
@@ -60,12 +62,14 @@ const SlippageFarmRow: React.FC<{ farm: Farm }> = ({ farm }) => {
 
 const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
     const maxAmounts = [100, 1000, 10000];
-    const tokens = [zeroAddress, "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"];
-    const { slippageAmounts, loading } = useSlippageDeposit(maxAmounts, tokens, farm);
+    const tokens = [zeroAddress, addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress];
+    const { slippageAmounts, loadingDeposit } = useSlippageDeposit(maxAmounts, tokens, farm);
+    const { slippageAmounts: slippageAmountWithdraw, loadingWithdraw } = useSlippageWithdraw(maxAmounts, tokens, farm);
     return (
-        <>
-            <div>
-                {loading ? (
+        <div className={"slippageIndividual"}>
+            <div style={{ width: "100%" }}>
+                <h1 style={{ fontSize: "14px", marginTop: "10px" }}>Deposit</h1>
+                {loadingDeposit ? (
                     <>
                         <Skeleton h={20} w={"100%"} style={{ marginBottom: "10px", marginTop: "10px" }} />
                         <Skeleton h={20} w={"100%"} style={{ marginBottom: "10px" }} />
@@ -74,7 +78,6 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                     </>
                 ) : (
                     <>
-                        <h1 style={{ fontSize: "14px", marginTop: "10px" }}>Deposit</h1>
                         {maxAmounts.map((maxAmount) =>
                             tokens.map((token) => (
                                 <div key={`${maxAmount}-${token}`}>
@@ -89,14 +92,49 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                                         width={24}
                                         alt=""
                                     />
-                                    : {slippageAmounts[`${maxAmount}-${token}`]?.toFixed(2) || 0}
+                                    :{" "}
+                                    {slippageAmounts[`${maxAmount}-${token}`]?.toFixed(2) || "Slippage not calaculated"}
                                 </div>
                             ))
                         )}
                     </>
                 )}
             </div>
-        </>
+            <div style={{ width: "100%" }}>
+                <h1 style={{ fontSize: "14px", marginTop: "10px" }}>Withdraw</h1>
+                {loadingWithdraw ? (
+                    <>
+                        <Skeleton h={20} w={"100%"} style={{ marginBottom: "10px", marginTop: "10px" }} />
+                        <Skeleton h={20} w={"100%"} style={{ marginBottom: "10px" }} />
+                        <Skeleton h={20} w={"100%"} style={{ marginBottom: "10px" }} />
+                        <Skeleton h={20} w={"100%"} />
+                    </>
+                ) : (
+                    <>
+                        {maxAmounts.map((maxAmount) =>
+                            tokens.map((token) => (
+                                <div key={`${maxAmount}-${token}`}>
+                                    Slippage for {maxAmount} of{" "}
+                                    <img
+                                        src={
+                                            token === zeroAddress
+                                                ? "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png"
+                                                : "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png"
+                                        }
+                                        height={24}
+                                        width={24}
+                                        alt=""
+                                    />
+                                    :{" "}
+                                    {slippageAmountWithdraw[`${maxAmount}-${token}`]?.toFixed(2) ||
+                                        "Slippage not calaculated"}
+                                </div>
+                            ))
+                        )}
+                    </>
+                )}
+            </div>
+        </div>
     );
 };
 export default SlippageFarm;
