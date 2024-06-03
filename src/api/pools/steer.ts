@@ -225,7 +225,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             // use weth address as tokenId, but in case of some farms (e.g: hop)
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn ?? wethAddress;
-
             //#region Gas Logic
             // if we are using zero dev, don't bother
             const connectorId = getConnectorId();
@@ -236,7 +235,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 const afterGasCut = await subtractGas(
                     amountInWei,
                     signer!,
-                    zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, {
+                    zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
                         value: balance,
                     })
                 );
