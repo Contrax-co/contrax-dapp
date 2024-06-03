@@ -18,3 +18,9 @@
     flex: auto;
     width: 100%;
 }
+
+@media screen and (max-width: 768px) {
+    .slippageIndividual {
+        flex-direction: column;
+    }
+}
