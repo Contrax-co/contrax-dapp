@@ -279,6 +279,9 @@ const FarmDetailsApy = ({ farm }: { farm: Farm }) => {
 
     return (
         <div className={"apyContainer"}>
+            <h1 className={`apy--light ${lightMode && "apy--dark"}`} style={{ fontSize: "50px", fontWeight: "bold" }}>
+                APY
+            </h1>
             <div className={"specificApy"}>
                 <p className={`apy--light ${lightMode && "apy--dark"}`}>
                     <b>Average APY :</b>
@@ -316,8 +319,9 @@ const FarmDetailsApy = ({ farm }: { farm: Farm }) => {
                                         const [day, month, year] = value.split("-");
                                         return `${day} ${monthNames[parseInt(month) - 1]} ${year}`;
                                     }}
+                                    label={{ fill: lightMode ? "black" : "white" }}
                                 />
-                                <YAxis />
+                                <YAxis label={{ fill: lightMode ? "black" : "white" }} />
                                 <Tooltip />
                                 <Area
                                     type="monotone"
