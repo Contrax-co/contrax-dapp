@@ -13,7 +13,7 @@ import { getLpAddressForFarmsPrice } from "src/utils/common";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import { useApy } from "src/hooks/useApy";
-import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { VaultsApy } from "src/api/stats";
 
 const FarmDetails = () => {
@@ -258,51 +258,76 @@ const FarmDetailsApy = ({ farm }: { farm: Farm }) => {
 
         return monthlyData;
     };
-
     const { lightMode } = useApp();
+    console.log(lightMode);
     const { apy, averageApy, loading } = useApy(farm.id);
-
     const newData = downsampleData(apy);
-
-    console.log(newData);
+    const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
 
     return (
         <div className={"apyContainer"}>
             <div className={"specificApy"}>
-                <p className={`specificapy--dark ${lightMode && "specificapy--light"}`}>
+                <p className={`apy--light ${lightMode && "apy--dark"}`}>
                     <b>Average APY :</b>
                 </p>
                 {loading ? (
                     <Skeleton h={20} w={20} />
                 ) : (
-                    <p className={`specificapy--dark ${lightMode && "specificapy--light"}`}>{averageApy.toFixed(2)}%</p>
+                    <p className={`apy--light ${lightMode && "apy--dark"}`}>{averageApy.toFixed(2)}%</p>
                 )}
             </div>
-            <div style={{ marginTop: "10px" }}>
-                <p className={`specificapy--dark ${lightMode && "specificapy--light"}`}>
+            <div style={{ marginTop: "10px", width: "100%", height: "250px" }}>
+                <p className={`apy--light ${lightMode && "apy--dark"}`} style={{ marginBottom: "10px" }}>
                     <b>APY Graph :</b>
                 </p>
                 {loading ? (
-                    <Skeleton h={20} w={"100%"} />
+                    <Skeleton h={200} w={"100%"} />
                 ) : (
                     <>
-                        <AreaChart
-                            width={1200}
-                            height={250}
-                            data={newData}
-                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                        >
-                            <defs>
-                                <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#63cce0" stopOpacity={0.8} />
-                                    <stop offset="95%" stopColor="#63cce0" stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
-                            <XAxis dataKey="date" />
-                            <YAxis />
-                            <Tooltip />
-                            <Area type="monotone" dataKey="apy" stroke="#63cce0" fillOpacity={1} fill="url(#colorUv)" />
-                        </AreaChart>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                                width={1200}
+                                height={250}
+                                data={newData}
+                                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                            >
+                                <defs>
+                                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#63cce0" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#63cce0" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <XAxis
+                                    dataKey="date"
+                                    tickFormatter={(value) => {
+                                        const [day, month, year] = value.split("-");
+                                        return `${day} ${monthNames[parseInt(month) - 1]} ${year}`;
+                                    }}
+                                />
+                                <YAxis />
+                                <Tooltip />
+                                <Area
+                                    type="monotone"
+                                    dataKey="apy"
+                                    stroke="#63cce0"
+                                    fillOpacity={1}
+                                    fill="url(#colorUv)"
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
                     </>
                 )}
             </div>

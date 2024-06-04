@@ -88,13 +88,13 @@
     align-items: center;
 }
 
-.specificapy--light {
+.apy--light {
     font-size: 14px;
     font-weight: 500;
     color: white;
 }
 
-.specificapy--dark {
+.apy--dark {
     color: black;
 }
 
