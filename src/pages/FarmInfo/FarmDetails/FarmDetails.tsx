@@ -3,8 +3,7 @@ import useApp from "src/hooks/useApp";
 import { useSlippageDeposit, useSlippageWithdraw } from "src/hooks/useSlippage";
 import { Farm } from "src/types";
 import { zeroAddress } from "viem";
-import downArrow from "../../../assets/images/down-arrow.png";
-import "./SlippageFarm.css";
+import "./FarmDetails.css";
 import { useState } from "react";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import { addressesByChainId } from "src/config/constants/contracts";
@@ -12,8 +11,12 @@ import { CHAIN_ID } from "src/types/enums";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { getLpAddressForFarmsPrice } from "src/utils/common";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
+import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
+import { useApy } from "src/hooks/useApy";
+import { Area, AreaChart, Tooltip, XAxis, YAxis } from "recharts";
+import { VaultsApy } from "src/api/stats";
 
-const SlippageFarm = () => {
+const FarmDetails = () => {
     const { lightMode } = useApp();
     const { farms } = useFarms();
     return (
@@ -22,26 +25,25 @@ const SlippageFarm = () => {
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     Vaults
                 </p>
-                <p>
+                <p className={`header_deposit`}>
                     <span>TVL in pool</span>
                 </p>
-                <p className={`header_deposite`}>
+                <p className={`header_deposit`}>
                     <span>TVL in underlying pool</span>
                 </p>
             </div>
             {farms.map((farm) => (
-                <SlippageFarmRow key={farm.id} farm={farm} />
+                <FarmDetailsRow key={farm.id} farm={farm} />
             ))}
         </>
     );
 };
 
-const SlippageFarmRow: React.FC<{ farm: Farm }> = ({ farm }) => {
+const FarmDetailsRow: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [dropDown, setDropDown] = useState(false);
     const lpAddress = getLpAddressForFarmsPrice([farm])[0];
     const { formattedSupplies } = useTotalSupplies();
-
     const {
         prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
     } = usePriceOfTokens();
@@ -50,6 +52,7 @@ const SlippageFarmRow: React.FC<{ farm: Farm }> = ({ farm }) => {
             <div
                 className={`farmslip_table_pool ${lightMode && "farmslip_table_pool_light"}`}
                 style={{ padding: "30px" }}
+                onClick={() => setDropDown(!dropDown)}
             >
                 <div className={"slippageContainer"}>
                     <div className="title_container titleContainerSlippage" style={{ width: "100%" }}>
@@ -67,7 +70,7 @@ const SlippageFarmRow: React.FC<{ farm: Farm }> = ({ farm }) => {
                             </div>
                         </div>
                     </div>
-                    <div style={{ width: "100%", textAlign: "center" }}>
+                    <div className={`tvls tvl_underlying ${lightMode && "tvl_underlying--light"}`}>
                         {formattedSupplies[farm.vault_addr] &&
                             (formattedSupplies[farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
                                 style: "currency",
@@ -75,7 +78,7 @@ const SlippageFarmRow: React.FC<{ farm: Farm }> = ({ farm }) => {
                                 maximumFractionDigits: 0,
                             })}
                     </div>
-                    <div style={{ width: "100%", textAlign: "center" }}>
+                    <div className={`tvls tvl_underlying ${lightMode && "tvl_underlying--light"}`}>
                         {formattedSupplies[farm.lp_address] &&
                             (formattedSupplies[farm.lp_address]! * lpPrice).toLocaleString("en-US", {
                                 style: "currency",
@@ -83,21 +86,63 @@ const SlippageFarmRow: React.FC<{ farm: Farm }> = ({ farm }) => {
                                 maximumFractionDigits: 0,
                             })}
                     </div>
-                    <img
-                        src={downArrow}
-                        alt=""
-                        width={30}
-                        onClick={() => setDropDown(!dropDown)}
-                        style={{ transform: dropDown ? "rotate(180deg)" : "rotate(0deg)" }}
-                    />
+                    <div className={`dropdown ${lightMode && "dropdown--light"}`}>
+                        {!dropDown ? <RiArrowDownSLine /> : <RiArrowUpSLine />}
+                    </div>
                 </div>
-                {dropDown && <SlippageIndividual farm={farm} />}
+                {dropDown && (
+                    <div>
+                        <div className={"tvlMobileContainer"}>
+                            <div>
+                                <div
+                                    style={{ width: "100%" }}
+                                    className={`tvl_mobile ${lightMode && "tvl_mobile--light"}`}
+                                >
+                                    TVL in pool
+                                </div>
+                                <div
+                                    className={`tvl_underlying ${lightMode && "tvl_underlying--light"}`}
+                                    style={{ width: "100%" }}
+                                >
+                                    {formattedSupplies[farm.vault_addr] &&
+                                        (formattedSupplies[farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            maximumFractionDigits: 0,
+                                        })}
+                                </div>
+                            </div>
+                            <div>
+                                <div
+                                    style={{ width: "100%" }}
+                                    className={`tvl_mobile ${lightMode && "tvl_mobile--light"}`}
+                                >
+                                    TVL in underlying pool
+                                </div>
+                                <div
+                                    className={`tvl_underlying ${lightMode && "tvl_underlying--light"}`}
+                                    style={{ width: "100%" }}
+                                >
+                                    {formattedSupplies[farm.lp_address] &&
+                                        (formattedSupplies[farm.lp_address]! * lpPrice).toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            maximumFractionDigits: 0,
+                                        })}
+                                </div>
+                            </div>
+                        </div>
+                        <SlippageIndividual farm={farm} />
+                        <FarmDetailsApy farm={farm} />
+                    </div>
+                )}
             </div>
         </>
     );
 };
 
 const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
+    const { lightMode } = useApp();
     const maxAmounts = [100, 1000, 10000];
     const tokens = [zeroAddress, addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress];
     const { slippageAmounts, loadingDeposit } = useSlippageDeposit(maxAmounts, tokens, farm);
@@ -105,7 +150,7 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
     return (
         <div className={"slippageIndividual"}>
             <div style={{ width: "100%" }}>
-                <h1 style={{ fontSize: "14px", marginTop: "10px" }}>Deposit</h1>
+                <h1 className={`slippageTitle ${lightMode && "slippageTitle--light"}`}>Deposit</h1>
                 {loadingDeposit ? (
                     <>
                         <Skeleton h={20} w={"100%"} style={{ marginBottom: "10px", marginTop: "10px" }} />
@@ -117,7 +162,10 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                     <>
                         {maxAmounts.map((maxAmount) =>
                             tokens.map((token) => (
-                                <div key={`${maxAmount}-${token}`}>
+                                <div
+                                    key={`${maxAmount}-${token}`}
+                                    className={`slippagecolor ${lightMode && "slippagecolor--light"}`}
+                                >
                                     Slippage for {maxAmount} of{" "}
                                     <img
                                         src={
@@ -138,7 +186,7 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                 )}
             </div>
             <div style={{ width: "100%" }}>
-                <h1 style={{ fontSize: "14px", marginTop: "10px" }}>Withdraw</h1>
+                <h1 className={`slippageTitle ${lightMode && "slippageTitle--light"}`}>Withdraw</h1>
                 {loadingWithdraw ? (
                     <>
                         <Skeleton h={20} w={"100%"} style={{ marginBottom: "10px", marginTop: "10px" }} />
@@ -150,7 +198,10 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                     <>
                         {maxAmounts.map((maxAmount) =>
                             tokens.map((token) => (
-                                <div key={`${maxAmount}-${token}`}>
+                                <div
+                                    key={`${maxAmount}-${token}`}
+                                    className={`slippagecolor ${lightMode && "slippagecolor--light"}`}
+                                >
                                     Slippage for {maxAmount} of{" "}
                                     <img
                                         src={
@@ -174,4 +225,88 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
         </div>
     );
 };
-export default SlippageFarm;
+
+const FarmDetailsApy = ({ farm }: { farm: Farm }) => {
+    const downsampleData = (data: VaultsApy[]) => {
+        if (!data || data.length === 0) return;
+
+        const monthlyData = [];
+        const tempMap: { [key: string]: { date: string; apy: number; count: number } } = {};
+
+        data.forEach((entry) => {
+            const date = new Date(entry.timestamp * 1000);
+
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            //   const [year, month] = entry.timestamp.split('-');
+            const key = `${day}-${month}-${year}`;
+
+            if (!tempMap[key]) {
+                tempMap[key] = { date: `${day}-${month}-${year}`, apy: entry.apy, count: 0 };
+            }
+
+            tempMap[key].apy += entry.apy;
+            tempMap[key].count++;
+        });
+
+        for (const key in tempMap) {
+            const averageApy = tempMap[key].apy / tempMap[key].count;
+            monthlyData.push({ date: key, apy: averageApy });
+        }
+
+        return monthlyData;
+    };
+
+    const { lightMode } = useApp();
+    const { apy, averageApy, loading } = useApy(farm.id);
+
+    const newData = downsampleData(apy);
+
+    console.log(newData);
+
+    return (
+        <div className={"apyContainer"}>
+            <div className={"specificApy"}>
+                <p className={`specificapy--dark ${lightMode && "specificapy--light"}`}>
+                    <b>Average APY :</b>
+                </p>
+                {loading ? (
+                    <Skeleton h={20} w={20} />
+                ) : (
+                    <p className={`specificapy--dark ${lightMode && "specificapy--light"}`}>{averageApy.toFixed(2)}%</p>
+                )}
+            </div>
+            <div style={{ marginTop: "10px" }}>
+                <p className={`specificapy--dark ${lightMode && "specificapy--light"}`}>
+                    <b>APY Graph :</b>
+                </p>
+                {loading ? (
+                    <Skeleton h={20} w={"100%"} />
+                ) : (
+                    <>
+                        <AreaChart
+                            width={1200}
+                            height={250}
+                            data={newData}
+                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                        >
+                            <defs>
+                                <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#63cce0" stopOpacity={0.8} />
+                                    <stop offset="95%" stopColor="#63cce0" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <XAxis dataKey="date" />
+                            <YAxis />
+                            <Tooltip />
+                            <Area type="monotone" dataKey="apy" stroke="#63cce0" fillOpacity={1} fill="url(#colorUv)" />
+                        </AreaChart>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+};
+export default FarmDetails;
