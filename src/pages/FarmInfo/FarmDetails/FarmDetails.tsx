@@ -207,8 +207,7 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                                     className={`slippagecolor ${lightMode && "slippagecolor--light"}`}
                                 >
                                     Slippage for {maxAmount} of {token === zeroAddress ? "ETH Address" : "USDC Address"}
-                                    :{" "}
-                                    {slippageAmounts[`${maxAmount}-${token}`]?.toFixed(2) || "Slippage not calaculated"}
+                                    : <b>{slippageAmounts[`${maxAmount}-${token}`]?.toFixed(2) || "-"}</b>
                                 </div>
                             ))
                         )}
@@ -233,9 +232,7 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                                     className={`slippagecolor ${lightMode && "slippagecolor--light"}`}
                                 >
                                     Slippage for {maxAmount} of {token === zeroAddress ? "ETH Address" : "USDC Address"}
-                                    :{" "}
-                                    {slippageAmountWithdraw[`${maxAmount}-${token}`]?.toFixed(2) ||
-                                        "Slippage not calaculated"}
+                                    : <b>{slippageAmountWithdraw[`${maxAmount}-${token}`]?.toFixed(2) || "-"}</b>
                                 </div>
                             ))
                         )}
