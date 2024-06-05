@@ -4,7 +4,7 @@ import { useSlippageDeposit, useSlippageWithdraw } from "src/hooks/useSlippage";
 import { Farm } from "src/types";
 import { zeroAddress } from "viem";
 import "./FarmDetails.css";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
@@ -15,10 +15,21 @@ import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import { useApy } from "src/hooks/useApy";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { VaultsApy } from "src/api/stats";
+import { useAppDispatch, useAppSelector } from "src/state";
+import { fetchAllPoolFeesThunk } from "src/state/fees/feesReducer";
+import { PoolFees } from "src/api/fees";
 
 const FarmDetails = () => {
     const { lightMode } = useApp();
+    const dispatch = useAppDispatch();
+    const { poolFees, isLoadingPoolFees } = useAppSelector((state) => state.fees);
     const { farms } = useFarms();
+
+    useEffect(() => {
+        if (poolFees.length === 0) {
+            dispatch(fetchAllPoolFeesThunk());
+        }
+    }, [poolFees]);
     return (
         <>
             <div className={`farmslip_table_header ${lightMode && "farmslip_table_header_light"}`}>
@@ -33,13 +44,17 @@ const FarmDetails = () => {
                 </p>
             </div>
             {farms.map((farm) => (
-                <FarmDetailsRow key={farm.id} farm={farm} />
+                <FarmDetailsRow key={farm.id} farm={farm} poolFees={poolFees} isLoadingPoolFees={isLoadingPoolFees} />
             ))}
         </>
     );
 };
 
-const FarmDetailsRow: React.FC<{ farm: Farm }> = ({ farm }) => {
+const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPoolFees: boolean }> = ({
+    farm,
+    poolFees,
+    isLoadingPoolFees,
+}) => {
     const { lightMode } = useApp();
     const [dropDown, setDropDown] = useState(false);
     const lpAddress = getLpAddressForFarmsPrice([farm])[0];
@@ -47,6 +62,13 @@ const FarmDetailsRow: React.FC<{ farm: Farm }> = ({ farm }) => {
     const {
         prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
     } = usePriceOfTokens();
+
+    const feesCollected = useMemo(() => {
+        return (
+            poolFees.find((item) => item.pool_address.toLowerCase() === farm.vault_addr.toLowerCase())?.fees_usd || 0
+        );
+    }, [poolFees, farm.vault_addr]);
+
     return (
         <>
             <div
@@ -134,6 +156,24 @@ const FarmDetailsRow: React.FC<{ farm: Farm }> = ({ farm }) => {
                         </div>
                         <SlippageIndividual farm={farm} />
                         <FarmDetailsApy farm={farm} />
+                        <div style={{ marginTop: "3rem" }}>
+                            <div className={"specificApy"}>
+                                <p className={`apy--light ${lightMode && "apy--dark"}`}>
+                                    <b>Fees Collected:</b>
+                                </p>
+                                {isLoadingPoolFees ? (
+                                    <Skeleton h={20} w={20} />
+                                ) : (
+                                    <p className={`apy--light ${lightMode && "apy--dark"}`}>
+                                        {feesCollected.toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            minimumFractionDigits: 2,
+                                        })}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
