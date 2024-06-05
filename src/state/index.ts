@@ -13,6 +13,7 @@ import errorReducer from "./error/errorReducer";
 import internetReducer from "./internet/internetReducer";
 import rampReducer from "./ramp/rampReducer";
 import accountReducer from "./account/accountReducer";
+import feesReducer from "./fees/feesReducer";
 import { getPersistConfig } from "redux-deep-persist";
 
 const rootReducer = combineReducers({
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
     decimals: decimalsReducer,
     supply: supplyReducer,
     ramp: rampReducer,
+    fees: feesReducer,
 });
 
 const persistConfig = getPersistConfig({
