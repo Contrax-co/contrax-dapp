@@ -206,17 +206,7 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                                     key={`${maxAmount}-${token}`}
                                     className={`slippagecolor ${lightMode && "slippagecolor--light"}`}
                                 >
-                                    Slippage for {maxAmount} of{" "}
-                                    <img
-                                        src={
-                                            token === zeroAddress
-                                                ? "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png"
-                                                : "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png"
-                                        }
-                                        height={24}
-                                        width={24}
-                                        alt=""
-                                    />
+                                    Slippage for {maxAmount} of {token === zeroAddress ? "ETH Address" : "USDC Address"}
                                     :{" "}
                                     {slippageAmounts[`${maxAmount}-${token}`]?.toFixed(2) || "Slippage not calaculated"}
                                 </div>
@@ -242,17 +232,7 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                                     key={`${maxAmount}-${token}`}
                                     className={`slippagecolor ${lightMode && "slippagecolor--light"}`}
                                 >
-                                    Slippage for {maxAmount} of{" "}
-                                    <img
-                                        src={
-                                            token === zeroAddress
-                                                ? "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png"
-                                                : "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png"
-                                        }
-                                        height={24}
-                                        width={24}
-                                        alt=""
-                                    />
+                                    Slippage for {maxAmount} of {token === zeroAddress ? "ETH Address" : "USDC Address"}
                                     :{" "}
                                     {slippageAmountWithdraw[`${maxAmount}-${token}`]?.toFixed(2) ||
                                         "Slippage not calaculated"}
