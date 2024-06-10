@@ -34,6 +34,7 @@ import { TraxApy } from "./TraxApy/TraxApy";
 import { useVaults } from "src/hooks/useVaults";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import DeprecatedWithdraw from "src/components/DeprecatedWithdraw/DeprecatedWithdraw";
+import ArbitriumBalances from "src/components/ArbitriumBalances/ArbitriumBalances";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -141,6 +142,7 @@ function Dashboard() {
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
                 <DeprecatedWithdraw />
+                <ArbitriumBalances />
                 {earnTraxTermsAgreed && (
                     <>
                         <TraxEarning />
