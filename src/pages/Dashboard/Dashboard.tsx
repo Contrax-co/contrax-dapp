@@ -35,6 +35,7 @@ import { useVaults } from "src/hooks/useVaults";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import DeprecatedWithdraw from "src/components/DeprecatedWithdraw/DeprecatedWithdraw";
 import ArbitriumBalances from "src/components/ArbitriumBalances/ArbitriumBalances";
+import BoostedApy from "src/components/BoostedApy/BoostedApy";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -151,6 +152,7 @@ function Dashboard() {
                     </>
                 )}
                 <ReferralEarning />
+                <BoostedApy />
                 <BridgeBtn />
                 <BridgeEthBtn />
                 <SwapUSDCBtn />
