@@ -14,6 +14,8 @@ export interface StateInterface {
     totalEarnedTraxByReferral?: number;
     traxCalculatedTimestamp?: number;
     earnTraxTermsAgreed?: boolean;
+    earnedArb?: number;
+    emmitedArb?: number;
     boosts?: Boosts[];
     estimatedTraxPerDay: { vaultAddress: string; estimatedTraxPerDay: number }[];
 }
@@ -27,6 +29,8 @@ export interface AccountResponse {
     earnTraxTermsAgreed?: boolean;
     earnedTrax?: number;
     earnedTraxByReferral?: number;
+    earnedArb?: number;
+    emmitedArb?: number;
     totalEarnedTrax?: number;
     totalEarnedTraxByReferral?: number;
     traxCalculatedTimestamp?: number;

@@ -143,7 +143,6 @@ function Dashboard() {
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
                 <DeprecatedWithdraw />
-                <ArbitriumBalances />
                 {earnTraxTermsAgreed && (
                     <>
                         <TraxEarning />
@@ -152,7 +151,7 @@ function Dashboard() {
                     </>
                 )}
                 <ReferralEarning />
-                <BoostedApy />
+                <ArbitriumBalances />
                 <BridgeBtn />
                 <BridgeEthBtn />
                 <SwapUSDCBtn />

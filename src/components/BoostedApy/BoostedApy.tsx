@@ -10,7 +10,7 @@ const BoostedApy: React.FC<IProps> = () => {
     return apyBoost && apyBoost > 0 ? (
         <div className={`colorContainer ${styles.container}`}>
             <p className={styles.heading}>Boosted APY</p>
-            <p className={styles.value}>{apyBoost}</p>
+            <p className={styles.value}>{apyBoost.toFixed()}%</p>
         </div>
     ) : null;
 };
