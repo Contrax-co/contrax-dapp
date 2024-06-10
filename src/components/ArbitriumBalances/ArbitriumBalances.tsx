@@ -12,12 +12,12 @@ const ArbitriumBalances: React.FC<IProps> = () => {
         return balances[addressesByChainId[CHAIN_ID.ARBITRUM].arbitrumAddress!];
     }, [balances]);
 
-    return (
+    return Number(balanceofArbitrium) > 0 ? (
         <div className={`colorContainer ${styles.container}`}>
             <p className={styles.heading}>Arbitrium Balance</p>
             <p className={styles.value}>{balanceofArbitrium}</p>
         </div>
-    );
+    ) : null;
 };
 
 export default ArbitriumBalances;
