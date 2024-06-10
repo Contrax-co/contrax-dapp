@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { UsersTableColumns } from "src/types/enums";
-import { fetchCountActiveUsers, fetchUserTVLs, fetchVaultStats } from "src/api/stats";
+import { fetchBoostedApy, fetchCountActiveUsers, fetchUserTVLs, fetchVaultStats } from "src/api/stats";
 import useFarms from "./farms/useFarms";
 
 export const useStats = () => {
@@ -28,6 +28,11 @@ export const useStats = () => {
         queryFn: () => fetchVaultStats(),
     });
 
+    const { data: aprBoost } = useQuery({
+        queryKey: ["stats/arb"],
+        queryFn: () => fetchBoostedApy(),
+    });
+
     const vaultStats = useMemo(
         () =>
             vaultStatsTemp?.map((vault) => ({
@@ -45,6 +50,7 @@ export const useStats = () => {
         sortBy,
         setSortBy,
         activeUsers,
+        apyBoost: aprBoost?.aprBoost,
         order,
         setOrder,
         search,

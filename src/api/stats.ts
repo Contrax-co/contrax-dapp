@@ -53,6 +53,10 @@ export interface VaultsApy {
     timestamp: number;
 }
 
+export interface BoostedApy {
+    aprBoost: number;
+}
+
 export const fetchUserTVLs = async (
     page: number,
     sortBy: UsersTableColumns | undefined,
@@ -82,4 +86,9 @@ export const fetchReferralDashboard = async () => {
 export const fetchSpecificFarmApy = async (id: number) => {
     const res = await axios.get<VaultsApyResponse>(`${BACKEND_BASE_URL}stats/apy/30d?farmId=${id}`);
     return res.data.data;
+};
+
+export const fetchBoostedApy = async () => {
+    const res = await axios.get<BoostedApy>(`${BACKEND_BASE_URL}stats/arb`);
+    return res.data;
 };
