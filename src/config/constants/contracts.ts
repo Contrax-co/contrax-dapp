@@ -8,6 +8,7 @@ export interface Addresses {
     usdtAddress: string;
     swapfishMasterChef?: string;
     nativeUsdAddress?: string;
+    arbitrumAddress?: string;
 }
 
 const arbitrumAddresses: Addresses = {
@@ -20,6 +21,7 @@ const arbitrumAddresses: Addresses = {
     usdtAddress: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
     swapfishMasterChef: "0x33141e87ad2DFae5FBd12Ed6e61Fa2374aAeD029",
     nativeUsdAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    arbitrumAddress: "0x912CE59144191C1204E64559FE8253a0e49E6548",
 };
 
 const polygonAddresses: Addresses = {

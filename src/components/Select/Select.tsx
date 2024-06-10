@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import styles from "./Select.module.scss";
 import OutsideClickHandler from "react-outside-click-handler";
 import { AiOutlineCaretDown } from "react-icons/ai";
@@ -12,6 +12,12 @@ interface IProps {
 
 export const Select: FC<IProps> = ({ value, setValue, options, extraText }) => {
     const [openSelect, setOpenSelect] = useState(false);
+
+    useEffect(() => {
+        if (options && value) {
+            if (!options.includes(value)) setValue(options[0]);
+        }
+    }, [options, value]);
 
     return (
         <div className={styles.selectWrapper}>

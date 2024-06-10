@@ -126,7 +126,13 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                             farmApys && parseFloat(farmApys.feeApr.toString())
                                                 ? `<p>Trading Fees: ${toFixedFloor(farmApys.feeApr, 3)}%</p>`
                                                 : ``
-                                        }`}
+                                        }
+                                        ${
+                                            farmApys.boost && parseFloat(farmApys.boost.toString())
+                                                ? `<p>Apy Boost: ${toFixedFloor(farmApys.boost, 3)}%</p>`
+                                                : ``
+                                        }
+                                        `}
                                 >
                                     <CgInfo className={`apy_info hoverable ${lightMode && "apy_info--light"}`} />
                                 </a>
@@ -230,7 +236,13 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                             farmApys && parseFloat(farmApys.feeApr.toString())
                                                 ? `<p>Trading Fees: ${toFixedFloor(farmApys.feeApr, 3)}%</p>`
                                                 : ``
-                                        }`}
+                                        }
+                                        ${
+                                            farmApys.boost && parseFloat(farmApys.boost.toString())
+                                                ? `<p>Apy Boost: ${toFixedFloor(farmApys.boost, 3)}%</p>`
+                                                : ``
+                                        }
+                                        `}
                                 >
                                     <CgInfo
                                         className={`apy_info hoverable ${lightMode && "apy_info--light"}`}

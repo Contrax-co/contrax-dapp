@@ -22,7 +22,14 @@ export const useFarmApys = () => {
 const useFarmApy = (farm: Farm) => {
     const { isLoading, apys, isFetched } = useAppSelector((state) => state.apys);
 
-    const apy = useMemo(() => apys[farm.id], [apys, farm.id]);
+    const apy = useMemo(() => {
+        let apyData = { ...apys[farm.id] };
+        if (apyData.boost) {
+            apyData.apy += apyData.boost;
+        }
+
+        return apyData;
+    }, [apys, farm.id]);
 
     return { apy, isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading };
 };
