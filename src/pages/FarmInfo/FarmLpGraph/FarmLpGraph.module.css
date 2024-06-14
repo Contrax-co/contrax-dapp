@@ -1,0 +1,19 @@
+.apyContainer {
+    margin-top: 20px;
+    width: 100%;
+}
+.specificApy {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.apy_light {
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+}
+
+.apy_dark {
+    color: black;
+}

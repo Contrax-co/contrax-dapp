@@ -66,3 +66,6 @@ export const TRANSFER_TOKEN = (currentWallet: string, networkName: string) => [
 ];
 
 export const REFFERED_ACCOUNTS = (currentWallet: string) => ["accounts", "reffered-accounts", currentWallet];
+
+export const VAULT_APY_GRAPH = (farmId: number) => ["stats", "apy", "30d", farmId];
+export const VAULT_LP_PRICE_GRAPH = (farmId: number) => ["stats", "lp", "price", "30d", farmId];
