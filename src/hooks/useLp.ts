@@ -1,34 +1,24 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { LP_Prices, fetchSpecificLpPrice } from "src/api/stats";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { fetchSpecificLpPrice } from "src/api/stats";
+import { VAULT_LP_PRICE_GRAPH } from "src/config/constants/query";
 
 export const useLp = (id: number) => {
-    const [lp, setLp] = useState<LP_Prices[]>([]);
-    const [loading, setLoading] = useState(false);
-
-    const fetchSpecificLp = useCallback(async () => {
-        setLoading(true);
-        try {
-            const specificApy = await fetchSpecificLpPrice(id);
-            setLp(specificApy);
-        } catch (error: any) {
-            throw new Error(error);
-        }
-        setLoading(false);
-    }, [id]);
-
-    useEffect(() => {
-        fetchSpecificLp();
-    }, []);
+    const { data, isLoading } = useQuery({
+        queryKey: VAULT_LP_PRICE_GRAPH(id),
+        queryFn: () => fetchSpecificLpPrice(id),
+        staleTime: 1000 * 60, // 1min stale time
+    });
 
     const averageLp = useMemo(() => {
-        if (lp.length === 0) return 0;
-        const sumlp = lp.reduce((a, b) => a + b.lp, 0);
-        return sumlp / lp.length;
-    }, [lp]);
+        if (!data || data.length === 0) return 0;
+        const sumlp = data.reduce((a, b) => a + b.lp, 0);
+        return sumlp / data.length;
+    }, [data]);
 
     return {
-        lp,
-        isLpPriceLoading: loading,
+        lp: data,
+        isLpPriceLoading: isLoading,
         averageLp,
     };
 };

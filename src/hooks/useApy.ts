@@ -1,34 +1,24 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { VaultsApy, fetchSpecificFarmApy } from "src/api/stats";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { fetchSpecificFarmApy } from "src/api/stats";
+import { VAULT_APY_GRAPH } from "src/config/constants/query";
 
 export const useApy = (id: number) => {
-    const [apy, setApy] = useState<VaultsApy[]>([]);
-    const [loading, setLoading] = useState(false);
-
-    const fetchSpecrticApy = useCallback(async () => {
-        setLoading(true);
-        try {
-            const specificApy = await fetchSpecificFarmApy(id);
-            setApy(specificApy);
-        } catch (error: any) {
-            throw new Error(error);
-        }
-        setLoading(false);
-    }, [id]);
-
-    useEffect(() => {
-        fetchSpecrticApy();
-    }, []);
+    const { data, isLoading } = useQuery({
+        queryKey: VAULT_APY_GRAPH(id),
+        queryFn: () => fetchSpecificFarmApy(id),
+        staleTime: 1000 * 60 * 5, // 5min stale time
+    });
 
     const averageApy = useMemo(() => {
-        if (apy.length === 0) return 0;
-        const sumApy = apy.reduce((a, b) => a + b.apy, 0);
-        return sumApy / apy.length;
-    }, [apy]);
+        if (!data || data.length === 0) return 0;
+        const sumApy = data.reduce((a, b) => a + b.apy, 0);
+        return sumApy / data.length;
+    }, [data]);
 
     return {
-        apy,
-        loading,
+        apy: data,
+        loading: isLoading,
         averageApy,
     };
 };

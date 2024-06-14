@@ -77,26 +77,8 @@
     color: black;
 }
 
-.apyContainer {
-    margin-top: 20px;
-    width: 100%;
-}
 
-.specificApy {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-}
 
-.apy--light {
-    font-size: 14px;
-    font-weight: 500;
-    color: white;
-}
-
-.apy--dark {
-    color: black;
-}
 
 @media screen and (max-width: 768px) {
     .slippageIndividual {
