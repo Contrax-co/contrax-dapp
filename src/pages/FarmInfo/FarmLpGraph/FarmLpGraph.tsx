@@ -76,9 +76,6 @@ const FarmLpGraph = ({ farm }: { farm: Farm }) => {
                 )}
             </div>
             <div style={{ marginTop: "10px", width: "100%", height: "250px" }}>
-                <p className={`${styles.apy_light} ${lightMode && styles.apy_dark}`} style={{ marginBottom: "10px" }}>
-                    <b>Price Graph :</b>
-                </p>
                 {isLpPriceLoading ? (
                     <Skeleton h={200} w={"100%"} />
                 ) : (
