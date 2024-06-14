@@ -12,13 +12,9 @@ import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { getLpAddressForFarmsPrice } from "src/utils/common";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
-import { useApy } from "src/hooks/useApy";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { LP_Prices, VaultsApy } from "src/api/stats";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { fetchAllPoolFeesThunk } from "src/state/fees/feesReducer";
 import { PoolFees } from "src/api/fees";
-import { useLp } from "src/hooks/useLp";
 import FarmApyGraph from "../FarmApyGraph/FarmApyGraph";
 import FarmLpGraph from "../FarmLpGraph/FarmLpGraph";
 
