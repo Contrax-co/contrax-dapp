@@ -171,6 +171,13 @@
     padding: 10px 5px;
 }
 
+.farm_apy_lp_graph_container_details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 20px;
+}
+
 @media (max-width: 1200px) {
     .details_zapToggle {
         grid-template-columns: 1fr;
@@ -191,6 +198,10 @@
 }
 
 @media (max-width: 768px) {
+    .farm_apy_lp_graph_container_details {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
     .details_top_container {
         padding: 10px;
         flex-direction: column;

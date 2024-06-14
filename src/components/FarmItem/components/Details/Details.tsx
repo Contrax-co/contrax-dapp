@@ -219,8 +219,10 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
                         </div>
                     ) : null}
                 </div>
-                <FarmApyGraph farm={farm} />
-                <FarmLpGraph farm={farm} />
+                <div className="farm_apy_lp_graph_container_details">
+                    <FarmApyGraph farm={farm} />
+                    <FarmLpGraph farm={farm} />
+                </div>
             </div>
             <div className={`details_retract ${lightMode && "details_retract--light"}`} onClick={props.onClick}>
                 <p className={`details_retract_description ${lightMode && "details_retract_description--light"}`}>
