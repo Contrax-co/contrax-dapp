@@ -61,9 +61,7 @@ export const addAccount = createAsyncThunk(
                 if (data.referrer) {
                     thunkApi.dispatch(setRefAddress(data.referrer.address));
                 }
-                if (data.earnTraxTermsAgreed) {
-                    thunkApi.dispatch(setEarnTraxTermsAgreed(data.earnTraxTermsAgreed || false));
-                }
+                thunkApi.dispatch(setEarnTraxTermsAgreed(data.earnTraxTermsAgreed || false));
                 // if (data.referralCode) {
                 thunkApi.dispatch(setReferralCode(data.referralCode || ""));
                 // }
