@@ -154,8 +154,6 @@ function Dashboard() {
                 )}
                 <ReferralEarning />
                 <ArbitriumBalances />
-                <BridgeBtn />
-                <BridgeEthBtn />
                 <SwapUSDCBtn />
             </div>
             {currentWallet ? (

@@ -13,6 +13,7 @@ export interface Addresses {
     bridgedUsdAddress?: Address;
     paymasterAddress?: Address;
     universalPaymaster?: Address;
+    nativeUsdAddress?: Address;
 }
 
 const arbitrumAddresses: Addresses = {
