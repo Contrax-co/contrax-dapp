@@ -43,12 +43,21 @@
     min-height: 40px;
     width: 100%;
     cursor: pointer;
+    min-width: 0px;
+}
+.logoutButton {
+    padding: 0 !important;
+    min-height: 40px;
+    width: 20px;
+    cursor: pointer;
+    min-width: 0px;
 }
 
 .btnContainer {
-    display: flex;
-    gap: 10px;
-    @include devices(mobile) {
-        flex-direction: column;
-    }
+    display: grid;
+    grid-template-columns: 1fr 0.25fr;
+    gap: 5px;
+    // @include devices(mobile) {
+    //     flex-direction: column;
+    // }
 }

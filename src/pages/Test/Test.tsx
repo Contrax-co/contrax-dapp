@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import useNotify from "src/hooks/useNotify";
 import { commify } from "ethers/lib/utils.js";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
@@ -9,31 +9,47 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
 import { Address, erc20Abi, getContract, maxUint256 } from "viem";
 import useVaultMigrate from "src/hooks/useVaultMigrate";
+// import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
+// import { LocalAccountSigner, arbitrum } from "@alchemy/aa-core";
+// import { createWeb3AuthSigner } from "src/config/walletConfig";
 
 const Test = () => {
-    const { client, currentWallet, smartAccount } = useWallet();
+    const { client, currentWallet } = useWallet();
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
     const [modelOpen, setModelOpen] = useState(false);
     const [model1Open, set1ModelOpen] = useState(false);
+    const { connectWallet } = useWallet();
     const { platformTVL } = usePlatformTVL();
-    const { multicallProvider } = useWallet();
 
     const { migrate } = useVaultMigrate();
+
     const fn = async () => {
-        if (!currentWallet) return;
-        const contract = getContract({
-            address: addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress as Address,
-            abi: erc20Abi,
-            client,
-        });
+        console.log(client);
+        // @ts-ignore
+        connectWallet({ email: "abdulrafay@contrax.finance" });
+        // const signer = await createWeb3AuthSigner();
+        // console.log('signer =>', signer);
+        // const client = await createModularAccountAlchemyClient({
+        //     apiKey: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
+        //     chain: arbitrum,
+        //     // you can swap this out for any SmartAccountSigner
+        //     signer
+        // });
+        // console.log("client =>", client);
+        // if (!currentWallet) return;
+        // const contract = getContract({
+        //     address: addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress as Address,
+        //     abi: erc20Abi,
+        //     client,
+        // });
         // const allowance = await contract.read.allowance([currentWallet, "0x1A4f0075987f557AE59caF559Dc7c98Ee86A8D1f"]);
         // console.log("allowance =>", allowance);
-        const hash = await contract.write.approve([
-            addressesByChainId[CHAIN_ID.ARBITRUM].universalPaymaster!,
-            maxUint256,
-        ]);
-        console.log(hash);
+        // const hash = await contract.write.approve([
+        //     addressesByChainId[CHAIN_ID.ARBITRUM].universalPaymaster!,
+        //     maxUint256,
+        // ]);
+        // console.log(hash);
         // get Arb price
         // await getPriceFromUsdcPair(multicallProvider, arbAddr);
         // get Weth and hEth Price

@@ -9,9 +9,10 @@ import useBalances from "src/hooks/useBalances";
 import { useDispatch } from "react-redux";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { CHAIN_ID } from "src/types/enums";
-import { bundlerClient, useEthersProvider, web3AuthInstance } from "src/config/walletConfig";
+import { bundlerClient, useEthersProvider } from "src/config/walletConfig";
 import { getTokenPricesBackend } from "src/api/token";
 import {
+    ENTRYPOINT_ADDRESS_V06,
     ENTRYPOINT_ADDRESS_V07,
     UserOperation,
     createSmartAccountClient,
@@ -32,9 +33,11 @@ import {
 } from "viem";
 import axios from "axios";
 import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
-import { arbitrum, mainnet, polygon } from "viem/chains";
+// import { arbitrum, mainnet, polygon } from "viem/chains";
 import { EstimateTxGasArgs, IClients } from "src/types";
 import { estimateGas } from "viem/actions";
+import { AlchemySigner, createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
+import { arbitrum, mainnet, polygon } from "@alchemy/aa-core";
 
 interface IWalletContext {
     /**
@@ -51,7 +54,7 @@ interface IWalletContext {
      * Connect wallet modal open for connecting any wallet
      * @returns void
      */
-    connectWallet: () => void;
+    connectWallet: (isExternal?: true) => Promise<void>;
 
     /**
      * Disconnect wallet and logout user
@@ -80,9 +83,8 @@ interface IWalletContext {
     client: IClients;
     publicClientMainnet: PublicClient;
     publicClientPolygon: PublicClient;
-    smartAccount?: KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V07, Transport, Chain>;
-    web3AuthClient: WalletClient<Transport, Chain, Account> | null;
     isSocial: boolean;
+    alchemySigner: AlchemySigner;
 }
 
 type BalanceResult = {
@@ -150,9 +152,10 @@ const useMulticallProvider = (
 };
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
-    const [smartAccount, setSmartAccount] =
-        useState<KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V07, Transport, Chain>>();
     const [isConnecting, setIsConnecting] = useState(false);
+    const [smartAccountClient, setSmartAccountClient] = useState<
+        Awaited<ReturnType<typeof createModularAccountAlchemyClient<AlchemySigner>>> | WalletClient
+    >();
     const [isSponsored] = useState(true);
     const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
@@ -210,104 +213,13 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const provider = useEthersProvider(publicClient);
     const multicallProvider = useMulticallProvider(provider);
     const { balances } = useBalances();
-    const [web3AuthClient, setWeb3AuthClient] = useState<WalletClient<Transport, Chain, Account> | null>(null);
-
-    const sponsorUserOperation = useCallback(
-        async (args: {
-            userOperation: UserOperation<"v0.7">;
-        }): Promise<{
-            callGasLimit: bigint;
-            verificationGasLimit: bigint;
-            preVerificationGas: bigint;
-            paymaster: Address;
-            paymasterVerificationGasLimit: bigint;
-            paymasterPostOpGasLimit: bigint;
-            paymasterData: Address;
-        }> => {
-            if (gasInErc20) await checkPaymasterApproval();
-            console.log("userOperation =>", args);
-            let userOperation = { ...args.userOperation };
-            Object.entries(userOperation).forEach(([key, val]) => {
-                if (typeof val === "bigint") {
-                    // @ts-ignore
-                    userOperation[key] = val.toString();
-                }
-            });
-            const res = await axios.post(paymastersByChainId[chainId], {
-                id: 0,
-                jsonrpc: "2.0",
-                method: "pm_sponsorUserOperation",
-                params: [userOperation, ENTRYPOINT_ADDRESS_V07, { type: gasInErc20 ? "erc20Token" : "ether" }],
-            });
-            const dt = res.data.result;
-
-            return {
-                callGasLimit: BigInt(dt.callGasLimit),
-                paymaster: dt.paymaster,
-                paymasterData: dt.paymasterData,
-                paymasterPostOpGasLimit: BigInt(dt.paymasterPostOpGasLimit),
-                paymasterVerificationGasLimit: BigInt(dt.paymasterVerificationGasLimit),
-                preVerificationGas: BigInt(dt.preVerificationGas),
-                verificationGasLimit: BigInt(dt.verificationGasLimit),
-            };
-        },
-        [gasInErc20, chainId]
-    );
-
-    const smartAccountClient = useMemo(() => {
-        if (!smartAccount) return undefined;
-        const smartAccountClient = createSmartAccountClient({
-            account: smartAccount,
-            entryPoint: ENTRYPOINT_ADDRESS_V07,
-            chain: arbitrum,
-            bundlerTransport: http(bundlersByChainId[chainId]),
-            middleware: isSponsored
-                ? {
-                      sponsorUserOperation,
-                  }
-                : undefined,
-            cacheTime: undefined,
-        }).extend((client) => ({
-            // TODO: All estimategas queries should be passed through here
-            // We should account for sponsorships, erc20gas, eoa, etc
-            estimateTxGas: async (args: EstimateTxGasArgs) => {
-                if (isSponsored) return 0n;
-                const callData = await smartAccountClient.account.encodeCallData({
-                    data: args.data,
-                    to: args.to,
-                    value: args.value || 0n,
-                });
-                const userOp = await client.prepareUserOperationRequest({
-                    userOperation: {
-                        callData,
-                    },
-                });
-                const estimate = await bundlerClient.estimateUserOperationGas({
-                    userOperation: userOp,
-                });
-                const totalEstimatedGasLimit =
-                    estimate.callGasLimit + estimate.preVerificationGas + estimate.verificationGasLimit;
-                return totalEstimatedGasLimit;
-            },
-            signTypedData: async (args: any) => {
-                return await smartAccount.signTypedData({
-                    domain: args.domain,
-                    types: args.types,
-                    message: args.message,
-                    primaryType: args.primaryType,
-                });
-            },
-        }));
-        checkPaymasterApproval({ public: publicClient, wallet: smartAccountClient });
-        return smartAccountClient;
-    }, [smartAccount, sponsorUserOperation]);
 
     const client = useMemo(
         () => ({
             public: publicClient,
-            wallet: isSocial ? smartAccountClient! : web3AuthClient!,
+            wallet: smartAccountClient,
         }),
-        [publicClient, smartAccountClient, web3AuthClient]
+        [publicClient, smartAccountClient]
     );
 
     const dispatch = useDispatch();
@@ -316,40 +228,79 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const arbitrumBalance = useNativeBalance(CHAIN_ID.ARBITRUM);
     const [domainName, setDomainName] = useState<null | string>(null);
 
-    const connectWallet = async () => {
+    const alchemySigner = useMemo(() => {
+        console.log("creatomg signer");
+        return new AlchemySigner({
+            client: {
+                connection: {
+                    jwt: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
+                },
+                iframeConfig: {
+                    iframeContainerId: "turnkey-iframe-container",
+                },
+            },
+        });
+    }, []);
+
+    const connectWallet = async (isExternal = false) => {
         try {
-            if (!web3AuthInstance.connected) {
-                await web3AuthInstance.connect();
-            }
-            const _isSocial = web3AuthInstance.connectedAdapterName === "openlogin";
-            setIsSocial(_isSocial);
-            const smartAccountSigner = await providerToSmartAccountSigner(web3AuthInstance.provider as any);
-            setWeb3AuthClient(
-                createWalletClient({
-                    account: smartAccountSigner.address,
-                    transport: custom(web3AuthInstance.provider!),
+            if (isExternal) {
+                // @ts-ignore
+                const [account] = await window.ethereum!.request({ method: "eth_requestAccounts" });
+                const _walletClient = createWalletClient({
+                    account,
+                    transport: custom(window.ethereum as any),
                     chain: arbitrum,
-                }).extend((client: WalletClient) => ({
-                    estimateTxGas: async (args: EstimateTxGasArgs) => {
-                        return await estimateGas(client, {
+                }).extend((client) => ({
+                    estimateTxGas: (args: EstimateTxGasArgs) => {
+                        return publicClient.estimateGas({
+                            account: client.account,
                             data: args.data,
                             to: args.to,
-                            value: args.value,
+                            value: args.value ? BigInt(args.value) : undefined,
                         });
                     },
-                }))
-            );
-            if (_isSocial) {
-                const smartAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
-                    entryPoint: ENTRYPOINT_ADDRESS_V07,
-                    signer: smartAccountSigner,
-                    // index: 0n,
-                });
-                setSmartAccount(smartAccount);
-                setCurrentWallet(smartAccount.address);
-            } else {
-                setCurrentWallet(smartAccountSigner.address);
+                }));
+                setSmartAccountClient(_walletClient);
+                setCurrentWallet(_walletClient.account.address);
+                setIsSocial(false);
+                localStorage.setItem("window.ethereum.connected", "yes");
+                return;
             }
+            setIsSocial(true);
+            const _walletClient = await createModularAccountAlchemyClient({
+                apiKey: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
+                chain: arbitrum,
+                signer: alchemySigner,
+            });
+            // @ts-ignore
+            _walletClient.estimateTxGas = async (args: EstimateTxGasArgs) => {
+                console.log("args =>", args);
+                let userOp = await _walletClient.buildUserOperation({
+                    uo: {
+                        data: args.data,
+                        target: args.to,
+                        value: BigInt(args.value || "0"),
+                    },
+                });
+                // @ts-ignore
+                userOp.nonce = "0x" + userOp.nonce.toString(16);
+                // @ts-ignore
+                userOp.maxFeePerGas = "0x" + userOp.maxFeePerGas.toString(16);
+                // @ts-ignore
+                userOp.maxPriorityFeePerGas = "0x" + userOp.maxPriorityFeePerGas.toString(16);
+                console.log("userOp =>", userOp);
+                // @ts-ignore
+                const estimate = await _walletClient.estimateUserOperationGas(userOp, ENTRYPOINT_ADDRESS_V06);
+
+                const totalEstimatedGasLimit =
+                    BigInt(estimate.callGasLimit) +
+                    BigInt(estimate.preVerificationGas) +
+                    BigInt(estimate.verificationGasLimit);
+                return totalEstimatedGasLimit;
+            };
+            setCurrentWallet(_walletClient.account.address);
+            setSmartAccountClient(_walletClient);
         } catch (error) {
             console.error(error);
         } finally {
@@ -358,8 +309,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     };
 
     async function logout() {
-        web3AuthInstance.logout();
         setCurrentWallet(undefined);
+        localStorage.removeItem("window.ethereum.connected");
+        alchemySigner.disconnect();
     }
 
     const displayAccount = React.useMemo(
@@ -377,13 +329,24 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     const getPkey = async () => {
         try {
-            const pkey = await web3AuthInstance.provider?.request({ method: "eth_private_key" });
-            return pkey as string;
+            // const pkey = await web3AuthSigner.inner.provider?.request({ method: "eth_private_key" });
+            // return pkey as string;
+            return "0xNotImplemented";
         } catch (error) {
             console.warn("Pkey: Not web3auth signer!");
             // notifyError(errorMessages.privateKeyError());
         }
     };
+    React.useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("bundle") && alchemySigner) {
+            // this will complete email auth
+            alchemySigner
+                .authenticate({ type: "email", bundle: urlParams.get("bundle")! })
+                // redirect the user or do w/e you want once the user is authenticated
+                .then(() => (window.location.href = "/"));
+        }
+    }, [alchemySigner]);
 
     React.useEffect(() => {
         const int = setInterval(async () => {
@@ -401,42 +364,38 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     }, [provider]);
 
     React.useEffect(() => {
-        if (isConnecting) {
-            const ele = document.querySelector("[data-rk] ._1am14410");
-            // @ts-ignore
-            if (ele) ele.style.filter = "saturate(0) blur(1px)";
-        } else {
-            const ele = document.querySelector("[data-rk] ._1am14410");
-            // @ts-ignore
-            if (ele) ele.style.filter = "";
-        }
-    }, [isConnecting]);
-
-    React.useEffect(() => {
-        if (smartAccount?.address) {
-            resolveDomainFromAddress(smartAccount.address).then((res) => {
+        if (smartAccountClient?.account?.address) {
+            resolveDomainFromAddress(smartAccountClient.account.address).then((res) => {
                 setDomainName(res);
             });
         } else {
             setDomainName(null);
         }
-    }, [smartAccount]);
+    }, [smartAccountClient]);
 
     useEffect(() => {
         const init = async () => {
             try {
-                await web3AuthInstance.initModal();
-
-                if (web3AuthInstance.connected) {
+                const auth = await alchemySigner.getAuthDetails().catch(() => null);
+                console.log("auth =>", auth);
+                if (auth) {
                     connectWallet();
+                } else if (window.ethereum) {
+                    const yes = localStorage.getItem("window.ethereum.connected");
+                    if (yes === "yes") {
+                        // @ts-ignore
+                        const accs = await window.ethereum.request({ method: "eth_accounts" });
+                        if (accs.length > 0) {
+                            connectWallet(true);
+                        }
+                    }
                 }
             } catch (error) {
                 console.error(error);
             }
         };
-
-        init();
-    }, []);
+        if (alchemySigner) init();
+    }, [alchemySigner]);
 
     return (
         <WalletContext.Provider
@@ -450,7 +409,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 chainId,
                 connectWallet,
                 isSocial,
-                smartAccount,
+                alchemySigner,
                 logout,
                 domainName,
                 displayAccount: displayAccount as Address,
@@ -466,7 +425,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 arbitrumBalance,
                 isSponsored,
                 setChainId,
-                web3AuthClient: web3AuthClient as any,
             }}
         >
             {children}

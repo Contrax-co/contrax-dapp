@@ -5,6 +5,8 @@
   "type": "module",
   "dependencies": {
     "@0xsequence/multicall": "^0.43.19",
+    "@alchemy/aa-alchemy": "^3.18.2",
+    "@alchemy/aa-signers": "^3.18.2",
     "@ethersproject/abstract-provider": "^5.7.0",
     "@front-finance/link": "^1.0.7",
     "@gatefi/js-sdk": "^0.14.0",
@@ -108,7 +110,7 @@
   },
   "devDependencies": {
     "@types/lodash.merge": "^4.6.9",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
@@ -124,7 +126,7 @@
     "typescript": "^5.4.5",
     "typescript-plugin-css-modules": "^5.1.0",
     "url": "^0.11.0",
-    "vite": "^5.2.8"
+    "vite": "^5.3.1"
   },
   "resolutions": {
     "@ethereumjs/tx": "4.0.2",
