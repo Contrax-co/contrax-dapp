@@ -20,15 +20,12 @@ import githubIcon from "./../assets/images/github-icon.svg";
 import twitterIcon from "./../assets/images/twitter-icon.svg";
 import { providers } from "ethers";
 import { PublicClient, WalletClient, http, type HttpTransport } from "viem";
-import { MetamaskAdapter } from "@web3auth/metamask-adapter";
-import { getWalletConnectV2Settings, WalletConnectV2Adapter } from "@web3auth/wallet-connect-v2-adapter";
+import { WalletConnectV2Adapter } from "@web3auth/wallet-connect-v2-adapter";
 import { ENTRYPOINT_ADDRESS_V07, createBundlerClient } from "permissionless";
 import { bundlersByChainId } from "./constants/urls";
 import { CHAIN_ID } from "src/types/enums";
-
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
-
 const clientId = WEB3AUTH_CLIENT_ID as string;
 // arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
 // arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
@@ -70,166 +67,7 @@ const openloginAdapter = new OpenloginAdapter({
         replaceUrlOnRedirect: false,
     },
 });
-const metamaskAdapter = new MetamaskAdapter({
-    clientId,
-    sessionTime: 3600, // 1 hour in seconds
-    web3AuthNetwork: "cyan",
-});
-const defaultWcSettings = {
-    adapterSettings: {
-        walletConnectInitOptions: {
-            projectId: "bb20b40a5d133af4db2d40117f6184a7",
-            relayUrl: "wss://relay.walletconnect.com",
-            metadata: {
-                name: "Contrax",
-                description: "Contrax",
-                url: "http://localhost:3000",
-                icons: ["http://localhost:3000/favicon.ico"],
-            },
-        },
-    },
-    loginSettings: {
-        optionalNamespaces: {
-            eip155: {
-                methods: ["eth_sendTransaction", "eth_sign", "personal_sign", "eth_signTypedData"],
-                chains: ["eip155:270689"],
-                events: ["chainChanged", "accountsChanged"],
-            },
-        },
-    },
-};
-
-// const walletConnectModal = new WalletConnectModal({ projectId: walletConnectProjectId });
-const walletConnectV2Adapter = new WalletConnectV2Adapter({
-    clientId,
-    web3AuthNetwork: "cyan",
-    adapterSettings: {
-        // qrcodeModal: walletConnectModal,
-        ...defaultWcSettings.adapterSettings,
-    },
-    loginSettings: { ...defaultWcSettings.loginSettings },
-});
-
-web3AuthInstance.configureAdapter(walletConnectV2Adapter);
 web3AuthInstance.configureAdapter(openloginAdapter);
-web3AuthInstance.configureAdapter(metamaskAdapter);
-
-// const connectors = connectorsForWallets([
-//     {
-//         groupName: "Social",
-//         wallets: [
-//             () => ({
-//                 ...{
-//                     id: "google",
-//                     name: "Google",
-//                     iconUrl: googleIcon,
-//                     iconBackground: "white",
-//                     createConnector: getWeb3authConnector(),
-//                 },
-//             }),
-
-//             // () => ({
-//             //     id: "facebook",
-//             //     name: "Facebook",
-//             //     iconUrl: facebookIcon,
-//             //     iconBackground: "white",
-//             //     createConnector(walletDetails) {
-//             //         const connector = Web3AuthConnector({
-//             //             web3AuthInstance,
-//             //             loginParams: {
-//             //                 loginProvider: "facebook",
-//             //             },
-//             //         });
-//             //         return connector;
-//             //     },
-//             // }),
-//             // () => ({
-//             //     id: "discord",
-//             //     name: "Discord",
-//             //     iconUrl: discordIcon,
-//             //     iconBackground: "white",
-//             //     createConnector(walletDetails) {
-//             //         const connector = Web3AuthConnector({
-//             //             web3AuthInstance,
-//             //             loginParams: {
-//             //                 loginProvider: "discord",
-//             //             },
-//             //         });
-//             //         return connector;
-//             //     },
-//             // }),
-//             // () => ({
-//             //     id: "twitter",
-//             //     name: "Twitter",
-//             //     iconUrl: twitterIcon,
-//             //     iconBackground: "white",
-//             //     createConnector(walletDetails) {
-//             //         const connector = Web3AuthConnector({
-//             //             web3AuthInstance,
-//             //             loginParams: {
-//             //                 loginProvider: "twitter",
-//             //             },
-//             //         });
-//             //         return connector;
-//             //     },
-//             // }),
-//             // () => ({
-//             //     id: "github",
-//             //     name: "Github",
-//             //     iconUrl: githubIcon,
-//             //     iconBackground: "white",
-//             //     createConnector(walletDetails) {
-//             //         const connector = Web3AuthConnector({
-//             //             web3AuthInstance,
-//             //             loginParams: {
-//             //                 loginProvider: "github",
-//             //             },
-//             //         });
-//             //         return connector;
-//             //     },
-//             // }),
-//         ],
-//     },
-//     {
-//         groupName: "Wallets",
-//         wallets: [
-//             injectedWallet,
-//             rainbowWallet,
-//             walletConnectWallet,
-//             braveWallet,
-//             coinbaseWallet,
-//             metaMaskWallet,
-//             safeWallet,
-//             argentWallet,
-//         ],
-//     },
-// ]);
-
-// export const wagmiClient = createConfig({
-//     connectors: [
-//         injected(),
-//         safe(),
-//         walletConnect({ projectId: walletConnectProjectId }),
-//         Web3AuthConnector({
-//             web3AuthInstance,
-//             loginParams: {
-//                 loginProvider: "google",
-//             },
-//         }),
-//     ],
-//     chains: [arbitrum, mainnet, polygon],
-//     transports: {
-//         [arbitrum.id]: http(ALCHEMY_KEY ? `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}` : undefined),
-//         [mainnet.id]: http(),
-//         [polygon.id]: http(),
-//     },
-//     batch: {
-//         multicall: {
-//             batchSize: 2048,
-//             wait: 500,
-//         },
-//     },
-// });
 export const web3authProvider = web3AuthInstance.provider;
 
 export function publicClientToProvider(publicClient: PublicClient) {

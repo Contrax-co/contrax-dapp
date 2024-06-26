@@ -1,16 +1,18 @@
 import { useMemo, useState } from "react";
 import useFarms from "./farms/useFarms";
 import useWallet from "./useWallet";
-import { useQuery } from "@tanstack/react-query";
 import { Address, erc20Abi, getContract, zeroAddress } from "viem";
 import { estimateGas, getBalance, getGasPrice, waitForTransactionReceipt } from "viem/actions";
 import useNotify from "./useNotify";
+import useWeb3Auth from "./useWeb3Auth";
 
 const useVaultMigrate = () => {
     const { farms } = useFarms();
-    const { web3AuthClient, client, currentWallet } = useWallet();
+    const { connect, disconnect } = useWeb3Auth();
+    const { client, currentWallet } = useWallet();
     const { notifyLoading, dismissNotify, notifySuccess, notifyError } = useNotify();
     const [isLoading, setIsLoading] = useState(false);
+
     const tokenAddress = useMemo(() => {
         const tokenAddress = new Set<Address>();
         farms.forEach((farm) => {
@@ -27,9 +29,16 @@ const useVaultMigrate = () => {
         return Array.from(tokenAddress);
     }, [farms]);
 
-    const { data, refetch } = useQuery({
-        queryKey: ["wallet", "web3auth", "balances", "vault"],
-        queryFn: async () => {
+    const migrate = async () => {
+        if (!currentWallet) {
+            alert("Login first!");
+            return;
+        }
+        const _walletClient = await connect();
+        if (!_walletClient) return;
+        setIsLoading(true);
+        let id = "";
+        try {
             const promises = tokenAddress.map((item) =>
                 getContract({
                     address: item,
@@ -37,30 +46,19 @@ const useVaultMigrate = () => {
                     client: {
                         public: client.public,
                     },
-                }).read.balanceOf([web3AuthClient!.account!.address])
+                }).read.balanceOf([_walletClient!.account!.address])
             );
             const balances = await Promise.all(promises);
-            const ethBal = await client.public.getBalance({ address: web3AuthClient!.account!.address });
-            return { tokenBalances: balances, ethBal };
-        },
-        select(data) {
-            return tokenAddress
+            const ethBal = await client.public.getBalance({ address: _walletClient!.account!.address });
+            const data = tokenAddress
                 .map((item, i) => ({
                     tokenAddress: item,
-                    balance: data.tokenBalances[i],
+                    balance: balances[i],
                 }))
-                .concat([{ tokenAddress: zeroAddress, balance: data.ethBal }])
+                .concat([{ tokenAddress: zeroAddress, balance: ethBal }])
                 .filter((ele) => ele.balance > 0);
-        },
-        enabled: !!web3AuthClient,
-        refetchInterval: 1000 * 60 * 2,
-    });
 
-    const migrate = async () => {
-        if (!data || !currentWallet || !web3AuthClient) return;
-        const id = notifyLoading("Migrating...", `Migrating 1/${data.length}`);
-        setIsLoading(true);
-        try {
+            id = notifyLoading("Migrating...", `Migrating 1/${data.length}`);
             for (let i = 0; i < data.length; i++) {
                 const item = data[i];
                 if (item.tokenAddress === zeroAddress) continue;
@@ -70,29 +68,29 @@ const useVaultMigrate = () => {
                         address: item.tokenAddress,
                         abi: erc20Abi,
                         client: {
-                            wallet: web3AuthClient,
+                            wallet: _walletClient,
                         },
                     }).write.transfer([currentWallet, item.balance]);
-                    await waitForTransactionReceipt(web3AuthClient, {
+                    await waitForTransactionReceipt(_walletClient, {
                         hash,
                     });
                 }
             }
 
             notifyLoading("Migrating...", `Moving eth to ${currentWallet}`, { id });
-            const bal = await getBalance(web3AuthClient, { address: web3AuthClient.account.address });
-            const gasLimit = await estimateGas(web3AuthClient, {
+            const bal = await getBalance(_walletClient, { address: _walletClient.account.address });
+            const gasLimit = await estimateGas(_walletClient, {
                 value: bal,
                 to: currentWallet,
             });
-            const gasPrice = await getGasPrice(web3AuthClient);
+            const gasPrice = await getGasPrice(_walletClient);
             const gasToRemove = gasLimit * gasPrice * 6n;
 
-            const hash = await web3AuthClient.sendTransaction({
+            const hash = await _walletClient.sendTransaction({
                 to: currentWallet,
                 value: bal - gasToRemove,
             });
-            await waitForTransactionReceipt(web3AuthClient, {
+            await waitForTransactionReceipt(_walletClient, {
                 hash,
             });
             notifySuccess("Success!", `Migrated All`);
@@ -101,10 +99,9 @@ const useVaultMigrate = () => {
             notifyError("Error!", error.details || error.reason || error.shortMessage || error.message);
         }
         dismissNotify(id);
-        refetch();
         setIsLoading(true);
     };
 
-    return { migrate, data, isLoading };
+    return { migrate, isLoading, disconnect };
 };
 export default useVaultMigrate;

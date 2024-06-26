@@ -115,7 +115,7 @@ export const zapInBase: ZapInBaseFn = async ({
         // token zap
         else {
             zapperTxn = await awaitTransaction(
-                zapperContract.write.zapIn([farm.vault_addr, 0, token, amountInWei]),
+                zapperContract.write.zapIn([farm.vault_addr, 0, token, amountInWei], {}),
                 client
             );
         }
@@ -241,6 +241,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         const connectorId = getConnectorId();
         if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
             const balance = BigInt(balances[zeroAddress] || "0");
+
             const afterGasCut = await subtractGas(
                 amountInWei,
                 client!,

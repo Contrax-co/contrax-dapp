@@ -8,7 +8,7 @@ import "@uniswap/widgets/fonts.css";
 import "./Swap.css";
 import { getEip1193Provider } from "src/utils/Eip1193Provider";
 // import TokenList from "@uniswap/default-token-list";
-import { Address, erc20Abi, maxUint256, zeroAddress } from "viem";
+import { Address, erc20Abi, maxUint256, zeroAddress, getContract } from "viem";
 import { awaitTransaction } from "src/utils/common";
 
 interface IProps {}
@@ -65,15 +65,13 @@ const Swap: React.FC<IProps> = () => {
                                 args: [currentWallet, v2Router],
                             });
                             if (allowance < bal) {
-                                await awaitTransaction(
-                                    client.wallet.writeContract({
-                                        abi: erc20Abi,
-                                        address: inputToken,
-                                        functionName: "approve",
-                                        args: [v2Router, maxUint256],
-                                    }),
-                                    client
-                                );
+                                const _contract = getContract({
+                                    abi: erc20Abi,
+                                    address: inputToken,
+                                    client,
+                                });
+                                // @ts-ignore
+                                await awaitTransaction(_contract.write.approve([v2Router, maxUint256], {}), client);
                             }
                         }
                     })();
