@@ -4,6 +4,8 @@ import { FarmDataProcessed } from "src/api/pools/types";
 import { PublicClient, Transport, Chain, Address, WalletClient, Account } from "viem";
 import { ENTRYPOINT_ADDRESS_V07, SmartAccountClient } from "permissionless";
 import { KernelEcdsaSmartAccount } from "permissionless/accounts";
+import { Web3AuthSigner } from "@alchemy/aa-signers/web3auth";
+import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
 
 export interface Farm {
     isDeprecated?: boolean;
@@ -306,16 +308,13 @@ Go to the module tuner on the partner dashboard to see how each property affects
 export interface EstimateTxGasArgs {
     data: Address;
     to: Address;
-    value?: bigint;
+    value?: string | bigint;
 }
 
 export interface IClients {
     wallet:
-        | SmartAccountClient<
-              typeof ENTRYPOINT_ADDRESS_V07,
-              Transport,
-              Chain,
-              KernelEcdsaSmartAccount<typeof ENTRYPOINT_ADDRESS_V07, Transport, Chain>
-          > & { estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint> };
+        | (Awaited<ReturnType<typeof createModularAccountAlchemyClient<Web3AuthSigner>>> | WalletClient) & {
+              estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
+          };
     public: PublicClient;
 }
