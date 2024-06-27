@@ -31,7 +31,7 @@ const AppProvider: React.FC<Props> = ({ children }) => {
 
     React.useEffect(() => {
         document.documentElement.setAttribute("data-lightMode", `${lightMode}`);
-    }, [lightMode]);    
+    }, [lightMode]);
 
     return (
         <AppContext.Provider

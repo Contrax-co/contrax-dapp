@@ -15,15 +15,17 @@ export const WalletConnectionModal: FC<IProps> = ({ setOpenModal }) => {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [showViewEmail, setShowViewEmail] = useState(false);
-    const loginWithEmail = () => {
-        alchemySigner.authenticate({ type: "email", email });
-        setShowViewEmail(true);
+    const loginWithEmail = async () => {
+        setTimeout(() => {
+            setShowViewEmail(true);
+        }, 3000);
+        await alchemySigner!.authenticate({ type: "email", email }).catch((err) => console.warn(err));
     };
 
     const loginWithPasskey = async () => {
         setLoading(true);
         try {
-            await alchemySigner.authenticate({ type: "passkey", createNew: false });
+            await alchemySigner!.authenticate({ type: "passkey", createNew: false });
             await connectWallet();
             setOpenModal(false);
         } catch (error) {
@@ -34,7 +36,7 @@ export const WalletConnectionModal: FC<IProps> = ({ setOpenModal }) => {
     const signUpWithPasskey = async () => {
         setLoading(true);
         try {
-            await alchemySigner.authenticate({
+            await alchemySigner!.authenticate({
                 type: "passkey",
                 createNew: true,
                 username: "contrax_finance_passkey",
@@ -70,7 +72,7 @@ export const WalletConnectionModal: FC<IProps> = ({ setOpenModal }) => {
             {!showViewEmail && !loading && (
                 <div>
                     <p>Email:</p>
-                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     <button onClick={loginWithEmail}>Log In</button>
                     <h6>OR</h6>
                     {window.ethereum && <button onClick={connectWithInjectedWallet}>Connection with wallet</button>}

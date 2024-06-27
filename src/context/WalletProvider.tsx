@@ -84,7 +84,7 @@ interface IWalletContext {
     publicClientMainnet: PublicClient;
     publicClientPolygon: PublicClient;
     isSocial: boolean;
-    alchemySigner: AlchemySigner;
+    alchemySigner?: AlchemySigner;
 }
 
 type BalanceResult = {
@@ -228,9 +228,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const arbitrumBalance = useNativeBalance(CHAIN_ID.ARBITRUM);
     const [domainName, setDomainName] = useState<null | string>(null);
 
-    const alchemySigner = useMemo(() => {
-        console.log("creatomg signer");
-        return new AlchemySigner({
+    const [alchemySigner, setAlchemySigner] = useState<AlchemySigner>();
+
+    useEffect(() => {
+        const _signer = new AlchemySigner({
             client: {
                 connection: {
                     jwt: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
@@ -240,6 +241,12 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 },
             },
         });
+        setAlchemySigner(_signer);
+        return () => {
+            // In strict mode it was giving error that turnkey iframe exits, so in cleanup we are manually cleaning the iframe
+            // @ts-ignore
+            document.querySelector("#turnkey-iframe-container").innerHTML = "";
+        };
     }, []);
 
     const connectWallet = async (isExternal = false) => {
@@ -271,7 +278,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             const _walletClient = await createModularAccountAlchemyClient({
                 apiKey: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
                 chain: arbitrum,
-                signer: alchemySigner,
+                signer: alchemySigner!,
             });
             // @ts-ignore
             _walletClient.estimateTxGas = async (args: EstimateTxGasArgs) => {
@@ -300,7 +307,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 return totalEstimatedGasLimit;
             };
             setCurrentWallet(_walletClient.account.address);
-            setSmartAccountClient(_walletClient);
+            setSmartAccountClient(_walletClient!);
         } catch (error) {
             console.error(error);
         } finally {
@@ -311,7 +318,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     async function logout() {
         setCurrentWallet(undefined);
         localStorage.removeItem("window.ethereum.connected");
-        alchemySigner.disconnect();
+        alchemySigner!.disconnect();
     }
 
     const displayAccount = React.useMemo(
@@ -344,7 +351,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             alchemySigner
                 .authenticate({ type: "email", bundle: urlParams.get("bundle")! })
                 // redirect the user or do w/e you want once the user is authenticated
-                .then(() => (window.location.href = "/"));
+                .then(async () => {
+                    await connectWallet();
+                });
         }
     }, [alchemySigner]);
 
@@ -376,8 +385,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     useEffect(() => {
         const init = async () => {
             try {
-                const auth = await alchemySigner.getAuthDetails().catch(() => null);
-                console.log("auth =>", auth);
+                const auth = await alchemySigner!.getAuthDetails().catch(() => null);
                 if (auth) {
                     connectWallet();
                 } else if (window.ethereum) {
@@ -428,6 +436,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             }}
         >
             {children}
+            <iframe id="turnkey-iframe-container"></iframe>
         </WalletContext.Provider>
     );
 };

@@ -101,7 +101,6 @@ const useVaultMigrate = () => {
         dismissNotify(id);
         setIsLoading(true);
     };
-console.log("connected =>", connected);
-return { migrate, isLoading, disconnect, connected };
+    return { migrate, isLoading, disconnect, connected };
 };
 export default useVaultMigrate;
