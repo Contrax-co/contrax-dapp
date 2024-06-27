@@ -18,9 +18,11 @@ import { RoutesPaths } from "./config/constants";
 import Swap from "./pages/Swap/Swap";
 import Bridge from "./pages/Bridge/Bridge";
 import { SignInRequiredWrapper } from "./components/SignInRequiredWrapper/SignInRequiredWrapper";
-import { BridgeDirection } from "./state/ramp/types";
 import { Snapshot } from "./pages/Snapshot/Snapshot";
 import FarmInfo from "./pages/FarmInfo/FarmInfo";
+import { useAppDispatch } from "./state";
+import useApp from "./hooks/useApp";
+import { setOffline } from "./state/internet/internetReducer";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -30,6 +32,24 @@ function Body() {
     const { reloadSupplies } = useTotalSupplies();
     const { reloadFarmData } = useFarmDetails();
     const { fetchAccountData } = useAccountData();
+    const { lightMode, supportChat, toggleSupportChat } = useApp();
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        window.addEventListener("online", () => {
+            window.location.reload();
+        });
+        window.addEventListener("offline", () => {
+            dispatch(setOffline());
+        });
+    }, []);
+
+    useEffect(() => {
+        // @ts-ignore
+        if (supportChat) window.chaport.q("startSession");
+        // @ts-ignore
+        else window.chaport.q("stopSession");
+    }, [supportChat]);
 
     useEffect(() => {
         fetchAccountData();
