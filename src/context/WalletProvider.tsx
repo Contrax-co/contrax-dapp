@@ -153,9 +153,7 @@ const useMulticallProvider = (
 
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [isConnecting, setIsConnecting] = useState(false);
-    const [smartAccountClient, setSmartAccountClient] = useState<
-        Awaited<ReturnType<typeof createModularAccountAlchemyClient<AlchemySigner>>> | WalletClient
-    >();
+    const [smartAccountClient, setSmartAccountClient] = useState<IClients["wallet"]>();
     const [isSponsored] = useState(true);
     const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
@@ -268,6 +266,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                         });
                     },
                 }));
+                // @ts-ignore
                 setSmartAccountClient(_walletClient);
                 setCurrentWallet(_walletClient.account.address);
                 setIsSocial(false);
@@ -306,7 +305,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                     BigInt(estimate.verificationGasLimit);
                 return totalEstimatedGasLimit;
             };
+            // @ts-ignore
             setCurrentWallet(_walletClient.account.address);
+            // @ts-ignore
             setSmartAccountClient(_walletClient!);
         } catch (error) {
             console.error(error);
