@@ -1,1 +1,84 @@
-.container{}
+@import "../../../styles/variables.scss";
+@import "../../../styles/_mixins.scss";
+
+.container {
+    width: 400px;
+}
+
+.heading {
+    color: var(--color_text);
+    position: relative;
+}
+.warning {
+    transform: rotate(20deg) translate(-20px, 5px) scale(100);
+    color: var(--background_primary);
+}
+.caption {
+    font-size: large;
+    font-weight: bold;
+    color: var(--color_text);
+    position: relative;
+}
+.inputContainer {
+    color: #b6c1ce;
+    background-color: var(--background_primary);
+    width: 100%;
+    border-radius: 10px;
+    padding: 16px;
+    box-sizing: border-box;
+    position: relative;
+}
+.input {
+    margin: 0px;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: transparent;
+    color: inherit;
+    border: none;
+    outline: none;
+
+    // @include devices(tablet) {
+    //     width: 65%;
+    // }
+    // @include devices(mobile) {
+    //     width: 50%;
+    // }
+}
+
+.loginBtn {
+    height: auto;
+    width: 80px;
+    scale: 0.9;
+    min-width: 0px;
+    min-height: 0px;
+    padding: 0px 0px;
+    &:hover {
+        scale: 1;
+    }
+}
+.passkeyBtnsContainer {
+    display: grid;
+    gap: 5px;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 20px;
+}
+
+.passkeyBtn {
+    min-width: 0px;
+    min-height: 0px;
+    padding: 0px !important;
+    height: 40px;
+}
+.injectedBtn {
+    width: 100%;
+}
+.walletDivider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color_primary), transparent);
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
