@@ -8,7 +8,7 @@ import useWeb3Auth from "./useWeb3Auth";
 
 const useVaultMigrate = () => {
     const { farms } = useFarms();
-    const { connect, disconnect } = useWeb3Auth();
+    const { connect, disconnect, connected } = useWeb3Auth();
     const { client, currentWallet } = useWallet();
     const { notifyLoading, dismissNotify, notifySuccess, notifyError } = useNotify();
     const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +101,7 @@ const useVaultMigrate = () => {
         dismissNotify(id);
         setIsLoading(true);
     };
-
-    return { migrate, isLoading, disconnect };
+console.log("connected =>", connected);
+return { migrate, isLoading, disconnect, connected };
 };
 export default useVaultMigrate;
