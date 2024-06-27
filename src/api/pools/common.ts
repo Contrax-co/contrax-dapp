@@ -32,7 +32,16 @@ import {
     simulateTransaction,
 } from "../tenderly";
 import merge from "lodash.merge";
-import { Address, encodeFunctionData, getContract, zeroAddress } from "viem";
+import {
+    Account,
+    Address,
+    Chain,
+    HttpTransport,
+    WalletClient,
+    encodeFunctionData,
+    getContract,
+    zeroAddress,
+} from "viem";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -48,7 +57,10 @@ export const zapInBase: ZapInBaseFn = async ({
     const zapperContract = getContract({
         address: farm.zapper_addr as Address,
         abi: farm.zapper_abi,
-        client,
+        client: {
+            wallet: client.wallet,
+            public: client.public,
+        },
     });
     const wethAddress = addressesByChainId[chainId].wethAddress as Address;
     let zapperTxn;

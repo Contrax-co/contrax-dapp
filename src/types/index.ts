@@ -1,7 +1,17 @@
 import { Apys } from "src/state/apys/types";
 import { FarmOriginPlatform, FarmType } from "./enums";
 import { FarmDataProcessed } from "src/api/pools/types";
-import { PublicClient, Transport, Chain, Address, WalletClient, Account } from "viem";
+import {
+    PublicClient,
+    Transport,
+    Chain,
+    Address,
+    WalletClient,
+    Account,
+    CustomTransport,
+    JsonRpcAccount,
+    createWalletClient,
+} from "viem";
 import { ENTRYPOINT_ADDRESS_V07, SmartAccountClient } from "permissionless";
 import { KernelEcdsaSmartAccount } from "permissionless/accounts";
 import { Web3AuthSigner } from "@alchemy/aa-signers/web3auth";
@@ -313,8 +323,15 @@ export interface EstimateTxGasArgs {
 
 export interface IClients {
     wallet:
-        | (Awaited<ReturnType<typeof createModularAccountAlchemyClient<Web3AuthSigner>>> | WalletClient) & {
+        | ReturnType<typeof createWalletClient<CustomTransport, Chain, JsonRpcAccount, undefined>> & {
               estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
           };
+    // wallet:
+    //     | (
+    //           | Awaited<ReturnType<typeof createModularAccountAlchemyClient<Web3AuthSigner>>>
+    //           | WalletClient<CustomTransport, Chain, JsonRpcAccount>
+    //       ) & {
+    //           estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
+    //       };
     public: PublicClient;
 }
