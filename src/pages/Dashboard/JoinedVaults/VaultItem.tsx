@@ -21,7 +21,7 @@ function useOldPrice(address: string) {
 }
 
 const VaultItem: React.FC<Props> = ({ vault }) => {
-    const { oldPrice, isLoading: isLoadingOldData } = useOldPrice(vault.lp_address);
+    const { oldPrice, isLoading: isLoadingOldData } = useOldPrice(vault.vault_addr);
     const { getTraxApy } = useTrax();
     const estimateTrax = useMemo(() => getTraxApy(vault.vault_addr), [getTraxApy, vault]);
     const {
@@ -29,6 +29,7 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
         priceOfSingleToken,
         apys: { apy },
     } = vault;
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>

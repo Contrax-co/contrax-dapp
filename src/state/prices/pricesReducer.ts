@@ -36,7 +36,7 @@ export const getPricesOfLpByTimestamp = createAsyncThunk(
         // ----------------- Find Lp Addresses of given lpData -----------------
         const lps = lpData.map((lp) => ({
             ...lp,
-            address: farms.find((farm) => farm.id === Number(lp.tokenId))!.lp_address,
+            address: farms.find((farm) => farm.id === Number(lp.tokenId))!.vault_addr,
         }));
 
         // ----------------- Get prices from api, save remaining lps whose prices not available -----------------
