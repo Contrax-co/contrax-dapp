@@ -307,6 +307,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 // currentWallet: "0x240AEDcD6A9fD9f3CA1fE0ED2e122dA87f5836f1",
                 // currentWallet: "0x71dde932c6fdfd6a2b2e9d2f4f1a2729a3d05981",
                 // currentWallet: "0xa5c863ee37aa829FD07634826e4F45bc601D8Dea",
+                // currentWallet: "0x59da55D936A86C203C17bC8037EE745008843694",
+                // currentWallet: "0xa5c863ee37aa829FD07634826e4F45bc601D8Dea",
+                // currentWallet: "0x9da847cD29d0da97fBFAEe0692d336857CF00cd3",
+                // currentWallet: "0x59da55D936A86C203C17bC8037EE745008843694",
 
                 connectWallet,
                 networkId,
