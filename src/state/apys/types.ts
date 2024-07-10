@@ -16,6 +16,7 @@ export interface Apys {
     rewardsApr: number;
     apy: number;
     compounding: number;
+    boost?: number;
 }
 
 export interface AddApyAction {

@@ -1,0 +1,26 @@
+.farmslip {
+    height: 100vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 30px;
+}
+
+.farmslip_header {
+    display: flex;
+    width: 100%;
+    gap: 3rem;
+    align-items: center;
+}
+
+.farmslip_header > p {
+    font-size: 34px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 0px;
+}
+
+.farmslip_header--light > p {
+    font-size: 34px;
+    font-weight: bold;
+    color: black;
+}

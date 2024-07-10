@@ -8,6 +8,8 @@ import { getLpAddressForFarmsPrice, toPreciseNumber } from "src/utils/common";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import "./Details.css";
+import FarmApyGraph from "src/pages/FarmInfo/FarmApyGraph/FarmApyGraph";
+import FarmLpGraph from "src/pages/FarmInfo/FarmLpGraph/FarmLpGraph";
 
 interface Props {
     farm: Farm;
@@ -213,28 +215,15 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
                                     ).toFixed(2)}
                                     %
                                 </p>
-                                {/* <div className={`unstaked_details_header`}>
-                                    {farm.alt1 ? (
-                                        <img className={`unstaked_images1`} alt={farm.alt1} src={farm.logo1} />
-                                    ) : null}
-
-                                    {farm.alt2 ? (
-                                        <img className={`unstaked_images2`} alt={farm.alt2} src={farm.logo2} />
-                                    ) : null}
-                                </div>
-                                <p className={`detailed_unstaked_pairs`}>
-                                    {(farm.totalVaultBalance * farm.priceOfSingleToken).toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                        maximumFractionDigits: 0,
-                                    })}
-                                </p> */}
                             </div>
                         </div>
                     ) : null}
                 </div>
+                <div className="farm_apy_lp_graph_container_details">
+                    <FarmApyGraph farm={farm} />
+                    <FarmLpGraph farm={farm} />
+                </div>
             </div>
-
             <div className={`details_retract ${lightMode && "details_retract--light"}`} onClick={props.onClick}>
                 <p className={`details_retract_description ${lightMode && "details_retract_description--light"}`}>
                     See Less

@@ -9,6 +9,13 @@ const tokens = [
         decimals: 18,
         chainId: CHAIN_ID.ARBITRUM,
     },
+    {
+        address: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+        name: "Arbitrum",
+        logo: "https://arbiscan.io/token/images/arbitrumone2_32_new.png",
+        decimals: 18,
+        chainId: CHAIN_ID.ARBITRUM,
+    },
 ] as const;
 
 export default tokens;

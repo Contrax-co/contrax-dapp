@@ -114,22 +114,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             }
             amountInWei = BigNumber.from(amountInWei);
 
-            //#region Token Amounts
-            const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
-            const steerVaultTokens: string[] = await zapperContract.steerVaultTokens(farm.vault_addr);
-            const getTotalAmounts: BigNumber[] = await zapperContract.getTotalAmounts(farm.vault_addr);
-
-            const token0Staked =
-                prices![steerVaultTokens[0]] * Number(toEth(getTotalAmounts[0], decimals![steerVaultTokens[0]]));
-            const token1Staked =
-                prices![steerVaultTokens[1]] * Number(toEth(getTotalAmounts[1], decimals![steerVaultTokens[1]]));
-
-            const token0Amount = amountInWei
-                .mul(((token0Staked / (token0Staked + token1Staked)) * 10 ** 12).toFixed())
-                .div(10 ** 12);
-            const token1Amount = amountInWei.sub(token0Amount);
-            //#endregion Token Amounts
-
             // #region Approve
             // first approve tokens, if zap is not in eth
             if (token !== constants.AddressZero) {
@@ -158,7 +142,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     const afterGasCut = await subtractGas(
                         amountInWei,
                         signer,
-                        zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, token0Amount, token1Amount, {
+                        zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
                             value: balance,
                         })
                     );
@@ -171,24 +155,16 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 //#endregion
 
                 zapperTxn = await awaitTransaction(
-                    zapperContract.zapInETH(farm.vault_addr, 0, token, token0Amount, token1Amount, {
+                    zapperContract.zapInETH(farm.vault_addr, 0, token, {
                         value: amountInWei,
                     })
                 );
             }
             // token zap
             else {
-                const tx = zapperContract.populateTransaction.zapIn(
-                    farm.vault_addr,
-                    0,
-                    token,
-                    token0Amount,
-                    token1Amount
-                );
+                const tx = zapperContract.populateTransaction.zapIn(farm.vault_addr, 0, token, amountInWei);
 
-                zapperTxn = await awaitTransaction(
-                    zapperContract.zapIn(farm.vault_addr, 0, token, token0Amount, token1Amount)
-                );
+                zapperTxn = await awaitTransaction(zapperContract.zapIn(farm.vault_addr, 0, token, amountInWei));
             }
 
             if (!zapperTxn.status) {
@@ -223,21 +199,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         }
         amountInWei = BigNumber.from(amountInWei);
 
-        //#region Token Amounts
-        const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
-        const steerVaultTokens: string[] = await zapperContract.steerVaultTokens(farm.vault_addr);
-        const getTotalAmounts: BigNumber[] = await zapperContract.getTotalAmounts(farm.vault_addr);
-
-        const token0Staked =
-            prices![steerVaultTokens[0]] * Number(toEth(getTotalAmounts[0], decimals![steerVaultTokens[0]]));
-        const token1Staked =
-            prices![steerVaultTokens[1]] * Number(toEth(getTotalAmounts[1], decimals![steerVaultTokens[1]]));
-
-        const token0Amount = amountInWei
-            .mul(((token0Staked / (token0Staked + token1Staked)) * 10 ** 12).toFixed())
-            .div(10 ** 12);
-        const token1Amount = amountInWei.sub(token0Amount);
-        //#endregion Token Amounts
         if (token !== constants.AddressZero) {
             transaction.state_overrides = getAllowanceStateOverride([
                 {
@@ -264,7 +225,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             // use weth address as tokenId, but in case of some farms (e.g: hop)
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn ?? wethAddress;
-
             //#region Gas Logic
             // if we are using zero dev, don't bother
             const connectorId = getConnectorId();
@@ -275,7 +235,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 const afterGasCut = await subtractGas(
                     amountInWei,
                     signer!,
-                    zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token0Amount, token1Amount, {
+                    zapperContract.estimateGas.zapInETH(farm.vault_addr, 0, token, {
                         value: balance,
                     })
                 );
@@ -287,8 +247,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 farm.vault_addr,
                 0,
                 token,
-                token0Amount,
-                token1Amount,
+
                 {
                     value: amountInWei,
                 }
@@ -297,13 +256,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
         } else {
-            const populated = await zapperContract.populateTransaction.zapIn(
-                farm.vault_addr,
-                0,
-                token,
-                token0Amount,
-                token1Amount
-            );
+            const populated = await zapperContract.populateTransaction.zapIn(farm.vault_addr, 0, token, amountInWei);
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
         }

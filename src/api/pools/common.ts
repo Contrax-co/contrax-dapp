@@ -281,7 +281,9 @@ export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max,
     >;
     transaction.from = currentWallet;
     const vaultBalance = await getBalance(farm.vault_addr, currentWallet, signer?.provider!);
-
+    if (max) {
+        amountInWei = vaultBalance;
+    }
     //#region Approve
     transaction.state_overrides = getAllowanceStateOverride([
         {
@@ -295,25 +297,27 @@ export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max,
             spender: farm.zapper_addr,
         },
     ]);
+    merge(
+        transaction.state_overrides,
+        getTokenBalanceStateOverride({
+            owner: currentWallet,
+            tokenAddress: farm.vault_addr,
+            balance: amountInWei.toString(),
+        })
+    );
     //#endregion
 
     //#region Zapping Out
-    if (max) {
-        amountInWei = vaultBalance;
-    }
+
     if (token === constants.AddressZero) {
-        const populated = await zapperContract.populateTransaction.zapOutAndSwapEth(
-            farm.vault_addr,
-            max ? vaultBalance : amountInWei,
-            0
-        );
+        const populated = await zapperContract.populateTransaction.zapOutAndSwapEth(farm.vault_addr, amountInWei, 0);
 
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     } else {
         const populated = await zapperContract.populateTransaction.zapOutAndSwap(
             farm.vault_addr,
-            max ? vaultBalance : amountInWei,
+            amountInWei,
             token,
             0
         );
@@ -322,6 +326,7 @@ export const slippageOut: SlippageOutBaseFn = async ({ signer, farm, token, max,
         transaction.value = populated.value?.toString();
     }
     //#endregion
+    console.log(transaction, farm);
     const simulationResult = await simulateTransaction({
         /* Standard EVM Transaction object */
         ...transaction,

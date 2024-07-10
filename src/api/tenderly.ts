@@ -63,6 +63,7 @@ export const getTokenBalanceStateOverride = (data: { tokenAddress: string; owner
         state: {
             [`balanceAndBlacklistStates[${data.owner.toLowerCase()}]`]: data.balance || max,
             [`balances[${data.owner.toLowerCase()}]`]: data.balance || max,
+            [`_balances[${data.owner.toLowerCase()}]`]: data.balance || max,
         },
     };
     return overrides;

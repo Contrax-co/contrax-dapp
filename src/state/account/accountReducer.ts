@@ -61,9 +61,7 @@ export const addAccount = createAsyncThunk(
                 if (data.referrer) {
                     thunkApi.dispatch(setRefAddress(data.referrer.address));
                 }
-                if (data.earnTraxTermsAgreed) {
-                    thunkApi.dispatch(setEarnTraxTermsAgreed(data.earnTraxTermsAgreed || false));
-                }
+                thunkApi.dispatch(setEarnTraxTermsAgreed(data.earnTraxTermsAgreed || false));
                 // if (data.referralCode) {
                 thunkApi.dispatch(setReferralCode(data.referralCode || ""));
                 // }
@@ -75,6 +73,8 @@ export const addAccount = createAsyncThunk(
                 // }
                 // if (data.totalEarnedTrax) {
                 thunkApi.dispatch(setTotalEarnedTrax(data.totalEarnedTrax || 0));
+                thunkApi.dispatch(setEarnedArb(data.earnedArb || 0));
+                thunkApi.dispatch(setEmmitedArb(data.emmitedArb || 0));
                 // }
                 // if (data.totalEarnedTraxByReferral) {
                 thunkApi.dispatch(setTotalEarnedTraxByReferral(data.totalEarnedTraxByReferral || 0));
@@ -120,6 +120,12 @@ const accountSlice = createSlice({
         setTotalEarnedTrax: (state: StateInterface, action: { payload: number }) => {
             state.totalEarnedTrax = action.payload;
         },
+        setEarnedArb: (state: StateInterface, action: { payload: number }) => {
+            state.earnedArb = action.payload;
+        },
+        setEmmitedArb: (state: StateInterface, action: { payload: number }) => {
+            state.emmitedArb = action.payload;
+        },
         setTotalEarnedTraxByReferral: (state: StateInterface, action: { payload: number }) => {
             state.totalEarnedTraxByReferral = action.payload;
         },
@@ -163,6 +169,8 @@ export const {
     setEarnTraxTermsAgreed,
     setBoosts,
     setEstimatedTraxPerDay,
+    setEarnedArb,
+    setEmmitedArb,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;

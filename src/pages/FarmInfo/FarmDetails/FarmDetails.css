@@ -1,0 +1,133 @@
+.slippageContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slippageIndividual {
+    display: flex;
+    gap: 30%;
+    align-items: center;
+    width: 100%;
+}
+
+.titleContainerSlippage {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    flex: auto;
+    width: 100%;
+}
+
+.tvls {
+    display: block;
+}
+
+.tvl_underlying {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    width: 100%;
+    text-align: center;
+}
+
+.tvl_underlying--light {
+    color: black;
+}
+
+.header_deposit {
+    display: block;
+}
+
+.tvlMobileContainer {
+    display: none;
+}
+
+.tvl_mobile {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    width: 100%;
+    text-align: left;
+}
+
+.tvl_mobile--light {
+    color: black;
+}
+
+.slippageTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.slippageTitle--light {
+    color: black;
+}
+
+.slippagecolor {
+    font-size: 14px;
+    color: white;
+    width: 100%;
+}
+
+.slippagecolor--light {
+    color: black;
+}
+
+
+
+
+@media screen and (max-width: 768px) {
+    .slippageIndividual {
+        flex-direction: column;
+    }
+}
+
+@media screen and (max-width: 637px) {
+    .header_deposit {
+        display: none;
+    }
+
+    .tvls {
+        display: none;
+    }
+    .titleContainerSlippage {
+        align-items: flex-start;
+    }
+    .tvlMobileContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 1.3rem;
+        width: 100%;
+    }
+
+    .tvlMobileContainer > div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .tvl_underlying {
+        text-align: right;
+        font-size: 12px;
+    }
+    .tvl_mobile {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .slippagecolor {
+        font-size: 12px;
+        color: white;
+        width: 100%;
+    }
+    .slippagecolor--light {
+        color: black;
+    }
+}

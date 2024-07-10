@@ -21,8 +21,7 @@ import Bridge from "./pages/Bridge/Bridge";
 import { SignInRequiredWrapper } from "./components/SignInRequiredWrapper/SignInRequiredWrapper";
 import { BridgeDirection } from "./state/ramp/types";
 import { Snapshot } from "./pages/Snapshot/Snapshot";
-import ReferralDashboard from "./pages/ReferralDashboard/ReferralDashboard";
-import FarmSlippage from "./pages/FarmSippage/FarmSlippage";
+import FarmInfo from "./pages/FarmInfo/FarmInfo";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -135,7 +134,7 @@ function Body() {
                     }
                 />
                 <Route path={RoutesPaths.Test} element={<Test />} />
-                <Route path={RoutesPaths.Test_pro_max} element={<FarmSlippage />} />
+                <Route path={RoutesPaths.Test_pro_max} element={<FarmInfo />} />
                 <Route path={RoutesPaths.Stats} element={<Stats />} />
                 <Route path={RoutesPaths.Governance} element={<Snapshot />} />
                 {/* <Route path={RoutesPaths.ReferralDashboard} element={<ReferralDashboard />} /> */}
