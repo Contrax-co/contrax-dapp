@@ -3,7 +3,6 @@ import useApp from "src/hooks/useApp";
 import { useSlippageDeposit, useSlippageWithdraw } from "src/hooks/useSlippage";
 import { Farm } from "src/types";
 import { zeroAddress } from "viem";
-import "./FarmDetails.css";
 import { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import { addressesByChainId } from "src/config/constants/contracts";
@@ -17,6 +16,7 @@ import { fetchAllPoolFeesThunk } from "src/state/fees/feesReducer";
 import { PoolFees } from "src/api/fees";
 import FarmApyGraph from "../FarmApyGraph/FarmApyGraph";
 import FarmLpGraph from "../FarmLpGraph/FarmLpGraph";
+import styles from "./styles.module.scss";
 
 const FarmDetails = () => {
     const { lightMode } = useApp();
@@ -31,7 +31,7 @@ const FarmDetails = () => {
     }, [poolFees]);
     return (
         <>
-            <div className={`farmslip_table_header ${lightMode && "farmslip_table_header_light"}`}>
+            <div className={`${styles.farmslip_table_header} ${lightMode && styles.farmslip_table_header_light}`}>
                 <p className="item_asset" style={{ marginLeft: 20 }}>
                     Vaults
                 </p>
@@ -71,13 +71,13 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
     return (
         <>
             <div
-                className={`farmslip_table_pool ${lightMode && "farmslip_table_pool_light"}`}
+                className={`${styles.farmslip_table_pool} ${lightMode && styles.farmslip_table_pool_light}`}
                 style={{ padding: "30px" }}
                 onClick={() => setDropDown(!dropDown)}
             >
-                <div className={"slippageContainer"}>
-                    <div className="title_container titleContainerSlippage" style={{ width: "100%" }}>
-                        <div className="pair">
+                <div className={styles.slippageContainer}>
+                    <div className={`title_container ${styles.titleContainerSlippage}`} style={{ width: "100%" }}>
+                        <div className={styles.pair}>
                             <img alt={farm?.alt1} src={farm?.logo1} height={50} width={50} />
                             {farm.logo2 ? <img alt={farm?.alt1} src={farm?.logo2} height={50} width={50} /> : undefined}
                         </div>
@@ -91,7 +91,7 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
                             </div>
                         </div>
                     </div>
-                    <div className={`tvls tvl_underlying ${lightMode && "tvl_underlying--light"}`}>
+                    <div className={`tvls ${styles.tvl_underlying} ${lightMode && styles["tvl_underlying--light"]}`}>
                         {formattedSupplies[farm.vault_addr] &&
                             (formattedSupplies[farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
                                 style: "currency",
@@ -99,7 +99,7 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
                                 maximumFractionDigits: 0,
                             })}
                     </div>
-                    <div className={`tvls tvl_underlying ${lightMode && "tvl_underlying--light"}`}>
+                    <div className={`tvls ${styles.tvl_underlying} ${lightMode && styles["tvl_underlying--light"]}`}>
                         {formattedSupplies[farm.lp_address] &&
                             (formattedSupplies[farm.lp_address]! * lpPrice).toLocaleString("en-US", {
                                 style: "currency",
@@ -117,12 +117,14 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
                             <div>
                                 <div
                                     style={{ width: "100%" }}
-                                    className={`tvl_mobile ${lightMode && "tvl_mobile--light"}`}
+                                    className={`${styles.tvl_mobile} ${lightMode && styles["tvl_mobile--light"]}`}
                                 >
                                     TVL in pool
                                 </div>
                                 <div
-                                    className={`tvl_underlying ${lightMode && "tvl_underlying--light"}`}
+                                    className={`${styles.tvl_underlying} ${
+                                        lightMode && styles["tvl_underlying--light"]
+                                    }`}
                                     style={{ width: "100%" }}
                                 >
                                     {formattedSupplies[farm.vault_addr] &&
@@ -136,12 +138,14 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
                             <div>
                                 <div
                                     style={{ width: "100%" }}
-                                    className={`tvl_mobile ${lightMode && "tvl_mobile--light"}`}
+                                    className={`${styles.tvl_mobile} ${lightMode && styles["tvl_mobile--light"]}`}
                                 >
                                     TVL in underlying pool
                                 </div>
                                 <div
-                                    className={`tvl_underlying ${lightMode && "tvl_underlying--light"}`}
+                                    className={`${styles.tvl_underlying} ${
+                                        lightMode && styles["tvl_underlying--light"]
+                                    }`}
                                     style={{ width: "100%" }}
                                 >
                                     {formattedSupplies[farm.lp_address] &&
@@ -188,9 +192,9 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
     const { slippageAmounts, loadingDeposit } = useSlippageDeposit(maxAmounts, tokens, farm);
     const { slippageAmounts: slippageAmountWithdraw, loadingWithdraw } = useSlippageWithdraw(maxAmounts, tokens, farm);
     return (
-        <div className={"slippageIndividual"}>
+        <div className={styles.slippageIndividual}>
             <div style={{ width: "100%" }}>
-                <h1 className={`slippageTitle ${lightMode && "slippageTitle--light"}`}>Deposit</h1>
+                <h1 className={`${styles.slippageTitle} ${lightMode && styles["slippageTitle--light"]}`}>Deposit</h1>
                 {loadingDeposit ? (
                     <>
                         <Skeleton h={20} w={"100%"} style={{ marginBottom: "10px", marginTop: "10px" }} />
@@ -204,7 +208,7 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                             tokens.map((token) => (
                                 <div
                                     key={`${maxAmount}-${token}`}
-                                    className={`slippagecolor ${lightMode && "slippagecolor--light"}`}
+                                    className={`${styles.slippagecolor} ${lightMode && styles["slippagecolor--light"]}`}
                                 >
                                     Slippage for {maxAmount} of {token === zeroAddress ? "ETH Address" : "USDC Address"}
                                     : <b>{slippageAmounts[`${maxAmount}-${token}`]?.toFixed(2) || "-"}</b>
@@ -215,7 +219,7 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                 )}
             </div>
             <div style={{ width: "100%" }}>
-                <h1 className={`slippageTitle ${lightMode && "slippageTitle--light"}`}>Withdraw</h1>
+                <h1 className={`${styles.slippageTitle} ${lightMode && styles["slippageTitle--light"]}`}>Withdraw</h1>
                 {loadingWithdraw ? (
                     <>
                         <Skeleton h={20} w={"100%"} style={{ marginBottom: "10px", marginTop: "10px" }} />
@@ -229,7 +233,7 @@ const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
                             tokens.map((token) => (
                                 <div
                                     key={`${maxAmount}-${token}`}
-                                    className={`slippagecolor ${lightMode && "slippagecolor--light"}`}
+                                    className={`${styles.slippagecolor} ${lightMode && styles["slippagecolor--light"]}`}
                                 >
                                     Slippage for {maxAmount} of {token === zeroAddress ? "ETH Address" : "USDC Address"}
                                     : <b>{slippageAmountWithdraw[`${maxAmount}-${token}`]?.toFixed(2) || "-"}</b>

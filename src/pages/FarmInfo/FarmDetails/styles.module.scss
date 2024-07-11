@@ -1,3 +1,22 @@
+.farmslip_table_pool {
+    background-color: #012243;
+    border-radius: 20px;
+    margin-bottom: 7px;
+}
+
+.farmslip_table_pool:hover {
+    background-color: #032a51;
+    cursor: pointer;
+}
+
+.farmslip_table_pool_light {
+    background-color: white;
+}
+
+.farmslip_table_pool_light:hover {
+    background-color: white;
+    cursor: pointer;
+}
 .slippageContainer {
     display: flex;
     justify-content: space-between;
@@ -19,10 +38,6 @@
     width: 100%;
 }
 
-.tvls {
-    display: block;
-}
-
 .tvl_underlying {
     font-size: 16px;
     font-weight: 600;
@@ -35,8 +50,73 @@
     color: black;
 }
 
-.header_deposit {
-    display: block;
+.type_heading {
+    display: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--color_grey);
+    text-align: center;
+    padding: 12px;
+}
+
+.farm__title {
+    display: flex;
+    font-size: 13px;
+    font-weight: bold;
+    justify-content: space-between;
+    padding-left: 30px;
+    padding-right: 30px;
+    color: white;
+}
+
+.farmslip_table_header,
+.farmslip_table_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 24px;
+    gap: 20px;
+    padding: 20px 26px;
+    text-align: center;
+}
+
+.farmslip_table_row {
+    min-height: 10vh;
+    position: relative;
+}
+
+.farmslip_table_header {
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.farmslip_table_header_light {
+    color: black;
+}
+
+.pair {
+    display: flex;
+    gap: 20px;
+}
+
+.farmslip_table_pool {
+    background-color: #012243;
+    border-radius: 20px;
+    margin-bottom: 7px;
+}
+
+.farmslip_table_pool:hover {
+    background-color: #032a51;
+    cursor: pointer;
+}
+
+.farmslip_table_pool_light {
+    background-color: white;
+}
+
+.farmslip_table_pool_light:hover {
+    background-color: white;
+    cursor: pointer;
 }
 
 .tvlMobileContainer {
@@ -76,9 +156,6 @@
 .slippagecolor--light {
     color: black;
 }
-
-
-
 
 @media screen and (max-width: 768px) {
     .slippageIndividual {
