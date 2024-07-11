@@ -92,6 +92,7 @@ export const { chains, publicClient, webSocketPublicClient } = configureChains(
 const web3AuthInstance = new Web3AuthNoModal({
     clientId,
     web3AuthNetwork: "cyan",
+    sessionTime: 604800, // 7 days
     chainConfig: {
         chainNamespace: CHAIN_NAMESPACES.EIP155,
         chainId: "0x" + arbitrum.id.toString(16),
@@ -147,7 +148,9 @@ export async function getWeb3AuthProvider(config: {
 
 const openloginAdapter = new OpenloginAdapter({
     privateKeyProvider: PrivateKeyProvider,
+    sessionTime: 604800,
     adapterSettings: {
+        sessionTime: 604800,
         network: "cyan",
         uxMode: "redirect",
         replaceUrlOnRedirect: false,
