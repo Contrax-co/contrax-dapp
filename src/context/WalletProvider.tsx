@@ -230,10 +230,14 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     useEffect(() => {
         const _signer = new AlchemySigner({
+            sessionConfig: {
+                expirationTimeMs: 1000 * 60 * 60 * 24 * 7,
+            },
             client: {
                 connection: {
                     jwt: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
                 },
+
                 iframeConfig: {
                     iframeContainerId: "turnkey-iframe-container",
                 },
@@ -386,7 +390,11 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     useEffect(() => {
         const init = async () => {
             try {
-                const auth = await alchemySigner!.getAuthDetails().catch(() => null);
+                const auth = await alchemySigner!.getAuthDetails().catch((err) => {
+                    console.log("err =>", err);
+                    return null;
+                });
+                console.log("auth =>", auth);
                 if (auth) {
                     connectWallet();
                 } else if (window.ethereum) {
