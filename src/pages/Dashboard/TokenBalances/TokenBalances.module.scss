@@ -37,10 +37,10 @@
     box-sizing: border-box;
     cursor: pointer;
     transition: 0.3s;
+    border-color: var(--color_primary);
     & p {
         margin: 2px 0px;
     }
-    border-color: var(--color_primary);
 }
 .tokenCard:hover {
     grid-template-columns: max-content 1fr max-content max-content;
