@@ -42,6 +42,7 @@ const useFront = () => {
                 } else {
                     notifyError({
                         title: "Transfer Failed",
+                        // @ts-ignore
                         message: data.errorMessage || "Something went wrong!",
                     });
                 }
