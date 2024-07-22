@@ -6,6 +6,7 @@ import * as gmx from "./gmx";
 import { FarmFunctions } from "./types";
 import peapods from "./peapods";
 import steer from "./steer";
+import clipper from "./clipper";
 
 // TODO: find a better way to add farms here, instead of using the farm id manually
 const farmFunctions: { [key: number]: FarmFunctions } = {
@@ -44,6 +45,8 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     37: steer(37), // 36: WETH-USDC.e
     38: steer(38), // 36: WETH-SUSHI
     39: steer(39), // 36: USDC-USDC.e
+
+    40: clipper(40), // 36: Clipper
 };
 
 export default farmFunctions;

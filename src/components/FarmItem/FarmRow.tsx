@@ -128,7 +128,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                                 : ``
                                         }
                                         ${
-                                            farmApys.boost && parseFloat(farmApys.boost.toString())
+                                            farmApys?.boost && parseFloat(farmApys.boost.toString())
                                                 ? `<p>Apy Boost: ${toFixedFloor(farmApys.boost, 3)}%</p>`
                                                 : ``
                                         }
@@ -238,7 +238,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                                 : ``
                                         }
                                         ${
-                                            farmApys.boost && parseFloat(farmApys.boost.toString())
+                                            farmApys?.boost && parseFloat(farmApys.boost.toString())
                                                 ? `<p>Apy Boost: ${toFixedFloor(farmApys.boost, 3)}%</p>`
                                                 : ``
                                         }
