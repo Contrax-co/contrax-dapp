@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { arbitrum, mainnet, polygon, gnosis, fantom } from "wagmi/chains";
+import { arbitrum, mainnet, polygon, base, bsc, avalanche, optimism, Chain } from "wagmi/chains";
 
 import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
@@ -65,14 +65,27 @@ if (ALCHEMY_KEY && !isDev) {
 }
 providersArray.push(publicProvider());
 
-export const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [
-        arbitrum,
-        mainnet,
-        polygon,
+const linea: Chain = {
+    id: 59144,
+    name: "Linea",
+    network: "linea",
+    rpcUrls: {
+        default: {
+            http: ["https://linea.decubate.com"],
+        },
+        public: {
+            http: ["https://linea.decubate.com"],
+        },
+    },
+    nativeCurrency: {
+        decimals: 18,
+        name: "Ethereum",
+        symbol: "ETH",
+    },
+};
 
-        // optimism, avalanche, gnosis, fantom, bsc
-    ],
+export const { chains, publicClient, webSocketPublicClient } = configureChains(
+    [arbitrum, mainnet, polygon, optimism, avalanche, bsc, base, linea],
     // @ts-ignore
     providersArray,
     {
