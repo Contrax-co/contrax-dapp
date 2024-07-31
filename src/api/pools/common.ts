@@ -1,7 +1,6 @@
 import { Farm } from "src/types";
-import { BigNumber, Signer, Contract, utils, constants } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, getConnectorId, subtractGas, toEth, validateNumberDecimals } from "src/utils/common";
+import { awaitTransaction, getConnectorId, subtractGas } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { blockExplorersByChainId } from "src/config/constants/urls";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
@@ -74,7 +73,7 @@ export const zapInBase: ZapInBaseFn = async ({
 
         // #region Approve
         // first approve tokens, if zap is not in eth
-        if (token !== constants.AddressZero) {
+        if (token !== zeroAddress) {
             notiId = notifyLoading(loadingMessages.approvingZapping());
             const response = await approveErc20(token, farm.zapper_addr as Address, amountInWei, currentWallet, client);
             if (!response.status) throw new Error("Error approving vault!");
@@ -86,7 +85,7 @@ export const zapInBase: ZapInBaseFn = async ({
         notiId = notifyLoading(loadingMessages.zapping());
 
         // eth zap
-        if (token === constants.AddressZero) {
+        if (token === zeroAddress) {
             // use weth address as tokenId, but in case of some farms (e.g: hop)
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn ?? wethAddress;
@@ -174,7 +173,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         if (max) {
             amountInWei = vaultBalance;
         }
-        if (token === constants.AddressZero) {
+        if (token === zeroAddress) {
             withdrawTxn = await awaitTransaction(
                 zapperContract.write.zapOutAndSwapEth([farm.vault_addr, max ? vaultBalance : amountInWei, 0n]),
                 client
@@ -221,7 +220,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         amountInWei = BigInt(balances[token] ?? "0");
     }
     amountInWei = amountInWei;
-    if (token !== constants.AddressZero) {
+    if (token !== zeroAddress) {
         transaction.state_overrides = getAllowanceStateOverride([
             {
                 tokenAddress: token,
@@ -243,7 +242,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         };
     }
 
-    if (token === constants.AddressZero) {
+    if (token === zeroAddress) {
         // use weth address as tokenId, but in case of some farms (e.g: hop)
         // we need the token of liquidity pair, so use tokenIn if provided
         token = tokenIn ?? wethAddress;
@@ -348,7 +347,7 @@ export const slippageOut: SlippageOutBaseFn = async ({ client, farm, token, max,
 
     //#region Zapping Out
 
-    if (token === constants.AddressZero) {
+    if (token === zeroAddress) {
         const populated = {
             data: encodeFunctionData({
                 abi: farm.zapper_abi,

@@ -1,5 +1,4 @@
 import { Farm } from "src/types";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { PublicClient } from "viem";
 
 export interface StateInterface {

@@ -1,6 +1,4 @@
 import { Farm } from "src/types";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
-import { Decimals } from "../decimals/types";
 
 export interface StateInterface {
     prices: Prices;
