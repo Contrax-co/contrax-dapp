@@ -127,7 +127,7 @@ export const updateEarnings = createAsyncThunk(
             });
             thunkApi.dispatch(
                 // @ts-ignore
-                getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, provider: multicallProvider, decimals })
+                getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, decimals })
             );
             return { earnings, currentWallet };
         } catch (error) {

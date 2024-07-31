@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@0xsequence/multicall": "^0.43.19",
     "@alchemy/aa-alchemy": "^3.18.2",
     "@alchemy/aa-signers": "^3.18.2",
     "@ethersproject/abstract-provider": "^5.7.0",

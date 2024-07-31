@@ -1,4 +1,3 @@
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { Farm, FarmData } from "src/types";
 import { Balances } from "../balances/types";
 import { Decimals } from "../decimals/types";

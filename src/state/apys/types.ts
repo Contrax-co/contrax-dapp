@@ -1,4 +1,3 @@
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { Farm } from "src/types";
 
 export interface StateInterface {
@@ -27,5 +26,4 @@ export interface AddApyAction {
 export interface FetchApysThunk {
     chainId: number;
     farms: Farm[];
-    multicallProvider: MulticallProvider;
 }

@@ -13,11 +13,6 @@ import {
     walletConnectProjectId,
 } from "./constants";
 import { Web3Auth } from "@web3auth/modal";
-import googleIcon from "./../assets/images/google-logo.svg";
-import facebookIcon from "./../assets/images/facebook-icon.svg";
-import discordIcon from "./../assets/images/discordapp-icon.svg";
-import githubIcon from "./../assets/images/github-icon.svg";
-import twitterIcon from "./../assets/images/twitter-icon.svg";
 import { providers } from "ethers";
 import { PublicClient, WalletClient, http, type HttpTransport } from "viem";
 import { WalletConnectV2Adapter } from "@web3auth/wallet-connect-v2-adapter";

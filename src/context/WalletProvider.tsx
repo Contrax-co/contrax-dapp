@@ -3,8 +3,6 @@ import * as ethers from "ethers";
 import { useQuery } from "@tanstack/react-query";
 import { GET_PRICE_TOKEN } from "src/config/constants/query";
 import { checkPaymasterApproval, getNetworkName, resolveDomainFromAddress, toEth } from "src/utils/common";
-import { getMulticallProvider } from "src/config/multicall";
-import { providers } from "@0xsequence/multicall/";
 import useBalances from "src/hooks/useBalances";
 import { useDispatch } from "react-redux";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
@@ -73,7 +71,6 @@ interface IWalletContext {
     balance: number;
     setChainId: (x: number) => void;
     getPkey: () => Promise<string | undefined>;
-    multicallProvider: providers.MulticallProvider;
     polygonBalance?: BalanceResult;
     mainnetBalance?: BalanceResult;
     arbitrumBalance?: BalanceResult;
@@ -141,16 +138,6 @@ const useNativeBalance = (chainId: number): BalanceResult => {
     };
 };
 
-const useMulticallProvider = (
-    provider: ethers.ethers.providers.JsonRpcProvider | ethers.ethers.providers.FallbackProvider
-) => {
-    const [multicallProvider, setMulticallProvider] = useState(getMulticallProvider(provider));
-    useEffect(() => {
-        setMulticallProvider(getMulticallProvider(provider));
-    }, [provider]);
-    return multicallProvider;
-};
-
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [isConnecting, setIsConnecting] = useState(false);
     const [smartAccountClient, setSmartAccountClient] = useState<IClients["wallet"]>();
@@ -209,7 +196,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         });
     }, [chain]);
     const provider = useEthersProvider(publicClient);
-    const multicallProvider = useMulticallProvider(provider);
     const { balances } = useBalances();
 
     const client = useMemo(
@@ -432,7 +418,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 displayAccount: displayAccount as Address,
                 balance,
                 getPkey,
-                multicallProvider,
                 // @ts-expect-error
                 client,
                 publicClientMainnet,

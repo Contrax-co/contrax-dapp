@@ -1,9 +1,6 @@
 import { awaitTransaction } from "src/utils/common";
-import { Contract, providers, BigNumber, Signer, constants } from "ethers";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { backendApi } from ".";
-import { PublicClient, Address, erc20Abi, getContract, maxUint256 } from "viem";
-import { waitForTransactionReceipt } from "viem/actions";
+import { PublicClient, Address, erc20Abi, getContract, maxUint256, zeroAddress } from "viem";
 import { IClients } from "src/types";
 
 export const getSpecificTokenPrice = async (tokenAddress: Address, chainId: number) => {
@@ -38,7 +35,7 @@ export const getBalance = async (
     client: Pick<IClients, "public">
 ): Promise<bigint> => {
     try {
-        if (tokenAddress === constants.AddressZero) {
+        if (tokenAddress === zeroAddress) {
             const res = await client.public.getBalance({ address });
             return res;
         }
