@@ -39,13 +39,13 @@ const lightSocketTheme = {
 const Bridge = () => {
     const { reloadBalances } = useBalances();
     const { lightMode } = useApp();
-    const { currentWallet, client, setChainId } = useWallet();
+    // const { currentWallet, client, setChainId } = useWallet();
 
-    const provider = useMemo(() => {
-        return getEip1193Provider(client);
-    }, [client]);
+    // const provider = useMemo(() => {
+    //     return getEip1193Provider(client);
+    // }, [client]);
 
-    React.useEffect(() => reloadBalances, []);
+    // React.useEffect(() => reloadBalances, []);
 
     if (!SOCKET_BRIDGE_KEY) return null;
     else

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface, UpdatePricesActionPayload } from "./types";
+import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface } from "./types";
 import { utils } from "ethers";
 import { getTokenPricesBackend } from "src/api/token";
 import { defaultChainId } from "src/config/constants";
@@ -15,19 +15,15 @@ const initialState: StateInterface = {
     isLoadedOldPrices: false,
 };
 
-export const updatePrices = createAsyncThunk(
-    "prices/updatePrices",
-    async ({ chainId }: UpdatePricesActionPayload, thunkApi) => {
-        try {
-            if (chainId !== defaultChainId) return;
-            const data = await getTokenPricesBackend();
-            return data?.[String(CHAIN_ID.ARBITRUM)];
-        } catch (error) {
-            console.log("Price unable to fetch", chainId, defaultChainId);
-            console.error(error);
-        }
+export const updatePrices = createAsyncThunk("prices/updatePrices", async (_, thunkApi) => {
+    try {
+        const data = await getTokenPricesBackend();
+        return data;
+    } catch (error) {
+        console.log("Price unable to fetch", defaultChainId);
+        console.error(error);
     }
-);
+});
 
 export const getPricesOfLpByTimestamp = createAsyncThunk(
     "prices/getOldPrices",

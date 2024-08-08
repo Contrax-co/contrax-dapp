@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Token } from "src/types";
-import { noExponents, toFixedFloor } from "src/utils/common";
+import { getNativeCoinInfo, noExponents, toFixedFloor } from "src/utils/common";
 import useFarms from "./farms/useFarms";
 import useBalances from "./useBalances";
 import usePriceOfTokens from "./usePriceOfTokens";
@@ -25,20 +25,13 @@ export enum UIStateEnum {
 
 export const useTokens = () => {
     const { farms } = useFarms();
-    const {
-        balance: ethBalance,
-        chainId,
-        currentWallet,
-        mainnetBalance,
-        polygonBalance,
-        arbitrumBalance,
-    } = useWallet();
+    const { currentWallet, getPublicClient } = useWallet();
     const [tokens, setTokens] = useState<Token[]>([]);
     const [lpTokens, setLpTokens] = useState<Token[]>([]);
     const { decimals } = useDecimals();
 
     const tokenAddresses = useMemo(() => {
-        const set = new Set<string>();
+        const set = new Set<Address>();
         const arr: { address: Address; decimals: number }[] = [];
         for (const farm of farms) {
             set.add(farm.token1);
@@ -46,8 +39,8 @@ export const useTokens = () => {
         }
         set.forEach((address) => {
             const farm = farms.find((farm) => farm.token1 === address || farm.token2 === address);
-            const decimal = decimals[address] || 18;
             if (farm) {
+                const decimal = decimals[farm.chainId][address] || 18;
                 arr.push({ address: address as Address, decimals: decimal });
             }
         });
@@ -80,26 +73,32 @@ export const useTokens = () => {
 
     useEffect(() => {
         const tokens: Token[] = tokenAddresses.map(({ address, decimals }) => {
-            const farm = farms.find((farm) => farm.token1 === address || farm.token2 === address);
+            const farm = farms.find((farm) => farm.token1 === address || farm.token2 === address)!;
             const isToken1 = farm?.token1 === address;
             let obj: Token = {
                 address: address,
                 decimals: decimals,
                 token_type: FarmType.normal,
-                balance: formattedBalances[address]
-                    ? formattedBalances[address]! < 1 / 10 ** tokenBalDecimalPlaces
-                        ? noExponents(formattedBalances[address]!.toPrecision(2)).slice(0, -1)
-                        : toFixedFloor(formattedBalances[address]!, tokenBalDecimalPlaces).toString()
+                balance: formattedBalances[farm.chainId][address]
+                    ? formattedBalances[farm.chainId][address]! < 1 / 10 ** tokenBalDecimalPlaces
+                        ? noExponents(formattedBalances[farm.chainId][address]!.toPrecision(2)).slice(0, -1)
+                        : toFixedFloor(formattedBalances[farm.chainId][address]!, tokenBalDecimalPlaces).toString()
                     : "0",
-                usdBalance: formattedBalances[address]
-                    ? prices[address] * formattedBalances[address]! < 1 / 10 ** usdBalDecimalPlaces
-                        ? noExponents((prices[address] * formattedBalances[address]!).toPrecision(2)).slice(0, -1)
-                        : toFixedFloor(prices[address] * formattedBalances[address]!, usdBalDecimalPlaces).toString()
+                usdBalance: formattedBalances[farm.chainId][address]
+                    ? prices[farm.chainId][address] * formattedBalances[farm.chainId][address]! <
+                      1 / 10 ** usdBalDecimalPlaces
+                        ? noExponents(
+                              (prices[farm.chainId][address] * formattedBalances[farm.chainId][address]!).toPrecision(2)
+                          ).slice(0, -1)
+                        : toFixedFloor(
+                              prices[farm.chainId][address] * formattedBalances[farm.chainId][address]!,
+                              usdBalDecimalPlaces
+                          ).toString()
                     : "0",
                 logo: isToken1 ? farm?.logo1 : farm?.logo2 || "",
                 name: isToken1 ? farm?.name1 : farm?.name2 || "",
-                price: prices[address],
-                networkId: defaultChainId,
+                price: prices[farm.chainId][address],
+                networkId: farm.chainId,
             };
             return obj;
         });
@@ -111,49 +110,63 @@ export const useTokens = () => {
                     address: token.address,
                     decimals: token.decimals,
                     token_type: FarmType.normal,
-                    balance: formattedBalances[token.address]
-                        ? formattedBalances[token.address]! < 1 / 10 ** tokenBalDecimalPlaces
-                            ? noExponents(formattedBalances[token.address]!.toPrecision(2)).slice(0, -1)
-                            : toFixedFloor(formattedBalances[token.address]!, tokenBalDecimalPlaces).toString()
+                    balance: formattedBalances[token.chainId][token.address]
+                        ? formattedBalances[token.chainId][token.address]! < 1 / 10 ** tokenBalDecimalPlaces
+                            ? noExponents(formattedBalances[token.chainId][token.address]!.toPrecision(2)).slice(0, -1)
+                            : toFixedFloor(
+                                  formattedBalances[token.chainId][token.address]!,
+                                  tokenBalDecimalPlaces
+                              ).toString()
                         : "0",
-                    usdBalance: formattedBalances[token.address]
-                        ? prices[token.address] * formattedBalances[token.address]! < 1 / 10 ** usdBalDecimalPlaces
+                    usdBalance: formattedBalances[token.chainId][token.address]
+                        ? prices[token.chainId][token.address] * formattedBalances[token.chainId][token.address]! <
+                          1 / 10 ** usdBalDecimalPlaces
                             ? noExponents(
-                                  (prices[token.address] * formattedBalances[token.address]!).toPrecision(2)
+                                  (
+                                      prices[token.chainId][token.address] *
+                                      formattedBalances[token.chainId][token.address]!
+                                  ).toPrecision(2)
                               ).slice(0, -1)
                             : toFixedFloor(
-                                  prices[token.address] * formattedBalances[token.address]!,
+                                  prices[token.chainId][token.address] *
+                                      formattedBalances[token.chainId][token.address]!,
                                   usdBalDecimalPlaces
                               ).toString()
                         : "0",
                     name: token.name,
                     logo: token.logo,
-                    price: prices[token.address],
+                    price: prices[token.chainId][token.address],
                     networkId: token.chainId,
                 };
                 tokens.push(obj);
             });
 
         const lpTokens: Token[] = lpAddresses.map(({ address, decimals }) => {
-            const farm = farms.find((farm) => getAddress(farm.lp_address) === address);
+            const farm = farms.find((farm) => getAddress(farm.lp_address) === address)!;
             let obj: Token = {
                 address: address,
                 decimals: decimals,
                 token_type: FarmType.advanced,
-                balance: formattedBalances[address]
-                    ? formattedBalances[address]! < 1 / 10 ** tokenBalDecimalPlaces
-                        ? noExponents(formattedBalances[address]!.toPrecision(2)).slice(0, -1)
-                        : toFixedFloor(formattedBalances[address]!, tokenBalDecimalPlaces).toString()
+                balance: formattedBalances[farm.chainId][address]
+                    ? formattedBalances[farm.chainId][address]! < 1 / 10 ** tokenBalDecimalPlaces
+                        ? noExponents(formattedBalances[farm.chainId][address]!.toPrecision(2)).slice(0, -1)
+                        : toFixedFloor(formattedBalances[farm.chainId][address]!, tokenBalDecimalPlaces).toString()
                     : "0",
-                usdBalance: formattedBalances[address]
-                    ? prices[address] * formattedBalances[address]! < 1 / 10 ** usdBalDecimalPlaces
-                        ? noExponents((prices[address] * formattedBalances[address]!).toPrecision(2)).slice(0, -1)
-                        : toFixedFloor(prices[address] * formattedBalances[address]!, usdBalDecimalPlaces).toString()
+                usdBalance: formattedBalances[farm.chainId][address]
+                    ? prices[farm.chainId][address] * formattedBalances[farm.chainId][address]! <
+                      1 / 10 ** usdBalDecimalPlaces
+                        ? noExponents(
+                              (prices[farm.chainId][address] * formattedBalances[farm.chainId][address]!).toPrecision(2)
+                          ).slice(0, -1)
+                        : toFixedFloor(
+                              prices[farm.chainId][address] * formattedBalances[farm.chainId][address]!,
+                              usdBalDecimalPlaces
+                          ).toString()
                     : "0",
                 name: farm?.url_name!,
                 logo: farm?.logo1!,
                 logo2: farm?.logo2,
-                price: prices[address],
+                price: prices[farm.chainId][address],
                 networkId: defaultChainId,
             };
             return obj;
@@ -163,15 +176,15 @@ export const useTokens = () => {
             address: arbTokens.find((item) => item.name === "xTrax")?.address!,
             logo: arbTokens.find((item) => item.name === "xTrax")?.logo!,
             decimals: 18,
-            balance: formattedBalances[traxAddr]
-                ? formattedBalances[traxAddr]! < 1 / 10 ** tokenBalDecimalPlaces
-                    ? noExponents(formattedBalances[traxAddr]!.toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(formattedBalances[traxAddr]!, tokenBalDecimalPlaces).toString()
+            balance: formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]
+                ? formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]! < 1 / 10 ** tokenBalDecimalPlaces
+                    ? noExponents(formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]!.toPrecision(2)).slice(0, -1)
+                    : toFixedFloor(formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]!, tokenBalDecimalPlaces).toString()
                 : "0",
-            usdBalance: formattedBalances[traxAddr]
-                ? formattedBalances[traxAddr]! < 1 / 10 ** tokenBalDecimalPlaces
-                    ? noExponents(formattedBalances[traxAddr]!.toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(formattedBalances[traxAddr]!, tokenBalDecimalPlaces).toString()
+            usdBalance: formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]
+                ? formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]! < 1 / 10 ** tokenBalDecimalPlaces
+                    ? noExponents(formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]!.toPrecision(2)).slice(0, -1)
+                    : toFixedFloor(formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]!, tokenBalDecimalPlaces).toString()
                 : "0",
             name: "xTrax",
             price: 0,
@@ -179,102 +192,35 @@ export const useTokens = () => {
             token_type: FarmType.normal,
         };
 
-        // const ethToken: Token = {
-        //     address: ethAddress,
-        //     token_type: FarmType.normal,
-        //     balance:
-        //         ethBalance < 1 / 10 ** tokenBalDecimalPlaces
-        //             ? noExponents(ethBalance.toPrecision(2)).slice(0, -1)
-        //             : toFixedFloor(ethBalance, tokenBalDecimalPlaces).toString(),
-        //     decimals: 18,
-        //     logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024",
-        //     name: "ETH",
-        //     network: networkId === 1 ? "Mainnet" : "Arbitrum",
-        //     usdBalance:
-        //         ethBalance * prices[ethAddress] < 1 / 10 ** usdBalDecimalPlaces
-        //             ? noExponents((ethBalance * prices[ethAddress]).toPrecision(2)).slice(0, -1)
-        //             : toFixedFloor(ethBalance * prices[ethAddress], usdBalDecimalPlaces).toString(),
-        // };
-        const matic: Token = {
-            address: zeroAddress,
-            token_type: FarmType.normal,
-            balance:
-                Number(polygonBalance?.formatted) < 1
-                    ? noExponents(Number(polygonBalance?.formatted).toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(Number(polygonBalance?.formatted), tokenBalDecimalPlaces).toString(),
-            decimals: 18,
-            logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025",
-            name: "MATIC",
-            network: "Polygon",
-            usdBalance:
-                (polygonBalance?.usdAmount &&
-                    (polygonBalance.usdAmount < 1
-                        ? noExponents((polygonBalance?.usdAmount).toPrecision(2)).slice(0, -1)
-                        : toFixedFloor(polygonBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
-                "0",
-            price: polygonBalance?.price as number,
-            networkId: CHAIN_ID.POLYGON,
-        };
+        Object.entries(formattedBalances).map(([chainId, value]) => {
+            const networkId = Number(chainId);
+            const bal = value[zeroAddress];
+            const token: Token = {
+                address: zeroAddress,
+                logo: getNativeCoinInfo(networkId).logo,
+                decimals: 18,
+                balance: formattedBalances[networkId][zeroAddress]
+                    ? formattedBalances[networkId][zeroAddress]! < 1 / 10 ** tokenBalDecimalPlaces
+                        ? noExponents(formattedBalances[networkId][zeroAddress]!.toPrecision(2)).slice(0, -1)
+                        : toFixedFloor(formattedBalances[networkId][zeroAddress]!, tokenBalDecimalPlaces).toString()
+                    : "0",
+                usdBalance: formattedBalances[networkId][zeroAddress]
+                    ? formattedBalances[networkId][zeroAddress]! < 1 / 10 ** tokenBalDecimalPlaces
+                        ? noExponents(formattedBalances[networkId][zeroAddress]!.toPrecision(2)).slice(0, -1)
+                        : toFixedFloor(formattedBalances[networkId][zeroAddress]!, tokenBalDecimalPlaces).toString()
+                    : "0",
+                name: getNativeCoinInfo(networkId).name,
+                price: 0,
+                networkId: networkId,
+                token_type: FarmType.normal,
+            };
+            tokens.unshift(token);
+        });
+        tokens.unshift(traxToken);
 
-        const ethMainnet: Token = {
-            address: zeroAddress,
-            token_type: FarmType.normal,
-            balance:
-                Number(mainnetBalance?.formatted) < 1
-                    ? noExponents(Number(mainnetBalance?.formatted).toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(Number(mainnetBalance?.formatted), tokenBalDecimalPlaces).toString(),
-            decimals: 18,
-            logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024",
-            name: "ETH",
-            network: "Mainnet",
-            usdBalance:
-                (mainnetBalance?.usdAmount &&
-                    (mainnetBalance.usdAmount < 1
-                        ? noExponents((mainnetBalance?.usdAmount).toPrecision(2)).slice(0, -1)
-                        : toFixedFloor(mainnetBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
-                "0",
-            price: mainnetBalance?.price as number,
-            networkId: CHAIN_ID.MAINNET,
-        };
-        const arbBalance: Token = {
-            address: zeroAddress,
-            token_type: FarmType.normal,
-            balance:
-                Number(arbitrumBalance?.formatted) < 1
-                    ? noExponents(Number(arbitrumBalance?.formatted).toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(Number(arbitrumBalance?.formatted), tokenBalDecimalPlaces).toString(),
-            decimals: 18,
-            logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024",
-            name: "ETH",
-            network: "Arbitrum",
-            usdBalance:
-                (arbitrumBalance?.usdAmount &&
-                    (arbitrumBalance.usdAmount < 1
-                        ? noExponents((arbitrumBalance?.usdAmount).toPrecision(2)).slice(0, -1)
-                        : toFixedFloor(arbitrumBalance?.usdAmount, usdBalDecimalPlaces).toString())) ||
-                "0",
-            price: arbitrumBalance?.price as number,
-            networkId: CHAIN_ID.ARBITRUM,
-        };
-
-        if (Number(arbBalance.usdBalance) >= 0.5 && chainId === CHAIN_ID.ARBITRUM) tokens.unshift(arbBalance);
-        if (Number(matic.usdBalance) >= 0.5 && chainId === CHAIN_ID.POLYGON) tokens.unshift(matic);
-        if (Number(ethMainnet.usdBalance) >= 0.5 && chainId === CHAIN_ID.MAINNET) tokens.unshift(ethMainnet);
-        if (Number(traxToken.balance) >= 0.5 && chainId === CHAIN_ID.ARBITRUM) tokens.unshift(traxToken);
         setTokens(tokens);
         setLpTokens(lpTokens);
-    }, [
-        farms,
-        prices,
-        tokenAddresses,
-        lpAddresses,
-        ethBalance,
-        chainId,
-        formattedBalances,
-        polygonBalance,
-        mainnetBalance,
-        arbitrumBalance,
-    ]);
+    }, [farms, prices, tokenAddresses, lpAddresses, formattedBalances]);
 
     const UIState = useMemo(() => {
         let STATE: UIStateEnum = UIStateEnum.CONNECT_WALLET;

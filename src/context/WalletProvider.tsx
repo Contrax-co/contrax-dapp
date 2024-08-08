@@ -1,43 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as ethers from "ethers";
-import { useQuery } from "@tanstack/react-query";
-import { GET_PRICE_TOKEN } from "src/config/constants/query";
-import { checkPaymasterApproval, getNetworkName, resolveDomainFromAddress, toEth } from "src/utils/common";
-import useBalances from "src/hooks/useBalances";
+import { resolveDomainFromAddress } from "src/utils/common";
 import { useDispatch } from "react-redux";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { CHAIN_ID } from "src/types/enums";
-import { bundlerClient, useEthersProvider } from "src/config/walletConfig";
-import { getTokenPricesBackend } from "src/api/token";
-import {
-    ENTRYPOINT_ADDRESS_V06,
-    ENTRYPOINT_ADDRESS_V07,
-    UserOperation,
-    createSmartAccountClient,
-    providerToSmartAccountSigner,
-} from "permissionless";
-import { KernelEcdsaSmartAccount, signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
-import {
-    Account,
-    Address,
-    Chain,
-    PublicClient,
-    Transport,
-    WalletClient,
-    createPublicClient,
-    createWalletClient,
-    custom,
-    http,
-} from "viem";
-import axios from "axios";
-import { bundlersByChainId, paymastersByChainId } from "src/config/constants/urls";
-// import { arbitrum, mainnet, polygon } from "viem/chains";
+import { SupportedChains } from "src/config/walletConfig";
+import { ENTRYPOINT_ADDRESS_V06 } from "permissionless";
+import { Address, EIP1193Provider, Hex, createPublicClient, createWalletClient, custom, http } from "viem";
 import { EstimateTxGasArgs, IClients } from "src/types";
-import { estimateGas } from "viem/actions";
 import { AlchemySigner, createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
-import { arbitrum, mainnet, polygon } from "@alchemy/aa-core";
+import { defaultChainId } from "src/config/constants";
 
-interface IWalletContext {
+export interface IWalletContext {
     /**
      * The current connect wallet address
      */
@@ -65,23 +39,17 @@ interface IWalletContext {
     //     | ethers.ethers.providers.JsonRpcProvider
     //     | ethers.ethers.providers.Provider;
 
-    /**
-     * Balance of the native eth that the user has
-     */
-    balance: number;
-    setChainId: (x: number) => void;
     getPkey: () => Promise<string | undefined>;
-    polygonBalance?: BalanceResult;
-    mainnetBalance?: BalanceResult;
-    arbitrumBalance?: BalanceResult;
     domainName: null | string;
-    chainId: number;
     isSponsored: boolean;
-    client: IClients;
-    publicClientMainnet: PublicClient;
-    publicClientPolygon: PublicClient;
     isSocial: boolean;
     alchemySigner?: AlchemySigner;
+    externalChainId: number;
+    switchExternalChain: (chainId: number) => Promise<void>;
+    isConnecting: boolean;
+    getPublicClient: (chainId: number) => IClients["public"];
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
+    getClients: (chainId: number) => Promise<IClients>;
 }
 
 type BalanceResult = {
@@ -99,174 +67,62 @@ interface IProps {
     children: React.ReactNode;
 }
 
-const useNativeBalance = (chainId: number): BalanceResult => {
-    const { data: price } = useQuery({
-        queryKey: GET_PRICE_TOKEN(getNetworkName(chainId), ethers.constants.AddressZero),
-        queryFn: () => getTokenPricesBackend(),
-        select(data) {
-            if (data) {
-                return data[String(chainId)][ethers.constants.AddressZero];
-            }
-        },
-        refetchInterval: 60000,
-    });
-    const { balances, mainnetBalances, polygonBalances } = useBalances();
-
-    const balance = useMemo(() => {
-        switch (chainId) {
-            case CHAIN_ID.ARBITRUM:
-                return balances[ethers.constants.AddressZero];
-            case CHAIN_ID.MAINNET:
-                return mainnetBalances[ethers.constants.AddressZero];
-            case CHAIN_ID.POLYGON:
-                return polygonBalances[ethers.constants.AddressZero];
-
-            default:
-                return "0";
-        }
-    }, [chainId, balances, mainnetBalances, polygonBalances]);
-
-    const formatted = useMemo(() => toEth(BigInt(balance || "0") || 0n), [balance]);
-    const usdAmount = useMemo(() => (price || 0) * Number(formatted), [price, formatted]);
-
-    return {
-        price: price || 0,
-        decimals: 18,
-        formatted,
-        value: ethers.BigNumber.from(balance || 0),
-        usdAmount,
-    };
-};
-
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [isConnecting, setIsConnecting] = useState(false);
-    const [smartAccountClient, setSmartAccountClient] = useState<IClients["wallet"]>();
     const [isSponsored] = useState(true);
     const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
     const [gasInErc20] = useState(false);
-    const [chainId, setChainId] = useState(CHAIN_ID.ARBITRUM);
-    const chain = useMemo(() => {
-        switch (chainId) {
-            case CHAIN_ID.ARBITRUM:
-                return arbitrum;
-            case CHAIN_ID.POLYGON:
-                return polygon;
-            case CHAIN_ID.MAINNET:
-                return mainnet;
-            default:
-                return arbitrum;
-        }
-    }, [chainId]);
-    const publicClient = useMemo(() => {
-        return createPublicClient({
-            chain,
-            transport: http(),
-            batch: {
-                multicall: {
-                    batchSize: 4096,
-                    wait: 250,
-                },
-            },
-            cacheTime: undefined,
-        });
-    }, [chain]);
-    const publicClientMainnet = useMemo(() => {
-        return createPublicClient({
-            chain: mainnet,
-            transport: http(),
-            batch: {
-                multicall: {
-                    batchSize: 4096,
-                    wait: 250,
-                },
-            },
-        });
-    }, [chain]);
-    const publicClientPolygon = useMemo(() => {
-        return createPublicClient({
-            chain: polygon,
-            transport: http(),
-            batch: {
-                multicall: {
-                    batchSize: 4096,
-                    wait: 250,
-                },
-            },
-        });
-    }, [chain]);
-    const provider = useEthersProvider(publicClient);
-    const { balances } = useBalances();
-
-    const client = useMemo(
-        () => ({
-            public: publicClient,
-            wallet: smartAccountClient,
-        }),
-        [publicClient, smartAccountClient]
-    );
-
+    const [externalChainId, setExternalChainId] = useState(CHAIN_ID.ARBITRUM);
+    const _publicClients = useRef<Record<number, IClients["public"]>>({});
+    const _walletClients = useRef<Record<number, IClients["wallet"]>>({});
     const dispatch = useDispatch();
-    const polygonBalance = useNativeBalance(CHAIN_ID.POLYGON);
-    const mainnetBalance = useNativeBalance(CHAIN_ID.MAINNET);
-    const arbitrumBalance = useNativeBalance(CHAIN_ID.ARBITRUM);
     const [domainName, setDomainName] = useState<null | string>(null);
-
     const [alchemySigner, setAlchemySigner] = useState<AlchemySigner>();
 
-    useEffect(() => {
-        const _signer = new AlchemySigner({
-            sessionConfig: {
-                expirationTimeMs: 1000 * 60 * 60 * 24 * 7,
-            },
-            client: {
-                connection: {
-                    jwt: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
-                },
-
-                iframeConfig: {
-                    iframeContainerId: "turnkey-iframe-container",
-                },
-            },
+    const switchExternalChain = async (chainId: number) => {
+        await (window.ethereum as EIP1193Provider).request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x" + chainId.toString() }],
         });
-        setAlchemySigner(_signer);
-        return () => {
-            // In strict mode it was giving error that turnkey iframe exits, so in cleanup we are manually cleaning the iframe
-            // @ts-ignore
-            document.querySelector("#turnkey-iframe-container").innerHTML = "";
-        };
-    }, []);
+    };
 
-    const connectWallet = async (isExternal = false) => {
-        try {
-            if (isExternal) {
-                // @ts-ignore
-                const [account] = await window.ethereum!.request({ method: "eth_requestAccounts" });
-                const _walletClient = createWalletClient({
-                    account,
-                    transport: custom(window.ethereum as any),
-                    chain: arbitrum,
-                }).extend((client) => ({
-                    estimateTxGas: (args: EstimateTxGasArgs) => {
-                        return publicClient.estimateGas({
-                            account: client.account,
-                            data: args.data,
-                            to: args.to,
-                            value: args.value ? BigInt(args.value) : undefined,
-                        });
+    const getPublicClient = (chainId: number): IClients["public"] => {
+        // @ts-ignore
+        if (_publicClients.current[chainId]) return _publicClients.current[chainId];
+        else {
+            const chain = SupportedChains.find((item) => item.id === chainId);
+            if (!chain) throw new Error("chain not found");
+            const _publicClient = createPublicClient({
+                chain: chain,
+                transport: http(),
+                batch: {
+                    multicall: {
+                        batchSize: 4096,
+                        wait: 250,
                     },
-                }));
-                // @ts-ignore
-                setSmartAccountClient(_walletClient);
-                setCurrentWallet(_walletClient.account.address);
-                setIsSocial(false);
-                localStorage.setItem("window.ethereum.connected", "yes");
-                return;
-            }
-            setIsSocial(true);
+                },
+            }) as IClients["public"];
+
+            _publicClients.current[chainId] = _publicClient;
+
+            return _publicClient;
+        }
+    };
+
+    // If External, check for chain and switch chain then give wallet client
+    // If social return wallet client
+    const getWalletClient = async (chainId: number, isExternal: boolean | null = null): Promise<IClients["wallet"]> => {
+        const chain = SupportedChains.find((item) => item.id === chainId);
+        if (!chain) throw new Error("chain not found");
+        let _isSocial = isSocial;
+        if (isExternal !== null) _isSocial = !isExternal;
+        if (_isSocial) {
+            if (_walletClients.current[chainId]) return _walletClients.current[chainId];
+
             const _walletClient = await createModularAccountAlchemyClient({
                 apiKey: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
-                chain: arbitrum,
+                chain,
                 signer: alchemySigner!,
             });
             // @ts-ignore
@@ -296,9 +152,65 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 return totalEstimatedGasLimit;
             };
             // @ts-ignore
-            setCurrentWallet(_walletClient.account.address);
+            _walletClients.current[chainId] = _walletClient;
             // @ts-ignore
-            setSmartAccountClient(_walletClient!);
+            return _walletClient;
+        } else {
+            const _publicClient = getPublicClient(chainId);
+            const [account] = await (window.ethereum as EIP1193Provider).request({ method: "eth_requestAccounts" });
+            // TODO: switch chain, if not exists then add network then switch.
+            await (window.ethereum as EIP1193Provider).request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: "0x" + chainId.toString() }],
+            });
+
+            const _walletClient = createWalletClient({
+                account,
+                transport: custom(window.ethereum as any),
+                chain,
+            }).extend((client) => ({
+                estimateTxGas: (args: EstimateTxGasArgs) => {
+                    return _publicClient.estimateGas({
+                        account: client.account,
+                        data: args.data,
+                        to: args.to,
+                        value: args.value ? BigInt(args.value) : undefined,
+                    });
+                },
+            }));
+            return _walletClient;
+        }
+    };
+
+    const getClients = async (chainId: number): Promise<IClients> => {
+        const wallet = await getWalletClient(chainId);
+        return {
+            public: getPublicClient(chainId),
+            wallet,
+        };
+    };
+    const externalWalletChainChanged = useCallback((newChain: Hex) => {
+        setExternalChainId(Number(newChain));
+    }, []);
+
+    const connectWallet = async (isExternal = false) => {
+        try {
+            setIsConnecting(true);
+            if (isExternal) {
+                const _walletClient = await getWalletClient(externalChainId, isExternal);
+                const _internalChain = await (window.ethereum as EIP1193Provider).request({ method: "eth_chainId" });
+                externalWalletChainChanged(_internalChain);
+                (window.ethereum as EIP1193Provider).on("chainChanged", externalWalletChainChanged);
+                setCurrentWallet(_walletClient.account.address);
+                setIsSocial(false);
+                localStorage.setItem("window.ethereum.connected", "yes");
+                return;
+            }
+
+            setIsSocial(true);
+            const _walletClient = await getWalletClient(externalChainId, false);
+            // @ts-ignore
+            setCurrentWallet(_walletClient.account.address);
         } catch (error) {
             console.error(error);
         } finally {
@@ -308,10 +220,11 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     async function logout() {
         setCurrentWallet(undefined);
+        _walletClients.current = {};
+        (window.ethereum as EIP1193Provider).removeListener("chainChanged", externalWalletChainChanged);
         localStorage.removeItem("window.ethereum.connected");
         alchemySigner!.disconnect();
     }
-
     const displayAccount = React.useMemo(
         () =>
             currentWallet
@@ -319,12 +232,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 : "",
         [currentWallet]
     );
-
-    const balance = useMemo(
-        () => Number(ethers.utils.formatUnits(balances[ethers.constants.AddressZero] || 0, 18)),
-        [balances]
-    );
-
     const getPkey = async () => {
         try {
             // const pkey = await web3AuthSigner.inner.provider?.request({ method: "eth_private_key" });
@@ -335,6 +242,30 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             // notifyError(errorMessages.privateKeyError());
         }
     };
+
+    useEffect(() => {
+        const _signer = new AlchemySigner({
+            sessionConfig: {
+                expirationTimeMs: 1000 * 60 * 60 * 24 * 7,
+            },
+            client: {
+                connection: {
+                    jwt: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
+                },
+
+                iframeConfig: {
+                    iframeContainerId: "turnkey-iframe-container",
+                },
+            },
+        });
+        setAlchemySigner(_signer);
+        return () => {
+            // In strict mode it was giving error that turnkey iframe exits, so in cleanup we are manually cleaning the iframe
+            // @ts-ignore
+            document.querySelector("#turnkey-iframe-container").innerHTML = "";
+        };
+    }, []);
+
     React.useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has("bundle") && alchemySigner) {
@@ -351,7 +282,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     React.useEffect(() => {
         const int = setInterval(async () => {
             try {
-                await provider.getBlockNumber();
+                const _publicClient = getPublicClient(defaultChainId);
+                await _publicClient.getBlockNumber();
                 dispatch(resetErrorCount());
             } catch (error) {
                 dispatch(incrementErrorCount());
@@ -361,17 +293,17 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         return () => {
             clearInterval(int);
         };
-    }, [provider]);
+    }, []);
 
     React.useEffect(() => {
-        if (smartAccountClient?.account?.address) {
-            resolveDomainFromAddress(smartAccountClient.account.address).then((res) => {
+        if (currentWallet) {
+            resolveDomainFromAddress(currentWallet).then((res) => {
                 setDomainName(res);
             });
         } else {
             setDomainName(null);
         }
-    }, [smartAccountClient]);
+    }, [currentWallet]);
 
     useEffect(() => {
         const init = async () => {
@@ -409,24 +341,20 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 // currentWallet: "0x74541e279fe87135e43D390aA5eaB8486fb185B9",
                 // currentWallet: "0x240AEDcD6A9fD9f3CA1fE0ED2e122dA87f5836f1",
                 // currentWallet: "0x71dde932c6fdfd6a2b2e9d2f4f1a2729a3d05981",
-                chainId,
                 connectWallet,
                 isSocial,
                 alchemySigner,
                 logout,
                 domainName,
                 displayAccount: displayAccount as Address,
-                balance,
                 getPkey,
-                // @ts-expect-error
-                client,
-                publicClientMainnet,
-                publicClientPolygon,
-                polygonBalance,
-                mainnetBalance,
-                arbitrumBalance,
                 isSponsored,
-                setChainId,
+                externalChainId,
+                switchExternalChain,
+                isConnecting,
+                getPublicClient,
+                getWalletClient,
+                getClients,
             }}
         >
             {children}

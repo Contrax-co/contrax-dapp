@@ -1,6 +1,4 @@
-import { Farm } from "src/types";
 import { useMemo } from "react";
-import useConstants from "../useConstants";
 import useWallet from "../useWallet";
 import { useIsMutating, useMutation } from "@tanstack/react-query";
 import { FARM_WITHDRAW } from "src/config/constants/query";
@@ -11,10 +9,11 @@ import { useDecimals } from "../useDecimals";
 import { toEth } from "src/utils/common";
 import usePriceOfTokens from "../usePriceOfTokens";
 import { parseUnits } from "viem";
+import { PoolDef } from "src/config/constants/pools_json";
 
-const useWithdraw = (farm: Farm) => {
-    const { client, currentWallet, chainId } = useWallet();
-    const { NETWORK_NAME } = useConstants();
+const useWithdraw = (farm: PoolDef) => {
+    const { currentWallet, getClients } = useWallet();
+
     const { reloadBalances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
     const { decimals } = useDecimals();
@@ -22,27 +21,27 @@ const useWithdraw = (farm: Farm) => {
 
     const _withdraw = async ({ withdrawAmount, max }: { withdrawAmount: number; max?: boolean }) => {
         if (!currentWallet) return;
-        let amountInWei = parseUnits(withdrawAmount.toString(), decimals[farm.lp_address] || 18);
-        await farmFunctions[farm.id].withdraw({ amountInWei, currentWallet, client, chainId, max });
+        let amountInWei = parseUnits(withdrawAmount.toString(), decimals[farm.chainId][farm.lp_address] || 18);
+        await farmFunctions[farm.id].withdraw({ amountInWei, currentWallet, getClients, max });
         reloadBalances();
         reloadSupplies();
     };
 
     const slippageWithdraw = async ({ withdrawAmount, max }: { withdrawAmount: number; max?: boolean }) => {
         if (!currentWallet) return;
-        let amountInWei = parseUnits(withdrawAmount.toString(), decimals[farm.lp_address] || 18);
-        //  @ts-ignore
+        let amountInWei = parseUnits(withdrawAmount.toString(), decimals[farm.chainId][farm.lp_address] || 18);
+        //  @ts-expect-error
         const difference = await farmFunctions[farm.id]?.withdrawSlippage({
             amountInWei,
             currentWallet,
-            client,
-            chainId,
+            getClients,
             max,
             farm,
         });
 
-        const afterDepositAmount = Number(toEth(difference, decimals[farm.lp_address])) * prices[farm.lp_address];
-        const beforeDepositAmount = withdrawAmount * prices[farm.lp_address];
+        const afterDepositAmount =
+            Number(toEth(difference, decimals[farm.chainId][farm.lp_address])) * prices[farm.chainId][farm.lp_address];
+        const beforeDepositAmount = withdrawAmount * prices[farm.chainId][farm.lp_address];
         let slippage = (1 - afterDepositAmount / beforeDepositAmount) * 100;
         if (slippage < 0) slippage = 0;
         return { afterDepositAmount, beforeDepositAmount, slippage };
@@ -54,11 +53,11 @@ const useWithdraw = (farm: Farm) => {
         status,
     } = useMutation({
         mutationFn: _withdraw,
-        mutationKey: FARM_WITHDRAW(currentWallet!, NETWORK_NAME, farm?.id || 0),
+        mutationKey: FARM_WITHDRAW(currentWallet!, farm?.id || 0),
     });
 
     const withdrawIsMutating = useIsMutating({
-        mutationKey: FARM_WITHDRAW(currentWallet!, NETWORK_NAME, farm?.id || 0),
+        mutationKey: FARM_WITHDRAW(currentWallet!, farm?.id || 0),
     });
 
     /**

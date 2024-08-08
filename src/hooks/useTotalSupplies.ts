@@ -4,7 +4,7 @@ import useFarms from "./farms/useFarms";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { fetchTotalSupplies } from "src/state/supply/supplyReducer";
 import { useDecimals } from "./useDecimals";
-import { formatUnits } from "viem";
+import { Address, formatUnits } from "viem";
 
 /**
  * Returns total supply for all tokens
@@ -12,7 +12,7 @@ import { formatUnits } from "viem";
 const useTotalSupplies = () => {
     const { farms } = useFarms();
     const { isLoading, totalSupplies, isFetched } = useAppSelector((state) => state.supply);
-    const { chainId, client } = useWallet();
+    const { getPublicClient } = useWallet();
     const dispatch = useAppDispatch();
     const {
         decimals,
@@ -22,20 +22,18 @@ const useTotalSupplies = () => {
     } = useDecimals();
 
     const reloadSupplies = useCallback(() => {
-        dispatch(fetchTotalSupplies({ farms, client }));
-    }, [farms, chainId, dispatch]);
+        dispatch(fetchTotalSupplies({ farms, getPublicClient }));
+    }, [farms, dispatch]);
 
     const formattedSupplies = useMemo(() => {
-        let b: { [key: string]: number | undefined } = {};
-        Object.entries(totalSupplies).map(([key, value]) => {
-            // Formalize the balance
-            if (!value) {
-                b[key] = undefined;
-                return;
-            }
-            const formattedBal = Number(formatUnits(BigInt(value || "0"), decimals[key] || 18));
-            b[key] = formattedBal;
-            return;
+        let b: { [chainId: number]: Record<Address, number> } = {};
+        Object.entries(totalSupplies).map(([chainId, values]) => {
+            b[Number(chainId)] = {};
+            Object.entries(values).forEach(([address, value]: [address: Address, value: string]) => {
+                b[Number(chainId)][address] = Number(
+                    formatUnits(BigInt(value), decimals[Number(chainId)][address] || 18)
+                );
+            });
         });
         return b;
     }, [totalSupplies]);

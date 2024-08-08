@@ -1,26 +1,25 @@
-import { Farm } from "src/types";
-import { PublicClient } from "viem";
+import { PoolDef } from "src/config/constants/pools_json";
+import { IClients } from "src/types";
+import { Address, PublicClient } from "viem";
 
 export interface StateInterface {
     balances: Balances;
-    polygonBalances: Balances;
-    mainnetBalances: Balances;
     isLoading: boolean;
     isFetched: boolean;
-    account: string;
+    account?: Address;
 }
 
 export interface UpdateBalancesActionPayload {
-    account: string;
-    farms: Farm[];
-    publicClient: PublicClient;
+    account: Address;
+    farms: PoolDef[];
+    getPublicClient: (chainId: number) => IClients["public"];
 }
 export interface UpdatePolygonBalancesActionPayload {
-    account: string;
-    addresses: string[];
+    account: Address;
+    addresses: Address[];
     publicClient: PublicClient;
 }
 
 export interface Balances {
-    [key: string]: string | undefined;
+    [chainId: number]: Record<Address, string>;
 }

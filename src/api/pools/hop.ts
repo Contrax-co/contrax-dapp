@@ -1,5 +1,3 @@
-import pools from "src/config/constants/pools.json";
-import { Farm } from "src/types";
 import { toEth } from "src/utils/common";
 import {
     FarmFunctions,
@@ -14,9 +12,10 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { defaultChainId } from "src/config/constants";
 import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
 import { zeroAddress } from "viem";
+import pools_json from "src/config/constants/pools_json";
 
 let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
-    const farm = pools.find((farm) => farm.id === farmId) as Farm;
+    const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
         const ethPrice = prices[zeroAddress];

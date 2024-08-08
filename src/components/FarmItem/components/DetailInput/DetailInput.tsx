@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import useApp from "src/hooks/useApp";
-import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
 import { noExponents } from "src/utils/common";
 import styles from "./DetailInput.module.scss";
@@ -15,9 +14,10 @@ import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmDetailInputOptions } from "src/state/farms/types";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
 import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
+import { PoolDef } from "src/config/constants/pools_json";
 
 interface Props {
-    farm: Farm;
+    farm: PoolDef;
 }
 
 const DetailInput: React.FC<Props> = ({ farm }) => {

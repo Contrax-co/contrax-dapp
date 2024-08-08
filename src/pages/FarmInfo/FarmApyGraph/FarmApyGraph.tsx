@@ -4,14 +4,14 @@ import { VaultsApy } from "src/api/stats";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import useApp from "src/hooks/useApp";
 import { useApy } from "src/hooks/useApy";
-import { Farm } from "src/types";
 import styles from "./FarmApyGraph.module.css";
+import { PoolDef } from "src/config/constants/pools_json";
 
-const FarmApyGraph = ({ farm }: { farm: Farm }) => {
+const FarmApyGraph = ({ farm }: { farm: PoolDef }) => {
     const downsampleData = (data: VaultsApy[]) => {
         if (!data || data.length === 0) return;
 
-        const monthlyData = [];
+        const monthlyData: { date: string; apy: string }[] = [];
         const tempMap: { [key: string]: { date: string; apy: number; count: number } } = {};
 
         data.forEach((entry) => {

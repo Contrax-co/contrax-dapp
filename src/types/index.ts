@@ -11,61 +11,15 @@ import {
     CustomTransport,
     JsonRpcAccount,
     createWalletClient,
+    HttpTransport,
 } from "viem";
 import { ENTRYPOINT_ADDRESS_V07, SmartAccountClient } from "permissionless";
 import { KernelEcdsaSmartAccount } from "permissionless/accounts";
 import { Web3AuthSigner } from "@alchemy/aa-signers/web3auth";
 import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
+import { PoolDef } from "src/config/constants/pools_json";
 
-export interface Farm {
-    isDeprecated?: boolean;
-    id: number;
-    stableCoin?: boolean;
-    originPlatform?: FarmOriginPlatform;
-    master_chef?: string;
-    pool_id?: number;
-    token_type: string;
-    name: string;
-    source: string;
-    url_name: string;
-    name1: string;
-    name2?: string;
-    platform: string;
-    platform_alt: string;
-    total_apy?: number;
-    rewards_apy?: number;
-    platform_logo: string;
-    pair1: string;
-    pair2?: string;
-    token1: Address;
-    token2?: Address;
-    zapper_addr: Address;
-    zapper_abi: any;
-    alt1: string;
-    alt2?: string;
-    logo1: string;
-    logo2?: string;
-    rewards1: string;
-    rewards1_alt: string;
-    rewards2?: string;
-    rewards2_alt?: string;
-    lp_address: Address;
-    decimals: number;
-    decimals1?: number;
-    decimals2?: number;
-    vault_addr: Address;
-    vault_abi: any;
-    lp_abi: any;
-    zap_symbol: string;
-    withdraw_decimals?: number;
-    vault_decimals?: number;
-    zap_currencies?: {
-        symbol: string;
-        address: Address;
-        decimals: number;
-    }[];
-}
-export interface FarmDetails extends Farm {
+export interface FarmDetails extends PoolDef {
     userVaultBalance: number;
     totalVaultBalance: number;
     totalPlatformBalance: number;
@@ -73,7 +27,7 @@ export interface FarmDetails extends Farm {
     apys: Apys;
 }
 
-export interface Vault extends Farm {
+export interface Vault extends PoolDef {
     userVaultBalance: number;
     priceOfSingleToken: number;
     apys: Apys;
@@ -333,5 +287,5 @@ export interface IClients {
     //       ) & {
     //           estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     //       };
-    public: PublicClient;
+    public: PublicClient<HttpTransport, Chain, undefined, undefined>;
 }

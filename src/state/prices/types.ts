@@ -1,4 +1,5 @@
-import { Farm } from "src/types";
+import { PoolDef } from "src/config/constants/pools_json";
+import { Address } from "viem";
 
 export interface StateInterface {
     prices: Prices;
@@ -19,10 +20,6 @@ export interface OldPrices {
 export interface AddPrice {
     [key: string]: number;
 }
-export interface UpdatePricesActionPayload {
-    chainId: number;
-}
-
 export interface GetOldPricesActionPayload {
     lpData: {
         token0: string;
@@ -33,9 +30,9 @@ export interface GetOldPricesActionPayload {
         tokenId: string;
         blockTimestamp: string;
     }[];
-    farms: Farm[];
+    farms: PoolDef[];
 }
 
 export interface Prices {
-    [key: string]: number;
+    [chainId: number]: Record<Address, number>;
 }

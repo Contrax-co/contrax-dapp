@@ -1,13 +1,12 @@
-import { BigNumber, Signer } from "ethers";
+import { PoolDef } from "src/config/constants/pools_json";
 import { Balances } from "src/state/balances/types";
 import { Decimals } from "src/state/decimals/types";
 import { Prices } from "src/state/prices/types";
-import { Farm, IClients } from "src/types";
+import { IClients } from "src/types";
 import { Address } from "viem";
 
 export interface ZapInArgs {
     amountInWei: bigint;
-    chainId: number;
     max?: boolean;
     token: Address;
     balances: Balances;
@@ -15,32 +14,29 @@ export interface ZapInArgs {
     decimals?: Decimals;
     currentWallet: Address;
     tokenIn?: Address;
-    client: IClients;
+    getClients: (chainId: number) => Promise<IClients>;
 }
 
 export interface ZapOutArgs {
     amountInWei: bigint;
     currentWallet: Address;
-    client: IClients;
-    chainId: number;
     max?: boolean;
     token: Address;
+    getClients: (chainId: number) => Promise<IClients>;
 }
 
 export interface DepositArgs {
     amountInWei: bigint;
     currentWallet: Address;
-    client: IClients;
-    chainId: number;
     max?: boolean;
+    getClients: (chainId: number) => Promise<IClients>;
 }
 
 export interface WithdrawArgs {
     amountInWei: bigint;
     currentWallet: Address;
-    client: IClients;
-    chainId: number;
     max?: boolean;
+    getClients: (chainId: number) => Promise<IClients>;
 }
 
 export interface TokenAmounts {
@@ -64,15 +60,15 @@ export interface FarmDataProcessed {
 }
 
 export type DepositFn = (args: DepositArgs) => Promise<void>;
-export type SlippageDepositBaseFn = (args: DepositArgs & { farm: Farm }) => Promise<bigint>;
+export type SlippageDepositBaseFn = (args: DepositArgs & { farm: PoolDef }) => Promise<bigint>;
 export type WithdrawFn = (args: WithdrawArgs) => Promise<void>;
-export type SlippageWithdrawBaseFn = (args: WithdrawArgs & { farm: Farm }) => Promise<bigint>;
+export type SlippageWithdrawBaseFn = (args: WithdrawArgs & { farm: PoolDef }) => Promise<bigint>;
 export type ZapInFn = (args: ZapInArgs) => Promise<void>;
-export type ZapInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<void>;
-export type SlippageInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<bigint>;
-export type SlippageOutBaseFn = (args: ZapOutArgs & { farm: Farm; balances: Balances }) => Promise<bigint>;
+export type ZapInBaseFn = (args: ZapInArgs & { farm: PoolDef }) => Promise<void>;
+export type SlippageInBaseFn = (args: ZapInArgs & { farm: PoolDef }) => Promise<bigint>;
+export type SlippageOutBaseFn = (args: ZapOutArgs & { farm: PoolDef; balances: Balances }) => Promise<bigint>;
 export type ZapOutFn = (args: ZapOutArgs) => Promise<void>;
-export type ZapOutBaseFn = (args: ZapOutArgs & { farm: Farm }) => Promise<void>;
+export type ZapOutBaseFn = (args: ZapOutArgs & { farm: PoolDef }) => Promise<void>;
 export type GetFarmDataProcessedFn = (
     balances: Balances,
     prices: Prices,

@@ -2,43 +2,53 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Address, erc20Abi, getAddress, getContract, zeroAddress } from "viem";
 import { Decimals, StateInterface, UpdateDecimalsActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
-import { defaultChainId } from "src/config/constants";
 
 const initialState: StateInterface = { decimals: {}, isLoading: false, isFetched: false };
 
 export const fetchDecimals = createAsyncThunk(
     "decimals/fetchDecimals",
-    async ({ farms, publicClient }: UpdateDecimalsActionPayload) => {
-        const addresses = new Set<string>();
+    async ({ farms, getPublicClient }: UpdateDecimalsActionPayload) => {
+        const chainIds = farms.reduce((accum, farm) => {
+            if (!accum?.includes(farm.chainId)) accum.push(farm.chainId);
+            return accum;
+        }, [] as number[]);
+        const addresses: Record<number, Set<Address>> = {};
+        chainIds.forEach((chainId) => {
+            addresses[chainId] = new Set();
+        });
         farms.forEach((farm) => {
-            addresses.add(farm.lp_address.toLowerCase());
-            addresses.add(farm.token1.toLowerCase());
-            farm.token2 && addresses.add(farm.token2.toLowerCase());
-            farm.vault_addr && addresses.add(farm.vault_addr.toLowerCase());
+            addresses[farm.chainId].add(getAddress(farm.lp_address));
+            addresses[farm.chainId].add(getAddress(farm.token1));
+            addresses[farm.chainId].add(getAddress(farm.vault_addr));
+            farm.token2 && addresses[farm.chainId].add(getAddress(farm.token2));
         });
         tokens.forEach((token) => {
-            if (token.chainId === defaultChainId) addresses.add(token.address.toLowerCase());
+            addresses[token.chainId].add(getAddress(token.address));
         });
-        const addressesArray = Array.from(addresses);
 
-        let promises = addressesArray.map((address) =>
-            getContract({
-                abi: erc20Abi,
-                address: address as Address,
-                client: {
-                    public: publicClient,
-                },
-            }).read.decimals()
+        let decimals: Decimals = {};
+        await Promise.all(
+            Object.entries(addresses).map(async ([chainId, set]) => {
+                decimals[Number(chainId)] = {};
+                const arr = Array.from(set);
+                const res = await Promise.all(
+                    arr.map((item) =>
+                        getContract({
+                            address: item,
+                            abi: erc20Abi,
+                            client: {
+                                public: getPublicClient(Number(chainId)),
+                            },
+                        }).read.decimals()
+                    )
+                );
+
+                decimals[Number(chainId)][zeroAddress] = 18;
+                res.forEach((item, i) => {
+                    decimals[Number(chainId)][arr[i]] = Number(item);
+                });
+            })
         );
-
-        const decimalsResponses = await Promise.all(promises);
-
-        const decimals: Decimals = decimalsResponses.reduce((accum, decimals, index) => {
-            accum[getAddress(addressesArray[index])] = decimals;
-            return accum;
-        }, {} as Decimals);
-
-        decimals[zeroAddress] = 18;
 
         return decimals;
     }

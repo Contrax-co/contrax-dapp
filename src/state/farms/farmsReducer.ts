@@ -10,7 +10,6 @@ import {
     FetchEarningsAction,
     FarmDetailInputOptions,
 } from "./types";
-import { Contract, BigNumber } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
 import { Address, erc20Abi, getContract } from "viem";
 import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
@@ -38,14 +37,12 @@ export const updateFarmDetails = createAsyncThunk(
         try {
             const data: FarmDetails = {};
             farms.forEach((farm) => {
-                // @ts-ignore
-                if (farmFunctions[farm.id]?.getProcessedFarmData)
-                    data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(
-                        balances,
-                        prices,
-                        decimals,
-                        totalSupplies[farm.vault_addr]
-                    );
+                data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(
+                    balances,
+                    prices,
+                    decimals,
+                    totalSupplies[farm.chainId][farm.vault_addr]
+                );
             });
             const usdcI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "USDC");
             const ethI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "ETH");
@@ -105,9 +102,9 @@ export const updateEarnings = createAsyncThunk(
                 const balance = vaultBalancesResponse[i];
                 const b = vaultBalancesResponse[i + 1];
 
-                let r = balance * BigInt(balances[farms[i / 2].vault_addr]!);
-                if (totalSupplies[farms[i / 2].vault_addr] !== "0")
-                    r = r / BigInt(totalSupplies[farms[i / 2].vault_addr]!);
+                let r = balance * BigInt(balances[farms[i / 2].chainId][farms[i / 2].vault_addr]);
+                if (totalSupplies[farms[i / 2].chainId][farms[i / 2].vault_addr] !== "0")
+                    r = r / BigInt(totalSupplies[farms[i / 2].chainId][farms[i / 2].vault_addr]);
                 if (b < r) {
                     const _withdraw = r - b;
                     const _after = b + _withdraw;
@@ -122,7 +119,9 @@ export const updateEarnings = createAsyncThunk(
                 const farm = farms.find((farm) => farm.vault_addr.toLowerCase() === item.vaultAddress)!;
                 const earnedTokens =
                     BigInt(item.withdraw) + BigInt(withdrawableLpAmount[farm.id]) - BigInt(item.deposit);
-                earnings[farm.id] = Number(toEth(earnedTokens, decimals[farm.lp_address])) * prices[farm.lp_address]!;
+                earnings[farm.id] =
+                    Number(toEth(earnedTokens, decimals[farm.chainId][farm.lp_address])) *
+                    prices[farm.chainId][farm.lp_address]!;
                 if (earnings[farm.id] < 0.0001) earnings[farm.id] = 0;
             });
             thunkApi.dispatch(

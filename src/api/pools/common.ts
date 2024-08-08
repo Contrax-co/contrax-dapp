@@ -1,26 +1,11 @@
-import { Farm } from "src/types";
 import { approveErc20, getBalance } from "src/api/token";
 import { awaitTransaction, getConnectorId, subtractGas } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
-import { blockExplorersByChainId } from "src/config/constants/urls";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
-import {
-    DepositFn,
-    DynamicFarmFunctions,
-    GetFarmDataProcessedFn,
-    SlippageInBaseFn,
-    SlippageOutBaseFn,
-    TokenAmounts,
-    WithdrawFn,
-    ZapInArgs,
-    ZapInBaseFn,
-    ZapInFn,
-    ZapOutBaseFn,
-    ZapOutFn,
-} from "./types";
+import { SlippageInBaseFn, SlippageOutBaseFn, ZapInBaseFn, ZapOutBaseFn } from "./types";
 import { addressesByChainId } from "src/config/constants/contracts";
-import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
-import { backendApi, isGasSponsored } from "..";
+import { web3AuthConnectorId } from "src/config/constants";
+import { isGasSponsored } from "..";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
 import {
     filterAssetChanges,
@@ -31,43 +16,25 @@ import {
     simulateTransaction,
 } from "../tenderly";
 import merge from "lodash.merge";
-import {
-    Account,
-    Address,
-    Chain,
-    HttpTransport,
-    WalletClient,
-    encodeFunctionData,
-    getContract,
-    zeroAddress,
-} from "viem";
+import { Address, encodeFunctionData, getContract, zeroAddress } from "viem";
+import zapperAbi from "src/assets/abis/zapperAbi";
 
-export const zapInBase: ZapInBaseFn = async ({
-    farm,
-    amountInWei,
-    balances,
-    token,
-    currentWallet,
-    client,
-    chainId,
-    max,
-    tokenIn,
-}) => {
+export const zapInBase: ZapInBaseFn = async ({ farm, amountInWei, balances, token, currentWallet, client, max, tokenIn }) => {
     const zapperContract = getContract({
         address: farm.zapper_addr as Address,
-        abi: farm.zapper_abi,
+        abi: zapperAbi,
         client: {
             wallet: client.wallet,
             public: client.public,
         },
     });
-    const wethAddress = addressesByChainId[chainId].wethAddress as Address;
+    const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
     let zapperTxn;
     let notiId;
     try {
         //#region Select Max
         if (max) {
-            amountInWei = BigInt(balances[token] ?? "0");
+            amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
         }
         //#endregion
 
@@ -94,7 +61,7 @@ export const zapInBase: ZapInBaseFn = async ({
             // if we are using zero dev, don't bother
             const connectorId = getConnectorId();
             if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-                const balance = BigInt(balances[zeroAddress] || "0");
+                const balance = BigInt(balances[farm.chainId][zeroAddress] || "0");
                 const afterGasCut = await subtractGas(
                     amountInWei,
                     client,
@@ -102,9 +69,9 @@ export const zapInBase: ZapInBaseFn = async ({
                         to: farm.zapper_addr,
                         value: balance,
                         data: encodeFunctionData({
-                            abi: farm.zapper_abi,
+                            abi: zapperAbi,
                             functionName: "zapInETH",
-                            args: [farm.vault_addr, 0, token],
+                            args: [farm.vault_addr, 0n, token],
                         }),
                     })
                 );
@@ -117,7 +84,7 @@ export const zapInBase: ZapInBaseFn = async ({
             //#endregion
 
             zapperTxn = await awaitTransaction(
-                zapperContract.write.zapInETH([farm.vault_addr, 0, token], {
+                zapperContract.write.zapInETH([farm.vault_addr, 0n, token], {
                     value: amountInWei,
                 }),
                 client
@@ -126,7 +93,7 @@ export const zapInBase: ZapInBaseFn = async ({
         // token zap
         else {
             zapperTxn = await awaitTransaction(
-                zapperContract.write.zapIn([farm.vault_addr, 0, token, amountInWei], {}),
+                zapperContract.write.zapIn([farm.vault_addr, 0n, token, amountInWei], {}),
                 client
             );
         }
@@ -146,10 +113,10 @@ export const zapInBase: ZapInBaseFn = async ({
     }
 };
 
-export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, client, chainId, max }) => {
+export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, client, max }) => {
     const zapperContract = getContract({
         address: farm.zapper_addr as Address,
-        abi: farm.zapper_abi,
+        abi: zapperAbi,
         client,
     });
     let notiId = notifyLoading(loadingMessages.approvingWithdraw());
@@ -180,7 +147,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
             );
         } else {
             withdrawTxn = await awaitTransaction(
-                zapperContract.write.zapOutAndSwap([farm.vault_addr, max ? vaultBalance : amountInWei, token, 0]),
+                zapperContract.write.zapOutAndSwap([farm.vault_addr, max ? vaultBalance : amountInWei, token, 0n]),
                 client
             );
         }
@@ -201,14 +168,14 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
 };
 
 export const slippageIn: SlippageInBaseFn = async (args) => {
-    let { amountInWei, balances, chainId, currentWallet, token, max, client, tokenIn, farm } = args;
+    let { amountInWei, balances, currentWallet, token, max, client, tokenIn, farm } = args;
 
     const zapperContract = getContract({
         address: farm.zapper_addr as Address,
-        abi: farm.zapper_abi,
+        abi: zapperAbi,
         client,
     });
-    const wethAddress = addressesByChainId[chainId].wethAddress as Address;
+    const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
 
     const transaction = {} as Omit<
         TenderlySimulateTransactionBody,
@@ -217,7 +184,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     transaction.from = currentWallet;
 
     if (max) {
-        amountInWei = BigInt(balances[token] ?? "0");
+        amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
     }
     amountInWei = amountInWei;
     if (token !== zeroAddress) {
@@ -251,7 +218,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         // if we are using zero dev, don't bother
         const connectorId = getConnectorId();
         if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-            const balance = BigInt(balances[zeroAddress] || "0");
+            const balance = BigInt(balances[farm.chainId][zeroAddress] || "0");
 
             const afterGasCut = await subtractGas(
                 amountInWei,
@@ -260,9 +227,9 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
                     to: farm.zapper_addr,
                     value: balance,
                     data: encodeFunctionData({
-                        abi: farm.zapper_abi,
+                        abi: zapperAbi,
                         functionName: "zapInETH",
-                        args: [farm.vault_addr, 0, token],
+                        args: [farm.vault_addr, 0n, token],
                     }),
                 })
             );
@@ -272,9 +239,9 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         //#endregion
         const populated = {
             data: encodeFunctionData({
-                abi: farm.zapper_abi,
+                abi: zapperAbi,
                 functionName: "zapInETH",
-                args: [farm.vault_addr, 0, token],
+                args: [farm.vault_addr, 0n, token],
             }),
             value: amountInWei,
         };
@@ -284,9 +251,9 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     } else {
         const populated = {
             data: encodeFunctionData({
-                abi: farm.zapper_abi,
+                abi: zapperAbi,
                 functionName: "zapIn",
-                args: [farm.vault_addr, 0, token, amountInWei],
+                args: [farm.vault_addr, 0n, token, amountInWei],
             }),
             value: "0",
         };
@@ -350,9 +317,9 @@ export const slippageOut: SlippageOutBaseFn = async ({ client, farm, token, max,
     if (token === zeroAddress) {
         const populated = {
             data: encodeFunctionData({
-                abi: farm.zapper_abi,
+                abi: zapperAbi,
                 functionName: "zapOutAndSwapEth",
-                args: [farm.vault_addr, max ? vaultBalance : amountInWei, 0],
+                args: [farm.vault_addr, max ? vaultBalance : amountInWei, 0n],
             }),
             value: "0",
         };
@@ -362,9 +329,9 @@ export const slippageOut: SlippageOutBaseFn = async ({ client, farm, token, max,
     } else {
         const populated = {
             data: encodeFunctionData({
-                abi: farm.zapper_abi,
+                abi: zapperAbi,
                 functionName: "zapOutAndSwap",
-                args: [farm.vault_addr, max ? vaultBalance : amountInWei, token, 0],
+                args: [farm.vault_addr, max ? vaultBalance : amountInWei, token, 0n],
             }),
             value: "0",
         };

@@ -1,17 +1,18 @@
-import { Farm } from "src/types";
-import { PublicClient } from "viem";
+import { PoolDef } from "src/config/constants/pools_json";
+import { IClients } from "src/types";
+import { Address } from "viem";
 
 export interface StateInterface {
-    decimals: Partial<Decimals>;
+    decimals: Decimals;
     isLoading: boolean;
     isFetched: boolean;
 }
 
 export interface UpdateDecimalsActionPayload {
-    farms: Farm[];
-    publicClient: PublicClient;
+    farms: PoolDef[];
+    getPublicClient: (chainId: number) => IClients["public"];
 }
 
 export interface Decimals {
-    [key: string]: number;
+    [chainId: number]: Record<Address, number>;
 }

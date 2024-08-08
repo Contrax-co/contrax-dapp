@@ -1,5 +1,3 @@
-import pools from "src/config/constants/pools.json";
-import { Farm } from "src/types";
 import { approveErc20 } from "src/api/token";
 import { awaitTransaction, getConnectorId, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
@@ -26,10 +24,13 @@ import {
 import { backendApi, isGasSponsored } from "..";
 import { zapOutBase, slippageOut } from "./common";
 import merge from "lodash.merge";
-import { Address, encodeFunctionData, getContract, zeroAddress } from "viem";
+import { Address, encodeFunctionData, getContract, Hex, zeroAddress } from "viem";
+import pools_json from "src/config/constants/pools_json";
+import zapperAbi from "src/assets/abis/zapperAbi";
+import clipperZapperAbi from "src/assets/abis/clipperZapperAbi";
 
 let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
-    const farm = pools.find((farm) => farm.id === farmId) as Farm;
+    const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
         const ethPrice = prices[zeroAddress];
@@ -104,7 +105,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         if (!client.wallet) return;
         const zapperContract = getContract({
             address: farm.zapper_addr as Address,
-            abi: farm.zapper_abi,
+            abi: clipperZapperAbi,
             client,
         });
         const wethAddress = addressesByChainId[chainId].wethAddress;
@@ -153,9 +154,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                             to: farm.zapper_addr,
                             value: balance,
                             data: encodeFunctionData({
-                                abi: farm.zapper_abi,
+                                abi: clipperZapperAbi,
                                 functionName: "zapInETH",
-                                args: [farm.vault_addr, 0, packedInput, packedConfig, r, s],
+                                args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
                             }),
                         })
                     );
@@ -168,7 +169,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 //#endregion
 
                 zapperTxn = await awaitTransaction(
-                    zapperContract.write.zapInETH([farm.vault_addr, 0, packedInput, packedConfig, r, s], {
+                    zapperContract.write.zapInETH([farm.vault_addr, 0n, packedInput, packedConfig, r, s], {
                         value: amountInWei,
                     }),
                     client
@@ -177,7 +178,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             // token zap
             else {
                 zapperTxn = await awaitTransaction(
-                    zapperContract.write.zapIn([farm.vault_addr, 0, packedInput, packedConfig, r, s]),
+                    zapperContract.write.zapIn([farm.vault_addr, 0n, packedInput, packedConfig, r, s]),
                     client
                 );
             }
@@ -202,7 +203,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             args;
         const zapperContract = getContract({
             address: farm.zapper_addr as Address,
-            abi: farm.zapper_abi,
+            abi: zapperAbi,
             client,
         });
         const wethAddress = addressesByChainId[chainId].wethAddress;
@@ -262,9 +263,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                         to: farm.zapper_addr,
                         value: balance,
                         data: encodeFunctionData({
-                            abi: farm.zapper_abi,
+                            abi: clipperZapperAbi,
                             functionName: "zapInETH",
-                            args: [farm.vault_addr, 0, packedInput, packedConfig, r, s],
+                            args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
                         }),
                     })
                 );
@@ -274,9 +275,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             //#endregion
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.zapper_abi,
+                    abi: clipperZapperAbi,
                     functionName: "zapInETH",
-                    args: [farm.vault_addr, 0, packedInput, packedConfig, r, s],
+                    args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
                 }),
                 value: amountInWei,
             };
@@ -286,9 +287,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         } else {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.zapper_abi,
+                    abi: zapperAbi,
                     functionName: "zapIn",
-                    args: [farm.vault_addr, 0, packedInput, packedConfig, r, s],
+                    args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
                 }),
             };
 
@@ -326,8 +327,8 @@ const createClipperData = async (tokenAmountWei: string, depositTokenAddress: st
     const response = await backendApi.post<{
         packedInput: string;
         packedConfig: string;
-        r: string;
-        s: string;
+        r: Hex;
+        s: Hex;
         extraData: {
             tokenAddress: string;
             tokenAmountWei: string;
@@ -336,5 +337,9 @@ const createClipperData = async (tokenAmountWei: string, depositTokenAddress: st
             v: number;
         };
     }>("/clipper/generate-deposit", { sender: zapperAddr, tokenAmountWei, depositTokenAddress });
-    return response.data;
+    return {
+        ...response.data,
+        packedInput: BigInt(response.data.packedInput),
+        packedConfig: BigInt(response.data.packedConfig),
+    };
 };

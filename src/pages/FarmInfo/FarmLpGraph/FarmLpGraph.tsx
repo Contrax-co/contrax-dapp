@@ -1,17 +1,17 @@
 import { useMemo } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
-import { Farm } from "src/types";
 import styles from "./FarmLpGraph.module.css";
 import { LP_Prices } from "src/api/stats";
 import useApp from "src/hooks/useApp";
 import { useLp } from "src/hooks/useLp";
+import { PoolDef } from "src/config/constants/pools_json";
 
-const FarmLpGraph = ({ farm }: { farm: Farm }) => {
+const FarmLpGraph = ({ farm }: { farm: PoolDef }) => {
     const downsampleData = (data: LP_Prices[]) => {
         if (!data || data.length === 0) return;
 
-        const monthlyData = [];
+        const monthlyData: { date: string; lp: string }[] = [];
         const tempMap: { [key: string]: { date: string; lp: number; count: number } } = {};
 
         data.forEach((entry) => {

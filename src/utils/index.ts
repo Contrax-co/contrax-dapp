@@ -1,5 +1,5 @@
 import { TokenInfo } from "@uniswap/widgets";
-import { Farm } from "src/types";
+import { PoolDef } from "src/config/constants/pools_json";
 import { getAddress } from "viem";
 
 export const copyToClipboard = (text: string, cb: Function | null = null) => {
@@ -9,7 +9,7 @@ export const copyToClipboard = (text: string, cb: Function | null = null) => {
     }, 1000);
 };
 
-export const getTokenListForUniswapDeprecated = (farms: Farm[]) => {
+export const getTokenListForUniswapDeprecated = (farms: PoolDef[]) => {
     const tokenList: TokenInfo[] = [];
     for (let i = 0; i < farms.length; i++) {
         const farm = farms[i];

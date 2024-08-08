@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import uniswapTokens from "./uniswapTokens.json";
 import useWallet from "src/hooks/useWallet";
 import useBalances from "src/hooks/useBalances";
@@ -10,20 +10,26 @@ import { getEip1193Provider } from "src/utils/Eip1193Provider";
 // import TokenList from "@uniswap/default-token-list";
 import { Address, erc20Abi, maxUint256, zeroAddress, getContract } from "viem";
 import { awaitTransaction } from "src/utils/common";
+import { CHAIN_ID } from "src/types/enums";
+import { IClients } from "src/types";
 
 interface IProps {}
 
 const Swap: React.FC<IProps> = () => {
-    const { isSocial, client, currentWallet } = useWallet();
+    const { isSocial, currentWallet, getClients, externalChainId } = useWallet();
     const { reloadBalances } = useBalances();
     const { lightMode } = useApp();
     const [inputToken, setInputToken] = useState<Address>(zeroAddress);
+    const [provider, setProvider] = useState<Awaited<ReturnType<typeof getEip1193Provider>>>();
+    const [client, setClient] = useState<IClients>();
 
-    const provider = useMemo(() => {
-        return getEip1193Provider(client);
-    }, [client]);
-
-    React.useEffect(() => reloadBalances, []);
+    React.useEffect(() => {
+        reloadBalances();
+        getClients(CHAIN_ID.ARBITRUM).then(async (client) => {
+            setClient(client);
+            setProvider(getEip1193Provider(client));
+        });
+    }, [externalChainId]);
 
     return (
         <div className="SwapContainer">
@@ -52,13 +58,13 @@ const Swap: React.FC<IProps> = () => {
                     (async function () {
                         if (isSocial && currentWallet && inputToken !== zeroAddress) {
                             const v2Router = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
-                            const bal = await client.public.readContract({
+                            const bal = await client!.public.readContract({
                                 abi: erc20Abi,
                                 address: inputToken,
                                 functionName: "balanceOf",
                                 args: [currentWallet],
                             });
-                            const allowance = await client.public.readContract({
+                            const allowance = await client!.public.readContract({
                                 abi: erc20Abi,
                                 address: inputToken,
                                 functionName: "allowance",
@@ -68,7 +74,7 @@ const Swap: React.FC<IProps> = () => {
                                 const _contract = getContract({
                                     abi: erc20Abi,
                                     address: inputToken,
-                                    client,
+                                    client: client!,
                                 });
                                 // @ts-ignore
                                 await awaitTransaction(_contract.write.approve([v2Router, maxUint256], {}), client);

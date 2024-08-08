@@ -2,7 +2,7 @@ import { notifyError } from "src/api/notify";
 import { defaultChainId } from "src/config/constants";
 import { errorMessages } from "src/config/constants/notifyMessages";
 import store from "src/state";
-import { Farm, IClients } from "src/types";
+import { IClients } from "src/types";
 import { createWeb3Name } from "@web3-name-sdk/core";
 import {
     Address,
@@ -19,11 +19,12 @@ import {
 import { waitForTransactionReceipt } from "viem/actions";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
+import { PoolDef } from "src/config/constants/pools_json";
 
 const web3Name = createWeb3Name();
 
 export const resolveEnsDomain = async (str: string) => {
-    let addr = null;
+    let addr: Address | null = null;
     try {
         addr = getAddress(str) as Address;
     } catch {
@@ -40,7 +41,7 @@ export const resolveDomainFromAddress = async (addr: string) => {
     return name;
 };
 
-export const getLpAddressForFarmsPrice = (farms: Farm[]) => {
+export const getLpAddressForFarmsPrice = (farms: PoolDef[]) => {
     // temp fix for dodo and stargate wrapped token prices
     // the underlyging tokens are named lp, but they are actaully just wrapped versions of platform tokens, so we
     // cannot calculate their price like normal LP, so instead we just use the base token for price
@@ -179,7 +180,9 @@ export const subtractGas = async (
     showError: boolean = true,
     _balance: bigint | undefined = undefined
 ) => {
-    const balance = _balance ? _balance : BigInt(store.getState().balances.balances[zeroAddress] || "0");
+    const balance = _balance
+        ? _balance
+        : BigInt(store.getState().balances.balances[client.public.chain.id][zeroAddress] || "0");
     const gasPrice = await client.public.getGasPrice();
     const gasLimit = await estimatedTx;
     const gasToRemove = gasLimit * gasPrice * 3n;
@@ -246,4 +249,13 @@ export const checkPaymasterApproval = async (client?: IClients) => {
     if (!paymasterApprovalCheckIterator && client)
         paymasterApprovalCheckIterator = checkForPaymasterApprovalGenerator(client);
     else await paymasterApprovalCheckIterator.next();
+};
+
+export const getNativeCoinInfo = (chainId: number) => {
+    switch (chainId) {
+        case 137:
+            return { logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025", decimal: 18, name: "MATIC" };
+        default:
+            return { logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024", decimal: 18, name: "ETH" };
+    }
 };

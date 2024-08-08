@@ -4,9 +4,10 @@ import { FiExternalLink } from "react-icons/fi";
 import useConstants from "src/hooks/useConstants";
 import { customCommify } from "src/utils/common";
 import { BsClipboardData } from "react-icons/bs";
+import { CHAIN_ID } from "src/types/enums";
 export const VaultStatsTable = () => {
     const { vaultStats } = useStats();
-    const { BLOCK_EXPLORER_URL } = useConstants();
+    const { BLOCK_EXPLORER_URL } = useConstants(CHAIN_ID.ARBITRUM);
 
     return (
         <div className={styles.container}>

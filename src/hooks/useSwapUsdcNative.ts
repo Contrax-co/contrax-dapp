@@ -15,12 +15,13 @@ const usdcAddr = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
 const usdceAddress = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 
 const useSwapUsdcNative = () => {
-    const { currentWallet, client } = useWallet();
+    const { currentWallet, getClients } = useWallet();
     const { balances, reloadBalances } = useBalances();
     const [loading, setLoading] = useState(false);
 
     const initateSwap = async (swapAmount?: BigNumber) => {
-        if (!currentWallet || !client.wallet) return;
+        if (!currentWallet) return;
+        const client = await getClients(CHAIN_ID.ARBITRUM);
         const notiId = uuid();
         setLoading(true);
         try {
@@ -30,7 +31,7 @@ const useSwapUsdcNative = () => {
                 CHAIN_ID.ARBITRUM,
                 usdceAddress,
                 usdcAddr,
-                swapAmount ? swapAmount.toString() : balances[usdceAddress]!,
+                swapAmount ? swapAmount.toString() : balances[CHAIN_ID.ARBITRUM][usdceAddress]!,
                 currentWallet
             );
             notifyLoading({ title: "Swapping", message: `Approving USDC.e - 1/3` }, { id: notiId });
@@ -74,7 +75,15 @@ const useSwapUsdcNative = () => {
     };
 
     const formattedBalance = useMemo(
-        () => Number(toEth(BigInt(balances[addressesByChainId[CHAIN_ID.ARBITRUM].bridgedUsdAddress!] || "0"), 6)),
+        () =>
+            Number(
+                toEth(
+                    BigInt(
+                        balances[CHAIN_ID.ARBITRUM][addressesByChainId[CHAIN_ID.ARBITRUM].bridgedUsdAddress!] || "0"
+                    ),
+                    6
+                )
+            ),
         [balances]
     );
     return { initateSwap, formattedBalance, loading };

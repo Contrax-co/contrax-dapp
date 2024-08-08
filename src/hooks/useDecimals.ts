@@ -7,12 +7,12 @@ import useWallet from "./useWallet";
 export const useDecimals = () => {
     const { farms } = useFarms();
     const { isLoading, decimals, isFetched } = useAppSelector((state) => state.decimals);
-    const { client } = useWallet();
+    const { getPublicClient } = useWallet();
     const dispatch = useAppDispatch();
 
     const reloadDecimals = useCallback(() => {
-        if (client.public) dispatch(fetchDecimals({ farms, publicClient: client.public }));
-    }, [farms, dispatch, client?.public]);
+        dispatch(fetchDecimals({ farms, getPublicClient }));
+    }, [farms, dispatch]);
 
     return { isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading, decimals, reloadDecimals };
 };

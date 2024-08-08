@@ -5,14 +5,24 @@ import { useMutation } from "@tanstack/react-query";
 import { TRANSFER_TOKEN } from "src/config/constants/query";
 import useConstants from "./useConstants";
 import { errorMessages } from "src/config/constants/notifyMessages";
-import { awaitTransaction, getConnectorId, subtractGas } from "src/utils/common";
+import { awaitTransaction, getNetworkName, subtractGas } from "src/utils/common";
 
 const useTransfer = () => {
-    const { currentWallet, client, isSponsored } = useWallet();
-    const { NETWORK_NAME } = useConstants();
+    const { currentWallet, isSponsored, getClients } = useWallet();
 
-    const _transferEth = async ({ to, amount, max }: { to: Address; amount: bigint; max?: boolean }) => {
-        if (!client.wallet || !currentWallet) return;
+    const _transferEth = async ({
+        to,
+        amount,
+        max,
+        chainId,
+    }: {
+        to: Address;
+        amount: bigint;
+        max?: boolean;
+        chainId: number;
+    }) => {
+        if (!currentWallet) return;
+        const client = await getClients(chainId);
         const balance = await client.public.getBalance({ address: currentWallet });
         if (max) amount = balance;
         if (!isSponsored) {
@@ -47,13 +57,17 @@ const useTransfer = () => {
         to,
         amount,
         max,
+        chainId,
     }: {
         tokenAddress: Address;
         to: Address;
         amount: bigint;
         max?: boolean;
+        chainId: number;
     }) => {
         if (!currentWallet) return;
+        const client = await getClients(chainId);
+
         const contract = getContract({
             address: tokenAddress,
             abi: erc20Abi,
@@ -66,16 +80,22 @@ const useTransfer = () => {
         return response;
     };
 
-    const _transfer = async (transferInfo: { tokenAddress: Address; to: Address; amount: bigint; max?: boolean }) => {
+    const _transfer = async (transferInfo: {
+        tokenAddress: Address;
+        to: Address;
+        amount: bigint;
+        max?: boolean;
+        chainId: number;
+    }) => {
         return transferInfo.tokenAddress === zeroAddress ? _transferEth(transferInfo) : _transferToken(transferInfo);
     };
 
     const { mutateAsync: transfer } = useMutation({
         mutationFn: _transfer,
-        mutationKey: TRANSFER_TOKEN(currentWallet!, NETWORK_NAME),
+        mutationKey: TRANSFER_TOKEN(currentWallet!),
     });
 
-    const isMutatingToken = useIsMutating({ mutationKey: TRANSFER_TOKEN(currentWallet!, NETWORK_NAME) });
+    const isMutatingToken = useIsMutating({ mutationKey: TRANSFER_TOKEN(currentWallet!) });
 
     return { transfer, isLoading: isMutatingToken > 0 };
 };

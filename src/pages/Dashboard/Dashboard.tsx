@@ -18,7 +18,6 @@ import SupportChatToggle from "src/components/SupportChatToggle/SupportChatToggl
 import ReferralLink from "src/components/ReferralLink/ReferralLink";
 import ReferBanner from "src/components/ReferBanner/ReferBanner";
 import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
-import { CHAIN_ID } from "src/types/enums";
 import { WrongNetwork } from "src/components/WrongNetwork/WrongNetwork";
 import ReferralEarning from "./ReferralEarning/ReferralEarning";
 import { TraxEarning } from "./TraxEarning/TraxEarning";
@@ -40,7 +39,7 @@ function Dashboard() {
     const { lightMode } = useApp();
     const { earnTraxTermsAgreed } = useAppSelector((state) => state.account);
     const { vaults, isFetched } = useVaults();
-    const { currentWallet, displayAccount, chainId, domainName, client } = useWallet();
+    const { currentWallet, displayAccount, domainName } = useWallet();
     const [congModel, setCongModel] = useState(false);
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
@@ -111,7 +110,7 @@ function Dashboard() {
 
                 <div className="dashboard-key-icons" style={currentWallet ? {} : { display: "flex" }}>
                     <SupportChatToggle />
-                    {client?.wallet && (
+                    {currentWallet && (
                         <>
                             <FaKey
                                 color={lightMode ? "var(--color_grey)" : "#ffffff"}
@@ -162,48 +161,44 @@ function Dashboard() {
                     <div className={`dashboard_section outlinedContainer`}>
                         <TokenBalances />
                     </div>
-                    {chainId === CHAIN_ID.ARBITRUM ? (
-                        <div className={`dashboard_section outlinedContainer`}>
-                            {isFetched ? (
-                                <>
-                                    {vaults.length > 0 ? (
-                                        <>
-                                            <p
-                                                className={`dashboard_wallet_title ${
-                                                    lightMode && "dashboard_wallet_title--light"
-                                                }`}
-                                            >
-                                                Staked Tokens
+                    <div className={`dashboard_section outlinedContainer`}>
+                        {isFetched ? (
+                            <>
+                                {vaults.length > 0 ? (
+                                    <>
+                                        <p
+                                            className={`dashboard_wallet_title ${
+                                                lightMode && "dashboard_wallet_title--light"
+                                            }`}
+                                        >
+                                            Staked Tokens
+                                        </p>
+                                        <Vaults />
+                                    </>
+                                ) : (
+                                    <div className="dashboard_video_container">
+                                        <div className="dashboard_para">
+                                            <h1 className="dashboard_video_title">New to Contrax?</h1>
+                                            <p className="dashboard_video_content">
+                                                Watch this demo on how to get started!
                                             </p>
-                                            <Vaults />
-                                        </>
-                                    ) : (
-                                        <div className="dashboard_video_container">
-                                            <div className="dashboard_para">
-                                                <h1 className="dashboard_video_title">New to Contrax?</h1>
-                                                <p className="dashboard_video_content">
-                                                    Watch this demo on how to get started!
-                                                </p>
-                                            </div>
-                                            <iframe
-                                                className="dashboard_iframe_video"
-                                                style={{ aspectRatio: "1.7777" }}
-                                                src="https://www.youtube.com/embed/cqJkiNrbVqk?si=XUyQiNVGbg99NnP1"
-                                                title="YouTube video player"
-                                                frameBorder="0"
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                                allowFullScreen
-                                            ></iframe>
                                         </div>
-                                    )}
-                                </>
-                            ) : (
-                                <Skeleton w={"100%"} h={250} bRadius={20} inverted={false} />
-                            )}
-                        </div>
-                    ) : (
-                        <WrongNetwork />
-                    )}
+                                        <iframe
+                                            className="dashboard_iframe_video"
+                                            style={{ aspectRatio: "1.7777" }}
+                                            src="https://www.youtube.com/embed/cqJkiNrbVqk?si=XUyQiNVGbg99NnP1"
+                                            title="YouTube video player"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <Skeleton w={"100%"} h={250} bRadius={20} inverted={false} />
+                        )}
+                    </div>
                 </>
             ) : (
                 <NotSignedIn />

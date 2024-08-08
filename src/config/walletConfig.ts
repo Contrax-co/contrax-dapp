@@ -1,29 +1,19 @@
 import { useMemo } from "react";
-import { arbitrum, mainnet, polygon } from "viem/chains";
-import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
+import { arbitrum, mainnet, polygon, optimism, linea, bsc } from "viem/chains";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import {
-    ALCHEMY_KEY,
-    INFURA_KEY,
-    POLLING_INTERVAL,
-    WEB3AUTH_CLIENT_ID,
-    isDev,
-    walletConnectProjectId,
-} from "./constants";
+import { POLLING_INTERVAL, WEB3AUTH_CLIENT_ID } from "./constants";
 import { Web3Auth } from "@web3auth/modal";
 import { providers } from "ethers";
 import { PublicClient, WalletClient, http, type HttpTransport } from "viem";
-import { WalletConnectV2Adapter } from "@web3auth/wallet-connect-v2-adapter";
-import { ENTRYPOINT_ADDRESS_V07, createBundlerClient } from "permissionless";
-import { bundlersByChainId } from "./constants/urls";
-import { CHAIN_ID } from "src/types/enums";
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
 const clientId = WEB3AUTH_CLIENT_ID as string;
 // arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
 // arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
+
+export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc];
 
 const PrivateKeyProvider = new EthereumPrivateKeyProvider({
     config: {
@@ -44,12 +34,6 @@ export const web3AuthInstance = new Web3Auth({
     clientId,
     web3AuthNetwork: "cyan",
     privateKeyProvider: PrivateKeyProvider,
-});
-
-export const bundlerClient = createBundlerClient({
-    chain: arbitrum,
-    transport: http(bundlersByChainId[CHAIN_ID.ARBITRUM]),
-    entryPoint: ENTRYPOINT_ADDRESS_V07,
 });
 
 const openloginAdapter = new OpenloginAdapter({

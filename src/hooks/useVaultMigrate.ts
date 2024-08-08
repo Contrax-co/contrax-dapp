@@ -5,11 +5,12 @@ import { Address, erc20Abi, getContract, zeroAddress } from "viem";
 import { estimateGas, getBalance, getGasPrice, waitForTransactionReceipt } from "viem/actions";
 import useNotify from "./useNotify";
 import useWeb3Auth from "./useWeb3Auth";
+import { CHAIN_ID } from "src/types/enums";
 
 const useVaultMigrate = () => {
     const { farms } = useFarms();
     const { connect, disconnect, connected } = useWeb3Auth();
-    const { client, currentWallet } = useWallet();
+    const { currentWallet, getPublicClient } = useWallet();
     const { notifyLoading, dismissNotify, notifySuccess, notifyError } = useNotify();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +31,7 @@ const useVaultMigrate = () => {
     }, [farms]);
 
     const migrate = async () => {
+        const publicClient = getPublicClient(CHAIN_ID.ARBITRUM);
         if (!currentWallet) {
             alert("Login first!");
             return;
@@ -44,12 +46,12 @@ const useVaultMigrate = () => {
                     address: item,
                     abi: erc20Abi,
                     client: {
-                        public: client.public,
+                        public: publicClient,
                     },
                 }).read.balanceOf([_walletClient!.account!.address])
             );
             const balances = await Promise.all(promises);
-            const ethBal = await client.public.getBalance({ address: _walletClient!.account!.address });
+            const ethBal = await publicClient.getBalance({ address: _walletClient!.account!.address });
             const data = tokenAddress
                 .map((item, i) => ({
                     tokenAddress: item,

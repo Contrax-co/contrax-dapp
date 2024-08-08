@@ -3,15 +3,15 @@ import useDeposit from "src/hooks/farms/useDeposit";
 import useWithdraw from "src/hooks/farms/useWithdraw";
 import useZapIn from "src/hooks/farms/useZapIn";
 import useZapOut from "src/hooks/farms/useZapOut";
-import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import useWallet from "src/hooks/useWallet";
 import { useAppDispatch, useAppSelector } from "src/state";
 import usePriceOfTokens from "./usePriceOfTokens";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
+import { PoolDef } from "src/config/constants/pools_json";
 
-export const useDetailInput = (farm: Farm) => {
+export const useDetailInput = (farm: PoolDef) => {
     const [amount, setAmount] = useState("");
     const [slippage, setSlippage] = useState<number>();
     const [fetchingSlippage, setFetchingSlippage] = useState(false);
@@ -69,9 +69,9 @@ export const useDetailInput = (farm: Farm) => {
             }
         } else {
             if (showInUsd) {
-                return amt / prices[farm.vault_addr];
+                return amt / prices[farm.chainId][farm.vault_addr];
             } else {
-                return (amt * withdrawable?.price!) / prices[farm.vault_addr];
+                return (amt * withdrawable?.price!) / prices[farm.chainId][farm.vault_addr];
             }
         }
     };

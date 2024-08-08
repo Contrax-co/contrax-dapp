@@ -6,18 +6,14 @@ import styles from "./TokenBalances.module.scss";
 import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { TransferToken } from "src/components/modals/TransferToken/TransferToken";
 import { Token } from "src/types";
-import { useNavigate } from "react-router-dom";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
-import useWallet from "src/hooks/useWallet";
 
 interface IProps {}
 
 export const TokenBalances: FC<IProps> = () => {
     const { lightMode } = useApp();
-    const { tokens, lpTokens, isLoading, UIState } = useTokens();
-    const navigate = useNavigate();
+    const { tokens, lpTokens, UIState } = useTokens();
     const [selectedToken, setSelectedToken] = useState<Token>();
-    const { chainId } = useWallet();
 
     const handleCloseModal = useCallback(() => setSelectedToken(undefined), [setSelectedToken]);
 
@@ -50,11 +46,7 @@ export const TokenBalances: FC<IProps> = () => {
                             <div
                                 key={i}
                                 className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                                onClick={() =>
-                                    chainId === token.networkId
-                                        ? setSelectedToken(token)
-                                        : navigate("/exchange/?tab=Bridge")
-                                }
+                                onClick={() => setSelectedToken(token)}
                             >
                                 <img className={styles.tokenLogo} src={token.logo} alt="logo" />
                                 <div>
@@ -98,11 +90,7 @@ export const TokenBalances: FC<IProps> = () => {
                                 <div
                                     key={i}
                                     className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                                    onClick={() =>
-                                        chainId === token.networkId
-                                            ? setSelectedToken(token)
-                                            : navigate("/exchange/?tab=Bridge")
-                                    }
+                                    onClick={() => setSelectedToken(token)}
                                 >
                                     <span style={{ display: "flex" }}>
                                         <img

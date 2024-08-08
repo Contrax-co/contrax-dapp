@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Farm } from "src/types";
 import { toEth, toWei } from "src/utils/common";
 import { useDecimals } from "./useDecimals";
 import usePriceOfTokens from "./usePriceOfTokens";
@@ -7,14 +6,15 @@ import useWallet from "./useWallet";
 import useBalances from "./useBalances";
 import farmFunctions from "src/api/pools";
 import { Address, zeroAddress } from "viem";
+import { PoolDef } from "src/config/constants/pools_json";
 
-export const useSlippageDeposit = (maxAmounts: number[], tokens: Address[], farm: Farm) => {
+export const useSlippageDeposit = (maxAmounts: number[], tokens: Address[], farm: PoolDef) => {
     const [slippageAmounts, setSlippageAmounts] = useState<{ [key: string]: number }>({});
     const [loadingDeposit, setLoadingDeposit] = useState(false);
     const { decimals } = useDecimals();
     const { balances } = useBalances();
     const { prices } = usePriceOfTokens();
-    const { currentWallet, client, chainId } = useWallet();
+    const { currentWallet, getClients } = useWallet();
 
     const fetchSlippage = async () => {
         setLoadingDeposit(true);
@@ -23,28 +23,28 @@ export const useSlippageDeposit = (maxAmounts: number[], tokens: Address[], farm
             for (const token of tokens) {
                 let amt;
                 if (token === zeroAddress) {
-                    amt = maxAmount / prices[zeroAddress];
+                    amt = maxAmount / prices[farm.chainId][zeroAddress];
                 } else {
                     amt = maxAmount;
                 }
-                let amountInWei = toWei(amt, decimals[token]);
+                let amountInWei = toWei(amt, decimals[farm.chainId][token]);
                 try {
                     const difference = await farmFunctions[farm.id]?.zapInSlippage?.(
                         {
                             currentWallet: currentWallet!,
                             amountInWei,
                             balances,
-                            chainId,
                             max: false,
                             token,
                             prices,
                             decimals: decimals as any,
-                            client,
                             farm,
+                            getClients,
                         }!
                     )!;
-                    const afterDepositAmount = Number(toEth(difference, farm.decimals)) * prices[farm.vault_addr];
-                    const beforeDepositAmount = amt * prices[token];
+                    const afterDepositAmount =
+                        Number(toEth(difference, farm.decimals)) * prices[farm.chainId][farm.vault_addr];
+                    const beforeDepositAmount = amt * prices[farm.chainId][token];
                     let slippage = (1 - afterDepositAmount / beforeDepositAmount) * 100;
                     if (slippage < 0) slippage = 0;
                     newSlippageAmounts[`${maxAmount}-${token}`] = slippage;
@@ -64,20 +64,20 @@ export const useSlippageDeposit = (maxAmounts: number[], tokens: Address[], farm
     return { slippageAmounts, loadingDeposit };
 };
 
-export const useSlippageWithdraw = (maxAmounts: number[], tokens: Address[], farm: Farm) => {
+export const useSlippageWithdraw = (maxAmounts: number[], tokens: Address[], farm: PoolDef) => {
     const [slippageAmounts, setSlippageAmounts] = useState<{ [key: string]: number }>({});
     const [loadingWithdraw, setLoadingWithdraw] = useState(false);
     const { decimals } = useDecimals();
     const { balances } = useBalances();
     const { prices } = usePriceOfTokens();
-    const { client, currentWallet, chainId } = useWallet();
+    const { currentWallet, getClients } = useWallet();
 
     const fetchSlippage = async () => {
         setLoadingWithdraw(true);
         const newSlippageAmounts: { [key: string]: number } = {};
         for (const maxAmount of maxAmounts) {
             for (const token of tokens) {
-                let amt = maxAmount / prices[farm.vault_addr];
+                let amt = maxAmount / prices[farm.chainId][farm.vault_addr];
 
                 let amountInWei = toWei(amt, farm.decimals);
                 try {
@@ -85,14 +85,14 @@ export const useSlippageWithdraw = (maxAmounts: number[], tokens: Address[], far
                         currentWallet: currentWallet!,
                         amountInWei,
                         balances,
-                        chainId,
                         max: false,
                         token,
-                        client,
                         farm,
+                        getClients,
                     })!;
-                    const afterWithdrawAmount = Number(toEth(difference, decimals[token])) * prices[token];
-                    const beforeWithdrawAmount = amt * prices[farm.vault_addr];
+                    const afterWithdrawAmount =
+                        Number(toEth(difference, decimals[farm.chainId][token])) * prices[farm.chainId][token];
+                    const beforeWithdrawAmount = amt * prices[farm.chainId][farm.vault_addr];
                     let slippage = (1 - afterWithdrawAmount / beforeWithdrawAmount) * 100;
                     if (slippage < 0) slippage = 0;
 

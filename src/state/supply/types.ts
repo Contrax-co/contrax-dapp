@@ -1,16 +1,18 @@
-import { Farm, IClients } from "src/types";
+import { PoolDef } from "src/config/constants/pools_json";
+import { IClients } from "src/types";
+import { Address } from "viem";
 
 export interface StateInterface {
-    totalSupplies: Partial<TotalSupplies>;
+    totalSupplies: TotalSupplies;
     isLoading: boolean;
     isFetched: boolean;
 }
 
 export interface UpdateBalancesActionPayload {
-    farms: Farm[];
-    client: Omit<IClients, "wallet">;
+    farms: PoolDef[];
+    getPublicClient: (chainId: number) => IClients["public"];
 }
 
 export interface TotalSupplies {
-    [key: string]: string;
+    [chainId: number]: Record<Address, string>;
 }
