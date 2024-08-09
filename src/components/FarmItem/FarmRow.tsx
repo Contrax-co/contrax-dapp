@@ -115,7 +115,8 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                             <b>Base APRs</b>
                                         </p>
                                         ${
-                                            farmApys && parseFloat(farmApys.rewardsApr.toString())
+                                            farmApys &&
+                                            parseFloat((farmApys.compounding + farmApys.rewardsApr).toString())
                                                 ? `<p>Compounding Rewards: ${toFixedFloor(
                                                       farmApys.rewardsApr + farmApys.compounding,
                                                       3
