@@ -72,7 +72,7 @@ export type ZapOutBaseFn = (args: ZapOutArgs & { farm: PoolDef }) => Promise<voi
 export type GetFarmDataProcessedFn = (
     balances: Balances,
     prices: Prices,
-    decimals: Partial<Decimals>,
+    decimals: Decimals,
     vaultTotalSupply: string | undefined
 ) => FarmDataProcessed;
 export interface FarmFunctions {

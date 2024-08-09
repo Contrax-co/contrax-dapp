@@ -1,5 +1,3 @@
-import pools from "src/config/constants/pools.json";
-import { Farm } from "src/types";
 import { approveErc20 } from "src/api/token";
 import { awaitTransaction, getConnectorId, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
@@ -27,33 +25,39 @@ import {
 import { isGasSponsored } from "..";
 import { zapOutBase, slippageOut } from "./common";
 import merge from "lodash.merge";
-import { Address, encodeFunctionData, getContract, zeroAddress } from "viem";
+import pools_json from "src/config/constants/pools_json";
+import steerZapperAbi from "src/assets/abis/steerZapperAbi";
+import { encodeFunctionData, getContract, zeroAddress } from "viem";
 
 let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
-    const farm = pools.find((farm) => farm.id === farmId) as Farm;
+    const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
-        const ethPrice = prices[zeroAddress];
-        const vaultTokenPrice = prices[farm.vault_addr];
-        const vaultBalance = BigInt(balances[farm.vault_addr] || 0);
+        const ethPrice = prices[farm.chainId][zeroAddress];
+        const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
+        const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr]);
+        const zapCurriences = farm.zap_currencies;
 
-        const usdcAddress = addressesByChainId[defaultChainId].usdcAddress as Address;
+        const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
         let depositableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress]),
+                amount: toEth(BigInt(balances[farm.chainId][usdcAddress]), decimals[farm.chainId][usdcAddress]),
                 amountDollar: (
-                    Number(toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress])) * prices[usdcAddress]
+                    Number(toEth(BigInt(balances[farm.chainId][usdcAddress]), decimals[farm.chainId][usdcAddress])) *
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
             },
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(BigInt(balances[zeroAddress]!), 18),
-                amountDollar: (Number(toEth(BigInt(balances[zeroAddress]!), 18)) * ethPrice).toString(),
+                amount: toEth(BigInt(balances[farm.chainId][zeroAddress]), 18),
+                amountDollar: (
+                    Number(toEth(BigInt(balances[farm.chainId][zeroAddress]), 18)) * ethPrice
+                ).toString(),
                 price: ethPrice,
             },
         ];
@@ -64,10 +68,10 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 tokenSymbol: "USDC",
                 amount: (
                     (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[usdcAddress]
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
                 isPrimaryVault: true,
             },
             {
@@ -94,50 +98,27 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         balances,
         token,
         currentWallet,
-        client,
-        chainId,
         max,
         tokenIn,
+        getClients,
         prices,
         decimals,
     }) => {
+        const client = await getClients(farm.chainId);
         const zapperContract = getContract({
-            address: farm.zapper_addr as Address,
-            abi: farm.zapper_abi,
+            address: farm.zapper_addr,
+            abi: steerZapperAbi,
             client,
         });
 
-        const wethAddress = addressesByChainId[chainId].wethAddress as Address;
+        const wethAddress = addressesByChainId[farm.chainId].wethAddress;
         let zapperTxn;
         let notiId;
         try {
             //#region Select Max
             if (max) {
-                amountInWei = BigInt(balances[token] ?? "0");
+                amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
             }
-
-            //#region Token Amounts
-            const vaultContract = getContract({
-                address: farm.vault_addr as Address,
-                abi: farm.vault_abi,
-                client,
-            });
-            // @ts-ignore
-            const steerVaultTokens = (await zapperContract.read.steerVaultTokens([farm.vault_addr])) as Address[];
-            // @ts-ignore
-            const getTotalAmounts = (await zapperContract.read.getTotalAmounts([farm.vault_addr])) as bigint[];
-
-            const token0Staked =
-                prices![steerVaultTokens[0]] * Number(toEth(getTotalAmounts[0], decimals![steerVaultTokens[0]]));
-            const token1Staked =
-                prices![steerVaultTokens[1]] * Number(toEth(getTotalAmounts[1], decimals![steerVaultTokens[1]]));
-
-            const token0Amount =
-                (amountInWei * BigInt(((token0Staked / (token0Staked + token1Staked)) * 10 ** 12).toFixed())) /
-                10n ** 12n;
-
-            const token1Amount = amountInWei - token0Amount;
-            //#endregion Token Amounts
 
             // #region Approve
             // first approve tokens, if zap is not in eth
@@ -161,9 +142,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 //#region Gas Logic
                 // if we are using zero dev, don't bother
                 const connectorId = getConnectorId();
-                // TODO: modify isGasSponsored
                 if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-                    const balance = BigInt(balances[zeroAddress] || 0);
+                    const balance = BigInt(balances[farm.chainId][zeroAddress]);
 
                     const afterGasCut = await subtractGas(
                         amountInWei,
@@ -172,9 +152,9 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                             to: farm.zapper_addr,
                             value: balance,
                             data: encodeFunctionData({
-                                abi: farm.zapper_abi,
+                                abi: steerZapperAbi,
                                 functionName: "zapInETH",
-                                args: [farm.vault_addr, 0, token, token0Amount, token1Amount],
+                                args: [farm.vault_addr, 0n, token],
                             }),
                         })
                     );
@@ -187,7 +167,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 //#endregion
 
                 zapperTxn = await awaitTransaction(
-                    zapperContract.write.zapInETH([farm.vault_addr, 0, token, token0Amount, token1Amount], {
+                    zapperContract.write.zapInETH([farm.vault_addr, 0n, token], {
                         value: amountInWei,
                     }),
                     client
@@ -196,7 +176,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             // token zap
             else {
                 zapperTxn = await awaitTransaction(
-                    zapperContract.write.zapIn([farm.vault_addr, 0, token, token0Amount, token1Amount]),
+                    zapperContract.write.zapIn([farm.vault_addr, 0n, token, amountInWei]),
                     client
                 );
             }
@@ -210,22 +190,21 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             // #endregion
         } catch (error: any) {
             console.log(error);
+            let err = JSON.parse(JSON.stringify(error));
             notiId && dismissNotify(notiId);
-            notifyError(errorMessages.generalError(error.shortDetails || error.details || error.message));
+            notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };
 
     const slippageIn: SlippageInBaseFn = async (args) => {
-        let { amountInWei, balances, chainId, currentWallet, token, max, client, tokenIn, farm, decimals, prices } =
-            args;
-
+        let { amountInWei, balances, currentWallet, token, max, getClients, tokenIn, farm, decimals, prices } = args;
+        const client = await getClients(farm.chainId);
         const zapperContract = getContract({
-            address: farm.zapper_addr as Address,
-            abi: farm.zapper_abi,
+            address: farm.zapper_addr,
+            abi: steerZapperAbi,
             client,
         });
-        console.log("zapperContract =>", zapperContract);
-        const wethAddress = addressesByChainId[chainId].wethAddress as Address;
+        const wethAddress = addressesByChainId[farm.chainId].wethAddress;
 
         const transaction = {} as Omit<
             TenderlySimulateTransactionBody,
@@ -234,32 +213,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         transaction.from = currentWallet;
 
         if (max) {
-            amountInWei = BigInt(balances[token] ?? "0");
+            amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
         }
-
-        //#region Token Amounts
-        const vaultContract = getContract({
-            address: farm.vault_addr as Address,
-            abi: farm.vault_abi,
-            client,
-        });
-        console.log("vaultContract =>", vaultContract);
-        // @ts-ignore
-        const steerVaultTokens: string[] = (await zapperContract.read.steerVaultTokens([farm.vault_addr])) as unknown;
-        console.log("steerVaultTokens =>", steerVaultTokens);
-        // @ts-ignore
-        const getTotalAmounts: bigint[] = (await zapperContract.read.getTotalAmounts([farm.vault_addr])) as unknown;
-        console.log("getTotalAmounts =>", getTotalAmounts);
-
-        const token0Staked =
-            prices![steerVaultTokens[0]] * Number(toEth(getTotalAmounts[0], decimals![steerVaultTokens[0]]));
-        const token1Staked =
-            prices![steerVaultTokens[1]] * Number(toEth(getTotalAmounts[1], decimals![steerVaultTokens[1]]));
-
-        const token0Amount =
-            (amountInWei * BigInt(((token0Staked / (token0Staked + token1Staked)) * 10 ** 12).toFixed())) / 10n ** 12n;
-        const token1Amount = amountInWei - token0Amount;
-        //#endregion Token Amounts
 
         if (token !== zeroAddress) {
             transaction.state_overrides = getAllowanceStateOverride([
@@ -290,8 +245,10 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             //#region Gas Logic
             // if we are using zero dev, don't bother
             const connectorId = getConnectorId();
-            if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-                const balance = BigInt(balances[zeroAddress] || 0);
+            // Check if max to subtract gas, cause we want simulations to work for amount which exceeds balance
+            // And subtract gas won't work cause it estimates gas for tx, and tx will fail insufficent balance
+            if ((connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) && max) {
+                const balance = BigInt(balances[farm.chainId][zeroAddress]);
                 const afterGasCut = await subtractGas(
                     amountInWei,
                     client,
@@ -299,9 +256,9 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                         to: farm.zapper_addr,
                         value: balance,
                         data: encodeFunctionData({
-                            abi: farm.zapper_abi,
+                            abi: steerZapperAbi,
                             functionName: "zapInETH",
-                            args: [farm.vault_addr, 0, token, token0Amount, token1Amount],
+                            args: [farm.vault_addr, 0n, token],
                         }),
                     })
                 );
@@ -311,9 +268,9 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             //#endregion
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.zapper_abi,
+                    abi: steerZapperAbi,
                     functionName: "zapInETH",
-                    args: [farm.vault_addr, 0, token, token0Amount, token1Amount],
+                    args: [farm.vault_addr, 0n, token],
                 }),
                 value: amountInWei,
             };
@@ -323,11 +280,11 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         } else {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.zapper_abi,
+                    abi: steerZapperAbi,
                     functionName: "zapIn",
-                    args: [farm.vault_addr, 0, token, token0Amount, token1Amount],
+                    args: [farm.vault_addr, 0n, token, amountInWei],
                 }),
-                value: 0,
+                value: amountInWei,
             };
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();

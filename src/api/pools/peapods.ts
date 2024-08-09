@@ -1,5 +1,3 @@
-import pools from "src/config/constants/pools.json";
-import { Farm } from "src/types";
 import { approveErc20, getBalance } from "src/api/token";
 import { awaitTransaction, getConnectorId, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
@@ -7,7 +5,6 @@ import { addressesByChainId } from "src/config/constants/contracts";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 import {
     DepositFn,
-    DynamicFarmFunctions,
     FarmFunctions,
     GetFarmDataProcessedFn,
     SlippageDepositBaseFn,
@@ -27,6 +24,9 @@ import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulat
 import { isGasSponsored } from "..";
 import { FarmType } from "src/types/enums";
 import { encodeFunctionData, getContract, zeroAddress } from "viem";
+import pools_json from "src/config/constants/pools_json";
+import vaultAbi from "src/assets/abis/vaultAbi";
+import zapperAbi from "src/assets/abis/zapperAbi";
 
 const apAbi = [
     {
@@ -51,12 +51,12 @@ const apAbi = [
     },
 ] as const;
 let peapods = function (farmId: number): FarmFunctions {
-    const farm = pools.find((farm) => farm.id === farmId) as Farm;
+    const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
-        const ethPrice = prices[zeroAddress];
-        const vaultTokenPrice = prices[farm.vault_addr];
-        const vaultBalance = BigInt(balances[farm.vault_addr] || 0);
+        const ethPrice = prices[farm.chainId][zeroAddress];
+        const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
+        const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
         const zapCurriences = farm.zap_currencies;
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
@@ -65,8 +65,8 @@ let peapods = function (farmId: number): FarmFunctions {
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(BigInt(balances[zeroAddress]!), 18),
-                amountDollar: (Number(toEth(BigInt(balances[zeroAddress]!), 18)) * ethPrice).toString(),
+                amount: toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18),
+                amountDollar: (Number(toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18)) * ethPrice).toString(),
                 price: ethPrice,
             },
         ];
@@ -85,43 +85,46 @@ let peapods = function (farmId: number): FarmFunctions {
             depositableAmounts.push({
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress]),
+                amount: toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress]),
                 amountDollar: (
-                    Number(toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress])) * prices[usdcAddress]
+                    Number(toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress])) *
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
             });
             withdrawableAmounts.push({
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
                 amount: (
                     (Number(toEth(BigInt(vaultBalance), farm.decimals)) * vaultTokenPrice) /
-                    prices[usdcAddress]
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
                 amountDollar: (Number(toEth(BigInt(vaultBalance), farm.decimals)) * vaultTokenPrice).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
             });
         }
 
         zapCurriences?.forEach((currency) => {
-            const currencyBalance = BigInt(balances[currency.address] || 0);
-            const currencyPrice = prices[currency.address];
+            const currencyBalance = BigInt(balances[farm.chainId][currency.address] || 0);
+            const currencyPrice = prices[farm.chainId][currency.address];
             depositableAmounts.push({
                 tokenAddress: currency.address,
                 tokenSymbol: currency.symbol,
-                amount: toEth(currencyBalance, decimals[currency.symbol]),
-                amountDollar: (Number(toEth(currencyBalance, decimals[currency.address])) * currencyPrice).toString(),
-                price: prices[currency.address],
+                amount: toEth(currencyBalance, decimals[farm.chainId][currency.address]),
+                amountDollar: (
+                    Number(toEth(currencyBalance, decimals[farm.chainId][currency.address])) * currencyPrice
+                ).toString(),
+                price: prices[farm.chainId][currency.address],
             });
             withdrawableAmounts.push({
                 tokenAddress: currency.address,
                 tokenSymbol: currency.symbol,
                 amount: (
                     (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[currency.address]
+                    prices[farm.chainId][currency.address]
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-                price: prices[currency.address],
+                price: prices[farm.chainId][currency.address],
                 isPrimaryVault: currency.symbol === farm.name,
             });
         });
@@ -134,11 +137,12 @@ let peapods = function (farmId: number): FarmFunctions {
         };
         return result;
     };
-    const deposit: DepositFn = async ({ amountInWei, currentWallet, client, max }) => {
+    const deposit: DepositFn = async ({ amountInWei, currentWallet, getClients, max }) => {
         let notiId = notifyLoading(loadingMessages.approvingDeposit());
+        const client = await getClients(farm.chainId);
         try {
             const vaultContract = getContract({
-                abi: farm.vault_abi,
+                abi: vaultAbi,
                 address: farm.vault_addr,
                 client,
             });
@@ -153,7 +157,7 @@ let peapods = function (farmId: number): FarmFunctions {
 
             let depositTxn: any;
             if (max) {
-                depositTxn = vaultContract.write.depositAll([]);
+                depositTxn = vaultContract.write.depositAll();
             } else {
                 depositTxn = vaultContract.write.deposit([amountInWei]);
             }
@@ -178,11 +182,12 @@ let peapods = function (farmId: number): FarmFunctions {
         }
     };
 
-    const withdraw: WithdrawFn = async ({ amountInWei, client, max }) => {
+    const withdraw: WithdrawFn = async ({ amountInWei, getClients, max }) => {
+        const client = await getClients(farm.chainId);
         const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
             const vaultContract = getContract({
-                abi: farm.vault_abi,
+                abi: vaultAbi,
                 address: farm.vault_addr,
                 client,
             });
@@ -192,7 +197,7 @@ let peapods = function (farmId: number): FarmFunctions {
 
             let withdrawTxn: any;
             if (max) {
-                withdrawTxn = vaultContract.write.withdrawAll([]);
+                withdrawTxn = vaultContract.write.withdrawAll();
             } else {
                 withdrawTxn = vaultContract.write.withdraw([amountInWei]);
             }
@@ -218,7 +223,8 @@ let peapods = function (farmId: number): FarmFunctions {
         }
     };
 
-    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max, client }) => {
+    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max, getClients }) => {
+        const client = await getClients(farm.chainId);
         const transaction = {} as Omit<
             TenderlySimulateTransactionBody,
             "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
@@ -237,7 +243,7 @@ let peapods = function (farmId: number): FarmFunctions {
         if (max) {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.vault_abi,
+                    abi: vaultAbi,
                     functionName: "depositAll",
                     args: [],
                 }),
@@ -249,7 +255,7 @@ let peapods = function (farmId: number): FarmFunctions {
         } else {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.vault_abi,
+                    abi: vaultAbi,
                     functionName: "deposit",
                     args: [amountInWei],
                 }),
@@ -273,14 +279,8 @@ let peapods = function (farmId: number): FarmFunctions {
         return difference;
     };
 
-    const withdrawSlippage: SlippageWithdrawBaseFn = async ({
-        amountInWei,
-        currentWallet,
-        client,
-        chainId,
-        max,
-        farm,
-    }) => {
+    const withdrawSlippage: SlippageWithdrawBaseFn = async ({ amountInWei, currentWallet, getClients, max, farm }) => {
+        const client = await getClients(farm.chainId);
         const transaction = {} as Omit<
             TenderlySimulateTransactionBody,
             "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
@@ -290,7 +290,7 @@ let peapods = function (farmId: number): FarmFunctions {
         if (max) {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.vault_abi,
+                    abi: vaultAbi,
                     functionName: "withdrawAll",
                     args: [],
                 }),
@@ -302,7 +302,7 @@ let peapods = function (farmId: number): FarmFunctions {
         } else {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.vault_abi,
+                    abi: vaultAbi,
                     functionName: "withdraw",
                     args: [amountInWei],
                 }),
@@ -332,14 +332,14 @@ let peapods = function (farmId: number): FarmFunctions {
         balances,
         token,
         currentWallet,
-        client,
-        chainId,
+        getClients,
         max,
         tokenIn,
     }) => {
+        const client = await getClients(farm.chainId);
         const zapperContract = getContract({
             address: farm.zapper_addr,
-            abi: farm.zapper_abi,
+            abi: zapperAbi,
             client,
         });
         let zapperTxn;
@@ -347,7 +347,7 @@ let peapods = function (farmId: number): FarmFunctions {
         try {
             //#region Select Max
             if (max) {
-                amountInWei = BigInt(balances[token] ?? "0");
+                amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
             }
             //#endregion
 
@@ -370,7 +370,7 @@ let peapods = function (farmId: number): FarmFunctions {
             // if we are using zero dev, don't bother
             const connectorId = getConnectorId();
             if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-                const balance = BigInt(balances[zeroAddress]!);
+                const balance = BigInt(balances[farm.chainId][zeroAddress]!);
                 const afterGasCut = await subtractGas(
                     amountInWei,
                     client,
@@ -378,9 +378,9 @@ let peapods = function (farmId: number): FarmFunctions {
                         to: farm.zapper_addr,
                         value: balance,
                         data: encodeFunctionData({
-                            abi: farm.zapper_abi,
+                            abi: zapperAbi,
                             functionName: "zapInETH",
-                            args: [farm.vault_addr, 0, token],
+                            args: [farm.vault_addr, 0n, token],
                         }),
                     })
                 );
@@ -393,7 +393,7 @@ let peapods = function (farmId: number): FarmFunctions {
             //#endregion
 
             zapperTxn = await awaitTransaction(
-                zapperContract.write.zapInETH([farm.vault_addr, 0, token], {
+                zapperContract.write.zapInETH([farm.vault_addr, 0n, token], {
                     value: amountInWei,
                 }),
                 client
@@ -414,10 +414,11 @@ let peapods = function (farmId: number): FarmFunctions {
         }
     };
     const slippageInLp: SlippageInBaseFn = async (args) => {
-        let { amountInWei, balances, chainId, currentWallet, token, max, client, farm } = args;
+        let { amountInWei, balances, currentWallet, token, max, getClients, farm } = args;
+        const client = await getClients(farm.chainId);
         const zapperContract = getContract({
             address: farm.zapper_addr,
-            abi: farm.zapper_abi,
+            abi: zapperAbi,
             client,
         });
         const apContract = getContract({
@@ -435,7 +436,7 @@ let peapods = function (farmId: number): FarmFunctions {
         transaction.from = currentWallet;
 
         if (max) {
-            amountInWei = BigInt(balances[token] ?? "0");
+            amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
         }
 
         transaction.balance_overrides = {
@@ -452,7 +453,7 @@ let peapods = function (farmId: number): FarmFunctions {
         // Check if max to subtract gas, cause we want simulations to work for amount which exceeds balance
         // And subtract gas won't work cause it estimates gas for tx, and tx will fail insufficent balance
         if ((connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) && max) {
-            const balance = BigInt(balances[zeroAddress]!);
+            const balance = BigInt(balances[farm.chainId][zeroAddress]!);
             const afterGasCut = await subtractGas(
                 amountInWei,
                 client,
@@ -460,9 +461,9 @@ let peapods = function (farmId: number): FarmFunctions {
                     to: farm.zapper_addr,
                     value: balance,
                     data: encodeFunctionData({
-                        abi: farm.zapper_abi,
+                        abi: zapperAbi,
                         functionName: "zapInETH",
-                        args: [farm.vault_addr, 0, token],
+                        args: [farm.vault_addr, 0n, token],
                     }),
                 })
             );
@@ -472,9 +473,9 @@ let peapods = function (farmId: number): FarmFunctions {
         //#endregion
         const populated = {
             data: encodeFunctionData({
-                abi: farm.zapper_abi,
+                abi: zapperAbi,
                 functionName: "zapInETH",
-                args: [farm.vault_addr, 0, token],
+                args: [farm.vault_addr, 0n, token],
             }),
             value: amountInWei,
         };

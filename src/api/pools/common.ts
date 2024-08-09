@@ -19,7 +19,17 @@ import merge from "lodash.merge";
 import { Address, encodeFunctionData, getContract, zeroAddress } from "viem";
 import zapperAbi from "src/assets/abis/zapperAbi";
 
-export const zapInBase: ZapInBaseFn = async ({ farm, amountInWei, balances, token, currentWallet, client, max, tokenIn }) => {
+export const zapInBase: ZapInBaseFn = async ({
+    farm,
+    amountInWei,
+    balances,
+    token,
+    currentWallet,
+    getClients,
+    max,
+    tokenIn,
+}) => {
+    const client = await getClients(farm.chainId);
     const zapperContract = getContract({
         address: farm.zapper_addr as Address,
         abi: zapperAbi,
@@ -113,7 +123,8 @@ export const zapInBase: ZapInBaseFn = async ({ farm, amountInWei, balances, toke
     }
 };
 
-export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, client, max }) => {
+export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, getClients, max }) => {
+    const client = await getClients(farm.chainId);
     const zapperContract = getContract({
         address: farm.zapper_addr as Address,
         abi: zapperAbi,
@@ -168,7 +179,8 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
 };
 
 export const slippageIn: SlippageInBaseFn = async (args) => {
-    let { amountInWei, balances, currentWallet, token, max, client, tokenIn, farm } = args;
+    let { amountInWei, balances, currentWallet, token, max, getClients, tokenIn, farm } = args;
+    const client = await getClients(farm.chainId);
 
     const zapperContract = getContract({
         address: farm.zapper_addr as Address,
@@ -281,7 +293,8 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     return assetChanges.difference;
 };
 
-export const slippageOut: SlippageOutBaseFn = async ({ client, farm, token, max, amountInWei, currentWallet }) => {
+export const slippageOut: SlippageOutBaseFn = async ({ getClients, farm, token, max, amountInWei, currentWallet }) => {
+    const client = await getClients(farm.chainId);
     const transaction = {} as Omit<
         TenderlySimulateTransactionBody,
         "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"

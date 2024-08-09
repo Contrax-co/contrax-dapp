@@ -649,46 +649,6 @@ const pools_json: PoolDef[] = [
         isDeprecated: false,
     },
     {
-        id: 5,
-        chainId: CHAIN_ID.ARBITRUM,
-        token_type: "Token",
-        originPlatform: FarmOriginPlatform.GMX,
-        source: "https://app.gmx.io/#/earn",
-        name: "GMX",
-        url_name: "GMX",
-        name1: "GMX",
-        platform: "Gmx",
-        platform_alt: "Gmx logo",
-        total_apy: 6.32,
-        rewards_apy: 2.63,
-        platform_logo:
-            "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a/logo.png",
-        pair1: "GMX",
-        token1: "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
-        zapper_addr: "0x2De2Ff329Ed82fF5fE1454dDD847307c966d733A",
-
-        alt1: "Gmx logo",
-        logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a/logo.png",
-        rewards1:
-            "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a/logo.png",
-        rewards1_alt: "Sushi logo",
-        rewards2:
-            "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
-        rewards2_alt: "ETH Logo",
-        lp_address: "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
-        decimals: 18,
-        vault_addr: "0x8CdF8d10ea6Cd3492e67C4250481A695c2a75C4a",
-
-        zap_currencies: [
-            {
-                symbol: "GMX",
-                address: "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
-                decimals: 18,
-            },
-        ],
-        isDeprecated: true,
-    },
-    {
         id: 19,
         chainId: CHAIN_ID.ARBITRUM,
         token_type: "Token",

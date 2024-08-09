@@ -1,9 +1,6 @@
-import pools from "src/config/constants/pools.json";
-import { Farm } from "src/types";
 import { approveErc20, getBalance } from "src/api/token";
 import { awaitTransaction, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
-import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 import {
@@ -24,15 +21,17 @@ import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
 import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
 import { encodeFunctionData, getContract, zeroAddress } from "viem";
+import pools_json from "src/config/constants/pools_json";
+import vaultAbi from "src/assets/abis/vaultAbi";
 
 let sushi: DynamicFarmFunctions = function (farmId) {
-    const farm = pools.find((farm) => farm.id === farmId) as Farm;
+    const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
-        const ethPrice = prices[zeroAddress];
+        const ethPrice = prices[farm.chainId][zeroAddress];
         const lpAddress = farm.lp_address;
-        const vaultTokenPrice = prices[farm.vault_addr];
-        const vaultBalance = BigInt(balances[farm.vault_addr] || 0);
+        const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
+        const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
@@ -40,27 +39,29 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress]),
+                amount: toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress]),
                 amountDollar: (
-                    Number(toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress])) * prices[usdcAddress]
+                    Number(toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress])) *
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
             },
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(BigInt(balances[zeroAddress]!), 18),
-                amountDollar: (Number(toEth(BigInt(balances[zeroAddress]!), 18)) * ethPrice).toString(),
+                amount: toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18),
+                amountDollar: (Number(toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18)) * ethPrice).toString(),
                 price: ethPrice,
             },
             {
                 tokenAddress: lpAddress,
                 tokenSymbol: farm.name,
-                amount: toEth(BigInt(balances[lpAddress]!), decimals[lpAddress]),
+                amount: toEth(BigInt(balances[farm.chainId][lpAddress]!), decimals[farm.chainId][lpAddress]),
                 amountDollar: (
-                    Number(toEth(BigInt(balances[lpAddress]!), decimals[lpAddress])) * prices[lpAddress]
+                    Number(toEth(BigInt(balances[farm.chainId][lpAddress]!), decimals[farm.chainId][lpAddress])) *
+                    prices[farm.chainId][lpAddress]
                 ).toString(),
-                price: prices[lpAddress],
+                price: prices[farm.chainId][lpAddress],
             },
         ];
 
@@ -68,9 +69,12 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: ((Number(toEth(vaultBalance)) * vaultTokenPrice) / prices[usdcAddress]).toString(),
+                amount: (
+                    (Number(toEth(vaultBalance)) * vaultTokenPrice) /
+                    prices[farm.chainId][usdcAddress]
+                ).toString(),
                 amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
             },
             {
                 tokenAddress: zeroAddress,
@@ -84,7 +88,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 tokenSymbol: farm.name,
                 amount: toEth(vaultBalance),
                 amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
-                price: prices[lpAddress],
+                price: prices[farm.chainId][lpAddress],
                 isPrimaryVault: true,
             },
         ];
@@ -98,11 +102,12 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         return result;
     };
 
-    const deposit: DepositFn = async ({ amountInWei, currentWallet, client, chainId, max }) => {
+    const deposit: DepositFn = async ({ amountInWei, currentWallet, getClients, max }) => {
         let notiId = notifyLoading(loadingMessages.approvingDeposit());
         try {
+            const client = await getClients(farm.chainId);
             const vaultContract = getContract({
-                abi: farm.vault_abi,
+                abi: vaultAbi,
                 address: farm.vault_addr,
                 client,
             });
@@ -151,11 +156,12 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, client, chainId, max }) => {
+    const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, getClients, max }) => {
         const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
+            const client = await getClients(farm.chainId);
             const vaultContract = getContract({
-                abi: farm.vault_abi,
+                abi: vaultAbi,
                 address: farm.vault_addr,
                 client,
             });
@@ -199,7 +205,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max, client }) => {
+    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max, getClients }) => {
         const transaction = {} as Omit<
             TenderlySimulateTransactionBody,
             "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
@@ -218,7 +224,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         if (max) {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.vault_abi,
+                    abi: vaultAbi,
                     functionName: "depositAll",
                     args: [],
                 }),
@@ -230,7 +236,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         } else {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.vault_abi,
+                    abi: vaultAbi,
                     functionName: "deposit",
                     args: [amountInWei],
                 }),
@@ -254,14 +260,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         return difference;
     };
 
-    const withdrawSlippage: SlippageWithdrawBaseFn = async ({
-        amountInWei,
-        currentWallet,
-        client,
-        chainId,
-        max,
-        farm,
-    }) => {
+    const withdrawSlippage: SlippageWithdrawBaseFn = async ({ amountInWei, currentWallet, max, farm }) => {
         const transaction = {} as Omit<
             TenderlySimulateTransactionBody,
             "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
@@ -271,7 +270,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         if (max) {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.vault_abi,
+                    abi: vaultAbi,
                     functionName: "withdrawAll",
                     args: [],
                 }),
@@ -283,7 +282,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         } else {
             const populated = {
                 data: encodeFunctionData({
-                    abi: farm.vault_abi,
+                    abi: vaultAbi,
                     functionName: "withdraw",
                     args: [amountInWei],
                 }),

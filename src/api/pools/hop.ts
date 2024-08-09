@@ -18,9 +18,9 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
     const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
-        const ethPrice = prices[zeroAddress];
-        const vaultBalance = BigInt(balances[farm.vault_addr] || 0);
-        const vaultTokenPrice = prices[farm.vault_addr];
+        const ethPrice = prices[farm.chainId][zeroAddress];
+        const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
+        const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
         const zapCurriences = farm.zap_currencies;
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
@@ -28,17 +28,18 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress]),
+                amount: toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress]),
                 amountDollar: (
-                    Number(toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress])) * prices[usdcAddress]
+                    Number(toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress])) *
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
             },
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(BigInt(balances[zeroAddress]!), 18),
-                amountDollar: (Number(toEth(BigInt(balances[zeroAddress]!), 18)) * ethPrice).toString(),
+                amount: toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18),
+                amountDollar: (Number(toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18)) * ethPrice).toString(),
                 price: ethPrice,
             },
         ];
@@ -48,10 +49,10 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
                 tokenSymbol: "USDC",
                 amount: (
                     (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[usdcAddress]
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
                 isPrimaryVault: "USDC.e" === farm.name,
             },
             {
@@ -65,24 +66,26 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
         ];
 
         zapCurriences?.forEach((currency) => {
-            const currencyBalance = BigInt(balances[currency.address] || 0);
-            const currencyPrice = prices[currency.address];
+            const currencyBalance = BigInt(balances[farm.chainId][currency.address] || 0);
+            const currencyPrice = prices[farm.chainId][currency.address];
             depositableAmounts.push({
                 tokenAddress: currency.address,
                 tokenSymbol: currency.symbol,
-                amount: toEth(currencyBalance, decimals[currency.symbol]),
-                amountDollar: (Number(toEth(currencyBalance, decimals[currency.address])) * currencyPrice).toString(),
-                price: prices[currency.address],
+                amount: toEth(currencyBalance, decimals[farm.chainId][currency.address]),
+                amountDollar: (
+                    Number(toEth(currencyBalance, decimals[farm.chainId][currency.address])) * currencyPrice
+                ).toString(),
+                price: prices[farm.chainId][currency.address],
             });
             withdrawableAmounts.push({
                 tokenAddress: currency.address,
                 tokenSymbol: currency.symbol,
                 amount: (
                     (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[currency.address]
+                    prices[farm.chainId][currency.address]
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-                price: prices[currency.address],
+                price: prices[farm.chainId][currency.address],
                 isPrimaryVault: currency.symbol === farm.name,
             });
         });

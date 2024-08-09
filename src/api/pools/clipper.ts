@@ -33,9 +33,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
     const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
-        const ethPrice = prices[zeroAddress];
-        const vaultTokenPrice = prices[farm.vault_addr];
-        const vaultBalance = BigInt(balances[farm.vault_addr] || 0);
+        const ethPrice = prices[farm.chainId][zeroAddress];
+        const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
+        const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
         const zapCurriences = farm.zap_currencies;
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
@@ -44,17 +44,18 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress]),
+                amount: toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress]),
                 amountDollar: (
-                    Number(toEth(BigInt(balances[usdcAddress]!), decimals[usdcAddress])) * prices[usdcAddress]
+                    Number(toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress])) *
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
             },
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(BigInt(balances[zeroAddress]!), 18),
-                amountDollar: (Number(toEth(BigInt(balances[zeroAddress]!), 18)) * ethPrice).toString(),
+                amount: toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18),
+                amountDollar: (Number(toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18)) * ethPrice).toString(),
                 price: ethPrice,
             },
         ];
@@ -65,10 +66,10 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 tokenSymbol: "USDC",
                 amount: (
                     (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[usdcAddress]
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
                 isPrimaryVault: true,
             },
             {
@@ -95,26 +96,25 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         balances,
         token,
         currentWallet,
-        client,
-        chainId,
+        getClients,
         max,
         tokenIn,
         prices,
         decimals,
     }) => {
-        if (!client.wallet) return;
+        const client = await getClients(farm.chainId);
         const zapperContract = getContract({
             address: farm.zapper_addr as Address,
             abi: clipperZapperAbi,
             client,
         });
-        const wethAddress = addressesByChainId[chainId].wethAddress;
+        const wethAddress = addressesByChainId[farm.chainId].wethAddress;
         let zapperTxn;
         let notiId;
         try {
             //#region Select Max
             if (max) {
-                amountInWei = BigInt(balances[token] ?? "0");
+                amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
             }
 
             // #region Approve
@@ -145,7 +145,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 // if we are using zero dev, don't bother
                 const connectorId = getConnectorId();
                 if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-                    const balance = BigInt(balances[zeroAddress]!);
+                    const balance = BigInt(balances[farm.chainId][zeroAddress]);
 
                     const afterGasCut = await subtractGas(
                         amountInWei,
@@ -199,14 +199,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
     };
 
     const slippageIn: SlippageInBaseFn = async (args) => {
-        let { amountInWei, balances, chainId, currentWallet, token, max, client, tokenIn, farm, decimals, prices } =
-            args;
-        const zapperContract = getContract({
-            address: farm.zapper_addr as Address,
-            abi: zapperAbi,
-            client,
-        });
-        const wethAddress = addressesByChainId[chainId].wethAddress;
+        let { amountInWei, balances, currentWallet, token, max, tokenIn, farm, getClients } = args;
+        const client = await getClients(farm.chainId);
+        const wethAddress = addressesByChainId[farm.chainId].wethAddress;
 
         const transaction = {} as Omit<
             TenderlySimulateTransactionBody,
@@ -215,7 +210,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         transaction.from = currentWallet;
 
         if (max) {
-            amountInWei = BigInt(balances[token] ?? "0");
+            amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
         }
 
         if (token !== zeroAddress) {
@@ -255,7 +250,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             // Check if max to subtract gas, cause we want simulations to work for amount which exceeds balance
             // And subtract gas won't work cause it estimates gas for tx, and tx will fail insufficent balance
             if ((connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) && max) {
-                const balance = BigInt(balances[zeroAddress]!);
+                const balance = BigInt(balances[farm.chainId][zeroAddress]!);
                 const afterGasCut = await subtractGas(
                     amountInWei,
                     client,
