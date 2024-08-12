@@ -34,6 +34,7 @@ import DeprecatedWithdraw from "src/components/DeprecatedWithdraw/DeprecatedWith
 import ArbitriumBalances from "src/components/ArbitriumBalances/ArbitriumBalances";
 import BoostedApy from "src/components/BoostedApy/BoostedApy";
 import OneClickMigrate from "src/components/OneClickMigrate/OneClickMigrate";
+import { CHAIN_ID } from "src/types/enums";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -45,7 +46,7 @@ function Dashboard() {
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
     const [openEarnTraxModal, setOpenEarnTraxModal] = useState(false);
-    const { BLOCK_EXPLORER_URL } = useConstants();
+    const { BLOCK_EXPLORER_URL } = useConstants(CHAIN_ID.ARBITRUM);
 
     const copy = () => {
         if (currentWallet) {

@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from "react";
+import { PoolDef } from "src/config/constants/pools_json";
 import { useAppDispatch, useAppSelector } from "src/state";
-import { Farm } from "src/types";
 import { fetchApys } from "src/state/apys/apysReducer";
 
 /**
@@ -19,7 +19,7 @@ export const useFarmApys = () => {
     return { isLoading: isLoading && !isFetched, isFetched, isFetching: isLoading, apys, reloadApys };
 };
 
-const useFarmApy = (farm: Farm) => {
+const useFarmApy = (farm: PoolDef) => {
     const { isLoading, apys, isFetched } = useAppSelector((state) => state.apys);
 
     const apy = useMemo(() => apys[farm.id], [apys, farm.id]);

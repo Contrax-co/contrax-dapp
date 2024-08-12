@@ -51,34 +51,6 @@ export interface PoolDef {
 
 const pools_json: PoolDef[] = [
     {
-        id: 40,
-        chainId: CHAIN_ID.ARBITRUM,
-        token_type: "Token",
-        name: "Clipper",
-        url_name: "Clipper",
-        originPlatform: FarmOriginPlatform.Clipper,
-        source: "https://clipper.exchange/app/liquidity/pool?tab=deposit",
-        name1: "USDC",
-        stableCoin: false,
-        platform: "Clipper",
-        platform_alt: "Clipper logo",
-        total_apy: 29,
-        rewards_apy: 29,
-        platform_logo: "clipper.svg",
-        pair1: "USDC",
-        token1: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-        zapper_addr: "0x4e09475d20Ad4cCa758eD0C8bC110be16B24D4E1",
-        alt1: "Steer logo",
-        logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
-        rewards1: "steer.ico",
-        rewards1_alt: "Steer logo",
-        lp_address: "0x769728b5298445BA2828c0f3F5384227fbF590C5",
-        decimals: 18,
-        decimals2: 18,
-        vault_addr: "0xF1C856646E42E717d73f3D8828ee4e76C4A506E5",
-        isDeprecated: false,
-    },
-    {
         id: 38,
         chainId: CHAIN_ID.ARBITRUM,
         token_type: "LP Token",
@@ -203,6 +175,34 @@ const pools_json: PoolDef[] = [
         decimals: 18,
         decimals2: 18,
         vault_addr: "0x404148F0B94Bc1EA2fdFE98B0DbF36Ff3E015Bb5",
+        isDeprecated: false,
+    },
+    {
+        id: 40,
+        chainId: CHAIN_ID.ARBITRUM,
+        token_type: "Token",
+        name: "Clipper",
+        url_name: "Clipper",
+        originPlatform: FarmOriginPlatform.Clipper,
+        source: "https://clipper.exchange/app/liquidity/pool?tab=deposit",
+        name1: "USDC",
+        stableCoin: false,
+        platform: "Clipper",
+        platform_alt: "Clipper logo",
+        total_apy: 29,
+        rewards_apy: 29,
+        platform_logo: "clipper.svg",
+        pair1: "USDC",
+        token1: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+        zapper_addr: "0x914fEf038fE15A3a5b631358Ff4251FAC2d7Dc6b",
+        alt1: "Steer logo",
+        logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
+        rewards1: "steer.ico",
+        rewards1_alt: "Steer logo",
+        lp_address: "0x769728b5298445BA2828c0f3F5384227fbF590C5",
+        decimals: 18,
+        decimals2: 18,
+        vault_addr: "0xa752C41Ca7De8B6852D9f6e17E224D166dCC456b",
         isDeprecated: false,
     },
     {
@@ -810,9 +810,9 @@ const pools_json: PoolDef[] = [
 
 export default pools_json;
 
-export const pools_chain_ids = pools_json.map((p) => p.chainId);
+export const pools_chain_ids = Array.from(pools_json.reduce((acc, curr) => acc.add(curr.chainId), new Set<number>()));
 
-// export let common_chains_state: { [chainId: number]: any[] } = {};
-// pools_chain_ids.forEach((item) => {
-//     common_chains_state[item] = [] as any;
-// });
+export let Common_Chains_State: Record<number, Record<any, any>> = {};
+pools_chain_ids.forEach((item) => {
+    Common_Chains_State[item] = [] as any;
+});

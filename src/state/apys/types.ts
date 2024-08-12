@@ -1,4 +1,4 @@
-import { Farm } from "src/types";
+import { PoolDef } from "src/config/constants/pools_json";
 
 export interface StateInterface {
     apys: { [farmId: number]: Apys };
@@ -25,5 +25,5 @@ export interface AddApyAction {
 
 export interface FetchApysThunk {
     chainId: number;
-    farms: Farm[];
+    farms: PoolDef[];
 }

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { EARNINGS_GRAPH_URL } from "src/config/constants";
+import { CHAIN_ID } from "src/types/enums";
 
 interface Response {
     deposit: string;
@@ -9,6 +10,7 @@ interface Response {
     blockTimestamp: string;
     userBalance: string;
     tokenId: string;
+    chainId: number;
 }
 
 export const getEarnings = async (userAddress: string) => {
@@ -28,7 +30,7 @@ export const getEarnings = async (userAddress: string) => {
                 }
               }`,
         });
-        return res.data.data.user?.earn as Response[];
+        return res.data.data.user?.earn.map((item: any) => ({ ...item, chainId: CHAIN_ID.ARBITRUM })) as Response[];
     } catch (err: any) {
         console.error(err);
         return undefined;

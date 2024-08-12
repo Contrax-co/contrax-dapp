@@ -5,7 +5,6 @@ import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
 import useApp from "src/hooks/useApp";
 import uuid from "react-uuid";
-import { Farm } from "src/types";
 import { toFixedFloor } from "src/utils/common";
 import { Skeleton } from "../Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
@@ -18,10 +17,11 @@ import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmTransactionType } from "src/types/enums";
 import useTrax from "src/hooks/useTrax";
 import { IS_LEGACY } from "src/config/constants";
+import { PoolDef } from "src/config/constants/pools_json";
 
 const xTraxTokenomics = "https://contraxfi.medium.com/contrax-initial-tokenomics-837d062596a4";
 interface Props {
-    farm: Farm;
+    farm: PoolDef;
     openedFarm: number | undefined;
     setOpenedFarm: Function;
 }
@@ -331,7 +331,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
 export default FarmRow;
 
-const FarmRowSkeleton = ({ farm, lightMode }: { farm: Farm; lightMode: boolean }) => {
+const FarmRowSkeleton = ({ farm, lightMode }: { farm: PoolDef; lightMode: boolean }) => {
     const { apy: farmApys, isLoading: isApyLoading } = useFarmApy(farm);
     const key = uuid();
     const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();

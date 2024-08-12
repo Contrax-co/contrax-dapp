@@ -3,13 +3,10 @@ import { Address, erc20Abi, getAddress, getContract } from "viem";
 import { StateInterface, UpdateBalancesActionPayload, TotalSupplies } from "./types";
 import tokens from "src/config/constants/tokens";
 import { CHAIN_ID } from "src/types/enums";
+import { Common_Chains_State } from "src/config/constants/pools_json";
 
 const initialState: StateInterface = {
-    totalSupplies: {
-        [CHAIN_ID.ARBITRUM]: {},
-        [CHAIN_ID.MAINNET]: {},
-        [CHAIN_ID.POLYGON]: {},
-    },
+    totalSupplies: Common_Chains_State,
     isLoading: false,
     isFetched: false,
 };

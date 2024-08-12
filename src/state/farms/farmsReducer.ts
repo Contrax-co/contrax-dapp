@@ -65,11 +65,10 @@ export const updateFarmDetails = createAsyncThunk(
 export const updateEarnings = createAsyncThunk(
     "farms/updateEarnings",
     async (
-        { currentWallet, farms, decimals, prices, balances, totalSupplies, publicClient, chainId }: FetchEarningsAction,
+        { currentWallet, farms, decimals, prices, balances, totalSupplies, getPublicClient }: FetchEarningsAction,
         thunkApi
     ) => {
         try {
-            if (chainId !== defaultChainId) throw new Error("Wrong chain");
             await sleep(6000);
             const earns = await getEarnings(currentWallet);
             if (!earns) {
@@ -85,7 +84,9 @@ export const updateEarnings = createAsyncThunk(
                     getContract({
                         address: farm.vault_addr as Address,
                         abi: VaultAbi,
-                        client: publicClient,
+                        client: {
+                            public: getPublicClient(farm.chainId),
+                        },
                     }).read.balance() as Promise<bigint>
                 );
 
@@ -93,7 +94,9 @@ export const updateEarnings = createAsyncThunk(
                     getContract({
                         address: farm.lp_address as Address,
                         abi: erc20Abi,
-                        client: publicClient,
+                        client: {
+                            public: getPublicClient(farm.chainId),
+                        },
                     }).read.balanceOf([farm.vault_addr as Address]) as Promise<bigint>
                 );
             });

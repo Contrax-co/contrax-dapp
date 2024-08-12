@@ -7,11 +7,36 @@ import { POLLING_INTERVAL, WEB3AUTH_CLIENT_ID } from "./constants";
 import { Web3Auth } from "@web3auth/modal";
 import { providers } from "ethers";
 import { PublicClient, WalletClient, http, type HttpTransport } from "viem";
+// import { arbitrum, mainnet, polygon, optimism } from "@alchemy/aa-core";
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
 // export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
 const clientId = WEB3AUTH_CLIENT_ID as string;
-// arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
-// arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
+
+Object.assign(arbitrum.rpcUrls, {
+    alchemy: {
+        http: ["https://arb-mainnet.g.alchemy.com/v2"],
+    },
+});
+Object.assign(mainnet.rpcUrls, {
+    alchemy: {
+        http: ["https://eth-mainnet.g.alchemy.com/v2"],
+    },
+});
+Object.assign(polygon.rpcUrls, {
+    alchemy: {
+        http: ["https://polygon-mainnet.g.alchemy.com/v2"],
+    },
+});
+Object.assign(optimism.rpcUrls, {
+    alchemy: {
+        http: ["https://opt-mainnet.g.alchemy.com/v2"],
+    },
+});
+Object.assign(linea.rpcUrls, {
+    alchemy: {
+        http: ["https://linea-mainnet.g.alchemy.com/v2"],
+    },
+});
 
 export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc];
 

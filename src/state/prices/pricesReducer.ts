@@ -5,9 +5,10 @@ import { getTokenPricesBackend } from "src/api/token";
 import { defaultChainId } from "src/config/constants";
 import { Address } from "viem";
 import { CHAIN_ID } from "src/types/enums";
+import { Common_Chains_State } from "src/config/constants/pools_json";
 
 const initialState: StateInterface = {
-    prices: {},
+    prices: Common_Chains_State,
     isLoading: false,
     isFetched: false,
     oldPrices: {},

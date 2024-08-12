@@ -1,4 +1,4 @@
-import { FarmData } from "src/types";
+import { FarmData, IClients } from "src/types";
 import { Balances } from "../balances/types";
 import { Decimals } from "../decimals/types";
 import { Prices } from "../prices/types";
@@ -45,7 +45,6 @@ export interface FetchEarningsAction {
     decimals: Decimals;
     prices: Prices;
     balances: Balances;
-    publicClient: PublicClient;
     totalSupplies: TotalSupplies;
-    chainId: number;
+    getPublicClient: (chainId: number) => IClients["public"];
 }

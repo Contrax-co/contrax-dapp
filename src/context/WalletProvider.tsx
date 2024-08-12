@@ -72,7 +72,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [isSponsored] = useState(true);
     const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
-    const [gasInErc20] = useState(false);
     const [externalChainId, setExternalChainId] = useState(CHAIN_ID.ARBITRUM);
     const _publicClients = useRef<Record<number, IClients["public"]>>({});
     const _walletClients = useRef<Record<number, IClients["wallet"]>>({});
@@ -83,7 +82,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const switchExternalChain = async (chainId: number) => {
         await (window.ethereum as EIP1193Provider).request({
             method: "wallet_switchEthereumChain",
-            params: [{ chainId: "0x" + chainId.toString() }],
+            params: [{ chainId: "0x" + chainId.toString(16) }],
         });
     };
 
@@ -161,7 +160,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             // TODO: switch chain, if not exists then add network then switch.
             await (window.ethereum as EIP1193Provider).request({
                 method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x" + chainId.toString() }],
+                params: [{ chainId: "0x" + chainId.toString(16) }],
             });
 
             const _walletClient = createWalletClient({

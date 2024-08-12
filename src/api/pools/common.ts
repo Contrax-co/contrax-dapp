@@ -334,11 +334,9 @@ export const slippageOut: SlippageOutBaseFn = async ({ getClients, farm, token, 
                 functionName: "zapOutAndSwapEth",
                 args: [farm.vault_addr, max ? vaultBalance : amountInWei, 0n],
             }),
-            value: "0",
         };
 
         transaction.input = populated.data || "";
-        transaction.value = populated.value?.toString();
     } else {
         const populated = {
             data: encodeFunctionData({
@@ -346,10 +344,8 @@ export const slippageOut: SlippageOutBaseFn = async ({ getClients, farm, token, 
                 functionName: "zapOutAndSwap",
                 args: [farm.vault_addr, max ? vaultBalance : amountInWei, token, 0n],
             }),
-            value: "0",
         };
         transaction.input = populated.data || "";
-        transaction.value = populated.value?.toString();
     }
     //#endregion
     console.log(transaction, farm);

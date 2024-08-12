@@ -14,7 +14,7 @@ import useVaultMigrate from "src/hooks/useVaultMigrate";
 // import { createWeb3AuthSigner } from "src/config/walletConfig";
 
 const Test = () => {
-    const { client, currentWallet } = useWallet();
+    const { currentWallet } = useWallet();
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
     const [modelOpen, setModelOpen] = useState(false);
@@ -25,7 +25,6 @@ const Test = () => {
     const { migrate } = useVaultMigrate();
 
     const fn = async () => {
-        console.log(client);
         // @ts-ignore
         connectWallet({ email: "abdulrafay@contrax.finance" });
         // const signer = await createWeb3AuthSigner();

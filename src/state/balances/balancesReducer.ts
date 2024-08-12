@@ -2,10 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Address, erc20Abi, getAddress, getContract, zeroAddress } from "viem";
 import { Balances, StateInterface, UpdateBalancesActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
-import { pools_chain_ids } from "src/config/constants/pools_json";
+import { Common_Chains_State, pools_chain_ids } from "src/config/constants/pools_json";
 
 const initialState: StateInterface = {
-    balances: {},
+    balances: Common_Chains_State,
     isLoading: false,
     isFetched: false,
     account: undefined,
@@ -14,6 +14,7 @@ const initialState: StateInterface = {
 export const fetchBalances = createAsyncThunk(
     "balances/fetchBalances",
     async ({ farms, getPublicClient, account }: UpdateBalancesActionPayload, thunkApi) => {
+        console.log("fetching balances");
         const addresses: Record<number, Set<Address>> = {};
         pools_chain_ids.forEach((chainId) => {
             addresses[chainId] = new Set();
@@ -94,9 +95,7 @@ const balancesSlice = createSlice({
         builder.addCase(fetchBalances.rejected, (state) => {
             state.isLoading = false;
             state.isFetched = false;
-            pools_chain_ids.forEach((chainId) => {
-                state.balances[chainId] = [] as any;
-            });
+            state.balances = Common_Chains_State;
         });
     },
 });

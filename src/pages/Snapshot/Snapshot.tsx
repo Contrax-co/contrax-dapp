@@ -25,7 +25,7 @@ export const Snapshot = () => {
         useSnapshotSpaceProposals(snapshotSpaceId);
 
     const traxBalance = useMemo(
-        () => formattedBalances[tokens.find((item) => item.name === "xTrax")?.address || ""],
+        () => formattedBalances[CHAIN_ID.ARBITRUM][tokens.find((item) => item.name === "xTrax")!.address],
         [formattedBalances]
     );
 

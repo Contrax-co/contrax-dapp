@@ -3,16 +3,16 @@ import { RiArrowUpSLine } from "react-icons/ri";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
-import { Farm } from "src/types";
 import { getLpAddressForFarmsPrice, toPreciseNumber } from "src/utils/common";
 import useTotalSupplies from "src/hooks/useTotalSupplies";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import "./Details.css";
 import FarmApyGraph from "src/pages/FarmInfo/FarmApyGraph/FarmApyGraph";
 import FarmLpGraph from "src/pages/FarmInfo/FarmLpGraph/FarmLpGraph";
+import { PoolDef } from "src/config/constants/pools_json";
 
 interface Props {
-    farm: Farm;
+    farm: PoolDef;
     onClick: () => void;
 }
 
@@ -25,11 +25,13 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
     const { formattedSupplies } = useTotalSupplies();
 
     const {
-        prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
+        prices: {
+            [farm.chainId]: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
+        },
     } = usePriceOfTokens();
     const { formattedBalances } = useBalances();
-    const unstakedTokenValue = useMemo(() => formattedBalances[lpAddress], [formattedBalances]);
-    const stakedTokenValue = useMemo(() => formattedBalances[farm.vault_addr], [formattedBalances]);
+    const unstakedTokenValue = useMemo(() => formattedBalances[farm.chainId][lpAddress], [formattedBalances]);
+    const stakedTokenValue = useMemo(() => formattedBalances[farm.chainId][farm.vault_addr], [formattedBalances]);
 
     return (
         <div className="details">
@@ -138,7 +140,8 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
                         Total Value Locked
                     </p>
 
-                    {formattedSupplies[farm.lp_address] && formattedSupplies[farm.lp_address]! * lpPrice ? (
+                    {formattedSupplies[farm.chainId][farm.lp_address] &&
+                    formattedSupplies[farm.chainId][farm.lp_address]! * lpPrice ? (
                         <div className={`detailed_header`}>
                             <p>Pool Liquidity</p>
                             <div className={`unstaked_details`}>
@@ -152,25 +155,29 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
                                     ) : null}
 
                                     <p className={`detailed_unstaked_pairs`}>
-                                        {formattedSupplies[farm.lp_address] &&
-                                            toPreciseNumber(formattedSupplies[farm.lp_address]!)}{" "}
+                                        {formattedSupplies[farm.chainId][farm.lp_address] &&
+                                            toPreciseNumber(formattedSupplies[farm.chainId][farm.lp_address]!)}{" "}
                                         {farm.name}
                                     </p>
                                 </div>
 
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {formattedSupplies[farm.lp_address] &&
-                                        (formattedSupplies[farm.lp_address]! * lpPrice).toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                            maximumFractionDigits: 0,
-                                        })}
+                                    {formattedSupplies[farm.chainId][farm.lp_address] &&
+                                        (formattedSupplies[farm.chainId][farm.lp_address]! * lpPrice).toLocaleString(
+                                            "en-US",
+                                            {
+                                                style: "currency",
+                                                currency: "USD",
+                                                maximumFractionDigits: 0,
+                                            }
+                                        )}
                                 </p>
                             </div>
                         </div>
                     ) : null}
 
-                    {formattedSupplies[farm.vault_addr] && formattedSupplies[farm.vault_addr]! * lpPrice ? (
+                    {formattedSupplies[farm.chainId][farm.vault_addr] &&
+                    formattedSupplies[farm.chainId][farm.vault_addr]! * lpPrice ? (
                         <div className={`detailed_header`}>
                             <p>Vault Liquidity</p>
                             <div className={`unstaked_details`}>
@@ -184,33 +191,37 @@ const Details: React.FC<Props> = ({ farm, ...props }) => {
                                     ) : null}
 
                                     <p className={`detailed_unstaked_pairs`}>
-                                        {formattedSupplies[farm.vault_addr] &&
-                                            toPreciseNumber(formattedSupplies[farm.vault_addr]!)}{" "}
+                                        {formattedSupplies[farm.chainId][farm.vault_addr] &&
+                                            toPreciseNumber(formattedSupplies[farm.chainId][farm.vault_addr]!)}{" "}
                                         {farm.name}
                                     </p>
                                 </div>
                                 <p className={`detailed_unstaked_pairs`}>
-                                    {formattedSupplies[farm.vault_addr] &&
-                                        (formattedSupplies[farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                            maximumFractionDigits: 0,
-                                        })}
+                                    {formattedSupplies[farm.chainId][farm.vault_addr] &&
+                                        (formattedSupplies[farm.chainId][farm.vault_addr]! * lpPrice).toLocaleString(
+                                            "en-US",
+                                            {
+                                                style: "currency",
+                                                currency: "USD",
+                                                maximumFractionDigits: 0,
+                                            }
+                                        )}
                                 </p>
                             </div>
                         </div>
                     ) : null}
 
                     {farmData?.withdrawableAmounts[0].amount &&
-                    formattedSupplies[farm.vault_addr] &&
-                    Number(farmData.withdrawableAmounts[0].amount) / formattedSupplies[farm.vault_addr]! ? (
+                    formattedSupplies[farm.chainId][farm.vault_addr] &&
+                    Number(farmData.withdrawableAmounts[0].amount) /
+                        formattedSupplies[farm.chainId][farm.vault_addr]! ? (
                         <div className={`detailed_header`}>
                             <p>Share</p>
                             <div className={`unstaked_details`}>
                                 <p className={`detailed_unstaked_pairs`}>
                                     {(
                                         (Number(farmData?.withdrawableAmounts[0].amount) /
-                                            (formattedSupplies[farm.vault_addr]! * lpPrice)) *
+                                            (formattedSupplies[farm.chainId][farm.vault_addr]! * lpPrice)) *
                                             100 || 0
                                     ).toFixed(2)}
                                     %

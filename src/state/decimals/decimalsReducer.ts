@@ -2,8 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Address, erc20Abi, getAddress, getContract, zeroAddress } from "viem";
 import { Decimals, StateInterface, UpdateDecimalsActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
+import { Common_Chains_State } from "src/config/constants/pools_json";
 
-const initialState: StateInterface = { decimals: {}, isLoading: false, isFetched: false };
+const initialState: StateInterface = { decimals: Common_Chains_State, isLoading: false, isFetched: false };
 
 export const fetchDecimals = createAsyncThunk(
     "decimals/fetchDecimals",
@@ -70,7 +71,7 @@ const decimalsSlice = createSlice({
         builder.addCase(fetchDecimals.rejected, (state) => {
             state.isLoading = false;
             state.isFetched = false;
-            state.decimals = {};
+            state.decimals = Common_Chains_State;
         });
     },
 });

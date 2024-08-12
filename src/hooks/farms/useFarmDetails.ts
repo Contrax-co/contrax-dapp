@@ -18,7 +18,7 @@ const useFarmDetails = () => {
     );
     const { decimals } = useDecimals();
 
-    const { chainId, currentWallet, client } = useWallet();
+    const { currentWallet, getPublicClient } = useWallet();
     const dispatch = useAppDispatch();
 
     const reloadFarmData = useCallback(() => {
@@ -28,28 +28,15 @@ const useFarmDetails = () => {
                 updateEarnings({
                     farms,
                     currentWallet,
+                    getPublicClient,
                     decimals,
                     prices,
                     balances,
-                    publicClient: client.public,
                     totalSupplies,
-                    chainId: chainId,
                 })
             );
         }
-    }, [
-        farms,
-        chainId,
-        dispatch,
-        currentWallet,
-        balances,
-        prices,
-        decimals,
-        isBalancesFetched,
-        isPricesFetched,
-        client.public,
-        totalSupplies,
-    ]);
+    }, [farms, dispatch, currentWallet, balances, prices, decimals, isBalancesFetched, isPricesFetched, totalSupplies]);
 
     useEffect(() => {
         if (currentWallet !== account) dispatch(reset());

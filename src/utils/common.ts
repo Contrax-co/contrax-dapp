@@ -159,7 +159,7 @@ export const awaitTransaction = async (transaction: Promise<Address>, client: Om
     } catch (e: any) {
         console.info("awaitTransaction error", e);
         status = false;
-        error = e.shortMessage || e.details || e.message || e.response?.data?.message || "Something went wrong!";
+        error = e.details || e.shortMessage || e.message || e.response?.data?.message || "Something went wrong!";
     }
     return {
         txHash,
