@@ -14,7 +14,6 @@ const initialState: StateInterface = {
 export const fetchBalances = createAsyncThunk(
     "balances/fetchBalances",
     async ({ farms, getPublicClient, account }: UpdateBalancesActionPayload, thunkApi) => {
-        console.log("fetching balances");
         const addresses: Record<number, Set<Address>> = {};
         pools_chain_ids.forEach((chainId) => {
             addresses[chainId] = new Set();

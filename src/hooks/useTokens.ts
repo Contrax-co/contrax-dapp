@@ -192,6 +192,7 @@ export const useTokens = () => {
             token_type: FarmType.normal,
         };
 
+        // Native coins for each chain
         Object.entries(formattedBalances).map(([chainId, value]) => {
             const networkId = Number(chainId);
             const bal = value[zeroAddress];
@@ -205,12 +206,19 @@ export const useTokens = () => {
                         : toFixedFloor(formattedBalances[networkId][zeroAddress]!, tokenBalDecimalPlaces).toString()
                     : "0",
                 usdBalance: formattedBalances[networkId][zeroAddress]
-                    ? formattedBalances[networkId][zeroAddress]! < 1 / 10 ** tokenBalDecimalPlaces
-                        ? noExponents(formattedBalances[networkId][zeroAddress]!.toPrecision(2)).slice(0, -1)
-                        : toFixedFloor(formattedBalances[networkId][zeroAddress]!, tokenBalDecimalPlaces).toString()
+                    ? prices[networkId][zeroAddress] * formattedBalances[networkId][zeroAddress]! < 1 / 10 ** 3
+                        ? noExponents(
+                              (prices[networkId][zeroAddress] * formattedBalances[networkId][zeroAddress]!).toPrecision(
+                                  3
+                              )
+                          ).slice(0, -1)
+                        : toFixedFloor(
+                              prices[networkId][zeroAddress] * formattedBalances[networkId][zeroAddress]!,
+                              3
+                          ).toString()
                     : "0",
                 name: getNativeCoinInfo(networkId).name,
-                price: 0,
+                price: prices[networkId][zeroAddress],
                 networkId: networkId,
                 token_type: FarmType.normal,
             };

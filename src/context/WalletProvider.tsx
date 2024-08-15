@@ -8,7 +8,7 @@ import { SupportedChains } from "src/config/walletConfig";
 import { ENTRYPOINT_ADDRESS_V06 } from "permissionless";
 import { Address, EIP1193Provider, Hex, createPublicClient, createWalletClient, custom, http } from "viem";
 import { EstimateTxGasArgs, IClients } from "src/types";
-import { AlchemySigner, createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
+import { createModularAccountAlchemyClient, AlchemyWebSigner } from "@alchemy/aa-alchemy";
 import { defaultChainId } from "src/config/constants";
 
 export interface IWalletContext {
@@ -43,7 +43,7 @@ export interface IWalletContext {
     domainName: null | string;
     isSponsored: boolean;
     isSocial: boolean;
-    alchemySigner?: AlchemySigner;
+    alchemySigner?: AlchemyWebSigner;
     externalChainId: number;
     switchExternalChain: (chainId: number) => Promise<void>;
     isConnecting: boolean;
@@ -77,13 +77,34 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const _walletClients = useRef<Record<number, IClients["wallet"]>>({});
     const dispatch = useDispatch();
     const [domainName, setDomainName] = useState<null | string>(null);
-    const [alchemySigner, setAlchemySigner] = useState<AlchemySigner>();
+    const [alchemySigner, setAlchemySigner] = useState<AlchemyWebSigner>();
 
     const switchExternalChain = async (chainId: number) => {
-        await (window.ethereum as EIP1193Provider).request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: "0x" + chainId.toString(16) }],
-        });
+        try {
+            await(window.ethereum as EIP1193Provider).request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: "0x" + chainId.toString(16) }],
+            });
+        } catch (e: any) {
+            // Code for chain not existing
+            if (e.code === 4902) {
+                const chain = SupportedChains.find((item) => item.id === chainId);
+                if (!chain) throw new Error("Chain not supported!");
+                await(window.ethereum as EIP1193Provider).request({
+                    method: "wallet_addEthereumChain",
+                    params: [
+                        {
+                            chainId: "0x" + chainId.toString(16),
+                            chainName: chain.name,
+                            nativeCurrency: chain.nativeCurrency,
+                            rpcUrls: [chain.rpcUrls.default.http[0]],
+                            blockExplorerUrls: [chain.blockExplorers.default.url],
+                        },
+                    ],
+                });
+            }
+            console.log(e);
+        }
     };
 
     const getPublicClient = (chainId: number): IClients["public"] => {
@@ -243,7 +264,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     };
 
     useEffect(() => {
-        const _signer = new AlchemySigner({
+        const _signer = new AlchemyWebSigner({
             sessionConfig: {
                 expirationTimeMs: 1000 * 60 * 60 * 24 * 7,
             },

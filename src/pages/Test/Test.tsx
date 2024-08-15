@@ -19,14 +19,15 @@ const Test = () => {
     const [url, setUrl] = useState<string>("");
     const [modelOpen, setModelOpen] = useState(false);
     const [model1Open, set1ModelOpen] = useState(false);
-    const { connectWallet } = useWallet();
+    const { connectWallet, switchExternalChain } = useWallet();
     const { platformTVL } = usePlatformTVL();
 
     const { migrate } = useVaultMigrate();
 
     const fn = async () => {
+        switchExternalChain(CHAIN_ID.OPTIMISM);
         // @ts-ignore
-        connectWallet({ email: "abdulrafay@contrax.finance" });
+        // connectWallet({ email: "abdulrafay@contrax.finance" });
         // const signer = await createWeb3AuthSigner();
         // console.log('signer =>', signer);
         // const client = await createModularAccountAlchemyClient({

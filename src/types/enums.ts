@@ -30,6 +30,8 @@ export enum CHAIN_ID {
     MAINNET = 1,
     POLYGON = 137,
     ARBITRUM = 42161,
+    LINEA = 59144,
+    OPTIMISM = 10,
 }
 
 export enum UsersTableColumns {
