@@ -39,7 +39,7 @@ export const SHUSHISWAP_CHEF_GRAPH_URL = "https://api.thegraph.com/subgraphs/nam
 export const SWAPFISH_GRAPH_URL = "https://api.thegraph.com/subgraphs/name/swapfish/swapfish";
 export const WEB3AUTH_CLIENT_ID = process.env.REACT_APP_WEB3AUTH_CLIENT_ID;
 export const EARNINGS_GRAPH_URL =
-    "https://gateway-arbitrum.network.thegraph.com/api/616d6a1cc1199359a718e468c9aec235/subgraphs/id/5Dai8aaipQpAZLNNJeLVp3C72RNVYJD2zbRiSAHd5Ugn";
+    "https://gateway.thegraph.com/api/616d6a1cc1199359a718e468c9aec235/subgraphs/id/6fdsQSH1HoZ7APjNR78C9atxFSuEx2dCcjwx5RBjZgE7";
 export const HOP_EXCHANGE_APY_URL = "https://assets.hop.exchange/v1.1-pool-stats.json";
 export const BACKEND_BASE_URL = "https://contrax-backend.herokuapp.com/api/v1/";
 export const TENDERLY_ACCESS_TOKEN = process.env.REACT_APP_TENDERLY_ACCESS_TOKEN;
