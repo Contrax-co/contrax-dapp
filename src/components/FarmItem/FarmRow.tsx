@@ -115,7 +115,8 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                             <b>Base APRs</b>
                                         </p>
                                         ${
-                                            farmApys && parseFloat(farmApys.rewardsApr.toString())
+                                            farmApys &&
+                                            parseFloat((farmApys.compounding + farmApys.rewardsApr).toString())
                                                 ? `<p>Compounding Rewards: ${toFixedFloor(
                                                       farmApys.rewardsApr + farmApys.compounding,
                                                       3
@@ -128,7 +129,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                                 : ``
                                         }
                                         ${
-                                            farmApys.boost && parseFloat(farmApys.boost.toString())
+                                            farmApys?.boost && parseFloat(farmApys.boost.toString())
                                                 ? `<p>Apy Boost: ${toFixedFloor(farmApys.boost, 3)}%</p>`
                                                 : ``
                                         }
@@ -238,7 +239,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                                 : ``
                                         }
                                         ${
-                                            farmApys.boost && parseFloat(farmApys.boost.toString())
+                                            farmApys?.boost && parseFloat(farmApys.boost.toString())
                                                 ? `<p>Apy Boost: ${toFixedFloor(farmApys.boost, 3)}%</p>`
                                                 : ``
                                         }
