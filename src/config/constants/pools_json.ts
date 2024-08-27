@@ -196,7 +196,7 @@ const pools_json: PoolDef[] = [
         token1: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
         zapper_addr: "0x914fEf038fE15A3a5b631358Ff4251FAC2d7Dc6b",
         alt1: "Steer logo",
-        logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
+        logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/000da991911ed04b164d67618341500601099f50/arbitrum-tokens/0xa752C41Ca7De8B6852D9f6e17E224D166dCC456b/logo.png",
         rewards1: "steer.ico",
         rewards1_alt: "Steer logo",
         lp_address: "0x769728b5298445BA2828c0f3F5384227fbF590C5",
