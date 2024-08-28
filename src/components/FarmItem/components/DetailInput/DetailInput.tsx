@@ -15,6 +15,7 @@ import { FarmDetailInputOptions } from "src/state/farms/types";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
 import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
 import { PoolDef } from "src/config/constants/pools_json";
+import useWallet from "src/hooks/useWallet";
 
 interface Props {
     farm: PoolDef;
@@ -22,6 +23,7 @@ interface Props {
 
 const DetailInput: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
+    const { externalChainId, isSocial, switchExternalChain } = useWallet();
     const { transactionType, currencySymbol } = useAppSelector((state) => state.farms.farmDetailInputOptions);
     const [showSlippageModal, setShowSlippageModal] = useState(false);
     const [showNotSlipageModal, setShowNotSlipageModal] = useState(false);
@@ -78,6 +80,10 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
 
     const submitHandler = (e: any) => {
         e.preventDefault();
+        if (!isSocial && externalChainId !== farm.chainId) {
+            switchExternalChain(farm.chainId);
+            return;
+        }
         if (slippage && slippage > 2) {
             setShowSlippageModal(true);
         } else if (slippage === undefined) {
@@ -91,6 +97,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         <form
             className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
             onSubmit={submitHandler}
+            noValidate={!isSocial && externalChainId !== farm.chainId}
         >
             {isLoadingTransaction && <Loader />}
             {isLoadingFarm && <Skeleton w={100} h={20} style={{ marginLeft: "auto" }} />}
@@ -127,11 +134,18 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                 className={`custom-button ${lightMode && "custom-button-light"}`}
                 type="submit"
                 disabled={
-                    parseFloat(amount) <= 0 || isNaN(parseFloat(amount)) || isLoadingTransaction || fetchingSlippage
+                    !isSocial && externalChainId !== farm.chainId
+                        ? false
+                        : parseFloat(amount) <= 0 ||
+                          isNaN(parseFloat(amount)) ||
+                          isLoadingTransaction ||
+                          fetchingSlippage
                 }
             >
                 {!currentWallet
                     ? "Please Login"
+                    : !isSocial && externalChainId !== farm.chainId
+                    ? "Change Network"
                     : parseFloat(amount) > 0
                     ? parseFloat(amount) > parseFloat(maxBalance)
                         ? "Insufficent Balance"
