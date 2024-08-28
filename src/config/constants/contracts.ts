@@ -1,3 +1,4 @@
+import { CHAIN_ID } from "src/types/enums";
 import { Address } from "viem";
 
 export interface Addresses {
@@ -32,6 +33,19 @@ const arbitrumAddresses: Addresses = {
     universalPaymaster: "0xDACDA34b8b3d9dF839F14e87699e594329FD0a83",
 };
 
+const baseAddresses: Addresses = {
+    bridgedUsdAddress: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+    factoryAddress: "0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
+    wethAddress: "0x4200000000000000000000000000000000000006",
+    nativeUsdAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    arbitrumAddress: "",
+    sushiAddress: "" as Address,
+    dodoMineAddress: "" as Address,
+    dodoTokenAddress: "" as Address,
+    swapfishMasterChef: "" as Address,
+    usdtAddress: "" as Address,
+};
 const polygonAddresses: Addresses = {
     factoryAddress: "" as Address,
     wethAddress: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
@@ -46,4 +60,5 @@ const polygonAddresses: Addresses = {
 export const addressesByChainId: { [key: number]: Addresses } = {
     0xa4b1: arbitrumAddresses,
     137: polygonAddresses,
+    [CHAIN_ID.BASE]: baseAddresses,
 };

@@ -34,7 +34,7 @@ const rootReducer = combineReducers({
 const persistConfig = getPersistConfig({
     key: "root",
     storage,
-    version: 4,
+    version: 5,
     whitelist: [
         "prices.prices",
         "decimals.decimals",

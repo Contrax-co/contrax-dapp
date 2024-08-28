@@ -490,7 +490,6 @@ const pools_json: PoolDef[] = [
         token1: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
         token2: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
         zapper_addr: "0x129F2259C549C76Fd3d6534037C0Bf908BB72934",
-
         logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
         alt1: "Ethereum logo",
         logo2: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png",
@@ -503,7 +502,6 @@ const pools_json: PoolDef[] = [
         decimals2: 6,
         vault_addr: "0x46910A4AbA500b71F213150A0E99201Fd5c8FCec",
         zap_symbol: "ETH",
-
         isDeprecated: true,
     },
     {
@@ -525,17 +523,14 @@ const pools_json: PoolDef[] = [
         pair1: "ETH",
         token1: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
         zapper_addr: "0x299a9B7E24139180a9B90682150379B511972b1b",
-
         alt1: "ETH logo",
         logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
         rewards1: "hop.svg",
         rewards1_alt: "Hop logo",
         lp_address: "0x59745774Ed5EfF903e615F5A2282Cae03484985a",
-
         decimals: 18,
         vault_addr: "0xfd3573bebDc8bF323c65Edf2408Fd9a8412a8694",
     },
-
     {
         id: 31,
         chainId: CHAIN_ID.ARBITRUM,
@@ -805,6 +800,38 @@ const pools_json: PoolDef[] = [
         decimals2: 18,
         vault_addr: "0xE8306Ea08a78ce8f3CD459FC21F0b48e15ec3538",
         isDeprecated: false,
+    },
+    {
+        id: 201,
+        chainId: CHAIN_ID.BASE,
+        token_type: "Token",
+        name: "WETH-USDCB",
+        url_name: "WETH-USDCB",
+        originPlatform: FarmOriginPlatform.Steer,
+        source: "https://app.steer.finance/vault/0x571a582064a07e0fa1d62cb1ce4d1b7fcf9095d3",
+        name1: "WETH",
+        name2: "USDCB",
+        stableCoin: false,
+        platform: "Steer",
+        platform_alt: "Steer logo",
+        total_apy: 9.32,
+        rewards_apy: 6.65,
+        platform_logo: "steer.ico",
+        pair1: "WETH",
+        pair2: "USDCB",
+        token1: "0x4200000000000000000000000000000000000006",
+        token2: "0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca",
+        zapper_addr: "0x287a5f47002e9b51A4aDa65A3Fc147f6AD25f2d0",
+        alt1: "WETH logo",
+        alt2: "USDCB logo",
+        logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
+        logo2: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png",
+        rewards1: "steer.ico",
+        rewards1_alt: "Steer logo",
+        isDeprecated: false,
+        lp_address: "0x571A582064a07E0FA1d62Cb1cE4d1B7fcf9095d3",
+        decimals: 18,
+        vault_addr: "0x76512AB6a1DEDD45B75dee47841eB9feD2411789",
     },
 ];
 

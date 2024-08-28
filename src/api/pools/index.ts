@@ -44,6 +44,8 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     38: steer(38), // 36: WETH-SUSHI
     39: steer(39), // 36: USDC-USDC.e
 
+    201: steer(201), // 201: WETH-USDCB
+
     40: clipper(40), // 36: Clipper
 };
 

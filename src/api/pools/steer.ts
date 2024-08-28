@@ -38,8 +38,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr]);
         const zapCurriences = farm.zap_currencies;
 
-        const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
-
+        const usdcAddress = addressesByChainId[farm.chainId].usdcAddress;
         let depositableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
@@ -294,6 +293,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             /* Standard EVM Transaction object */
             ...transaction,
             to: farm.zapper_addr,
+            chainId: farm.chainId,
         });
         console.log({ simulationResult });
         const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);

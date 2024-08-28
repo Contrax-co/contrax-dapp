@@ -353,6 +353,7 @@ export const slippageOut: SlippageOutBaseFn = async ({ getClients, farm, token, 
         /* Standard EVM Transaction object */
         ...transaction,
         to: farm.zapper_addr,
+        chainId: farm.chainId,
     });
     console.log("simulationResult =>", simulationResult);
     let difference = 0n;

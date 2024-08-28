@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { arbitrum, mainnet, polygon, optimism, linea, bsc } from "viem/chains";
+import { arbitrum, mainnet, polygon, optimism, linea, bsc, base } from "viem/chains";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -37,8 +37,13 @@ Object.assign(linea.rpcUrls, {
         http: ["https://linea-mainnet.g.alchemy.com/v2"],
     },
 });
+Object.assign(base.rpcUrls, {
+    alchemy: {
+        http: ["https://base-mainnet.g.alchemy.com/v2"],
+    },
+});
 
-export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc];
+export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc, base];
 
 const PrivateKeyProvider = new EthereumPrivateKeyProvider({
     config: {

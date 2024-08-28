@@ -39,18 +39,21 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress]),
+                amount: toEth(BigInt(balances[farm.chainId][usdcAddress] || 0), decimals[farm.chainId][usdcAddress]),
                 amountDollar: (
-                    Number(toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress])) *
-                    prices[farm.chainId][usdcAddress]
+                    Number(
+                        toEth(BigInt(balances[farm.chainId][usdcAddress] || 0), decimals[farm.chainId][usdcAddress])
+                    ) * prices[farm.chainId][usdcAddress]
                 ).toString(),
                 price: prices[farm.chainId][usdcAddress],
             },
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18),
-                amountDollar: (Number(toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18)) * ethPrice).toString(),
+                amount: toEth(BigInt(balances[farm.chainId][zeroAddress] || 0), 18),
+                amountDollar: (
+                    Number(toEth(BigInt(balances[farm.chainId][zeroAddress] || 0), 18)) * ethPrice
+                ).toString(),
                 price: ethPrice,
             },
             {

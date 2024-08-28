@@ -134,12 +134,12 @@ export const simulateTransaction = async (
     data: Omit<
         TenderlySimulateTransactionBody,
         "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
-    >
+    > & { chainId?: number }
 ): Promise<SimulationResponse> => {
     const body: TenderlySimulateTransactionBody = {
         state_objects: {},
         ...data,
-        network_id: `${Network.ARBITRUM_ONE}`,
+        network_id: `${data.chainId || Network.ARBITRUM_ONE}`,
     };
 
     // State overiding api is not working hence, commented

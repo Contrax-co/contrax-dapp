@@ -3,6 +3,7 @@ import { Address, erc20Abi, getAddress, getContract, zeroAddress } from "viem";
 import { Balances, StateInterface, UpdateBalancesActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
 import { Common_Chains_State, pools_chain_ids } from "src/config/constants/pools_json";
+import { CHAIN_ID } from "src/types/enums";
 
 const initialState: StateInterface = {
     balances: Common_Chains_State,
@@ -27,6 +28,8 @@ export const fetchBalances = createAsyncThunk(
         tokens.forEach((token) => {
             addresses[token.chainId].add(getAddress(token.address));
         });
+        // Extra addresses for balance
+        addresses[CHAIN_ID.BASE].add("0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913");
 
         let balances: Balances = {};
         await Promise.all(
@@ -91,7 +94,7 @@ const balancesSlice = createSlice({
             state.isFetched = true;
             state.balances = { ...action.payload };
         });
-        builder.addCase(fetchBalances.rejected, (state) => {
+        builder.addCase(fetchBalances.rejected, (state, ...rest) => {
             state.isLoading = false;
             state.isFetched = false;
             state.balances = Common_Chains_State;
