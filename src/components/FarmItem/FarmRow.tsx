@@ -90,6 +90,13 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                             <div className="rewards_div">
                                 <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm?.platform}</p>
                                 <img alt={farm?.platform_alt} className="rewards_image" src={farm?.platform_logo} />
+                                <img
+                                    alt={farm.chainId.toString()}
+                                    style={{ marginLeft: 2, border: "none" }}
+                                    className="rewards_image"
+                                    title={farm.chainId.toString()}
+                                    src={`chains/${farm.chainId}.png`}
+                                />
                             </div>
                         </div>
                     </div>

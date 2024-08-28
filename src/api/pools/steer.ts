@@ -39,6 +39,14 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         const zapCurriences = farm.zap_currencies;
 
         const usdcAddress = addressesByChainId[farm.chainId].usdcAddress;
+        console.log("usdcAddress =>", farm.chainId, usdcAddress);
+        console.log(
+            "BigInt(balances[farm.chainId][usdcAddress]) =>",
+            farm.chainId,
+            BigInt(balances[farm.chainId][usdcAddress]),
+            prices[farm.chainId][usdcAddress],
+            decimals[farm.chainId][usdcAddress]
+        );
         let depositableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
@@ -54,9 +62,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
                 amount: toEth(BigInt(balances[farm.chainId][zeroAddress]), 18),
-                amountDollar: (
-                    Number(toEth(BigInt(balances[farm.chainId][zeroAddress]), 18)) * ethPrice
-                ).toString(),
+                amountDollar: (Number(toEth(BigInt(balances[farm.chainId][zeroAddress]), 18)) * ethPrice).toString(),
                 price: ethPrice,
             },
         ];

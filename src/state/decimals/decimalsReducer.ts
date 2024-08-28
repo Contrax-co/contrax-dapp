@@ -3,6 +3,7 @@ import { Address, erc20Abi, getAddress, getContract, zeroAddress } from "viem";
 import { Decimals, StateInterface, UpdateDecimalsActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
 import { Common_Chains_State } from "src/config/constants/pools_json";
+import { CHAIN_ID } from "src/types/enums";
 
 const initialState: StateInterface = { decimals: Common_Chains_State, isLoading: false, isFetched: false };
 
@@ -26,6 +27,8 @@ export const fetchDecimals = createAsyncThunk(
         tokens.forEach((token) => {
             addresses[token.chainId].add(getAddress(token.address));
         });
+        // Extra addresses for balance
+        addresses[CHAIN_ID.BASE].add("0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913");
 
         let decimals: Decimals = {};
         await Promise.all(
