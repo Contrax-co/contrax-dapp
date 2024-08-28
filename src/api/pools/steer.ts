@@ -39,14 +39,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         const zapCurriences = farm.zap_currencies;
 
         const usdcAddress = addressesByChainId[farm.chainId].usdcAddress;
-        console.log("usdcAddress =>", farm.chainId, usdcAddress);
-        console.log(
-            "BigInt(balances[farm.chainId][usdcAddress]) =>",
-            farm.chainId,
-            BigInt(balances[farm.chainId][usdcAddress]),
-            prices[farm.chainId][usdcAddress],
-            decimals[farm.chainId][usdcAddress]
-        );
+
         let depositableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
