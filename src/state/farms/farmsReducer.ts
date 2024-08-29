@@ -44,15 +44,15 @@ export const updateFarmDetails = createAsyncThunk(
                     totalSupplies[farm.chainId][farm.vault_addr]
                 );
             });
-            const usdcI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "USDC");
-            const ethI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "ETH");
+            // const usdcI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "USDC");
+            // const ethI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "ETH");
 
-            if (
-                Number(data[farms[0].id]?.depositableAmounts[ethI!].amountDollar) >
-                Number(data[farms[0].id]?.depositableAmounts[usdcI!].amountDollar)
-            ) {
-                thunkApi.dispatch(setCurrencySymbol("ETH"));
-            }
+            // if (
+            //     Number(data[farms[0].id]?.depositableAmounts[ethI!].amountDollar) >
+            //     Number(data[farms[0].id]?.depositableAmounts[usdcI!].amountDollar)
+            // ) {
+            //     thunkApi.dispatch(setCurrencySymbol("ETH"));
+            // }
 
             return { data, currentWallet };
         } catch (error) {
