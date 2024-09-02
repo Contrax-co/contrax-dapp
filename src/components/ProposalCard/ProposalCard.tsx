@@ -20,6 +20,8 @@ interface Props {
     fetchVotes: Function;
     loadingVotes: boolean;
     end: number;
+    snapshotAppName: string;
+    snapshotId: string;
 }
 
 export const ProposalCard: React.FC<Props> = ({
@@ -34,13 +36,15 @@ export const ProposalCard: React.FC<Props> = ({
     fetchVotes,
     loadingVotes,
     end,
+    snapshotAppName,
+    snapshotId,
 }) => {
     const { loadingVote, vote } = useSnapshotVote();
     const isVoteable = useMemo(() => status === "active", [status, votedChoice]);
 
     const handleVote = async (choice: number) => {
         if (isVoteable) {
-            await vote(id, choice, choices[choice - 1]);
+            await vote(id, choice, choices[choice - 1], snapshotAppName, snapshotId);
             fetchVotes();
         }
     };
@@ -85,5 +89,3 @@ export const ProposalCard: React.FC<Props> = ({
         </div>
     );
 };
-
-
