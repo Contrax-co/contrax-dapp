@@ -64,7 +64,7 @@ export const useSnapshotSpace = () => {
     };
 };
 
-export const useSnapshotSpaceProposals = () => {
+export const useSnapshotSpaceProposals = (snapshotSpaceId = SNAPSHOT_SPACE_ID) => {
     const [proposals, setProposals] = useState<SnapshotSpaceProposal[]>();
     const [votes, setVotes] = useState<SnapshotSpaceVote[]>();
     const [loadingSpaceProposals, setLoadingSpaceProposals] = useState(false);
@@ -74,7 +74,7 @@ export const useSnapshotSpaceProposals = () => {
     const fetchSpaceProposal = async () => {
         setLoadingSpaceProposals(true);
         try {
-            const response = await getSnapshotSpaceProposals(SNAPSHOT_SPACE_ID);
+            const response = await getSnapshotSpaceProposals(snapshotSpaceId);
 
             setProposals(response);
         } catch (e) {
@@ -87,7 +87,7 @@ export const useSnapshotSpaceProposals = () => {
         if (!currentWallet) return;
         setLoadingSpaceVotes(true);
         try {
-            const response = await getSnapshotSpaceProposalsVotesByAddress(SNAPSHOT_SPACE_ID, currentWallet);
+            const response = await getSnapshotSpaceProposalsVotesByAddress(snapshotSpaceId, currentWallet);
 
             setVotes(response);
         } catch (e) {
@@ -98,11 +98,11 @@ export const useSnapshotSpaceProposals = () => {
 
     useEffect(() => {
         fetchSpaceProposal();
-    }, [currentWallet]);
+    }, [currentWallet, snapshotSpaceId]);
 
     useEffect(() => {
         fetchSpaceVotes();
-    }, [currentWallet]);
+    }, [currentWallet, snapshotSpaceId]);
 
     return {
         proposals,
@@ -120,19 +120,25 @@ export const useSnapshotVote = () => {
     const { address } = useAccount();
     const { notifyError, notifyLoading, notifySuccess, dismissNotify } = useNotify();
 
-    const vote = async (proposalId: string, choiceNumber: number, choice: string) => {
+    const vote = async (
+        proposalId: string,
+        choiceNumber: number,
+        choice: string,
+        snapshotAppName: string,
+        snapshotId: string
+    ) => {
         if (!provider || !address) return;
         setloadingVote(true);
         const loadingId = notifyLoading("Vote", "Proposing vote!");
 
         try {
             const response = await client.vote(provider, address, {
-                space: SNAPSHOT_SPACE_ID,
+                space: snapshotId,
                 proposal: proposalId,
                 type: "single-choice",
                 choice: choiceNumber,
                 reason: "I voted from the Contrax dApp directly!",
-                app: SNAPSHOT_APP_NAME,
+                app: snapshotAppName,
             });
             notifySuccess("Vote", `Successfully voted ${choice}`);
         } catch (e: any) {
