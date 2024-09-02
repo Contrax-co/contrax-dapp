@@ -16,9 +16,7 @@ const ArbitriumBalances: React.FC<IProps> = () => {
     // }, [balances]);
 
     return Number(earnedArb) > 0.0005 ? (
-        <div className={`colorContainer ${styles.container}`}>
-            <p className={styles.heading}>Loyalty Arb</p>
-            <p className={styles.value}>{earnedArb?.toFixed(3)}</p>
+        <div>
         </div>
     ) : null;
 };
