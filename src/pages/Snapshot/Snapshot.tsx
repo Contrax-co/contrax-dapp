@@ -9,16 +9,20 @@ import { ProposalCard } from "src/components/ProposalCard/ProposalCard";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
 import useBalances from "src/hooks/useBalances";
 import tokens from "src/config/constants/tokens";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { Tabs } from "src/components/Tabs/Tabs";
+import PoolButton from "src/components/PoolButton/PoolButton";
+import { SNAPSHOT_APP_NAME, SNAPSHOT_SPACE_ID } from "src/config/constants";
 
 export const Snapshot = () => {
     const { joinSpace, loadingJoinSpace } = useSnapshotJoinSpace();
     const { loadingSpace, space, isMember } = useSnapshotSpace();
-    const { loadingSpaceProposals, loadingSpaceVotes, proposals, votes, fetchSpaceProposal, fetchSpaceVotes } =
-        useSnapshotSpaceProposals();
+    const [tab, setTab] = useState<"Contrax" | "Artbitrum">("Contrax");
     const { formattedBalances } = useBalances();
-
-    console.log("formattedBalances =>", formattedBalances);
+    const snapshotSpaceId = useMemo(() => (tab === "Contrax" ? SNAPSHOT_SPACE_ID : "arbitrumfoundation.eth"), [tab]);
+    const snapshotSpaceName = useMemo(() => (tab === "Contrax" ? SNAPSHOT_APP_NAME : "Arbitrum DAO"), [tab]);
+    const { loadingSpaceProposals, loadingSpaceVotes, proposals, votes, fetchSpaceProposal, fetchSpaceVotes } =
+        useSnapshotSpaceProposals(snapshotSpaceId);
 
     const traxBalance = useMemo(
         () => formattedBalances[tokens.find((item) => item.name === "xTrax")?.address || ""],
@@ -27,6 +31,24 @@ export const Snapshot = () => {
 
     return (
         <div className="snapshot-container">
+            <Tabs>
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab("Contrax");
+                    }}
+                    description={"Contrax"}
+                    active={tab === "Contrax"}
+                />
+                <PoolButton
+                    variant={2}
+                    onClick={() => {
+                        setTab("Artbitrum");
+                    }}
+                    description={"Artbitrum"}
+                    active={tab === "Artbitrum"}
+                />
+            </Tabs>
             {/* <h4> */}
             {/* {space?.name} (${space?.symbol}) */}
             {/* </h4> */}
@@ -40,13 +62,14 @@ export const Snapshot = () => {
                     Join Space
                 </button>
             )} */}
-
-            <div>
-                <h5 style={{ marginTop: 20, marginBottom: 0 }}>Proposals</h5>
-                <p className={"xTrax"} style={{ marginTop: 0, marginBottom: 30 }}>
-                    {traxBalance && `xTrax balance: ${traxBalance}`}
-                </p>
-            </div>
+            {tab === "Contrax" && (
+                <div>
+                    <h5 style={{ marginTop: 20, marginBottom: 0 }}>Proposals</h5>
+                    <p className={"xTrax"} style={{ marginTop: 0, marginBottom: 30 }}>
+                        {traxBalance && `xTrax balance: ${traxBalance}`}
+                    </p>
+                </div>
+            )}
             {/* {proposals?.map((e, index) => {
                 return (
                     <div key={e.id}>
@@ -84,6 +107,8 @@ export const Snapshot = () => {
                             fetchVotes={fetchSpaceVotes}
                             loadingVotes={loadingSpaceVotes}
                             end={item.end}
+                            snapshotAppName={snapshotSpaceName}
+                            snapshotId={snapshotSpaceId}
                         />
                     ))
                 )}
