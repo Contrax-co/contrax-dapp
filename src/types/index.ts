@@ -301,10 +301,9 @@ export interface CrossChainTransactionObject {
     };
     balances: Balances;
     currentWallet: Address;
-    // fromChainId: number;
     toChainId: number;
-    // fromToken: Address;
     toToken: Address;
     toTokenAmount: bigint;
+    max?: boolean;
     getClients: (chainId: number) => Promise<IClients>;
 }

@@ -169,14 +169,29 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     }),
                     client
                 );
+
+                // zapperTxn = await crossChainTransaction({
+                //     getClients,
+                //     balances,
+                //     currentWallet,
+                //     toChainId: farm.chainId,
+                //     toToken: zeroAddress,
+                //     toTokenAmount: amountInWei,
+                //     max,
+                //     contractCall: {
+                //         outputTokenAddress: farm.vault_addr,
+                //         value: amountInWei,
+                //         to: farm.zapper_addr,
+                //         data: encodeFunctionData({
+                //             abi: steerZapperAbi,
+                //             functionName: "zapInETH",
+                //             args: [farm.vault_addr, 0n, token],
+                //         }),
+                //     },
+                // });
             }
             // token zap
             else {
-                // zapperTxn = await awaitTransaction(
-                //     zapperContract.write.zapIn([farm.vault_addr, 0n, token, amountInWei]),
-                //     client
-                // );
-
                 zapperTxn = await crossChainTransaction({
                     getClients,
                     balances,
@@ -184,6 +199,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     toChainId: farm.chainId,
                     toToken: token,
                     toTokenAmount: amountInWei,
+                    max,
                     contractCall: {
                         outputTokenAddress: farm.vault_addr,
                         value: 0n,

@@ -28,7 +28,7 @@ import {
 } from "viem";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import { CrossChainTransactionObject, IClients } from "src/types";
-import { convertQuoteToRoute, getContractCallsQuote, getStatus } from "@lifi/sdk";
+import { convertQuoteToRoute, getContractCallsQuote, getQuote, getStatus, LiFiStep } from "@lifi/sdk";
 import { SupportedChains } from "src/config/walletConfig";
 
 export const zapInBase: ZapInBaseFn = async ({
@@ -404,32 +404,45 @@ export const crossChainTransaction = async (
         const toBalDiff = obj.toTokenAmount - toBal;
         const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
         const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
-            if (value >= toBalDiff) return true;
+            if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
             return false;
         })?.[0];
         if (!fromChainId) throw new Error("Insufficient balance");
         console.log("getting bridge quote");
-        const quote = await getContractCallsQuote({
-            fromAddress: obj.currentWallet,
-            fromChain: fromChainId,
-            toChain: obj.toChainId,
-            // @ts-ignore
-            fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
-            toToken: obj.toToken,
-            toAmount: toBalDiff.toString(),
-            // toAmount: obj.toTokenAmount.toString(),
-            contractOutputsToken: obj.contractCall.outputTokenAddress,
-            contractCalls: [
-                // {
-                //     fromAmount: obj.toTokenAmount.toString(),
-                //     fromTokenAddress: obj.toToken,
-                //     toContractAddress: obj.contractCall.to,
-                //     toTokenAddress: obj.contractCall.outputTokenAddress,
-                //     toContractCallData: obj.contractCall.data,
-                //     toContractGasLimit: "2000000",
-                // },
-            ],
-        });
+        let quote: LiFiStep;
+        if (obj.max) {
+            quote = await getQuote({
+                fromAddress: obj.currentWallet,
+                fromChain: fromChainId,
+                toChain: obj.toChainId,
+                // @ts-ignore
+                fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
+                toToken: obj.toToken,
+                fromAmount: toBalDiff.toString(),
+            });
+        } else {
+            quote = await getContractCallsQuote({
+                fromAddress: obj.currentWallet,
+                fromChain: fromChainId,
+                toChain: obj.toChainId,
+                // @ts-ignore
+                fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
+                toToken: obj.toToken,
+                toAmount: toBalDiff.toString(),
+                // toAmount: obj.toTokenAmount.toString(),
+                contractOutputsToken: obj.contractCall.outputTokenAddress,
+                contractCalls: [
+                    // {
+                    //     fromAmount: obj.toTokenAmount.toString(),
+                    //     fromTokenAddress: obj.toToken,
+                    //     toContractAddress: obj.contractCall.to,
+                    //     toTokenAddress: obj.contractCall.outputTokenAddress,
+                    //     toContractCallData: obj.contractCall.data,
+                    //     toContractGasLimit: "2000000",
+                    // },
+                ],
+            });
+        }
         console.log("quote =>", quote);
         const route = convertQuoteToRoute(quote);
         console.log("route =>", route);
@@ -438,7 +451,9 @@ export const crossChainTransaction = async (
             const client = await obj.getClients(step.transactionRequest!.chainId!);
             const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
             const tokenBalance = await getBalance(
-                addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+                obj.toToken === zeroAddress
+                    ? zeroAddress
+                    : addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
                 obj.currentWallet,
                 client
             );
@@ -446,13 +461,15 @@ export const crossChainTransaction = async (
                 throw new Error("Insufficient Balance");
             }
             console.log("approving for bridge");
-            await approveErc20(
-                addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
-                step.estimate.approvalAddress as Address,
-                BigInt(step.estimate.fromAmount),
-                obj.currentWallet,
-                client
-            );
+            if (obj.toToken !== zeroAddress) {
+                await approveErc20(
+                    addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+                    step.estimate.approvalAddress as Address,
+                    BigInt(step.estimate.fromAmount),
+                    obj.currentWallet,
+                    client
+                );
+            }
             const transaction = client.wallet.sendTransaction({
                 data: data as Hex,
                 gasLimit: gasLimit!,
