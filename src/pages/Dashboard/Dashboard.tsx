@@ -151,7 +151,6 @@ function Dashboard() {
                     </>
                 )}
                 <ReferralEarning />
-                <ArbitriumBalances />
                 <BridgeBtn />
                 <BridgeEthBtn />
                 <SwapUSDCBtn />
