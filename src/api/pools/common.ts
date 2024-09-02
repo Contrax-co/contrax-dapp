@@ -1,5 +1,5 @@
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, getConnectorId, subtractGas } from "src/utils/common";
+import { awaitTransaction, getCombinedBalance, getConnectorId, subtractGas } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 import { SlippageInBaseFn, SlippageOutBaseFn, ZapInBaseFn, ZapOutBaseFn } from "./types";
@@ -16,8 +16,20 @@ import {
     simulateTransaction,
 } from "../tenderly";
 import merge from "lodash.merge";
-import { Address, encodeFunctionData, getContract, zeroAddress } from "viem";
+import {
+    Address,
+    createPublicClient,
+    encodeFunctionData,
+    getContract,
+    Hex,
+    http,
+    TransactionReceipt,
+    zeroAddress,
+} from "viem";
 import zapperAbi from "src/assets/abis/zapperAbi";
+import { CrossChainTransactionObject, IClients } from "src/types";
+import { convertQuoteToRoute, getContractCallsQuote, getStatus } from "@lifi/sdk";
+import { SupportedChains } from "src/config/walletConfig";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -366,4 +378,141 @@ export const slippageOut: SlippageOutBaseFn = async ({ getClients, farm, token, 
     }
 
     return difference;
+};
+
+export const crossChainTransaction = async (
+    obj: CrossChainTransactionObject
+): Promise<{
+    status: boolean;
+    error?: string;
+}> => {
+    const chain = SupportedChains.find((item) => item.id === obj.toChainId);
+    if (!chain) throw new Error("chain not found");
+    const toPublicClient = createPublicClient({
+        chain: chain,
+        transport: http(),
+        batch: {
+            multicall: {
+                batchSize: 4096,
+                wait: 250,
+            },
+        },
+    }) as IClients["public"];
+
+    const toBal = await getBalance(obj.toToken, obj.currentWallet, { public: toPublicClient });
+    if (toBal < obj.toTokenAmount) {
+        const toBalDiff = obj.toTokenAmount - toBal;
+        const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
+        const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
+            if (value >= toBalDiff) return true;
+            return false;
+        })?.[0];
+        if (!fromChainId) throw new Error("Insufficient balance");
+        console.log("getting bridge quote");
+        const quote = await getContractCallsQuote({
+            fromAddress: obj.currentWallet,
+            fromChain: fromChainId,
+            toChain: obj.toChainId,
+            // @ts-ignore
+            fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
+            toToken: obj.toToken,
+            toAmount: toBalDiff.toString(),
+            // toAmount: obj.toTokenAmount.toString(),
+            contractOutputsToken: obj.contractCall.outputTokenAddress,
+            contractCalls: [
+                // {
+                //     fromAmount: obj.toTokenAmount.toString(),
+                //     fromTokenAddress: obj.toToken,
+                //     toContractAddress: obj.contractCall.to,
+                //     toTokenAddress: obj.contractCall.outputTokenAddress,
+                //     toContractCallData: obj.contractCall.data,
+                //     toContractGasLimit: "2000000",
+                // },
+            ],
+        });
+        console.log("quote =>", quote);
+        const route = convertQuoteToRoute(quote);
+        console.log("route =>", route);
+        let allStatus: boolean = false;
+        for await (const step of route.steps) {
+            const client = await obj.getClients(step.transactionRequest!.chainId!);
+            const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
+            const tokenBalance = await getBalance(
+                addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+                obj.currentWallet,
+                client
+            );
+            if (tokenBalance < BigInt(step.estimate.fromAmount)) {
+                throw new Error("Insufficient Balance");
+            }
+            console.log("approving for bridge");
+            await approveErc20(
+                addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+                step.estimate.approvalAddress as Address,
+                BigInt(step.estimate.fromAmount),
+                obj.currentWallet,
+                client
+            );
+            const transaction = client.wallet.sendTransaction({
+                data: data as Hex,
+                gasLimit: gasLimit!,
+                gasPrice: BigInt(gasPrice!),
+                to: to as Address,
+                value: BigInt(value!),
+            });
+            console.log("doing transaction on source chain");
+            const res = await awaitTransaction(transaction, client);
+            console.log("res =>", res);
+            if (!res.status) {
+                throw new Error(res.error);
+            }
+            let status: string;
+            do {
+                const result = await getStatus({
+                    txHash: res.txHash!,
+                    fromChain: step.action.fromChainId,
+                    toChain: step.action.toChainId,
+                    bridge: step.tool,
+                });
+                status = result.status;
+
+                console.log(`Transaction status for ${res.txHash}:`, status);
+
+                // Wait for a short period before checking the status again
+                await new Promise((resolve) => setTimeout(resolve, 5000));
+            } while (status !== "DONE" && status !== "FAILED");
+
+            if (status === "DONE") {
+                allStatus = true;
+            } else {
+                console.error(`Transaction ${res.txHash} failed`);
+                allStatus = false;
+            }
+        }
+        if (allStatus) {
+            const client = await obj.getClients(obj.toChainId);
+            const transaction = client.wallet.sendTransaction({
+                data: obj.contractCall.data,
+                to: obj.contractCall.to,
+                value: obj.contractCall.value,
+            });
+            console.log("performing transaction on destination chain");
+            const res = await awaitTransaction(transaction, client);
+            return res;
+        } else {
+            return {
+                status: false,
+                error: "Target chain error",
+            };
+        }
+    } else {
+        const client = await obj.getClients(obj.toChainId);
+        const transaction = client.wallet.sendTransaction({
+            data: obj.contractCall.data,
+            to: obj.contractCall.to,
+            value: obj.contractCall.value,
+        });
+        const res = await awaitTransaction(transaction, client);
+        return res;
+    }
 };

@@ -14,11 +14,15 @@ import {
     TenderlySimulateTransactionBody,
 } from "src/types/tenderly";
 import { zeroAddress } from "viem";
+import { defaultChainId } from "src/config/constants";
 
 // #region Utility functions
-const mapStateOverridesToEncodeStateRequest = (overrides: SimulationParametersOverrides): EncodeStateRequest => {
+const mapStateOverridesToEncodeStateRequest = (
+    overrides: SimulationParametersOverrides,
+    chainId: number
+): EncodeStateRequest => {
     return {
-        networkID: `${Network.ARBITRUM_ONE}`,
+        networkID: chainId.toString(),
         stateOverrides: Object.keys(overrides)
             .map((contractAddress) => ({
                 [contractAddress]: overrides[contractAddress as string].state,
@@ -79,8 +83,11 @@ const mapToEncodedOverrides = (stateOverrides: StateOverride): EncodedStateOverr
         }, {});
 };
 
-export const encodeStateOverrides = async (overrides: SimulationParametersOverrides) => {
-    const encodingRequest = mapStateOverridesToEncodeStateRequest(overrides);
+export const encodeStateOverrides = async (
+    overrides: SimulationParametersOverrides,
+    chainId: number = defaultChainId
+) => {
+    const encodingRequest = mapStateOverridesToEncodeStateRequest(overrides, chainId);
     const res = await tenderlyApi.post(
         `contracts/encode-states
       `,
@@ -145,7 +152,7 @@ export const simulateTransaction = async (
     // State overiding api is not working hence, commented
     // TODO: uncomment when fixed
     if (data.state_overrides) {
-        const overrides = await encodeStateOverrides(data.state_overrides);
+        const overrides = await encodeStateOverrides(data.state_overrides, data.chainId);
         const contractAddress = Object.keys(overrides);
         const encodedState = contractAddress.map((addr) => ({
             [addr]: {

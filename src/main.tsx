@@ -12,6 +12,15 @@ import { PersistGate } from "redux-persist/integration/react";
 import AppProvider from "./context/AppProvider";
 import "src/api/interceptor";
 import { supportChatConfig } from "./config/supportChat";
+import { createConfig, ChainId } from "@lifi/sdk";
+
+createConfig({
+    integrator: "Contrax",
+    // rpcUrls: {
+    //   [ChainId.ARB]: ['https://arbitrum-example.node.com/'],
+    //   [ChainId.SOL]: ['https://solana-example.node.com/'],
+    // },
+});
 
 // Configuration for toast notifications
 setUpNotifications({

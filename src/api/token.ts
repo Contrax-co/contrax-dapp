@@ -54,6 +54,15 @@ export const getBalance = async (
     }
 };
 
+/**
+ * Checks for allowance, if not met then approves
+ * @param contractAddress 
+ * @param spender 
+ * @param amount 
+ * @param currentWallet wallet address of signer
+ * @param client Both public and wallet client
+ * @returns 
+ */
 export const approveErc20 = async (
     contractAddress: Address,
     spender: Address,

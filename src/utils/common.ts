@@ -20,6 +20,8 @@ import { waitForTransactionReceipt } from "viem/actions";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
 import { PoolDef } from "src/config/constants/pools_json";
+import { Balances } from "src/state/balances/types";
+import { SupportedChains } from "src/config/walletConfig";
 
 const web3Name = createWeb3Name();
 
@@ -258,4 +260,25 @@ export const getNativeCoinInfo = (chainId: number) => {
         default:
             return { logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024", decimal: 18, name: "ETH" };
     }
+};
+
+export const getCombinedBalance = (balances: Balances, type: "eth" | "usdc") => {
+    let balance = 0n;
+    let chainBalances: { [chainId: string]: bigint } = {};
+    Object.entries(balances).forEach(([chainId, values]) => {
+        const isEth = SupportedChains.find((item) => item.id === Number(chainId))?.nativeCurrency.symbol === "ETH";
+        if (type === "eth" && isEth) {
+            balance += BigInt(values[zeroAddress]);
+            chainBalances[chainId] = BigInt(values[zeroAddress]);
+        } else if (type === "usdc") {
+            // @ts-ignore
+            const usdcAddress = addressesByChainId[chainId].usdcAddress;
+            if (usdcAddress) {
+                balance += BigInt(values[usdcAddress]);
+                chainBalances[chainId] = BigInt(values[usdcAddress]);
+            }
+        }
+    });
+    const formattedBalance = Number(toEth(BigInt(balance), type === "eth" ? 18 : 6));
+    return { formattedBalance, balance, chainBalances };
 };

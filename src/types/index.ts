@@ -12,12 +12,14 @@ import {
     JsonRpcAccount,
     createWalletClient,
     HttpTransport,
+    Hex,
 } from "viem";
 import { ENTRYPOINT_ADDRESS_V07, SmartAccountClient } from "permissionless";
 import { KernelEcdsaSmartAccount } from "permissionless/accounts";
 import { Web3AuthSigner } from "@alchemy/aa-signers/web3auth";
 import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
 import { PoolDef } from "src/config/constants/pools_json";
+import { Balances } from "src/state/balances/types";
 
 export interface FarmDetails extends PoolDef {
     userVaultBalance: number;
@@ -288,4 +290,21 @@ export interface IClients {
     //           estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     //       };
     public: PublicClient<HttpTransport, Chain, undefined, undefined>;
+}
+
+export interface CrossChainTransactionObject {
+    contractCall: {
+        value: bigint;
+        data: Hex;
+        to: Address;
+        outputTokenAddress: Address;
+    };
+    balances: Balances;
+    currentWallet: Address;
+    // fromChainId: number;
+    toChainId: number;
+    // fromToken: Address;
+    toToken: Address;
+    toTokenAmount: bigint;
+    getClients: (chainId: number) => Promise<IClients>;
 }

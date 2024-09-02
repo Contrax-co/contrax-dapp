@@ -1945,6 +1945,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.25.0":
+  version: 7.25.4
+  resolution: "@babel/runtime@npm:7.25.4"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: 5c2aab03788e77f1f959d7e6ce714c299adfc9b14fb6295c2a17eb7cad0dd9c2ebfb2d25265f507f68c43d5055c5cd6f71df02feb6502cea44b68432d78bcbbe
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.0.0, @babel/template@npm:^7.24.7, @babel/template@npm:^7.3.3":
   version: 7.24.7
   resolution: "@babel/template@npm:7.24.7"
@@ -5101,6 +5110,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lifi/sdk@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "@lifi/sdk@npm:3.1.5"
+  dependencies:
+    "@lifi/types": ^15.2.0
+    "@solana/wallet-adapter-base": ^0.9.23
+    "@solana/web3.js": ^1.95.2
+    eth-rpc-errors: ^4.0.3
+    viem: ^2.19.3
+  peerDependencies:
+    "@solana/wallet-adapter-base": ^0.9.0
+    "@solana/web3.js": ^1.93.0
+    viem: ^2.16.0
+  checksum: cc63202e2b25031bab17687ccc10dd2ead05c11436b3e50e7871b5e5e5c6e699d876729416be21717b07d1bad51ab7ab8d2e0d9e85d0e8c766671434ccfd6edd
+  languageName: node
+  linkType: hard
+
+"@lifi/types@npm:^15.2.0":
+  version: 15.3.2
+  resolution: "@lifi/types@npm:15.3.2"
+  checksum: 28933f20ee500e45b9375f65e4152000e875309769a41215b3dbd780c60e2894d75e234da01751a01c61465cf17cc8fe0cfedb5f2d8b8a604010a0b2a9cf29c3
+  languageName: node
+  linkType: hard
+
 "@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.0":
   version: 1.2.0
   resolution: "@lit-labs/ssr-dom-shim@npm:1.2.0"
@@ -7529,6 +7562,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@solana/wallet-adapter-base@npm:^0.9.23":
+  version: 0.9.23
+  resolution: "@solana/wallet-adapter-base@npm:0.9.23"
+  dependencies:
+    "@solana/wallet-standard-features": ^1.1.0
+    "@wallet-standard/base": ^1.0.1
+    "@wallet-standard/features": ^1.0.3
+    eventemitter3: ^4.0.7
+  peerDependencies:
+    "@solana/web3.js": ^1.77.3
+  checksum: bd2fc54ae3d82758378c3eb92ab47b976335376082323d3e954e1c18dd35db1fa503eb8d2dd1dd6f6d7936cedfc02ff5db7a5e2f8fc00f6c7d37cf131df906cc
+  languageName: node
+  linkType: hard
+
+"@solana/wallet-standard-features@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "@solana/wallet-standard-features@npm:1.2.0"
+  dependencies:
+    "@wallet-standard/base": ^1.0.1
+    "@wallet-standard/features": ^1.0.3
+  checksum: 03ec568f9a4a945970dda57abed4c5a9f669798b272bd7c2d6c135c8baeba8fd78a5fd6d850364dba8257eaf84b7bf8578ba039666f377206c2fd89f6093fca3
+  languageName: node
+  linkType: hard
+
 "@solana/web3.js@npm:^1.87.3, @solana/web3.js@npm:^1.91.4":
   version: 1.95.0
   resolution: "@solana/web3.js@npm:1.95.0"
@@ -7549,6 +7606,29 @@ __metadata:
     rpc-websockets: ^9.0.2
     superstruct: ^2.0.2
   checksum: 5e25c8a14d543baf16ad4b5803840909cb9da6fe18c556bc5325b51cf976d46fe186ae0f1439205ee160c1c3d0e55410b037d6170766450c03a05b6ee0370d06
+  languageName: node
+  linkType: hard
+
+"@solana/web3.js@npm:^1.95.2":
+  version: 1.95.3
+  resolution: "@solana/web3.js@npm:1.95.3"
+  dependencies:
+    "@babel/runtime": ^7.25.0
+    "@noble/curves": ^1.4.2
+    "@noble/hashes": ^1.4.0
+    "@solana/buffer-layout": ^4.0.1
+    agentkeepalive: ^4.5.0
+    bigint-buffer: ^1.1.5
+    bn.js: ^5.2.1
+    borsh: ^0.7.0
+    bs58: ^4.0.1
+    buffer: 6.0.3
+    fast-stable-stringify: ^1.0.0
+    jayson: ^4.1.1
+    node-fetch: ^2.7.0
+    rpc-websockets: ^9.0.2
+    superstruct: ^2.0.2
+  checksum: 6951eb12275de09ef9422fc65982b7496f3d11253b4cd1b09694dd2135d92aa272a04a7adf50ef0136a459b08ea40e07f6e7cbf1970cae44d6193d93fe6acc1f
   languageName: node
   linkType: hard
 
@@ -10507,6 +10587,22 @@ __metadata:
     typescript:
       optional: true
   checksum: 2cc8c06b886683ffda13cfba0172ccabb68f72b458852f0275ccb0bad937c1ccb74bf8dd42f4d89fc5b92a88740aef2d7876c361da0ee3f030f3d8f8b49f26ff
+  languageName: node
+  linkType: hard
+
+"@wallet-standard/base@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@wallet-standard/base@npm:1.0.1"
+  checksum: 8f40bee1c69d2c3c0a4c317b3069301406025f8dc1a794b4b4b6d36d2e8e1e38193e6db1c3ac729c773d380f4e2c3a7454bfd3e138708aa6821b6e2029063590
+  languageName: node
+  linkType: hard
+
+"@wallet-standard/features@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@wallet-standard/features@npm:1.0.3"
+  dependencies:
+    "@wallet-standard/base": ^1.0.1
+  checksum: 000a4087d6fd70aaed7f66b118c85097f1d75aa29b962467ee7dee179d01ce009ee685552f53caaef67fdfab63d452073f6fb3bcc0471e3c88fc7e742d2c4e05
   languageName: node
   linkType: hard
 
@@ -14721,6 +14817,7 @@ __metadata:
     "@ethersproject/abstract-provider": ^5.7.0
     "@front-finance/link": ^1.0.7
     "@gatefi/js-sdk": ^0.14.0
+    "@lifi/sdk": ^3.1.5
     "@meshconnect/web-link-sdk": ^2.0.1
     "@ramp-network/ramp-instant-sdk": ^4.0.1
     "@reduxjs/toolkit": ^1.9.7
@@ -20396,6 +20493,28 @@ __metadata:
   bin:
     jayson: bin/jayson.js
   checksum: 3a0f94f6548d5f6c366a9e6791129f2e19697ea09c2c37e9112b1a19902802aca8375b024b6b7a1e0465521f9fe6f06723258a6aac685290ce3761d92ea61e0a
+  languageName: node
+  linkType: hard
+
+"jayson@npm:^4.1.1":
+  version: 4.1.2
+  resolution: "jayson@npm:4.1.2"
+  dependencies:
+    "@types/connect": ^3.4.33
+    "@types/node": ^12.12.54
+    "@types/ws": ^7.4.4
+    JSONStream: ^1.3.5
+    commander: ^2.20.3
+    delay: ^5.0.0
+    es6-promisify: ^5.0.0
+    eyes: ^0.1.8
+    isomorphic-ws: ^4.0.1
+    json-stringify-safe: ^5.0.1
+    uuid: ^8.3.2
+    ws: ^7.5.10
+  bin:
+    jayson: bin/jayson.js
+  checksum: 10d6a0ce55045a1098b9b0d1d9b4b898f034e70696e57240ba76d67eddaabd703e1f59477c667b57e39f6f1fc54dbb87b1327a8a4edef39a37a17b70c79bb6e4
   languageName: node
   linkType: hard
 
@@ -30331,6 +30450,28 @@ __metadata:
     typescript:
       optional: true
   checksum: 43f240edcf430a2fca03307b5f52f5c07a79a583ef6618e6b053634007aa3491476b1a7b75e7c27456930afb811e808f25f729dafa1fa8b0e275f8ca4fd23455
+  languageName: node
+  linkType: hard
+
+"viem@npm:^2.19.3":
+  version: 2.20.1
+  resolution: "viem@npm:2.20.1"
+  dependencies:
+    "@adraffy/ens-normalize": 1.10.0
+    "@noble/curves": 1.4.0
+    "@noble/hashes": 1.4.0
+    "@scure/bip32": 1.4.0
+    "@scure/bip39": 1.3.0
+    abitype: 1.0.5
+    isows: 1.0.4
+    webauthn-p256: 0.0.5
+    ws: 8.17.1
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 3b544fb036c844e2621c22edfc60d8d5e0a03477b43690d282b1ec9222d5682a6c680c65f45e25a17df1ab68ace7bd09301208b07b48f9b18a0212c923d9b1c1
   languageName: node
   linkType: hard
 
