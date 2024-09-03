@@ -265,17 +265,17 @@ export const getNativeCoinInfo = (chainId: number) => {
 export const getCombinedBalance = (balances: Balances, type: "eth" | "usdc") => {
     let balance = 0n;
     let chainBalances: { [chainId: string]: bigint } = {};
-    Object.entries(balances).forEach(([chainId, values]) => {
+    Object.entries(balances || {}).forEach(([chainId, values]) => {
         const isEth = SupportedChains.find((item) => item.id === Number(chainId))?.nativeCurrency.symbol === "ETH";
         if (type === "eth" && isEth) {
-            balance += BigInt(values[zeroAddress]);
-            chainBalances[chainId] = BigInt(values[zeroAddress]);
+            balance += BigInt(values[zeroAddress] || 0);
+            chainBalances[chainId] = BigInt(values[zeroAddress] || 0);
         } else if (type === "usdc") {
             // @ts-ignore
             const usdcAddress = addressesByChainId[chainId].usdcAddress;
             if (usdcAddress) {
-                balance += BigInt(values[usdcAddress]);
-                chainBalances[chainId] = BigInt(values[usdcAddress]);
+                balance += BigInt(values[usdcAddress] || 0);
+                chainBalances[chainId] = BigInt(values[usdcAddress] || 0);
             }
         }
     });

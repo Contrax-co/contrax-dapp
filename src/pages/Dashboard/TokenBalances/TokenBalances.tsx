@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useMemo, useState, Fragment } from "react";
 import useApp from "src/hooks/useApp";
 import { UIStateEnum, useTokens } from "src/hooks/useTokens";
 import styles from "./TokenBalances.module.scss";
@@ -7,6 +7,14 @@ import { EmptyComponent } from "src/components/EmptyComponent/EmptyComponent";
 import { TransferToken } from "src/components/modals/TransferToken/TransferToken";
 import { Token } from "src/types";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
+import { SupportedChains } from "src/config/walletConfig";
+import { BiSliderAlt } from "react-icons/bi";
+import { TbListDetails } from "react-icons/tb";
+import OutsideClickHandler from "react-outside-click-handler";
+import { useAppDispatch, useAppSelector } from "src/state";
+import { toggleTokenDetailBalances } from "src/state/settings/settingsReducer";
+import { getCombinedBalance } from "src/utils/common";
+import useBalances from "src/hooks/useBalances";
 
 interface IProps {}
 
@@ -14,12 +22,20 @@ export const TokenBalances: FC<IProps> = () => {
     const { lightMode } = useApp();
     const { tokens, lpTokens, UIState } = useTokens();
     const [selectedToken, setSelectedToken] = useState<Token>();
+    const showTokenDetailedBalances = useAppSelector((state) => state.settings.showTokenDetailedBalances);
+    const { balances } = useBalances();
 
     const handleCloseModal = useCallback(() => setSelectedToken(undefined), [setSelectedToken]);
+    const usdcBalance = useMemo(() => getCombinedBalance(balances, "usdc"), [balances]);
 
     return (
         <>
-            <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>Token Balances</p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
+                <p className={`dashboard_wallet_title ${lightMode && "dashboard_wallet_title--light"}`}>
+                    Token Balances
+                </p>
+                <Settings />
+            </div>
             {UIState === UIStateEnum.CONNECT_WALLET && (
                 <EmptyComponent style={{ paddingTop: 50, paddingBottom: 50 }}>
                     Connect your wallet to view your balances
@@ -40,8 +56,40 @@ export const TokenBalances: FC<IProps> = () => {
 
             {(UIState === UIStateEnum.SHOW_TOKENS_TOKENS || UIState === UIStateEnum.SHOW_TOKENS) && (
                 <div className={styles.container}>
+                    {!showTokenDetailedBalances && (
+                        <div
+                            className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
+                            onClick={() => setSelectedToken(tokens.find((item) => item.name === "USDC"))}
+                        >
+                            <img
+                                className={styles.tokenLogo}
+                                src={
+                                    "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png"
+                                }
+                                alt="logo"
+                            />
+                            <div>
+                                <p className={styles.name}>{"USDC"}</p>
+                                <p className={styles.balance}>
+                                    {ethers.utils.commify(Number(usdcBalance?.formattedBalance || 0).toString())}
+                                </p>
+                            </div>
+                            <p className={styles.usdBalance}>
+                                {Number(usdcBalance?.formattedBalance || 0)
+                                    .toLocaleString("en-US", {
+                                        style: "currency",
+                                        currency: "USD",
+                                        minimumFractionDigits: 3,
+                                    })
+                                    .slice(0, -1)}
+                            </p>
+                        </div>
+                    )}
                     {tokens
-                        .filter((token) => Number(token.usdBalance) > 0.01)
+                        .filter(
+                            (token) =>
+                                Number(token.usdBalance) > 0.01 && (showTokenDetailedBalances || token.name !== "USDC")
+                        )
                         .map((token, i) => (
                             <div
                                 key={i}
@@ -49,12 +97,19 @@ export const TokenBalances: FC<IProps> = () => {
                                 onClick={() => setSelectedToken(token)}
                             >
                                 <img className={styles.tokenLogo} src={token.logo} alt="logo" />
+                                <img
+                                    className={styles.networkLogo}
+                                    src={`https://github.com/Contrax-co/tokens/blob/main/chains/${token.networkId}.png?raw=true`}
+                                    alt={token.networkId.toString()}
+                                />
                                 <div>
                                     <p className={styles.name}>
                                         {token.name}
-                                        {token.network ? (
-                                            <span className={styles.networkName}>({token.network})</span>
-                                        ) : null}
+                                        {showTokenDetailedBalances && (
+                                            <span className={styles.networkName}>
+                                                ({SupportedChains.find((item) => item.id === token.networkId)?.name})
+                                            </span>
+                                        )}
                                     </p>
                                     <p className={styles.balance}>
                                         {ethers.utils.commify(Number(token.balance).toString())}
@@ -130,5 +185,39 @@ export const TokenBalances: FC<IProps> = () => {
                 </>
             )}
         </>
+    );
+};
+
+const Settings = () => {
+    const [open, setOpen] = useState(false);
+    const dispatch = useAppDispatch();
+    const showTokenDetailedBalances = useAppSelector((state) => state.settings.showTokenDetailedBalances);
+    return (
+        <OutsideClickHandler display="inline-block" onOutsideClick={() => setOpen(false)}>
+            <div style={{ position: "relative" }}>
+                <div className={styles.settingsButton} onClick={() => setOpen(!open)}>
+                    <BiSliderAlt />
+                </div>
+                {open && (
+                    <div className={styles.settingsDialog}>
+                        <div
+                            style={{
+                                display: "flex",
+                                cursor: "pointer",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 10,
+                            }}
+                            onClick={() => {
+                                dispatch(toggleTokenDetailBalances(!showTokenDetailedBalances));
+                            }}
+                        >
+                            <TbListDetails width={16} height={16} />
+                            <p>{showTokenDetailedBalances ? "Hide" : "Show"} Token Distribution</p>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </OutsideClickHandler>
     );
 };

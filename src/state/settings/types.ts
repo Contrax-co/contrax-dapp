@@ -3,4 +3,5 @@ export interface StateInterface {
     supportChat: boolean;
     connectorId: string;
     showVaultsWithFunds: boolean;
+    showTokenDetailedBalances: boolean;
 }

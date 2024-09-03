@@ -103,43 +103,40 @@ export const useTokens = () => {
             return obj;
         });
 
-        arbTokens
-            .filter((token) => token.chainId === defaultChainId)
-            .forEach((token) => {
-                let obj: Token = {
-                    address: token.address,
-                    decimals: token.decimals,
-                    token_type: FarmType.normal,
-                    balance: formattedBalances[token.chainId][token.address]
-                        ? formattedBalances[token.chainId][token.address]! < 1 / 10 ** tokenBalDecimalPlaces
-                            ? noExponents(formattedBalances[token.chainId][token.address]!.toPrecision(2)).slice(0, -1)
-                            : toFixedFloor(
-                                  formattedBalances[token.chainId][token.address]!,
-                                  tokenBalDecimalPlaces
-                              ).toString()
-                        : "0",
-                    usdBalance: formattedBalances[token.chainId][token.address]
-                        ? prices[token.chainId][token.address] * formattedBalances[token.chainId][token.address]! <
-                          1 / 10 ** usdBalDecimalPlaces
-                            ? noExponents(
-                                  (
-                                      prices[token.chainId][token.address] *
-                                      formattedBalances[token.chainId][token.address]!
-                                  ).toPrecision(2)
-                              ).slice(0, -1)
-                            : toFixedFloor(
+        arbTokens.forEach((token) => {
+            let obj: Token = {
+                address: token.address,
+                decimals: token.decimals,
+                token_type: FarmType.normal,
+                balance: formattedBalances[token.chainId][token.address]
+                    ? formattedBalances[token.chainId][token.address]! < 1 / 10 ** tokenBalDecimalPlaces
+                        ? noExponents(formattedBalances[token.chainId][token.address]!.toPrecision(2)).slice(0, -1)
+                        : toFixedFloor(
+                              formattedBalances[token.chainId][token.address]!,
+                              tokenBalDecimalPlaces
+                          ).toString()
+                    : "0",
+                usdBalance: formattedBalances[token.chainId][token.address]
+                    ? prices[token.chainId][token.address] * formattedBalances[token.chainId][token.address]! <
+                      1 / 10 ** usdBalDecimalPlaces
+                        ? noExponents(
+                              (
                                   prices[token.chainId][token.address] *
-                                      formattedBalances[token.chainId][token.address]!,
-                                  usdBalDecimalPlaces
-                              ).toString()
-                        : "0",
-                    name: token.name,
-                    logo: token.logo,
-                    price: prices[token.chainId][token.address],
-                    networkId: token.chainId,
-                };
-                tokens.push(obj);
-            });
+                                  formattedBalances[token.chainId][token.address]!
+                              ).toPrecision(2)
+                          ).slice(0, -1)
+                        : toFixedFloor(
+                              prices[token.chainId][token.address] * formattedBalances[token.chainId][token.address]!,
+                              usdBalDecimalPlaces
+                          ).toString()
+                    : "0",
+                name: token.name,
+                logo: token.logo,
+                price: prices[token.chainId][token.address],
+                networkId: token.chainId,
+            };
+            tokens.push(obj);
+        });
 
         const lpTokens: Token[] = lpAddresses.map(({ address, decimals }) => {
             const farm = farms.find((farm) => getAddress(farm.lp_address) === address)!;

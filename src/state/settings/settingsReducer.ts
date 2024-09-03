@@ -6,6 +6,7 @@ const initialState: StateInterface = {
     supportChat: true,
     showVaultsWithFunds: false,
     connectorId: "",
+    showTokenDetailedBalances: false,
 };
 
 const settingsSlice = createSlice({
@@ -27,10 +28,19 @@ const settingsSlice = createSlice({
         setConnectorId: (state: StateInterface, action: PayloadAction<string>) => {
             state.connectorId = action.payload;
         },
+        toggleTokenDetailBalances: (state: StateInterface, action: PayloadAction<boolean>) => {
+            state.showTokenDetailedBalances = action.payload;
+        },
     },
 });
 
-export const { setSettings, toggleTheme, toggleSupportChat, toggleShowVaultsWithFunds, setConnectorId } =
-    settingsSlice.actions;
+export const {
+    setSettings,
+    toggleTheme,
+    toggleTokenDetailBalances,
+    toggleSupportChat,
+    toggleShowVaultsWithFunds,
+    setConnectorId,
+} = settingsSlice.actions;
 
 export default settingsSlice.reducer;
