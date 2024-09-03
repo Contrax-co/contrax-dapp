@@ -380,12 +380,24 @@ export const slippageOut: SlippageOutBaseFn = async ({ getClients, farm, token, 
     return difference;
 };
 
-export const crossChainTransaction = async (
-    obj: CrossChainTransactionObject
-): Promise<{
-    status: boolean;
-    error?: string;
-}> => {
+export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTransactionObject, "contractCall">>(
+    obj: T
+): Promise<
+    T["simulate"] extends true
+        ? {
+              afterBridgeBal: bigint;
+              amountToBeBridged: bigint;
+              //   amountSentForBridging:bigint;
+              //   amountToGetFromBridging:bigint;
+              //   amountTotalAfterBridging:bigint;
+              //   amountWantedAfterBridging:bigint;
+          }
+        : {
+              status: boolean;
+              error?: string;
+              isBridged: boolean;
+          }
+> {
     const chain = SupportedChains.find((item) => item.id === obj.toChainId);
     if (!chain) throw new Error("chain not found");
     const toPublicClient = createPublicClient({
@@ -407,10 +419,15 @@ export const crossChainTransaction = async (
             if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
             return false;
         })?.[0];
-        if (!fromChainId) throw new Error("Insufficient balance");
+        if (!fromChainId) {
+            if (obj.simulate) {
+                // @ts-ignore
+                return { afterBridgeBal: BigInt(obj.toTokenAmount), amountToBeBridged: 0n };
+            } else throw new Error("Insufficient balance");
+        }
         console.log("getting bridge quote");
         let quote: LiFiStep;
-        if (obj.max) {
+        if (true || obj.max) {
             quote = await getQuote({
                 fromAddress: obj.currentWallet,
                 fromChain: fromChainId,
@@ -421,31 +438,38 @@ export const crossChainTransaction = async (
                 fromAmount: toBalDiff.toString(),
             });
         } else {
-            quote = await getContractCallsQuote({
-                fromAddress: obj.currentWallet,
-                fromChain: fromChainId,
-                toChain: obj.toChainId,
-                // @ts-ignore
-                fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
-                toToken: obj.toToken,
-                toAmount: toBalDiff.toString(),
-                // toAmount: obj.toTokenAmount.toString(),
-                contractOutputsToken: obj.contractCall.outputTokenAddress,
-                contractCalls: [
-                    // {
-                    //     fromAmount: obj.toTokenAmount.toString(),
-                    //     fromTokenAddress: obj.toToken,
-                    //     toContractAddress: obj.contractCall.to,
-                    //     toTokenAddress: obj.contractCall.outputTokenAddress,
-                    //     toContractCallData: obj.contractCall.data,
-                    //     toContractGasLimit: "2000000",
-                    // },
-                ],
-            });
+            // quote = await getContractCallsQuote({
+            //     fromAddress: obj.currentWallet,
+            //     fromChain: fromChainId,
+            //     toChain: obj.toChainId,
+            //     // @ts-ignore
+            //     fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
+            //     toToken: obj.toToken,
+            //     toAmount: toBalDiff.toString(),
+            //     // toAmount: obj.toTokenAmount.toString(),
+            //     // contractOutputsToken: obj.contractCall.outputTokenAddress,
+            //     contractCalls: [
+            //         // {
+            //         //     fromAmount: obj.toTokenAmount.toString(),
+            //         //     fromTokenAddress: obj.toToken,
+            //         //     toContractAddress: obj.contractCall.to,
+            //         //     toTokenAddress: obj.contractCall.outputTokenAddress,
+            //         //     toContractCallData: obj.contractCall.data,
+            //         //     toContractGasLimit: "2000000",
+            //         // },
+            //     ],
+            // });
         }
         console.log("quote =>", quote);
         const route = convertQuoteToRoute(quote);
         console.log("route =>", route);
+        if (obj.simulate) {
+            let afterBridgeBal = BigInt(route.toAmount) + toBal;
+            if (afterBridgeBal > BigInt(obj.toTokenAmount)) afterBridgeBal = BigInt(obj.toTokenAmount);
+            // @ts-ignore
+            return { afterBridgeBal, amountToBeBridged: BigInt(route.fromAmount) };
+        }
+
         let allStatus: boolean = false;
         for await (const step of route.steps) {
             const client = await obj.getClients(step.transactionRequest!.chainId!);
@@ -483,15 +507,17 @@ export const crossChainTransaction = async (
             if (!res.status) {
                 throw new Error(res.error);
             }
-            let status: string;
+            let status = "PENDING";
             do {
-                const result = await getStatus({
-                    txHash: res.txHash!,
-                    fromChain: step.action.fromChainId,
-                    toChain: step.action.toChainId,
-                    bridge: step.tool,
-                });
-                status = result.status;
+                try {
+                    const result = await getStatus({
+                        txHash: res.txHash!,
+                        fromChain: step.action.fromChainId,
+                        toChain: step.action.toChainId,
+                        bridge: step.tool,
+                    });
+                    status = result.status;
+                } catch (_) {}
 
                 console.log(`Transaction status for ${res.txHash}:`, status);
 
@@ -507,29 +533,184 @@ export const crossChainTransaction = async (
             }
         }
         if (allStatus) {
-            const client = await obj.getClients(obj.toChainId);
-            const transaction = client.wallet.sendTransaction({
-                data: obj.contractCall.data,
-                to: obj.contractCall.to,
-                value: obj.contractCall.value,
-            });
-            console.log("performing transaction on destination chain");
-            const res = await awaitTransaction(transaction, client);
-            return res;
+            // @ts-ignore
+            return {
+                status: true,
+                isBridged: true,
+            };
         } else {
+            // @ts-ignore
             return {
                 status: false,
                 error: "Target chain error",
+                isBridged: true,
             };
         }
     } else {
-        const client = await obj.getClients(obj.toChainId);
-        const transaction = client.wallet.sendTransaction({
-            data: obj.contractCall.data,
-            to: obj.contractCall.to,
-            value: obj.contractCall.value,
-        });
-        const res = await awaitTransaction(transaction, client);
-        return res;
+        if (obj.simulate) {
+            // @ts-ignore
+            return {
+                afterBridgeBal: BigInt(obj.toTokenAmount),
+                amountToBeBridged: 0n,
+            };
+        } else {
+            // @ts-ignore
+            return { status: true };
+        }
     }
-};
+}
+// export const crossChainTransaction = async (
+//     obj: CrossChainTransactionObject
+// ): Promise<{
+//     status: boolean;
+//     error?: string;
+// }> => {
+//     console.time("bridge");
+//     const chain = SupportedChains.find((item) => item.id === obj.toChainId);
+//     if (!chain) throw new Error("chain not found");
+//     const toPublicClient = createPublicClient({
+//         chain: chain,
+//         transport: http(),
+//         batch: {
+//             multicall: {
+//                 batchSize: 4096,
+//                 wait: 250,
+//             },
+//         },
+//     }) as IClients["public"];
+
+//     const toBal = await getBalance(obj.toToken, obj.currentWallet, { public: toPublicClient });
+//     if (toBal < obj.toTokenAmount) {
+//         const toBalDiff = obj.toTokenAmount - toBal;
+//         const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
+//         const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
+//             if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
+//             return false;
+//         })?.[0];
+//         if (!fromChainId) throw new Error("Insufficient balance");
+//         console.log("getting bridge quote");
+//         let quote: LiFiStep;
+//         if (obj.max) {
+//             quote = await getQuote({
+//                 fromAddress: obj.currentWallet,
+//                 fromChain: fromChainId,
+//                 toChain: obj.toChainId,
+//                 // @ts-ignore
+//                 fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
+//                 toToken: obj.toToken,
+//                 fromAmount: toBalDiff.toString(),
+//             });
+//         } else {
+//             quote = await getContractCallsQuote({
+//                 fromAddress: obj.currentWallet,
+//                 fromChain: fromChainId,
+//                 toChain: obj.toChainId,
+//                 // @ts-ignore
+//                 fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
+//                 toToken: obj.toToken,
+//                 toAmount: toBalDiff.toString(),
+//                 // toAmount: obj.toTokenAmount.toString(),
+//                 contractOutputsToken: obj.contractCall.outputTokenAddress,
+//                 contractCalls: [
+//                     // {
+//                     //     fromAmount: obj.toTokenAmount.toString(),
+//                     //     fromTokenAddress: obj.toToken,
+//                     //     toContractAddress: obj.contractCall.to,
+//                     //     toTokenAddress: obj.contractCall.outputTokenAddress,
+//                     //     toContractCallData: obj.contractCall.data,
+//                     //     toContractGasLimit: "2000000",
+//                     // },
+//                 ],
+//             });
+//         }
+//         console.log("quote =>", quote);
+//         const route = convertQuoteToRoute(quote);
+//         console.log("route =>", route);
+//         let allStatus: boolean = false;
+//         for await (const step of route.steps) {
+//             const client = await obj.getClients(step.transactionRequest!.chainId!);
+//             const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
+//             const tokenBalance = await getBalance(
+//                 obj.toToken === zeroAddress
+//                     ? zeroAddress
+//                     : addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+//                 obj.currentWallet,
+//                 client
+//             );
+//             if (tokenBalance < BigInt(step.estimate.fromAmount)) {
+//                 throw new Error("Insufficient Balance");
+//             }
+//             console.log("approving for bridge");
+//             if (obj.toToken !== zeroAddress) {
+//                 await approveErc20(
+//                     addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+//                     step.estimate.approvalAddress as Address,
+//                     BigInt(step.estimate.fromAmount),
+//                     obj.currentWallet,
+//                     client
+//                 );
+//             }
+//             const transaction = client.wallet.sendTransaction({
+//                 data: data as Hex,
+//                 gasLimit: gasLimit!,
+//                 gasPrice: BigInt(gasPrice!),
+//                 to: to as Address,
+//                 value: BigInt(value!),
+//             });
+//             console.log("doing transaction on source chain");
+//             const res = await awaitTransaction(transaction, client);
+//             console.log("res =>", res);
+//             if (!res.status) {
+//                 throw new Error(res.error);
+//             }
+//             let status: string;
+//             do {
+//                 const result = await getStatus({
+//                     txHash: res.txHash!,
+//                     fromChain: step.action.fromChainId,
+//                     toChain: step.action.toChainId,
+//                     bridge: step.tool,
+//                 });
+//                 status = result.status;
+
+//                 console.log(`Transaction status for ${res.txHash}:`, status);
+
+//                 // Wait for a short period before checking the status again
+//                 await new Promise((resolve) => setTimeout(resolve, 5000));
+//             } while (status !== "DONE" && status !== "FAILED");
+
+//             if (status === "DONE") {
+//                 allStatus = true;
+//             } else {
+//                 console.error(`Transaction ${res.txHash} failed`);
+//                 allStatus = false;
+//             }
+//         }
+//         if (allStatus) {
+//             const client = await obj.getClients(obj.toChainId);
+//             const transaction = client.wallet.sendTransaction({
+//                 data: obj.contractCall.data,
+//                 to: obj.contractCall.to,
+//                 value: obj.contractCall.value,
+//             });
+//             console.log("performing transaction on destination chain");
+//             const res = await awaitTransaction(transaction, client);
+//             return res;
+//         } else {
+//             return {
+//                 status: false,
+//                 error: "Target chain error",
+//             };
+//         }
+//     } else {
+//         const client = await obj.getClients(obj.toChainId);
+//         const transaction = client.wallet.sendTransaction({
+//             data: obj.contractCall.data,
+//             to: obj.contractCall.to,
+//             value: obj.contractCall.value,
+//         });
+//         const res = await awaitTransaction(transaction, client);
+//         return res;
+//     }
+//     console.timeEnd("bridge");
+// };

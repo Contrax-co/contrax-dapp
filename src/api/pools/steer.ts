@@ -1,4 +1,4 @@
-import { approveErc20 } from "src/api/token";
+import { approveErc20, getBalance } from "src/api/token";
 import { awaitTransaction, getCombinedBalance, getConnectorId, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { addressesByChainId } from "src/config/constants/contracts";
@@ -23,7 +23,7 @@ import {
     simulateTransaction,
 } from "../tenderly";
 import { isGasSponsored } from "..";
-import { zapOutBase, slippageOut, crossChainTransaction } from "./common";
+import { zapOutBase, slippageOut, crossChainBridgeIfNecessary } from "./common";
 import merge from "lodash.merge";
 import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
@@ -38,7 +38,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr]);
         const zapCurriences = farm.zap_currencies;
         const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
-        const combinedEthBalance = getCombinedBalance(balances, "eth");
         const usdcAddress = addressesByChainId[farm.chainId].usdcAddress;
 
         let depositableAmounts: TokenAmounts[] = [
@@ -52,8 +51,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: combinedEthBalance.formattedBalance.toString(),
-                amountDollar: (Number(combinedEthBalance.formattedBalance) * ethPrice).toString(),
+                amount: toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18),
+                amountDollar: (Number(toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18)) * ethPrice).toString(),
                 price: ethPrice,
             },
         ];
@@ -192,7 +191,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             }
             // token zap
             else {
-                zapperTxn = await crossChainTransaction({
+                let { status: bridgeStatus, isBridged } = await crossChainBridgeIfNecessary({
                     getClients,
                     balances,
                     currentWallet,
@@ -200,17 +199,21 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     toToken: token,
                     toTokenAmount: amountInWei,
                     max,
-                    contractCall: {
-                        outputTokenAddress: farm.vault_addr,
-                        value: 0n,
-                        to: farm.zapper_addr,
-                        data: encodeFunctionData({
-                            abi: steerZapperAbi,
-                            functionName: "zapIn",
-                            args: [farm.vault_addr, 0n, token, amountInWei],
-                        }),
-                    },
                 });
+                if (bridgeStatus) {
+                    if (isBridged) {
+                        amountInWei = await getBalance(token, currentWallet, client);
+                    }
+                    zapperTxn = await awaitTransaction(
+                        zapperContract.write.zapIn([farm.vault_addr, 0n, token, amountInWei]),
+                        client
+                    );
+                } else {
+                    zapperTxn = {
+                        status: false,
+                        error: "Bridge Failed",
+                    };
+                }
             }
 
             if (!zapperTxn.status) {
@@ -311,11 +314,21 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
         } else {
+            const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
+                getClients,
+                balances,
+                currentWallet,
+                toChainId: farm.chainId,
+                toToken: token,
+                toTokenAmount: amountInWei,
+                max,
+                simulate: true,
+            });
             const populated = {
                 data: encodeFunctionData({
                     abi: steerZapperAbi,
                     functionName: "zapIn",
-                    args: [farm.vault_addr, 0n, token, amountInWei],
+                    args: [farm.vault_addr, 0n, token, afterBridgeBal],
                 }),
             };
             transaction.input = populated.data || "";

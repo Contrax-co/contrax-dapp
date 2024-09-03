@@ -95,7 +95,7 @@ export const encodeStateOverrides = async (
     );
     const encodedStates = res.data;
     console.log(encodedStates);
-    const result = mapToEncodedOverrides(encodedStates.stateOverrides);
+    const result = mapToEncodedOverrides(encodedStates?.stateOverrides || {});
     console.log(result);
     return result;
 };

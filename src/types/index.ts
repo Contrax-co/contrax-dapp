@@ -305,5 +305,6 @@ export interface CrossChainTransactionObject {
     toToken: Address;
     toTokenAmount: bigint;
     max?: boolean;
+    simulate?: boolean;
     getClients: (chainId: number) => Promise<IClients>;
 }
