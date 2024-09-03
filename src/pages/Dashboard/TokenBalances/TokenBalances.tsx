@@ -58,8 +58,8 @@ export const TokenBalances: FC<IProps> = () => {
                 <div className={styles.container}>
                     {!showTokenDetailedBalances && (
                         <div
-                            className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                            onClick={() => setSelectedToken(tokens.find((item) => item.name === "USDC"))}
+                            className={`${styles.tokenCardBase} ${lightMode && styles.tokenCardLight}`}
+                            // onClick={() => setSelectedToken(tokens.find((item) => item.name === "USDC"))}
                         >
                             <img
                                 className={styles.tokenLogo}
