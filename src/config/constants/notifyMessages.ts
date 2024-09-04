@@ -71,4 +71,16 @@ export const loadingMessages: LoadingMessages = {
         title: "Transferring...",
         message: "Your transfer is in progress",
     }),
+    gettingBridgeQuote: () => ({
+        title: "Creating your stake position...",
+        message: "Getting Quote for Bridge",
+    }),
+    bridgeStep: (step: number, totalSteps: number) => ({
+        title: "Creating your stake position...",
+        message: `Bridge Step ${step} of ${totalSteps}`,
+    }),
+    bridgeDestTxWait: () => ({
+        title: "Creating your stake position...",
+        message: `Waiting for destination transaction to be mined`,
+    }),
 };

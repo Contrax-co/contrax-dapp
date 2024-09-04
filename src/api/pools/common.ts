@@ -427,6 +427,8 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
         }
         console.log("getting bridge quote");
         let quote: LiFiStep;
+        if (obj.notificationId) notifyLoading(loadingMessages.gettingBridgeQuote(), { id: obj.notificationId });
+
         if (true || obj.max) {
             quote = await getQuote({
                 fromAddress: obj.currentWallet,
@@ -471,7 +473,10 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
         }
 
         let allStatus: boolean = false;
+        let i = 1;
         for await (const step of route.steps) {
+            if (obj.notificationId)
+                notifyLoading(loadingMessages.bridgeStep(i, route.steps.length), { id: obj.notificationId });
             const client = await obj.getClients(step.transactionRequest!.chainId!);
             const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
             const tokenBalance = await getBalance(
@@ -509,6 +514,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
             }
             let status = "PENDING";
             do {
+                if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
                 try {
                     const result = await getStatus({
                         txHash: res.txHash!,
@@ -531,6 +537,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 console.error(`Transaction ${res.txHash} failed`);
                 allStatus = false;
             }
+            i++;
         }
         if (allStatus) {
             // @ts-ignore

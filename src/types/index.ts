@@ -81,6 +81,9 @@ export interface LoadingMessages {
     confirmDeposit: () => NotifyMessage;
     depositing: (tx?: string) => NotifyMessage;
     transferingTokens: () => NotifyMessage;
+    gettingBridgeQuote: () => NotifyMessage;
+    bridgeStep: (step: number, totalSteps: number) => NotifyMessage;
+    bridgeDestTxWait: () => NotifyMessage;
 }
 
 export interface AccountInfo {
@@ -306,5 +309,6 @@ export interface CrossChainTransactionObject {
     toTokenAmount: bigint;
     max?: boolean;
     simulate?: boolean;
+    notificationId?: string;
     getClients: (chainId: number) => Promise<IClients>;
 }
