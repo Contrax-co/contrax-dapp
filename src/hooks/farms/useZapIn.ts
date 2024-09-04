@@ -19,7 +19,7 @@ export interface ZapIn {
 }
 
 const useZapIn = (farm: PoolDef) => {
-    const { currentWallet, getClients } = useWallet();
+    const { currentWallet, getClients, getPublicClient, getWalletClient, estimateTxGas } = useWallet();
     const { reloadBalances, balances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
     const { decimals } = useDecimals();
@@ -34,9 +34,12 @@ const useZapIn = (farm: PoolDef) => {
             balances,
             max,
             getClients,
+            estimateTxGas,
             token,
             prices,
             decimals,
+            getPublicClient,
+            getWalletClient,
         });
 
         reloadBalances();
@@ -55,9 +58,12 @@ const useZapIn = (farm: PoolDef) => {
             getClients,
             farm,
             max,
+            estimateTxGas,
             token,
             prices,
             decimals,
+            getPublicClient,
+            getWalletClient,
         });
         const afterDepositAmount = Number(toEth(difference, farm.decimals)) * prices[farm.chainId][farm.vault_addr];
         const beforeDepositAmount = zapAmount * prices[farm.chainId][token];

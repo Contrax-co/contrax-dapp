@@ -37,6 +37,7 @@ export const zapInBase: ZapInBaseFn = async ({
     balances,
     token,
     currentWallet,
+    estimateTxGas,
     getClients,
     max,
     tokenIn,
@@ -87,8 +88,9 @@ export const zapInBase: ZapInBaseFn = async ({
                 const afterGasCut = await subtractGas(
                     amountInWei,
                     client,
-                    client.wallet.estimateTxGas({
+                    estimateTxGas({
                         to: farm.zapper_addr,
+                        chainId: farm.chainId,
                         value: balance,
                         data: encodeFunctionData({
                             abi: zapperAbi,
@@ -191,7 +193,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
 };
 
 export const slippageIn: SlippageInBaseFn = async (args) => {
-    let { amountInWei, balances, currentWallet, token, max, getClients, tokenIn, farm } = args;
+    let { amountInWei, balances, currentWallet, estimateTxGas, token, max, getClients, tokenIn, farm } = args;
     const client = await getClients(farm.chainId);
 
     const zapperContract = getContract({
@@ -247,8 +249,9 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
             const afterGasCut = await subtractGas(
                 amountInWei,
                 client!,
-                client.wallet.estimateTxGas({
+                estimateTxGas({
                     to: farm.zapper_addr,
+                    chainId: farm.chainId,
                     value: balance,
                     data: encodeFunctionData({
                         abi: zapperAbi,

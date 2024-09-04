@@ -277,14 +277,12 @@ Go to the module tuner on the partner dashboard to see how each property affects
 export interface EstimateTxGasArgs {
     data: Address;
     to: Address;
+    chainId: number;
     value?: string | bigint;
 }
 
 export interface IClients {
-    wallet:
-        | ReturnType<typeof createWalletClient<CustomTransport, Chain, JsonRpcAccount, undefined>> & {
-              estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
-          };
+    wallet: ReturnType<typeof createWalletClient<CustomTransport, Chain, JsonRpcAccount, undefined>>;
     // wallet:
     //     | (
     //           | Awaited<ReturnType<typeof createModularAccountAlchemyClient<Web3AuthSigner>>>

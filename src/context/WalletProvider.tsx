@@ -50,16 +50,8 @@ export interface IWalletContext {
     getPublicClient: (chainId: number) => IClients["public"];
     getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
     getClients: (chainId: number) => Promise<IClients>;
+    estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
 }
-
-type BalanceResult = {
-    price: number;
-    usdAmount: number;
-    decimals?: number | undefined;
-    formatted?: string | undefined;
-    // symbol?: string | undefined;
-    value?: ethers.ethers.BigNumber | undefined;
-};
 
 export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
 
@@ -146,37 +138,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 signer: alchemySigner!,
             });
             // @ts-ignore
-            _walletClient.estimateTxGas = async (args: EstimateTxGasArgs) => {
-                console.log("args =>", args);
-                let userOp = await _walletClient.buildUserOperation({
-                    uo: {
-                        data: args.data,
-                        target: args.to,
-                        value: BigInt(args.value || "0"),
-                    },
-                });
-                // @ts-ignore
-                userOp.nonce = "0x" + userOp.nonce.toString(16);
-                // @ts-ignore
-                userOp.maxFeePerGas = "0x" + userOp.maxFeePerGas.toString(16);
-                // @ts-ignore
-                userOp.maxPriorityFeePerGas = "0x" + userOp.maxPriorityFeePerGas.toString(16);
-                console.log("userOp =>", userOp);
-                // @ts-ignore
-                const estimate = await _walletClient.estimateUserOperationGas(userOp, ENTRYPOINT_ADDRESS_V06);
-
-                const totalEstimatedGasLimit =
-                    BigInt(estimate.callGasLimit) +
-                    BigInt(estimate.preVerificationGas) +
-                    BigInt(estimate.verificationGasLimit);
-                return totalEstimatedGasLimit;
-            };
-            // @ts-ignore
             _walletClients.current[chainId] = _walletClient;
             // @ts-ignore
             return _walletClient;
         } else {
-            const _publicClient = getPublicClient(chainId);
             const [account] = await (window.ethereum as EIP1193Provider).request({ method: "eth_requestAccounts" });
             // TODO: switch chain, if not exists then add network then switch.
             await (window.ethereum as EIP1193Provider).request({
@@ -188,17 +153,45 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 account,
                 transport: custom(window.ethereum as any),
                 chain,
-            }).extend((client) => ({
-                estimateTxGas: (args: EstimateTxGasArgs) => {
-                    return _publicClient.estimateGas({
-                        account: client.account,
-                        data: args.data,
-                        to: args.to,
-                        value: args.value ? BigInt(args.value) : undefined,
-                    });
-                },
-            }));
+            });
             return _walletClient;
+        }
+    };
+
+    const estimateTxGas = async (args: EstimateTxGasArgs) => {
+        if (!isSocial) {
+            const publicClient = getPublicClient(args.chainId);
+            return await publicClient.estimateGas({
+                account: currentWallet,
+                data: args.data,
+                to: args.to,
+                value: args.value ? BigInt(args.value) : undefined,
+            });
+        } else {
+            const walletClient = await getWalletClient(args.chainId);
+            // @ts-ignore
+            let userOp = await walletClient.buildUserOperation({
+                uo: {
+                    data: args.data,
+                    target: args.to,
+                    value: BigInt(args.value || "0"),
+                },
+            });
+            // @ts-ignore
+            userOp.nonce = "0x" + userOp.nonce.toString(16);
+            // @ts-ignore
+            userOp.maxFeePerGas = "0x" + userOp.maxFeePerGas.toString(16);
+            // @ts-ignore
+            userOp.maxPriorityFeePerGas = "0x" + userOp.maxPriorityFeePerGas.toString(16);
+            console.log("userOp =>", userOp);
+            // @ts-ignore
+            const estimate = await walletClient.estimateUserOperationGas(userOp, ENTRYPOINT_ADDRESS_V06);
+
+            const totalEstimatedGasLimit =
+                BigInt(estimate.callGasLimit) +
+                BigInt(estimate.preVerificationGas) +
+                BigInt(estimate.verificationGasLimit);
+            return totalEstimatedGasLimit;
         }
     };
 
@@ -369,6 +362,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 displayAccount: displayAccount as Address,
                 getPkey,
                 isSponsored,
+                estimateTxGas,
                 externalChainId,
                 switchExternalChain,
                 isConnecting,

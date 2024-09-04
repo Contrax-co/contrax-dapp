@@ -2,7 +2,7 @@ import { PoolDef } from "src/config/constants/pools_json";
 import { Balances } from "src/state/balances/types";
 import { Decimals } from "src/state/decimals/types";
 import { Prices } from "src/state/prices/types";
-import { IClients } from "src/types";
+import { EstimateTxGasArgs, IClients } from "src/types";
 import { Address } from "viem";
 
 export interface ZapInArgs {
@@ -14,7 +14,10 @@ export interface ZapInArgs {
     decimals?: Decimals;
     currentWallet: Address;
     tokenIn?: Address;
+    estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     getClients: (chainId: number) => Promise<IClients>;
+    getPublicClient: (chainId: number) => IClients["public"];
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
 }
 
 export interface ZapOutArgs {
@@ -22,7 +25,10 @@ export interface ZapOutArgs {
     currentWallet: Address;
     max?: boolean;
     token: Address;
+    estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     getClients: (chainId: number) => Promise<IClients>;
+    getPublicClient: (chainId: number) => IClients["public"];
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
 }
 
 export interface DepositArgs {

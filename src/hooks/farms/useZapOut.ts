@@ -18,7 +18,7 @@ export interface ZapOut {
 }
 
 const useZapOut = (farm: PoolDef) => {
-    const { currentWallet, getClients } = useWallet();
+    const { currentWallet, getClients, getPublicClient, estimateTxGas, getWalletClient } = useWallet();
     const { reloadBalances, balances } = useBalances();
     const { decimals } = useDecimals();
     const { prices } = usePriceOfTokens();
@@ -27,7 +27,16 @@ const useZapOut = (farm: PoolDef) => {
     const _zapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
         if (!currentWallet) return;
         let amountInWei = toWei(withdrawAmt, farm.decimals);
-        await farmFunctions[farm.id].zapOut({ amountInWei, currentWallet, getClients, max, token });
+        await farmFunctions[farm.id].zapOut({
+            amountInWei,
+            getPublicClient,
+            getWalletClient,
+            estimateTxGas,
+            currentWallet,
+            getClients,
+            max,
+            token,
+        });
         reloadBalances();
         reloadSupplies();
     };
@@ -44,6 +53,9 @@ const useZapOut = (farm: PoolDef) => {
             balances,
             getClients,
             max,
+            estimateTxGas,
+            getPublicClient,
+            getWalletClient,
             token,
         });
         const afterWithdrawAmount =
