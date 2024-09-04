@@ -45,10 +45,21 @@ function Body() {
     }, []);
 
     useEffect(() => {
-        // @ts-ignore
-        if (supportChat) window.chaport.q("startSession");
-        // @ts-ignore
-        else window.chaport.q("stopSession");
+        console.log("supportChat =>", supportChat);
+        if (supportChat) {
+            // @ts-ignore
+            window.chaport.q("startSession");
+            const chaport = document.querySelector(".chaport-container");
+            // @ts-ignore
+            if (chaport) chaport.style.display = "block";
+        } else {
+            // @ts-ignore
+            window.chaport.q("stopSession");
+            // @ts-ignore
+            const chaport = document.querySelector(".chaport-container");
+            // @ts-ignore
+            if (chaport) chaport.style.display = "none";
+        }
     }, [supportChat]);
 
     useEffect(() => {
