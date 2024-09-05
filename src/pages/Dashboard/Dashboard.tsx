@@ -153,8 +153,6 @@ function Dashboard() {
                     </>
                 )}
                 <ReferralEarning />
-                <BridgeBtn />
-                <BridgeEthBtn />
                 <SwapUSDCBtn />
             </div>
             {currentWallet ? (

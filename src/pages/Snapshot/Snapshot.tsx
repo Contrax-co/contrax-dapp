@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import { Tabs } from "src/components/Tabs/Tabs";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { SNAPSHOT_APP_NAME, SNAPSHOT_SPACE_ID } from "src/config/constants";
+import { CHAIN_ID } from "src/types/enums";
 
 export const Snapshot = () => {
     const { joinSpace, loadingJoinSpace } = useSnapshotJoinSpace();
