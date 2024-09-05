@@ -190,7 +190,11 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             }
             // token zap
             else {
-                let { status: bridgeStatus, isBridged } = await crossChainBridgeIfNecessary({
+                let {
+                    status: bridgeStatus,
+                    isBridged,
+                    finalAmountToDeposit,
+                } = await crossChainBridgeIfNecessary({
                     getClients,
                     notificationId: notiId,
                     balances,
@@ -202,9 +206,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 });
                 if (bridgeStatus) {
                     const client = await getClients(farm.chainId);
-                    if (isBridged) {
-                        amountInWei = await getBalance(token, currentWallet, client);
-                    }
+                    amountInWei = finalAmountToDeposit;
                     const { packedConfig, packedInput, r, s } = await createClipperData(
                         amountInWei.toString(),
                         token === zeroAddress ? wethAddress : token,
@@ -296,7 +298,6 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             };
         }
 
-        
         if (token === zeroAddress) {
             // use weth address as tokenId, but in case of some farms (e.g: hop)
             // we need the token of liquidity pair, so use tokenIn if provided

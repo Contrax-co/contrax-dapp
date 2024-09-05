@@ -196,7 +196,11 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             }
             // token zap
             else {
-                let { status: bridgeStatus, isBridged } = await crossChainBridgeIfNecessary({
+                let {
+                    status: bridgeStatus,
+                    isBridged,
+                    finalAmountToDeposit,
+                } = await crossChainBridgeIfNecessary({
                     getClients,
                     notificationId: notiId,
                     balances,
@@ -208,9 +212,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 });
                 if (bridgeStatus) {
                     const client = await getClients(farm.chainId);
-                    if (isBridged) {
-                        amountInWei = await getBalance(token, currentWallet, client);
-                    }
+                    amountInWei = finalAmountToDeposit;
                     notifyLoading(loadingMessages.zapping(), { id: notiId });
                     zapperTxn = await awaitTransaction(
                         client.wallet.writeContract({

@@ -28,7 +28,7 @@ import {
 } from "viem";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import { CrossChainTransactionObject, IClients } from "src/types";
-import { convertQuoteToRoute, getContractCallsQuote, getQuote, getStatus, LiFiStep } from "@lifi/sdk";
+import { convertQuoteToRoute, FullStatusData, getContractCallsQuote, getQuote, getStatus, LiFiStep } from "@lifi/sdk";
 import { SupportedChains } from "src/config/walletConfig";
 
 export const zapInBase: ZapInBaseFn = async ({
@@ -119,7 +119,11 @@ export const zapInBase: ZapInBaseFn = async ({
         }
         // token zap
         else {
-            let { status: bridgeStatus, isBridged } = await crossChainBridgeIfNecessary({
+            let {
+                status: bridgeStatus,
+                isBridged,
+                finalAmountToDeposit,
+            } = await crossChainBridgeIfNecessary({
                 getClients,
                 notificationId: notiId,
                 balances,
@@ -131,9 +135,7 @@ export const zapInBase: ZapInBaseFn = async ({
             });
             if (bridgeStatus) {
                 const client = await getClients(farm.chainId);
-                if (isBridged) {
-                    amountInWei = await getBalance(token, currentWallet, client);
-                }
+                amountInWei = finalAmountToDeposit;
                 notifyLoading(loadingMessages.zapping(), { id: notiId });
                 zapperTxn = await awaitTransaction(
                     client.wallet.writeContract({
@@ -448,6 +450,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
               status: boolean;
               error?: string;
               isBridged: boolean;
+              finalAmountToDeposit: bigint;
           }
 > {
     const chain = SupportedChains.find((item) => item.id === obj.toChainId);
@@ -526,6 +529,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
 
         let allStatus: boolean = false;
         let i = 1;
+        let finalAmountToDeposit: bigint = 0n;
         for await (const step of route.steps) {
             if (obj.notificationId)
                 notifyLoading(loadingMessages.bridgeStep(i, route.steps.length), { id: obj.notificationId });
@@ -574,6 +578,10 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                         toChain: step.action.toChainId,
                         bridge: step.tool,
                     });
+                    // @ts-ignore
+                    if (result.status === "DONE" && result?.receiving?.amount) {
+                        finalAmountToDeposit = BigInt((result.receiving as any).amount) + toBal;
+                    }
                     status = result.status;
                 } catch (_) {}
 
@@ -596,6 +604,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
             return {
                 status: true,
                 isBridged: true,
+                finalAmountToDeposit,
             };
         } else {
             // @ts-ignore
