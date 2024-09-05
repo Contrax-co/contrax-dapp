@@ -16,7 +16,7 @@ import { IClients } from "src/types";
 interface IProps {}
 
 const Swap: React.FC<IProps> = () => {
-    const { isSocial, currentWallet, getClients, externalChainId } = useWallet();
+    const { isSocial, currentWallet, getClients, externalChainId, estimateTxGas } = useWallet();
     const { reloadBalances } = useBalances();
     const { lightMode } = useApp();
     const [inputToken, setInputToken] = useState<Address>(zeroAddress);
@@ -27,7 +27,7 @@ const Swap: React.FC<IProps> = () => {
         reloadBalances();
         getClients(CHAIN_ID.ARBITRUM).then(async (client) => {
             setClient(client);
-            setProvider(getEip1193Provider(client));
+            setProvider(getEip1193Provider(client, estimateTxGas));
         });
     }, [externalChainId]);
 

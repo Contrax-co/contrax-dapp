@@ -8,7 +8,7 @@ import { errorMessages } from "src/config/constants/notifyMessages";
 import { awaitTransaction, getNetworkName, subtractGas } from "src/utils/common";
 
 const useTransfer = () => {
-    const { currentWallet, isSponsored, getClients } = useWallet();
+    const { currentWallet, estimateTxGas, isSponsored, getClients } = useWallet();
 
     const _transferEth = async ({
         to,
@@ -29,7 +29,8 @@ const useTransfer = () => {
             const afterGasCut = await subtractGas(
                 amount,
                 client,
-                client.wallet.estimateTxGas({
+                estimateTxGas({
+                    chainId,
                     to: to,
                     value: amount,
                     data: "0x",

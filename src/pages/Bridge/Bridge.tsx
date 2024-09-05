@@ -6,7 +6,6 @@ import useWallet from "src/hooks/useWallet";
 import { useEthersSigner, walletClientToSigner } from "src/config/walletConfig";
 import { SOCKET_BRIDGE_KEY, defaultChainId } from "src/config/constants";
 import "./Bridge.css";
-import { getEip1193Provider } from "src/utils/Eip1193Provider";
 
 const darkSocketTheme = {
     width: 360,

@@ -1,7 +1,10 @@
 import { ethers } from "ethers";
-import { IClients } from "src/types";
+import { EstimateTxGasArgs, IClients } from "src/types";
 
-export const getEip1193Provider = (client: IClients): ethers.providers.Web3Provider => {
+export const getEip1193Provider = (
+    client: IClients,
+    estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>
+): ethers.providers.Web3Provider => {
     return new ethers.providers.Web3Provider({
         // @ts-ignore
         request: async ({ method, params, ...rest }: { method: string; params: any }) => {
@@ -17,7 +20,8 @@ export const getEip1193Provider = (client: IClients): ethers.providers.Web3Provi
                 case "eth_accounts":
                     return [client.wallet.account.address];
                 case "eth_estimateGas":
-                    return await client.wallet.estimateTxGas({
+                    return await estimateTxGas({
+                        chainId: params[0].chainId,
                         data: params[0].data,
                         to: params[0].to,
                         value: params[0].value || 0n,
