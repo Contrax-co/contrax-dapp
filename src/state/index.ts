@@ -39,6 +39,7 @@ const persistConfig = getPersistConfig({
         "prices.prices",
         "decimals.decimals",
         "settings.theme",
+        "settings.showTokenDetailedBalances",
         "settings.supportChat",
         "account.earnTraxTermsAgreed",
         "account.referrerCode",
