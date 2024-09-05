@@ -35,6 +35,7 @@ import ArbitriumBalances from "src/components/ArbitriumBalances/ArbitriumBalance
 import BoostedApy from "src/components/BoostedApy/BoostedApy";
 import OneClickMigrate from "src/components/OneClickMigrate/OneClickMigrate";
 import { CHAIN_ID } from "src/types/enums";
+import Transactions from "./Transactions/Transactions";
 
 function Dashboard() {
     const { lightMode } = useApp();
@@ -157,6 +158,9 @@ function Dashboard() {
             </div>
             {currentWallet ? (
                 <>
+                    <div className={`dashboard_section outlinedContainer`}>
+                        <Transactions />
+                    </div>
                     <div className={`dashboard_section outlinedContainer`}>
                         <TokenBalances />
                     </div>
