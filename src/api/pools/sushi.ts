@@ -1,5 +1,5 @@
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, toEth } from "src/utils/common";
+import { awaitTransaction, getCombinedBalance, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
@@ -32,6 +32,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         const lpAddress = farm.lp_address;
         const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
         const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
+        const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
@@ -39,12 +40,8 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(BigInt(balances[farm.chainId][usdcAddress] || 0), decimals[farm.chainId][usdcAddress]),
-                amountDollar: (
-                    Number(
-                        toEth(BigInt(balances[farm.chainId][usdcAddress] || 0), decimals[farm.chainId][usdcAddress])
-                    ) * prices[farm.chainId][usdcAddress]
-                ).toString(),
+                amount: combinedUsdcBalance.formattedBalance.toString(),
+                amountDollar: combinedUsdcBalance.formattedBalance.toString(),
                 price: prices[farm.chainId][usdcAddress],
             },
             {

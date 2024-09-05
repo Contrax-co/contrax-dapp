@@ -120,16 +120,18 @@ export const updateEarnings = createAsyncThunk(
             }
             earns.forEach((item) => {
                 const farm = farms.find((farm) => farm.vault_addr.toLowerCase() === item.vaultAddress)!;
-                const earnedTokens =
-                    BigInt(item.withdraw) + BigInt(withdrawableLpAmount[farm.id]) - BigInt(item.deposit);
-                earnings[farm.id] =
-                    Number(toEth(earnedTokens, decimals[farm.chainId][farm.lp_address])) *
-                    prices[farm.chainId][farm.lp_address]!;
-                if (earnings[farm.id] < 0.0001) earnings[farm.id] = 0;
+                if (farm) {
+                    const earnedTokens =
+                        BigInt(item.withdraw) + BigInt(withdrawableLpAmount[farm.id]) - BigInt(item.deposit);
+                    earnings[farm.id] =
+                        Number(toEth(earnedTokens, decimals[farm.chainId][farm.lp_address])) *
+                        prices[farm.chainId][farm.lp_address]!;
+                    if (earnings[farm.id] < 0.0001) earnings[farm.id] = 0;
+                }
             });
             thunkApi.dispatch(
                 // @ts-ignore
-                getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, decimals })
+                getPricesOfLpByTimestamp({ farms, lpData: earns })
             );
             return { earnings, currentWallet };
         } catch (error) {

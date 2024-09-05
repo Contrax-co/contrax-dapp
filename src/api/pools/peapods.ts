@@ -1,5 +1,5 @@
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, getConnectorId, subtractGas, toEth } from "src/utils/common";
+import { awaitTransaction, getCombinedBalance, getConnectorId, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
@@ -50,7 +50,7 @@ const apAbi = [
         type: "function",
     },
 ] as const;
-let peapods = function (farmId: number): FarmFunctions {
+let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
     const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
@@ -58,7 +58,7 @@ let peapods = function (farmId: number): FarmFunctions {
         const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
         const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
         const zapCurriences = farm.zap_currencies;
-
+        const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
         let depositableAmounts: TokenAmounts[] = [
@@ -85,11 +85,8 @@ let peapods = function (farmId: number): FarmFunctions {
             depositableAmounts.push({
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress]),
-                amountDollar: (
-                    Number(toEth(BigInt(balances[farm.chainId][usdcAddress]!), decimals[farm.chainId][usdcAddress])) *
-                    prices[farm.chainId][usdcAddress]
-                ).toString(),
+                amount: combinedUsdcBalance.formattedBalance.toString(),
+                amountDollar: combinedUsdcBalance.formattedBalance.toString(),
                 price: prices[farm.chainId][usdcAddress],
             });
             withdrawableAmounts.push({
@@ -137,224 +134,38 @@ let peapods = function (farmId: number): FarmFunctions {
         };
         return result;
     };
-    const deposit: DepositFn = async ({ amountInWei, currentWallet, getClients, max }) => {
-        let notiId = notifyLoading(loadingMessages.approvingDeposit());
-        const client = await getClients(farm.chainId);
-        try {
-            const vaultContract = getContract({
-                abi: vaultAbi,
-                address: farm.vault_addr,
-                client,
-            });
-
-            const lpBalance = await getBalance(farm.lp_address, currentWallet, client);
-
-            // approve the vault to spend asset
-            await approveErc20(farm.lp_address, farm.vault_addr, lpBalance, currentWallet, client);
-
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.confirmDeposit(), { id: notiId });
-
-            let depositTxn: any;
-            if (max) {
-                depositTxn = vaultContract.write.depositAll();
-            } else {
-                depositTxn = vaultContract.write.deposit([amountInWei]);
-            }
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.depositing(depositTxn.transactionHash), {
-                id: notiId,
-            });
-
-            depositTxn = await awaitTransaction(depositTxn, client);
-
-            if (!depositTxn.status) {
-                throw new Error("Error depositing into vault!");
-            } else {
-                notifySuccess(successMessages.deposit());
-                dismissNotify(notiId);
-            }
-        } catch (error: any) {
-            console.log(error);
-            let err = JSON.parse(JSON.stringify(error));
-            dismissNotify(notiId);
-            notifyError(errorMessages.generalError(err.reason || err.message));
-        }
-    };
-
-    const withdraw: WithdrawFn = async ({ amountInWei, getClients, max }) => {
-        const client = await getClients(farm.chainId);
-        const notiId = notifyLoading(loadingMessages.approvingWithdraw());
-        try {
-            const vaultContract = getContract({
-                abi: vaultAbi,
-                address: farm.vault_addr,
-                client,
-            });
-
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
-
-            let withdrawTxn: any;
-            if (max) {
-                withdrawTxn = vaultContract.write.withdrawAll();
-            } else {
-                withdrawTxn = vaultContract.write.withdraw([amountInWei]);
-            }
-
-            dismissNotify(notiId);
-            notifyLoading(loadingMessages.withDrawing(withdrawTxn.bundleTransactionHash), {
-                id: notiId,
-            });
-
-            withdrawTxn = await awaitTransaction(withdrawTxn, client);
-
-            if (!withdrawTxn.status) {
-                throw new Error("Error withdrawing Try again!");
-            } else {
-                dismissNotify(notiId);
-                notifySuccess(successMessages.withdraw());
-            }
-        } catch (error) {
-            let err = JSON.parse(JSON.stringify(error));
-            console.log(err);
-            dismissNotify(notiId);
-            notifyError(errorMessages.generalError(err.reason || err.message));
-        }
-    };
-
-    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max, getClients }) => {
-        const client = await getClients(farm.chainId);
-        const transaction = {} as Omit<
-            TenderlySimulateTransactionBody,
-            "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
-        >;
-        transaction.from = currentWallet;
-
-        // approve the vault to spend asset
-        transaction.state_overrides = getAllowanceStateOverride([
-            {
-                tokenAddress: farm.lp_address,
-                owner: currentWallet,
-                spender: farm.vault_addr,
-            },
-        ]);
-
-        if (max) {
-            const populated = {
-                data: encodeFunctionData({
-                    abi: vaultAbi,
-                    functionName: "depositAll",
-                    args: [],
-                }),
-                value: 0n,
-            };
-
-            transaction.input = populated.data || "";
-            transaction.value = populated.value?.toString();
-        } else {
-            const populated = {
-                data: encodeFunctionData({
-                    abi: vaultAbi,
-                    functionName: "deposit",
-                    args: [amountInWei],
-                }),
-                value: 0n,
-            };
-
-            transaction.input = populated.data || "";
-            transaction.value = populated.value?.toString();
-        }
-        const simulationResult = await simulateTransaction({
-            /* Standard EVM Transaction object */
-            ...transaction,
-            to: farm.vault_addr,
-        });
-
-        const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
-        const difference =
-            BigInt(filteredState.afterChange[currentWallet.toLowerCase()]) -
-            BigInt(filteredState.original[currentWallet.toLowerCase()]);
-
-        return difference;
-    };
-
-    const withdrawSlippage: SlippageWithdrawBaseFn = async ({ amountInWei, currentWallet, getClients, max, farm }) => {
-        const client = await getClients(farm.chainId);
-        const transaction = {} as Omit<
-            TenderlySimulateTransactionBody,
-            "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
-        >;
-        transaction.from = currentWallet;
-
-        if (max) {
-            const populated = {
-                data: encodeFunctionData({
-                    abi: vaultAbi,
-                    functionName: "withdrawAll",
-                    args: [],
-                }),
-                value: 0n,
-            };
-
-            transaction.input = populated.data || "";
-            transaction.value = populated.value?.toString();
-        } else {
-            const populated = {
-                data: encodeFunctionData({
-                    abi: vaultAbi,
-                    functionName: "withdraw",
-                    args: [amountInWei],
-                }),
-                value: 0n,
-            };
-
-            transaction.input = populated.data || "";
-            transaction.value = populated.value?.toString();
-        }
-
-        const simulationResult = await simulateTransaction({
-            /* Standard EVM Transaction object */
-            ...transaction,
-            to: farm.vault_addr,
-        });
-        const filteredState = filterStateDiff(farm.lp_address, "balances", simulationResult.stateDiffs);
-        const difference =
-            BigInt(filteredState.afterChange[currentWallet.toLowerCase()]) -
-            BigInt(filteredState.original[currentWallet.toLowerCase()]);
-
-        return difference;
-    };
 
     const zapInBaseLp: ZapInBaseFn = async ({
         farm,
         amountInWei,
         balances,
+        estimateTxGas,
         token,
         currentWallet,
         getClients,
         max,
+        getPublicClient,
         tokenIn,
     }) => {
-        const client = await getClients(farm.chainId);
-        const zapperContract = getContract({
-            address: farm.zapper_addr,
-            abi: zapperAbi,
-            client,
-        });
+        const publicClient = getPublicClient(farm.chainId);
         let zapperTxn;
         let notiId;
         try {
             //#region Select Max
             if (max) {
-                amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+                if (token !== zeroAddress) {
+                    const { balance } = getCombinedBalance(balances, "usdc");
+                    amountInWei = BigInt(balance);
+                } else {
+                    amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+                }
             }
             //#endregion
 
             const apContract = getContract({
                 address: farm.token1,
                 abi: apAbi,
-                client,
+                client: { public: publicClient },
             });
 
             const [{ token: tokenIn }] = await apContract.read.getAllAssets();
@@ -373,10 +184,11 @@ let peapods = function (farmId: number): FarmFunctions {
                 const balance = BigInt(balances[farm.chainId][zeroAddress]!);
                 const afterGasCut = await subtractGas(
                     amountInWei,
-                    client,
-                    client.wallet.estimateTxGas({
+                    { public: publicClient },
+                    estimateTxGas({
                         to: farm.zapper_addr,
                         value: balance,
+                        chainId: farm.chainId,
                         data: encodeFunctionData({
                             abi: zapperAbi,
                             functionName: "zapInETH",
@@ -391,9 +203,13 @@ let peapods = function (farmId: number): FarmFunctions {
                 amountInWei = afterGasCut;
             }
             //#endregion
-
+            const client = await getClients(farm.chainId);
             zapperTxn = await awaitTransaction(
-                zapperContract.write.zapInETH([farm.vault_addr, 0n, token], {
+                client.wallet.writeContract({
+                    address: farm.zapper_addr,
+                    abi: zapperAbi,
+                    functionName: "zapInETH",
+                    args: [farm.vault_addr, 0n, token],
                     value: amountInWei,
                 }),
                 client
@@ -414,17 +230,13 @@ let peapods = function (farmId: number): FarmFunctions {
         }
     };
     const slippageInLp: SlippageInBaseFn = async (args) => {
-        let { amountInWei, balances, currentWallet, token, max, getClients, farm } = args;
-        const client = await getClients(farm.chainId);
-        const zapperContract = getContract({
-            address: farm.zapper_addr,
-            abi: zapperAbi,
-            client,
-        });
+        let { amountInWei, balances, getPublicClient, currentWallet, estimateTxGas, token, max, getClients, farm } =
+            args;
+        const publicClient = getPublicClient(farm.chainId);
         const apContract = getContract({
             address: farm.token1,
             abi: apAbi,
-            client,
+            client: { public: publicClient },
         });
 
         const [{ token: tokenIn }] = await apContract.read.getAllAssets();
@@ -436,7 +248,12 @@ let peapods = function (farmId: number): FarmFunctions {
         transaction.from = currentWallet;
 
         if (max) {
-            amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+            if (token !== zeroAddress) {
+                const { balance } = getCombinedBalance(balances, "usdc");
+                amountInWei = BigInt(balance);
+            } else {
+                amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+            }
         }
 
         transaction.balance_overrides = {
@@ -456,8 +273,9 @@ let peapods = function (farmId: number): FarmFunctions {
             const balance = BigInt(balances[farm.chainId][zeroAddress]!);
             const afterGasCut = await subtractGas(
                 amountInWei,
-                client,
-                client.wallet.estimateTxGas({
+                { public: publicClient },
+                estimateTxGas({
+                    chainId: farm.chainId,
                     to: farm.zapper_addr,
                     value: balance,
                     data: encodeFunctionData({
@@ -508,10 +326,6 @@ let peapods = function (farmId: number): FarmFunctions {
         zapOut,
         zapInSlippage,
         zapOutSlippage,
-        depositSlippage,
-        withdrawSlippage,
-        deposit,
-        withdraw,
     };
 };
 

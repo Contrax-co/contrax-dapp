@@ -13,7 +13,7 @@ import {
     ZapInFn,
     ZapOutFn,
 } from "./types";
-import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
+import { web3AuthConnectorId } from "src/config/constants";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
 import {
     filterAssetChanges,
@@ -27,8 +27,7 @@ import { zapOutBase, slippageOut, crossChainBridgeIfNecessary } from "./common";
 import merge from "lodash.merge";
 import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
-import { encodeFunctionData, getContract, zeroAddress } from "viem";
-import { writeContract } from "viem/actions";
+import { encodeFunctionData, zeroAddress } from "viem";
 
 let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
     const farm = pools_json.find((farm) => farm.id === farmId)!;
@@ -99,8 +98,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         estimateTxGas,
         getClients,
         getPublicClient,
-        prices,
-        decimals,
     }) => {
         const wethAddress = addressesByChainId[farm.chainId].wethAddress;
         const publicClient = getPublicClient(farm.chainId);
@@ -109,9 +106,14 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         try {
             //#region Select Max
             if (max) {
-                const { balance } = getCombinedBalance(balances, token === zeroAddress ? "eth" : "usdc");
-                amountInWei = BigInt(balance);
+                if (token !== zeroAddress) {
+                    const { balance } = getCombinedBalance(balances, "usdc");
+                    amountInWei = BigInt(balance);
+                } else {
+                    amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+                }
             }
+            //#endregion
 
             // #region Approve
             // first approve tokens, if zap is not in eth
@@ -138,7 +140,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 const connectorId = getConnectorId();
                 if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
                     const balance = BigInt(balances[farm.chainId][zeroAddress]);
-
                     const afterGasCut = await subtractGas(
                         amountInWei,
                         { public: publicClient },
@@ -266,8 +267,12 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         transaction.from = currentWallet;
 
         if (max) {
-            const { balance } = getCombinedBalance(balances, token === zeroAddress ? "eth" : "usdc");
-            amountInWei = BigInt(balance);
+            if (token !== zeroAddress) {
+                const { balance } = getCombinedBalance(balances, "usdc");
+                amountInWei = BigInt(balance);
+            } else {
+                amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+            }
         }
 
         if (token !== zeroAddress) {

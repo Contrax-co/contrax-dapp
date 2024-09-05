@@ -40,24 +40,22 @@ export const zapInBase: ZapInBaseFn = async ({
     estimateTxGas,
     getClients,
     max,
+    getPublicClient,
     tokenIn,
 }) => {
-    const client = await getClients(farm.chainId);
-    const zapperContract = getContract({
-        address: farm.zapper_addr as Address,
-        abi: zapperAbi,
-        client: {
-            wallet: client.wallet,
-            public: client.public,
-        },
-    });
     const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
+    const publicClient = getPublicClient(farm.chainId);
     let zapperTxn;
     let notiId;
     try {
         //#region Select Max
         if (max) {
-            amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+            if (token !== zeroAddress) {
+                const { balance } = getCombinedBalance(balances, "usdc");
+                amountInWei = BigInt(balance);
+            } else {
+                amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+            }
         }
         //#endregion
 
@@ -65,6 +63,7 @@ export const zapInBase: ZapInBaseFn = async ({
         // first approve tokens, if zap is not in eth
         if (token !== zeroAddress) {
             notiId = notifyLoading(loadingMessages.approvingZapping());
+            const client = await getClients(farm.chainId);
             const response = await approveErc20(token, farm.zapper_addr as Address, amountInWei, currentWallet, client);
             if (!response.status) throw new Error("Error approving vault!");
             dismissNotify(notiId);
@@ -87,7 +86,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 const balance = BigInt(balances[farm.chainId][zeroAddress] || "0");
                 const afterGasCut = await subtractGas(
                     amountInWei,
-                    client,
+                    { public: publicClient },
                     estimateTxGas({
                         to: farm.zapper_addr,
                         chainId: farm.chainId,
@@ -106,20 +105,51 @@ export const zapInBase: ZapInBaseFn = async ({
                 amountInWei = afterGasCut;
             }
             //#endregion
-
+            const client = await getClients(farm.chainId);
             zapperTxn = await awaitTransaction(
-                zapperContract.write.zapInETH([farm.vault_addr, 0n, token], {
+                client.wallet.writeContract({
+                    address: farm.zapper_addr,
+                    abi: zapperAbi,
+                    functionName: "zapInETH",
+                    args: [farm.vault_addr, 0n, token],
                     value: amountInWei,
                 }),
-                client
+                { public: publicClient }
             );
         }
         // token zap
         else {
-            zapperTxn = await awaitTransaction(
-                zapperContract.write.zapIn([farm.vault_addr, 0n, token, amountInWei], {}),
-                client
-            );
+            let { status: bridgeStatus, isBridged } = await crossChainBridgeIfNecessary({
+                getClients,
+                notificationId: notiId,
+                balances,
+                currentWallet,
+                toChainId: farm.chainId,
+                toToken: token,
+                toTokenAmount: amountInWei,
+                max,
+            });
+            if (bridgeStatus) {
+                const client = await getClients(farm.chainId);
+                if (isBridged) {
+                    amountInWei = await getBalance(token, currentWallet, client);
+                }
+                notifyLoading(loadingMessages.zapping(), { id: notiId });
+                zapperTxn = await awaitTransaction(
+                    client.wallet.writeContract({
+                        address: farm.zapper_addr,
+                        abi: zapperAbi,
+                        functionName: "zapIn",
+                        args: [farm.vault_addr, 0n, token, amountInWei],
+                    }),
+                    client
+                );
+            } else {
+                zapperTxn = {
+                    status: false,
+                    error: "Bridge Failed",
+                };
+            }
         }
 
         if (!zapperTxn.status) {
@@ -193,14 +223,19 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
 };
 
 export const slippageIn: SlippageInBaseFn = async (args) => {
-    let { amountInWei, balances, currentWallet, estimateTxGas, token, max, getClients, tokenIn, farm } = args;
-    const client = await getClients(farm.chainId);
-
-    const zapperContract = getContract({
-        address: farm.zapper_addr as Address,
-        abi: zapperAbi,
-        client,
-    });
+    let {
+        amountInWei,
+        balances,
+        currentWallet,
+        getPublicClient,
+        estimateTxGas,
+        token,
+        max,
+        getClients,
+        tokenIn,
+        farm,
+    } = args;
+    const publicClient = getPublicClient(farm.chainId);
     const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
 
     const transaction = {} as Omit<
@@ -210,9 +245,14 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     transaction.from = currentWallet;
 
     if (max) {
-        amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+        if (token !== zeroAddress) {
+            const { balance } = getCombinedBalance(balances, "usdc");
+            amountInWei = BigInt(balance);
+        } else {
+            amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
+        }
     }
-    amountInWei = amountInWei;
+
     if (token !== zeroAddress) {
         transaction.state_overrides = getAllowanceStateOverride([
             {
@@ -248,7 +288,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
 
             const afterGasCut = await subtractGas(
                 amountInWei,
-                client!,
+                { public: publicClient },
                 estimateTxGas({
                     to: farm.zapper_addr,
                     chainId: farm.chainId,
@@ -276,22 +316,31 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     } else {
+        const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
+            getClients,
+            balances,
+            currentWallet,
+            toChainId: farm.chainId,
+            toToken: token,
+            toTokenAmount: amountInWei,
+            max,
+            simulate: true,
+        });
         const populated = {
             data: encodeFunctionData({
                 abi: zapperAbi,
                 functionName: "zapIn",
-                args: [farm.vault_addr, 0n, token, amountInWei],
+                args: [farm.vault_addr, 0n, token, afterBridgeBal],
             }),
-            value: "0",
         };
         transaction.input = populated.data || "";
-        transaction.value = populated.value?.toString();
     }
     console.log(transaction, farm);
     const simulationResult = await simulateTransaction({
         /* Standard EVM Transaction object */
         ...transaction,
         to: farm.zapper_addr,
+        chainId: farm.chainId,
     });
     console.log({ simulationResult });
     const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
@@ -335,7 +384,7 @@ export const slippageOut: SlippageOutBaseFn = async ({ getClients, farm, token, 
         getTokenBalanceStateOverride({
             owner: currentWallet,
             tokenAddress: farm.vault_addr,
-            balance: amountInWei.toString(),
+            balance: max ? vaultBalance.toString() : amountInWei.toString(),
         })
     );
     //#endregion
