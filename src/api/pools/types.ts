@@ -6,6 +6,7 @@ import { EstimateTxGasArgs, IClients } from "src/types";
 import { Address } from "viem";
 
 export interface ZapInArgs {
+    id: string;
     amountInWei: bigint;
     max?: boolean;
     token: Address;
@@ -21,6 +22,7 @@ export interface ZapInArgs {
 }
 
 export interface ZapOutArgs {
+    id: string;
     amountInWei: bigint;
     currentWallet: Address;
     max?: boolean;

@@ -5,6 +5,12 @@ import { IoArrowDownOutline } from "react-icons/io5";
 import farms from "src/config/constants/pools_json";
 import moment from "moment";
 import { ModalLayout } from "src/components/modals/ModalLayout/ModalLayout";
+import { useAppSelector } from "src/state";
+import { Transaction, TransactionStatus } from "src/state/transactions/types";
+import { formatUnits, zeroAddress } from "viem";
+import { useDecimals } from "src/hooks/useDecimals";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
+import { VscError } from "react-icons/vsc";
 
 type Tx = {
     type: "in" | "out" | "pending";
@@ -48,6 +54,8 @@ const txs: Tx[] = [
 
 const Transactions = () => {
     const [open, setOpen] = useState(false);
+    const transactions = useAppSelector((state) => state.transactions.transactions.slice(0, 3));
+    console.log("transactions =>", transactions);
     return (
         <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
@@ -57,7 +65,8 @@ const Transactions = () => {
                 </p>
             </div>
             <div className={styles.rowsContainer}>
-                {txs.map((item, i) => (
+                {transactions.length === 0 && <p className="center">No transactions yet</p>}
+                {transactions.map((item, i) => (
                     <Row {...item} key={i} />
                 ))}
             </div>
@@ -68,19 +77,28 @@ const Transactions = () => {
 
 export default Transactions;
 
-const Row: FC<Tx> = ({ amount, amountUsd, chainId, date, farmId, tokenSymbol, type }) => {
+const Row: FC<Transaction> = ({ amountInWei, date, farmId, id, max, status, token, type, bridgeInfo, txHash }) => {
     const farm = useMemo(() => farms.find((item) => item.id === farmId), [farmId]);
+    const { decimals } = useDecimals();
+    const { prices } = usePriceOfTokens();
     if (!farm) return null;
     return (
         <div className={styles.row}>
             <div className={styles.txTypeArrowWrapper}>
-                {type === "in" && <IoArrowDownOutline style={{ width: 24, height: 24 }} />}
-                {type === "out" && <IoArrowUpOutline style={{ width: 24, height: 24 }} />}
-                {type === "pending" && <div className={styles.loader} />}
+                {type === "withdraw" && status === TransactionStatus.SUCCESS && (
+                    <IoArrowDownOutline style={{ width: 24, height: 24 }} />
+                )}
+                {type === "deposit" && status === TransactionStatus.SUCCESS && (
+                    <IoArrowUpOutline style={{ width: 24, height: 24 }} />
+                )}
+                {status === TransactionStatus.FAILED && <VscError style={{ width: 24, height: 24 }} />}
+                {(status === TransactionStatus.PENDING || status === TransactionStatus.BRIDGING) && (
+                    <div className={styles.loader} />
+                )}
                 <img
                     className={styles.networkLogo}
-                    src={`https://github.com/Contrax-co/tokens/blob/main/chains/${chainId}.png?raw=true`}
-                    alt={chainId.toString()}
+                    src={`https://github.com/Contrax-co/tokens/blob/main/chains/${farm.chainId}.png?raw=true`}
+                    alt={farm.chainId.toString()}
                 />
             </div>
             <div className={styles.txDetailsFarm}>
@@ -88,9 +106,14 @@ const Row: FC<Tx> = ({ amount, amountUsd, chainId, date, farmId, tokenSymbol, ty
                 <p className={styles.date}>{moment(date).fromNow()}</p>
             </div>
             <div className={styles.txAmountDetails}>
-                <p className={styles.farmName}>${amountUsd}</p>
+                <p className={styles.farmName}>
+                    $
+                    {Number(formatUnits(BigInt(amountInWei), decimals[farm.chainId][token])) *
+                        prices[farm.chainId][token]}
+                </p>
                 <p className={styles.date}>
-                    {amount} {tokenSymbol}
+                    {formatUnits(BigInt(amountInWei), decimals[farm.chainId][token])}{" "}
+                    {token === zeroAddress ? "ETH" : "USDC"}
                 </p>
             </div>
         </div>
@@ -98,50 +121,13 @@ const Row: FC<Tx> = ({ amount, amountUsd, chainId, date, farmId, tokenSymbol, ty
 };
 
 const TransactionsModal: FC<{ setOpenModal: (value: boolean) => void }> = ({ setOpenModal }) => {
+    const transactions = useAppSelector((state) => state.transactions.transactions.slice(0, 3));
+
     return (
         <ModalLayout onClose={() => setOpenModal(false)} className={styles.modalContainer}>
             <p className={`${styles.section_title}`}>Transactions</p>
             <div className={styles.rowsContainer}>
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
-                    <Row {...item} key={i} />
-                ))}
-                {txs.map((item, i) => (
+                {transactions.map((item, i) => (
                     <Row {...item} key={i} />
                 ))}
             </div>

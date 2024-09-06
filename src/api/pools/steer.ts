@@ -28,6 +28,9 @@ import merge from "lodash.merge";
 import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
 import { encodeFunctionData, zeroAddress } from "viem";
+import store from "src/state";
+import { addTransaction, editTransaction } from "src/state/transactions/transactionsReducer";
+import { TransactionStatus } from "src/state/transactions/types";
 
 let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
     const farm = pools_json.find((farm) => farm.id === farmId)!;
@@ -92,6 +95,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         amountInWei,
         balances,
         token,
+        id,
         currentWallet,
         max,
         tokenIn,
@@ -102,7 +106,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         const wethAddress = addressesByChainId[farm.chainId].wethAddress;
         const publicClient = getPublicClient(farm.chainId);
         let zapperTxn;
-        let notiId;
         try {
             //#region Select Max
             if (max) {
@@ -118,16 +121,16 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             // #region Approve
             // first approve tokens, if zap is not in eth
             if (token !== zeroAddress) {
-                notiId = notifyLoading(loadingMessages.approvingZapping());
+                notifyLoading(loadingMessages.approvingZapping(), { id });
                 const client = await getClients(farm.chainId);
                 const response = await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, client);
                 if (!response.status) throw new Error("Error approving vault!");
-                dismissNotify(notiId);
+                dismissNotify(id);
             }
             // #endregion
 
             // #region Zapping In
-            notiId = notifyLoading(loadingMessages.zapping());
+            notifyLoading(loadingMessages.zapping(), { id });
 
             // eth zap
             if (token === zeroAddress) {
@@ -155,7 +158,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                         })
                     );
                     if (!afterGasCut) {
-                        notiId && dismissNotify(notiId);
+                        dismissNotify(id);
                         return;
                     }
                     amountInWei = afterGasCut;
@@ -171,7 +174,10 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                         args: [farm.vault_addr, 0n, token],
                         value: amountInWei,
                     }),
-                    { public: publicClient }
+                    { public: publicClient },
+                    (hash) => {
+                        store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                    }
                 );
 
                 // zapperTxn = await crossChainTransaction({
@@ -202,7 +208,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     finalAmountToDeposit,
                 } = await crossChainBridgeIfNecessary({
                     getClients,
-                    notificationId: notiId,
+                    notificationId: id,
                     balances,
                     currentWallet,
                     toChainId: farm.chainId,
@@ -212,8 +218,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 });
                 if (bridgeStatus) {
                     const client = await getClients(farm.chainId);
-                    amountInWei = finalAmountToDeposit;
-                    notifyLoading(loadingMessages.zapping(), { id: notiId });
+                    if (isBridged) amountInWei = finalAmountToDeposit;
+                    notifyLoading(loadingMessages.zapping(), { id });
                     zapperTxn = await awaitTransaction(
                         client.wallet.writeContract({
                             address: farm.zapper_addr,
@@ -221,7 +227,10 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                             functionName: "zapIn",
                             args: [farm.vault_addr, 0n, token, amountInWei],
                         }),
-                        client
+                        client,
+                        (hash) => {
+                            store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                        }
                     );
                 } else {
                     zapperTxn = {
@@ -232,16 +241,18 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             }
 
             if (!zapperTxn.status) {
+                store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
                 throw new Error(zapperTxn.error);
             } else {
-                dismissNotify(notiId);
+                dismissNotify(id);
                 notifySuccess(successMessages.zapIn());
+                store.dispatch(editTransaction({ id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS }));
             }
             // #endregion
         } catch (error: any) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
-            notiId && dismissNotify(notiId);
+            dismissNotify(id);
             notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };

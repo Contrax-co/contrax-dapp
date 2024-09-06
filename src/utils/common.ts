@@ -146,13 +146,18 @@ export const sleep = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const awaitTransaction = async (transaction: Promise<Address>, client: Omit<IClients, "wallet">) => {
+export const awaitTransaction = async (
+    transaction: Promise<Address>,
+    client: Omit<IClients, "wallet">,
+    txHashCallback: ((txHash: Address) => any) | undefined = undefined
+) => {
     let txHash: Address | undefined;
     let receipt: TransactionReceipt | undefined;
     let error: string | undefined;
     let status: boolean;
     try {
         txHash = await transaction;
+        if (txHashCallback) txHashCallback(txHash);
         receipt = await waitForTransactionReceipt(client.public, { hash: txHash });
         status = true;
         if (receipt.status === "reverted") {

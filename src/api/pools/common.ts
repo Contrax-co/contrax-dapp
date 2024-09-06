@@ -30,6 +30,9 @@ import zapperAbi from "src/assets/abis/zapperAbi";
 import { CrossChainTransactionObject, IClients } from "src/types";
 import { convertQuoteToRoute, FullStatusData, getContractCallsQuote, getQuote, getStatus, LiFiStep } from "@lifi/sdk";
 import { SupportedChains } from "src/config/walletConfig";
+import store from "src/state";
+import { editTransaction } from "src/state/transactions/transactionsReducer";
+import { TransactionStatus } from "src/state/transactions/types";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -572,6 +575,19 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
             do {
                 if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
                 try {
+                    store.dispatch(
+                        editTransaction({
+                            id: obj.notificationId!,
+                            status: TransactionStatus.BRIDGING,
+                            bridgeInfo: {
+                                txHash: res.txHash!,
+                                fromChain: step.action.fromChainId,
+                                toChain: step.action.toChainId,
+                                tool: step.tool,
+                                beforeBridgeBalance: toBal.toString(),
+                            },
+                        })
+                    );
                     const result = await getStatus({
                         txHash: res.txHash!,
                         fromChain: step.action.fromChainId,
