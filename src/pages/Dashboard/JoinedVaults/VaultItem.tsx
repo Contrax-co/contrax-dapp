@@ -14,7 +14,7 @@ interface Props {
 
 function useOldPrice(chainId: number, address: string) {
     const { isLoadingEarnings } = useFarmDetails();
-    const oldPrice = useAppSelector((state) => state.prices.oldPrices[chainId][address]);
+    const oldPrice = useAppSelector((state) => state.prices.oldPrices[chainId]?.[address]);
     const { isFetchingOldPrices, isLoadedOldPrices } = useAppSelector((state) => state.prices);
 
     return { oldPrice, isLoading: (isLoadingEarnings || isFetchingOldPrices) && !isLoadedOldPrices };

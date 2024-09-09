@@ -1,5 +1,5 @@
 import axios from "axios";
-import { EARNINGS_GRAPH_URL } from "src/config/constants";
+import { EARNINGS_GRAPH_URL, EARNINGS_GRAPH_URL_BASE } from "src/config/constants";
 import { CHAIN_ID } from "src/types/enums";
 
 interface Response {
@@ -30,7 +30,31 @@ export const getEarnings = async (userAddress: string) => {
                 }
               }`,
         });
-        return res.data.data.user?.earn.map((item: any) => ({ ...item, chainId: CHAIN_ID.ARBITRUM })) as Response[];
+        const res_base = await axios.post(EARNINGS_GRAPH_URL_BASE, {
+            query: `query MyQuery {
+                user(id: \"${userAddress.toLowerCase()}\") {
+                  earn {
+                    vaultAddress
+                    deposit
+                    withdraw
+                    blockNumber
+                    tokenId
+                    blockTimestamp
+                    userBalance
+                  }
+                }
+              }`,
+        });
+        let responseDataArb = res.data.data.user?.earn.map((item: any) => ({
+            ...item,
+            chainId: CHAIN_ID.ARBITRUM,
+        })) as Response[];
+        let responseDataBase = res_base.data.data.user?.earn.map((item: any) => ({
+            ...item,
+            chainId: CHAIN_ID.BASE,
+        })) as Response[];
+
+        return responseDataArb.concat(responseDataBase);
     } catch (err: any) {
         console.error(err);
         return undefined;

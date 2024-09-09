@@ -119,7 +119,7 @@ export const updateEarnings = createAsyncThunk(
                 withdrawableLpAmount[farms[i / 2].id] = r.toString();
             }
             earns.forEach((item) => {
-                const farm = farms.find((farm) => farm.vault_addr.toLowerCase() === item.vaultAddress)!;
+                const farm = farms.find((farm) => farm.id === Number(item.tokenId));
                 if (farm) {
                     const earnedTokens =
                         BigInt(item.withdraw) + BigInt(withdrawableLpAmount[farm.id]) - BigInt(item.deposit);
