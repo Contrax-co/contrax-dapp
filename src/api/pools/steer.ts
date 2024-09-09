@@ -167,12 +167,14 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 const client = await getClients(farm.chainId);
 
                 zapperTxn = await awaitTransaction(
-                    client.wallet.writeContract({
-                        address: farm.zapper_addr,
-                        abi: steerZapperAbi,
-                        functionName: "zapInETH",
-                        args: [farm.vault_addr, 0n, token],
+                    client.wallet.sendTransaction({
+                        to: farm.zapper_addr,
                         value: amountInWei,
+                        data: encodeFunctionData({
+                            abi: steerZapperAbi,
+                            functionName: "zapInETH",
+                            args: [farm.vault_addr, 0n, token],
+                        }),
                     }),
                     { public: publicClient },
                     (hash) => {
@@ -221,11 +223,13 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     if (isBridged) amountInWei = finalAmountToDeposit;
                     notifyLoading(loadingMessages.zapping(), { id });
                     zapperTxn = await awaitTransaction(
-                        client.wallet.writeContract({
-                            address: farm.zapper_addr,
-                            abi: steerZapperAbi,
-                            functionName: "zapIn",
-                            args: [farm.vault_addr, 0n, token, amountInWei],
+                        client.wallet.sendTransaction({
+                            to: farm.zapper_addr,
+                            data: encodeFunctionData({
+                                abi: steerZapperAbi,
+                                functionName: "zapIn",
+                                args: [farm.vault_addr, 0n, token, amountInWei],
+                            }),
                         }),
                         client,
                         (hash) => {

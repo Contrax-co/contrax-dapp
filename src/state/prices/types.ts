@@ -3,7 +3,7 @@ import { Address } from "viem";
 
 export interface StateInterface {
     prices: Prices;
-    oldPrices: Partial<OldPrices>;
+    oldPrices: OldPrices;
     isLoading: boolean;
     isFetched: boolean;
     isLoadedOldPrices: boolean;
@@ -11,10 +11,12 @@ export interface StateInterface {
 }
 
 export interface OldPrices {
-    [key: string]: {
-        timestamp: number;
-        price: number;
-    }[];
+    [chainId: string]: {
+        [address: string]: {
+            timestamp: number;
+            price: number;
+        }[];
+    };
 }
 
 export interface AddPrice {
@@ -22,11 +24,6 @@ export interface AddPrice {
 }
 export interface GetOldPricesActionPayload {
     lpData: {
-        token0: string;
-        token1: string;
-        totalSupply: string;
-        reserve0: string;
-        reserve1: string;
         tokenId: string;
         blockTimestamp: string;
     }[];

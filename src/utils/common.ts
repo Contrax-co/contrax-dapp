@@ -287,3 +287,4 @@ export const getCombinedBalance = (balances: Balances, type: "eth" | "usdc") => 
     const formattedBalance = Number(toEth(BigInt(balance), type === "eth" ? 18 : 6));
     return { formattedBalance, balance, chainBalances };
 };
+

@@ -21,10 +21,21 @@ export const getTokenPricesBackend = async (
             { cache: true }
         );
 
-        console.log("data =>", data.data.allPrices);
         return data.data.allPrices;
     } catch (error) {
         console.error(error);
+        return undefined;
+    }
+};
+
+export const getPricesByTime = async (data: { address: Address; timestamp: number; chainId: number }[]) => {
+    try {
+        const res = await backendApi.post<{
+            data: { [chainId: string]: { [address: string]: { timestamp: number; price: number }[] } };
+        }>("price/time", { query: data }, { cache: true });
+        return res.data.data;
+    } catch (err) {
+        console.error(err);
         return undefined;
     }
 };
@@ -56,12 +67,12 @@ export const getBalance = async (
 
 /**
  * Checks for allowance, if not met then approves
- * @param contractAddress 
- * @param spender 
- * @param amount 
+ * @param contractAddress
+ * @param spender
+ * @param amount
  * @param currentWallet wallet address of signer
  * @param client Both public and wallet client
- * @returns 
+ * @returns
  */
 export const approveErc20 = async (
     contractAddress: Address,

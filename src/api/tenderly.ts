@@ -149,8 +149,6 @@ export const simulateTransaction = async (
         network_id: `${data.chainId || Network.ARBITRUM_ONE}`,
     };
 
-    // State overiding api is not working hence, commented
-    // TODO: uncomment when fixed
     if (data.state_overrides) {
         const overrides = await encodeStateOverrides(data.state_overrides, data.chainId);
         const contractAddress = Object.keys(overrides);

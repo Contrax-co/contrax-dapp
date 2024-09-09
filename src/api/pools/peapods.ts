@@ -205,12 +205,14 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             //#endregion
             const client = await getClients(farm.chainId);
             zapperTxn = await awaitTransaction(
-                client.wallet.writeContract({
-                    address: farm.zapper_addr,
-                    abi: zapperAbi,
-                    functionName: "zapInETH",
-                    args: [farm.vault_addr, 0n, token],
+                client.wallet.sendTransaction({
+                    to: farm.zapper_addr,
                     value: amountInWei,
+                    data: encodeFunctionData({
+                        abi: zapperAbi,
+                        functionName: "zapInETH",
+                        args: [farm.vault_addr, 0n, token],
+                    }),
                 }),
                 client
             );

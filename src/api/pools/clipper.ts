@@ -178,12 +178,14 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 const client = await getClients(farm.chainId);
 
                 zapperTxn = await awaitTransaction(
-                    client.wallet.writeContract({
-                        address: farm.zapper_addr,
-                        abi: clipperZapperAbi,
+                    client.wallet.sendTransaction({
+                        to: farm.zapper_addr,
                         value: amountInWei,
-                        functionName: "zapInETH",
-                        args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
+                        data: encodeFunctionData({
+                            abi: clipperZapperAbi,
+                            functionName: "zapInETH",
+                            args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
+                        }),
                     }),
                     client
                 );
@@ -214,11 +216,13 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     );
                     notifyLoading(loadingMessages.zapping(), { id: notiId });
                     zapperTxn = await awaitTransaction(
-                        client.wallet.writeContract({
-                            address: farm.zapper_addr,
-                            abi: clipperZapperAbi,
-                            functionName: "zapIn",
-                            args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
+                        client.wallet.sendTransaction({
+                            to: farm.zapper_addr,
+                            data: encodeFunctionData({
+                                abi: clipperZapperAbi,
+                                functionName: "zapIn",
+                                args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
+                            }),
                         }),
                         client
                     );

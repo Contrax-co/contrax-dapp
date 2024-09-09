@@ -129,10 +129,8 @@ export const updateEarnings = createAsyncThunk(
                     if (earnings[farm.id] < 0.0001) earnings[farm.id] = 0;
                 }
             });
-            thunkApi.dispatch(
-                // @ts-ignore
-                getPricesOfLpByTimestamp({ farms, lpData: earns })
-            );
+
+            thunkApi.dispatch(getPricesOfLpByTimestamp({ farms, lpData: earns }));
             return { earnings, currentWallet };
         } catch (error) {
             console.error(error);
