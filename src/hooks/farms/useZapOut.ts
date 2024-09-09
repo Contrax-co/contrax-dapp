@@ -10,6 +10,7 @@ import { toEth, toWei } from "src/utils/common";
 import usePriceOfTokens from "../usePriceOfTokens";
 import { Address } from "viem";
 import { PoolDef } from "src/config/constants/pools_json";
+import { v4 as uuid } from "uuid";
 
 export interface ZapOut {
     withdrawAmt: number;
@@ -27,7 +28,9 @@ const useZapOut = (farm: PoolDef) => {
     const _zapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
         if (!currentWallet) return;
         let amountInWei = toWei(withdrawAmt, farm.decimals);
+        const id = uuid();
         await farmFunctions[farm.id].zapOut({
+            id,
             amountInWei,
             getPublicClient,
             getWalletClient,

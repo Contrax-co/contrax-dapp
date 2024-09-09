@@ -7,6 +7,7 @@ import useBalances from "./useBalances";
 import farmFunctions from "src/api/pools";
 import { Address, zeroAddress } from "viem";
 import { PoolDef } from "src/config/constants/pools_json";
+import { v4 as uuid } from "uuid";
 
 export const useSlippageDeposit = (maxAmounts: number[], tokens: Address[], farm: PoolDef) => {
     const [slippageAmounts, setSlippageAmounts] = useState<{ [key: string]: number }>({});
@@ -28,9 +29,12 @@ export const useSlippageDeposit = (maxAmounts: number[], tokens: Address[], farm
                     amt = maxAmount;
                 }
                 let amountInWei = toWei(amt, decimals[farm.chainId][token]);
+                const id = uuid();
+
                 try {
                     const difference = await farmFunctions[farm.id]?.zapInSlippage?.(
                         {
+                            id,
                             currentWallet: currentWallet!,
                             amountInWei,
                             balances,
@@ -83,8 +87,11 @@ export const useSlippageWithdraw = (maxAmounts: number[], tokens: Address[], far
                 let amt = maxAmount / prices[farm.chainId][farm.vault_addr];
 
                 let amountInWei = toWei(amt, farm.decimals);
+                const id = uuid();
+
                 try {
                     const difference = await farmFunctions[farm.id]?.zapOutSlippage?.({
+                        id,
                         currentWallet: currentWallet!,
                         amountInWei,
                         balances,
