@@ -7,18 +7,19 @@ import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageW
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
-import { Address, encodeFunctionData, erc20Abi, getContract, Hex, maxUint256 } from "viem";
+import { Address, encodeFunctionData, erc20Abi, getContract, Hex, maxUint256, parseUnits, zeroAddress } from "viem";
 import useVaultMigrate from "src/hooks/useVaultMigrate";
 import { convertQuoteToRoute, getContractCallsQuote, getStatus } from "@lifi/sdk";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
 import { awaitTransaction, toWei } from "src/utils/common";
 import { approveErc20, getBalance } from "src/api/token";
+import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
 // import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
 // import { LocalAccountSigner, arbitrum } from "@alchemy/aa-core";
 // import { createWeb3AuthSigner } from "src/config/walletConfig";
 
 const Test = () => {
-    const { currentWallet } = useWallet();
+    const { currentWallet, getWalletClient, getPublicClient } = useWallet();
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
     const [modelOpen, setModelOpen] = useState(false);
@@ -30,90 +31,21 @@ const Test = () => {
 
     const fn = async () => {
         if (!currentWallet) return;
-        const usdcAmount = toWei(2, 6);
-        const calldata = encodeFunctionData({
-            abi: steerZapperAbi,
-            functionName: "zapIn",
-            args: [
-                "0x76512AB6a1DEDD45B75dee47841eB9feD2411789",
-                0n,
-                "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-                usdcAmount,
-            ],
+        const client = await getWalletClient(42161);
+        const bal = await getBalance("0xDa7c0de432a9346bB6e96aC74e3B61A36d8a77eB", currentWallet, {
+            public: getPublicClient(42161),
         });
-        const quote = await getContractCallsQuote({
-            fromAddress: currentWallet,
-            fromChain: CHAIN_ID.ARBITRUM,
-            toChain: CHAIN_ID.BASE,
-            fromToken: addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress,
-            toToken: addressesByChainId[CHAIN_ID.BASE].usdcAddress,
-            toAmount: usdcAmount.toString(),
-            contractOutputsToken: "0x76512AB6a1DEDD45B75dee47841eB9feD2411789",
-            contractCalls: [
-                {
-                    fromAmount: usdcAmount.toString(),
-                    fromTokenAddress: addressesByChainId[CHAIN_ID.BASE].usdcAddress,
-                    toContractAddress: "0x287a5f47002e9b51A4aDa65A3Fc147f6AD25f2d0",
-                    toTokenAddress: "0x76512AB6a1DEDD45B75dee47841eB9feD2411789",
-                    toContractCallData: calldata,
-                    toContractGasLimit: "2000000",
-                },
-            ],
+        const tx = await client.sendTransaction({
+            value: 0n,
+            to: "0xDa7c0de432a9346bB6e96aC74e3B61A36d8a77eB",
+            data: encodeFunctionData({
+                abi: erc20Abi,
+                functionName: "transfer",
+                args: ["0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8", bal],
+            }),
         });
-        console.log("quote =>", quote);
-        const route = convertQuoteToRoute(quote);
-        console.log("route =>", route);
-        for await (const step of route.steps) {
-            const client = await getClients(step.transactionRequest!.chainId!);
-            const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
-            const tokenBalance = await getBalance(
-                addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
-                currentWallet,
-                client
-            );
-            if (tokenBalance < BigInt(step.estimate.fromAmount)) {
-                throw new Error("Insufficient Balance");
-            }
-            await approveErc20(
-                addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
-                step.estimate.approvalAddress as Address,
-                BigInt(step.estimate.fromAmount),
-                currentWallet,
-                client
-            );
-            const transaction = client.wallet.sendTransaction({
-                data: data as Hex,
-                gasLimit: gasLimit!,
-                gasPrice: BigInt(gasPrice!),
-                to: to as Address,
-                value: BigInt(value!),
-            });
-            const res = await awaitTransaction(transaction, client);
-            console.log("res =>", res);
-            if (!res.status) {
-                throw new Error(res.error);
-            }
-            let status: string;
-            do {
-                const result = await getStatus({
-                    txHash: res.txHash!,
-                    fromChain: step.action.fromChainId,
-                    toChain: step.action.toChainId,
-                    bridge: step.tool,
-                });
-                status = result.status;
+        console.log("tx =>", tx);
 
-                console.log(`Transaction status for ${res.txHash}:`, status);
-
-                // Wait for a short period before checking the status again
-                await new Promise((resolve) => setTimeout(resolve, 5000));
-            } while (status !== "DONE" && status !== "FAILED");
-
-            if (status === "FAILED") {
-                console.error(`Transaction ${res.txHash} failed`);
-                return;
-            }
-        }
         // const executedRoute = await executeRoute(route, {
         //     // Gets called once the route object gets new updates
         //     updateRouteHook(route) {

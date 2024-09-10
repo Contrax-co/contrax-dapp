@@ -1,10 +1,9 @@
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, getCombinedBalance, getConnectorId, subtractGas } from "src/utils/common";
+import { awaitTransaction, getCombinedBalance, subtractGas } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 import { SlippageInBaseFn, SlippageOutBaseFn, ZapInBaseFn, ZapOutBaseFn } from "./types";
 import { addressesByChainId } from "src/config/constants/contracts";
-import { web3AuthConnectorId } from "src/config/constants";
 import { isGasSponsored } from "..";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
 import {
@@ -28,11 +27,12 @@ import {
 } from "viem";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import { CrossChainTransactionObject, IClients } from "src/types";
-import { convertQuoteToRoute, FullStatusData, getContractCallsQuote, getQuote, getStatus, LiFiStep } from "@lifi/sdk";
+import { convertQuoteToRoute, getQuote, getStatus, LiFiStep } from "@lifi/sdk";
 import { SupportedChains } from "src/config/walletConfig";
 import store from "src/state";
 import { editTransaction } from "src/state/transactions/transactionsReducer";
 import { TransactionStatus } from "src/state/transactions/types";
+import { buildTransaction, getBridgeStatus, getRoute, SocketApprovalData, SocketRoute } from "../bridge";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -43,38 +43,34 @@ export const zapInBase: ZapInBaseFn = async ({
     estimateTxGas,
     getClients,
     max,
+    id,
     getPublicClient,
     tokenIn,
 }) => {
     const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
     const publicClient = getPublicClient(farm.chainId);
     let zapperTxn;
-    let notiId;
     try {
         //#region Select Max
         if (max) {
-            if (token !== zeroAddress) {
-                const { balance } = getCombinedBalance(balances, "usdc");
-                amountInWei = BigInt(balance);
-            } else {
-                amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
-            }
+            const { balance } = getCombinedBalance(balances, token === zeroAddress ? "eth" : "usdc");
+            amountInWei = BigInt(balance);
         }
         //#endregion
 
         // #region Approve
         // first approve tokens, if zap is not in eth
         if (token !== zeroAddress) {
-            notiId = notifyLoading(loadingMessages.approvingZapping());
+            notifyLoading(loadingMessages.approvingZapping(), { id });
             const client = await getClients(farm.chainId);
             const response = await approveErc20(token, farm.zapper_addr as Address, amountInWei, currentWallet, client);
             if (!response.status) throw new Error("Error approving vault!");
-            dismissNotify(notiId);
+            dismissNotify(id);
         }
         // #endregion
 
         // #region Zapping In
-        notiId = notifyLoading(loadingMessages.zapping());
+        notifyLoading(loadingMessages.zapping(), { id });
 
         // eth zap
         if (token === zeroAddress) {
@@ -82,18 +78,31 @@ export const zapInBase: ZapInBaseFn = async ({
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn ?? wethAddress;
 
-            //#region Gas Logic
-            // if we are using zero dev, don't bother
-            const connectorId = getConnectorId();
-            if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-                const balance = BigInt(balances[farm.chainId][zeroAddress] || "0");
+            const {
+                finalAmountToDeposit,
+                isBridged,
+                status: bridgeStatus,
+            } = await crossChainBridgeIfNecessary({
+                getClients,
+                notificationId: id,
+                balances,
+                currentWallet,
+                toChainId: farm.chainId,
+                toToken: zeroAddress,
+                toTokenAmount: amountInWei,
+                max,
+            });
+            if (bridgeStatus) {
+                const client = await getClients(farm.chainId);
+                if (isBridged) amountInWei = finalAmountToDeposit;
+
                 const afterGasCut = await subtractGas(
                     amountInWei,
                     { public: publicClient },
                     estimateTxGas({
                         to: farm.zapper_addr,
+                        value: amountInWei,
                         chainId: farm.chainId,
-                        value: balance,
                         data: encodeFunctionData({
                             abi: zapperAbi,
                             functionName: "zapInETH",
@@ -102,25 +111,33 @@ export const zapInBase: ZapInBaseFn = async ({
                     })
                 );
                 if (!afterGasCut) {
-                    notiId && dismissNotify(notiId);
-                    return;
+                    dismissNotify(id);
+                    throw new Error("Error subtracting gas!");
                 }
-                amountInWei = afterGasCut;
-            }
-            //#endregion
-            const client = await getClients(farm.chainId);
-            zapperTxn = await awaitTransaction(
-                client.wallet.sendTransaction({
-                    to: farm.zapper_addr,
-                    value: amountInWei,
-                    data: encodeFunctionData({
-                        abi: zapperAbi,
-                        functionName: "zapInETH",
-                        args: [farm.vault_addr, 0n, token],
+
+                notifyLoading(loadingMessages.zapping(), { id });
+
+                zapperTxn = await awaitTransaction(
+                    client.wallet.sendTransaction({
+                        to: farm.zapper_addr,
+                        value: afterGasCut,
+                        data: encodeFunctionData({
+                            abi: zapperAbi,
+                            functionName: "zapInETH",
+                            args: [farm.vault_addr, 0n, token],
+                        }),
                     }),
-                }),
-                { public: publicClient }
-            );
+                    client,
+                    (hash) => {
+                        store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                    }
+                );
+            } else {
+                zapperTxn = {
+                    status: false,
+                    error: "Bridge Failed",
+                };
+            }
         }
         // token zap
         else {
@@ -130,7 +147,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 finalAmountToDeposit,
             } = await crossChainBridgeIfNecessary({
                 getClients,
-                notificationId: notiId,
+                notificationId: id,
                 balances,
                 currentWallet,
                 toChainId: farm.chainId,
@@ -141,7 +158,7 @@ export const zapInBase: ZapInBaseFn = async ({
             if (bridgeStatus) {
                 const client = await getClients(farm.chainId);
                 amountInWei = finalAmountToDeposit;
-                notifyLoading(loadingMessages.zapping(), { id: notiId });
+                notifyLoading(loadingMessages.zapping(), { id });
                 zapperTxn = await awaitTransaction(
                     client.wallet.sendTransaction({
                         to: farm.zapper_addr,
@@ -151,7 +168,10 @@ export const zapInBase: ZapInBaseFn = async ({
                             args: [farm.vault_addr, 0n, token, amountInWei],
                         }),
                     }),
-                    client
+                    client,
+                    (hash) => {
+                        store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                    }
                 );
             } else {
                 zapperTxn = {
@@ -162,28 +182,31 @@ export const zapInBase: ZapInBaseFn = async ({
         }
 
         if (!zapperTxn.status) {
+            store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
             throw new Error(zapperTxn.error);
         } else {
-            dismissNotify(notiId);
+            store.dispatch(editTransaction({ id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS }));
+            dismissNotify(id);
             notifySuccess(successMessages.zapIn());
         }
         // #endregion
     } catch (error: any) {
         console.log(error);
         let err = JSON.parse(JSON.stringify(error));
-        notiId && dismissNotify(notiId);
+        id && dismissNotify(id);
         notifyError(errorMessages.generalError(error.message || err.reason || err.message));
+        store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
     }
 };
 
-export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, getClients, max }) => {
+export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, getClients, max, id }) => {
     const client = await getClients(farm.chainId);
     const zapperContract = getContract({
         address: farm.zapper_addr as Address,
         abi: zapperAbi,
         client,
     });
-    let notiId = notifyLoading(loadingMessages.approvingWithdraw());
+    notifyLoading(loadingMessages.approvingWithdraw(), { id });
     try {
         const vaultBalance = await getBalance(farm.vault_addr, currentWallet, client);
 
@@ -194,11 +217,11 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         if (!(await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, client)).status)
             throw new Error("Error approving lp!");
 
-        dismissNotify(notiId);
+        dismissNotify(id);
         //#endregion
 
         //#region Zapping Out
-        notiId = notifyLoading(loadingMessages.withDrawing());
+        notifyLoading(loadingMessages.withDrawing(), { id });
 
         let withdrawTxn;
         if (max) {
@@ -207,27 +230,36 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         if (token === zeroAddress) {
             withdrawTxn = await awaitTransaction(
                 zapperContract.write.zapOutAndSwapEth([farm.vault_addr, max ? vaultBalance : amountInWei, 0n]),
-                client
+                client,
+                (hash) => {
+                    store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                }
             );
         } else {
             withdrawTxn = await awaitTransaction(
                 zapperContract.write.zapOutAndSwap([farm.vault_addr, max ? vaultBalance : amountInWei, token, 0n]),
-                client
+                client,
+                (hash) => {
+                    store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                }
             );
         }
 
         if (!withdrawTxn.status) {
+            store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
             throw new Error(withdrawTxn.error);
         } else {
-            dismissNotify(notiId);
+            store.dispatch(editTransaction({ id, txHash: withdrawTxn.txHash, status: TransactionStatus.SUCCESS }));
+            dismissNotify(id);
             notifySuccess(successMessages.withdraw());
         }
         //#endregion
     } catch (error: any) {
         console.log(error);
         let err = JSON.parse(JSON.stringify(error));
-        dismissNotify(notiId);
+        dismissNotify(id);
         notifyError(errorMessages.generalError(error.message || err.reason || err.message));
+        store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
     }
 };
 
@@ -254,12 +286,8 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     transaction.from = currentWallet;
 
     if (max) {
-        if (token !== zeroAddress) {
-            const { balance } = getCombinedBalance(balances, "usdc");
-            amountInWei = BigInt(balance);
-        } else {
-            amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
-        }
+        const { balance } = getCombinedBalance(balances, token === zeroAddress ? "eth" : "usdc");
+        amountInWei = BigInt(balance);
     }
 
     if (token !== zeroAddress) {
@@ -288,38 +316,24 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         // use weth address as tokenId, but in case of some farms (e.g: hop)
         // we need the token of liquidity pair, so use tokenIn if provided
         token = tokenIn ?? wethAddress;
+        const { afterBridgeBal } = await crossChainBridgeIfNecessarySocket({
+            getClients,
+            balances,
+            currentWallet,
+            toChainId: farm.chainId,
+            toToken: zeroAddress,
+            toTokenAmount: amountInWei,
+            max,
+            simulate: true,
+        });
 
-        //#region Gas Logic
-        // if we are using zero dev, don't bother
-        const connectorId = getConnectorId();
-        if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-            const balance = BigInt(balances[farm.chainId][zeroAddress] || "0");
-
-            const afterGasCut = await subtractGas(
-                amountInWei,
-                { public: publicClient },
-                estimateTxGas({
-                    to: farm.zapper_addr,
-                    chainId: farm.chainId,
-                    value: balance,
-                    data: encodeFunctionData({
-                        abi: zapperAbi,
-                        functionName: "zapInETH",
-                        args: [farm.vault_addr, 0n, token],
-                    }),
-                })
-            );
-            if (!afterGasCut) return 0n;
-            amountInWei = afterGasCut;
-        }
-        //#endregion
         const populated = {
             data: encodeFunctionData({
                 abi: zapperAbi,
                 functionName: "zapInETH",
                 args: [farm.vault_addr, 0n, token],
             }),
-            value: amountInWei,
+            value: afterBridgeBal,
         };
 
         transaction.input = populated.data || "";
@@ -500,6 +514,9 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
                 toToken: obj.toToken,
                 fromAmount: toBalDiff.toString(),
+                order: "FASTEST",
+                // @ts-ignore
+                denyBridges: "hop",
             });
         } else {
             // quote = await getContractCallsQuote({
@@ -647,158 +664,158 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
         }
     }
 }
-// export const crossChainTransaction = async (
-//     obj: CrossChainTransactionObject
-// ): Promise<{
-//     status: boolean;
-//     error?: string;
-// }> => {
-//     console.time("bridge");
-//     const chain = SupportedChains.find((item) => item.id === obj.toChainId);
-//     if (!chain) throw new Error("chain not found");
-//     const toPublicClient = createPublicClient({
-//         chain: chain,
-//         transport: http(),
-//         batch: {
-//             multicall: {
-//                 batchSize: 4096,
-//                 wait: 250,
-//             },
-//         },
-//     }) as IClients["public"];
+export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChainTransactionObject, "contractCall">>(
+    obj: T
+): Promise<
+    T["simulate"] extends true
+        ? {
+              afterBridgeBal: bigint;
+              amountToBeBridged: bigint;
+              //   amountSentForBridging:bigint;
+              //   amountToGetFromBridging:bigint;
+              //   amountTotalAfterBridging:bigint;
+              //   amountWantedAfterBridging:bigint;
+          }
+        : {
+              status: boolean;
+              error?: string;
+              isBridged: boolean;
+              finalAmountToDeposit: bigint;
+          }
+> {
+    const chain = SupportedChains.find((item) => item.id === obj.toChainId);
+    if (!chain) throw new Error("chain not found");
+    const toPublicClient = createPublicClient({
+        chain: chain,
+        transport: http(),
+        batch: {
+            multicall: {
+                batchSize: 4096,
+                wait: 250,
+            },
+        },
+    }) as IClients["public"];
 
-//     const toBal = await getBalance(obj.toToken, obj.currentWallet, { public: toPublicClient });
-//     if (toBal < obj.toTokenAmount) {
-//         const toBalDiff = obj.toTokenAmount - toBal;
-//         const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
-//         const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
-//             if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
-//             return false;
-//         })?.[0];
-//         if (!fromChainId) throw new Error("Insufficient balance");
-//         console.log("getting bridge quote");
-//         let quote: LiFiStep;
-//         if (obj.max) {
-//             quote = await getQuote({
-//                 fromAddress: obj.currentWallet,
-//                 fromChain: fromChainId,
-//                 toChain: obj.toChainId,
-//                 // @ts-ignore
-//                 fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
-//                 toToken: obj.toToken,
-//                 fromAmount: toBalDiff.toString(),
-//             });
-//         } else {
-//             quote = await getContractCallsQuote({
-//                 fromAddress: obj.currentWallet,
-//                 fromChain: fromChainId,
-//                 toChain: obj.toChainId,
-//                 // @ts-ignore
-//                 fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
-//                 toToken: obj.toToken,
-//                 toAmount: toBalDiff.toString(),
-//                 // toAmount: obj.toTokenAmount.toString(),
-//                 contractOutputsToken: obj.contractCall.outputTokenAddress,
-//                 contractCalls: [
-//                     // {
-//                     //     fromAmount: obj.toTokenAmount.toString(),
-//                     //     fromTokenAddress: obj.toToken,
-//                     //     toContractAddress: obj.contractCall.to,
-//                     //     toTokenAddress: obj.contractCall.outputTokenAddress,
-//                     //     toContractCallData: obj.contractCall.data,
-//                     //     toContractGasLimit: "2000000",
-//                     // },
-//                 ],
-//             });
-//         }
-//         console.log("quote =>", quote);
-//         const route = convertQuoteToRoute(quote);
-//         console.log("route =>", route);
-//         let allStatus: boolean = false;
-//         for await (const step of route.steps) {
-//             const client = await obj.getClients(step.transactionRequest!.chainId!);
-//             const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
-//             const tokenBalance = await getBalance(
-//                 obj.toToken === zeroAddress
-//                     ? zeroAddress
-//                     : addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
-//                 obj.currentWallet,
-//                 client
-//             );
-//             if (tokenBalance < BigInt(step.estimate.fromAmount)) {
-//                 throw new Error("Insufficient Balance");
-//             }
-//             console.log("approving for bridge");
-//             if (obj.toToken !== zeroAddress) {
-//                 await approveErc20(
-//                     addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
-//                     step.estimate.approvalAddress as Address,
-//                     BigInt(step.estimate.fromAmount),
-//                     obj.currentWallet,
-//                     client
-//                 );
-//             }
-//             const transaction = client.wallet.sendTransaction({
-//                 data: data as Hex,
-//                 gasLimit: gasLimit!,
-//                 gasPrice: BigInt(gasPrice!),
-//                 to: to as Address,
-//                 value: BigInt(value!),
-//             });
-//             console.log("doing transaction on source chain");
-//             const res = await awaitTransaction(transaction, client);
-//             console.log("res =>", res);
-//             if (!res.status) {
-//                 throw new Error(res.error);
-//             }
-//             let status: string;
-//             do {
-//                 const result = await getStatus({
-//                     txHash: res.txHash!,
-//                     fromChain: step.action.fromChainId,
-//                     toChain: step.action.toChainId,
-//                     bridge: step.tool,
-//                 });
-//                 status = result.status;
+    const toBal = await getBalance(obj.toToken, obj.currentWallet, { public: toPublicClient });
+    if (toBal < obj.toTokenAmount) {
+        const toBalDiff = obj.toTokenAmount - toBal;
+        const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
+        const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
+            if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
+            return false;
+        })?.[0];
+        if (!fromChainId) {
+            if (obj.simulate) {
+                // @ts-ignore
+                return { afterBridgeBal: BigInt(obj.toTokenAmount), amountToBeBridged: 0n };
+            } else throw new Error("Insufficient balance");
+        }
+        console.log("getting bridge quote");
+        if (obj.notificationId) notifyLoading(loadingMessages.gettingBridgeQuote(), { id: obj.notificationId });
 
-//                 console.log(`Transaction status for ${res.txHash}:`, status);
+        const { route, approvalData } = await getRoute(
+            Number(fromChainId),
+            obj.toChainId,
+            obj.toToken === zeroAddress
+                ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+                : addressesByChainId[Number(fromChainId)].usdcAddress,
+            obj.toToken === zeroAddress ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : obj.toToken,
+            toBalDiff.toString(),
+            obj.currentWallet
+        );
 
-//                 // Wait for a short period before checking the status again
-//                 await new Promise((resolve) => setTimeout(resolve, 5000));
-//             } while (status !== "DONE" && status !== "FAILED");
+        console.log("route =>", route);
+        console.log("approvalData =>", approvalData);
+        if (obj.simulate) {
+            let afterBridgeBal = BigInt(route.toAmount) + toBal;
+            if (afterBridgeBal > BigInt(obj.toTokenAmount)) afterBridgeBal = BigInt(obj.toTokenAmount);
+            // @ts-ignore
+            return { afterBridgeBal, amountToBeBridged: BigInt(route.fromAmount) };
+        }
+        const buildTx = await buildTransaction(route);
+        if (!buildTx) throw new Error("Failed to build bridge transaction");
 
-//             if (status === "DONE") {
-//                 allStatus = true;
-//             } else {
-//                 console.error(`Transaction ${res.txHash} failed`);
-//                 allStatus = false;
-//             }
-//         }
-//         if (allStatus) {
-//             const client = await obj.getClients(obj.toChainId);
-//             const transaction = client.wallet.sendTransaction({
-//                 data: obj.contractCall.data,
-//                 to: obj.contractCall.to,
-//                 value: obj.contractCall.value,
-//             });
-//             console.log("performing transaction on destination chain");
-//             const res = await awaitTransaction(transaction, client);
-//             return res;
-//         } else {
-//             return {
-//                 status: false,
-//                 error: "Target chain error",
-//             };
-//         }
-//     } else {
-//         const client = await obj.getClients(obj.toChainId);
-//         const transaction = client.wallet.sendTransaction({
-//             data: obj.contractCall.data,
-//             to: obj.contractCall.to,
-//             value: obj.contractCall.value,
-//         });
-//         const res = await awaitTransaction(transaction, client);
-//         return res;
-//     }
-//     console.timeEnd("bridge");
-// };
+        let finalAmountToDeposit: bigint = 0n;
+        if (obj.notificationId) notifyLoading(loadingMessages.bridgeStep(1, 1), { id: obj.notificationId });
+        const client = await obj.getClients(buildTx.chainId);
+        if (approvalData) {
+            await approveErc20(
+                approvalData.approvalTokenAddress,
+                buildTx.txTarget,
+                BigInt(approvalData.minimumApprovalAmount),
+                obj.currentWallet,
+                client
+            );
+        }
+        console.log("buildTx =>", buildTx);
+        const transaction = client.wallet.sendTransaction({
+            data: buildTx.txData,
+            to: buildTx.txTarget,
+            value: BigInt(buildTx.value),
+        });
+        console.log("doing transaction on source chain");
+        const res = await awaitTransaction(transaction, client);
+        console.log("res =>", res);
+        if (!res.status) {
+            throw new Error(res.error);
+        }
+        let status = "PENDING";
+        do {
+            if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
+            try {
+                store.dispatch(
+                    editTransaction({
+                        id: obj.notificationId!,
+                        status: TransactionStatus.BRIDGING,
+                        bridgeInfo: {
+                            txHash: res.txHash!,
+                            tool: "",
+                            fromChain: buildTx.chainId,
+                            toChain: obj.toChainId,
+                            beforeBridgeBalance: toBal.toString(),
+                        },
+                    })
+                );
+                const result = await getBridgeStatus(res.txHash!, buildTx.chainId, obj.toChainId);
+                console.log("result =>", result);
+                // @ts-ignore
+                if (result.destinationTxStatus === "COMPLETED") {
+                    finalAmountToDeposit = BigInt(result.toAmount!) + toBal;
+                }
+                status = result.destinationTxStatus;
+            } catch (_) {}
+
+            console.log(`Transaction status for ${res.txHash}:`, status);
+
+            // Wait for a short period before checking the status again
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+        } while (status !== "COMPLETED");
+
+        if (status === "COMPLETED") {
+            // @ts-ignore
+            return {
+                status: true,
+                isBridged: true,
+                finalAmountToDeposit,
+            };
+        } else {
+            // @ts-ignore
+            return {
+                status: false,
+                error: "Target chain error",
+                isBridged: true,
+            };
+        }
+    } else {
+        if (obj.simulate) {
+            // @ts-ignore
+            return {
+                afterBridgeBal: BigInt(obj.toTokenAmount),
+                amountToBeBridged: 0n,
+            };
+        } else {
+            // @ts-ignore
+            return { status: true };
+        }
+    }
+}

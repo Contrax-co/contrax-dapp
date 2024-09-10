@@ -176,10 +176,6 @@ export const awaitTransaction = async (
     };
 };
 
-export const getConnectorId = () => {
-    return store.getState().settings.connectorId;
-};
-
 export const subtractGas = async (
     amountInWei: bigint,
     client: Pick<IClients, "public">,
@@ -192,7 +188,7 @@ export const subtractGas = async (
         : BigInt(store.getState().balances.balances[client.public.chain.id][zeroAddress] || "0");
     const gasPrice = await client.public.getGasPrice();
     const gasLimit = await estimatedTx;
-    const gasToRemove = gasLimit * gasPrice * 3n;
+    const gasToRemove = gasLimit * gasPrice * 5n;
     if (amountInWei + gasToRemove >= balance) amountInWei = amountInWei - gasToRemove;
     if (amountInWei <= 0) {
         showError && notifyError(errorMessages.insufficientGas());

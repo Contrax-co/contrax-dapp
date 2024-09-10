@@ -1,5 +1,5 @@
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, getCombinedBalance, getConnectorId, subtractGas, toEth } from "src/utils/common";
+import { awaitTransaction, getCombinedBalance, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
@@ -17,7 +17,7 @@ import {
     ZapInFn,
     ZapOutFn,
 } from "./types";
-import { defaultChainId, web3AuthConnectorId } from "src/config/constants";
+import { defaultChainId } from "src/config/constants";
 import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
 import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
@@ -59,14 +59,15 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
         const zapCurriences = farm.zap_currencies;
         const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
+        const combinedEthBalance = getCombinedBalance(balances, "eth");
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
         let depositableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18),
-                amountDollar: (Number(toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18)) * ethPrice).toString(),
+                amount: combinedEthBalance.formattedBalance.toString(),
+                amountDollar: (Number(combinedEthBalance.formattedBalance) * ethPrice).toString(),
                 price: ethPrice,
             },
         ];
@@ -177,32 +178,6 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn;
 
-            //#region Gas Logic
-            // if we are using zero dev, don't bother
-            const connectorId = getConnectorId();
-            if (connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
-                const balance = BigInt(balances[farm.chainId][zeroAddress]!);
-                const afterGasCut = await subtractGas(
-                    amountInWei,
-                    { public: publicClient },
-                    estimateTxGas({
-                        to: farm.zapper_addr,
-                        value: balance,
-                        chainId: farm.chainId,
-                        data: encodeFunctionData({
-                            abi: zapperAbi,
-                            functionName: "zapInETH",
-                            args: [farm.vault_addr, 0n, token],
-                        }),
-                    })
-                );
-                if (!afterGasCut) {
-                    notiId && dismissNotify(notiId);
-                    return;
-                }
-                amountInWei = afterGasCut;
-            }
-            //#endregion
             const client = await getClients(farm.chainId);
             zapperTxn = await awaitTransaction(
                 client.wallet.sendTransaction({
@@ -266,31 +241,6 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         // we need the token of liquidity pair, so use tokenIn if provided
         token = tokenIn;
 
-        //#region Gas Logic
-        // if we are using zero dev, don't bother
-        const connectorId = getConnectorId();
-        // Check if max to subtract gas, cause we want simulations to work for amount which exceeds balance
-        // And subtract gas won't work cause it estimates gas for tx, and tx will fail insufficent balance
-        if ((connectorId !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) && max) {
-            const balance = BigInt(balances[farm.chainId][zeroAddress]!);
-            const afterGasCut = await subtractGas(
-                amountInWei,
-                { public: publicClient },
-                estimateTxGas({
-                    chainId: farm.chainId,
-                    to: farm.zapper_addr,
-                    value: balance,
-                    data: encodeFunctionData({
-                        abi: zapperAbi,
-                        functionName: "zapInETH",
-                        args: [farm.vault_addr, 0n, token],
-                    }),
-                })
-            );
-            if (!afterGasCut) return 0n;
-            amountInWei = afterGasCut;
-        }
-        //#endregion
         const populated = {
             data: encodeFunctionData({
                 abi: zapperAbi,

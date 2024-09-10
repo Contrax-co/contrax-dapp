@@ -23,6 +23,7 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
         const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
         const zapCurriences = farm.zap_currencies;
         const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
+        const combinedEthBalance = getCombinedBalance(balances, "eth");
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
         let depositableAmounts: TokenAmounts[] = [
@@ -36,8 +37,8 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18),
-                amountDollar: (Number(toEth(BigInt(balances[farm.chainId][zeroAddress]!), 18)) * ethPrice).toString(),
+                amount: combinedEthBalance.formattedBalance.toString(),
+                amountDollar: (Number(combinedEthBalance.formattedBalance) * ethPrice).toString(),
                 price: ethPrice,
             },
         ];

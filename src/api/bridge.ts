@@ -36,7 +36,7 @@ interface UserTx {
     chainId: number;
     protocol: Protocol;
     fromAsset: Asset;
-    approvalData: ApprovalData;
+    approvalData: SocketApprovalData;
     fromAmount: string;
     toAsset: Asset;
     toAmount: string;
@@ -47,7 +47,7 @@ interface UserTx {
     userTxIndex: number;
 }
 
-interface Route {
+export interface SocketRoute {
     routeId: string;
     isOnlySwapRoute: boolean;
     fromAmount: string;
@@ -61,6 +61,8 @@ interface Route {
     outputValueInUsd: number;
     receivedValueInUsd: number;
     inputValueInUsd: number;
+    maxServiceTime: number;
+    serviceTime: number;
 }
 
 interface TokenList {
@@ -74,7 +76,7 @@ interface TokenList {
     symbol: string;
 }
 
-interface ApprovalData {
+export interface SocketApprovalData {
     allowanceTarget: Address;
     approvalTokenAddress: Address;
     minimumApprovalAmount: string;
@@ -82,7 +84,7 @@ interface ApprovalData {
 }
 
 interface BuildTxResponse {
-    approvalData: ApprovalData;
+    approvalData: SocketApprovalData;
     chainId: number;
     txData: Address;
     txTarget: Address;
@@ -155,12 +157,19 @@ export const getRoute = async (
     userAddress: Address
 ) => {
     const res = await socketTechApi.get(
-        `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true&excludeBridges=stargate`
+        `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=time&singleTxOnly=true`
     );
     const errors: ErrorObj = res.data.result.bridgeRouteErrors;
-    const routes = res.data.result.routes as Route[];
+    const routes = res.data.result.routes as SocketRoute[];
+    const route = routes.sort((a, b) => {
+        return a.serviceTime - b.serviceTime;
+    })[0];
+    // const route = routes.sort((a, b) => {
+    //     return b. - a.outputValueInUsd;
+    // })[0];
+
     // @ts-ignore
-    const route = routes.find((e) => e.userTxs.some((tx) => tx.approvalData.allowanceTarget !== ""));
+    // const route = routes.find((e) => e.userTxs.some((tx) => tx.approvalData.allowanceTarget !== ""));
     // routes.find((route) => route.usedBridgeNames[0] !== "connext" && route.usedBridgeNames[0] !== "hop") ||
     // routes.find((route) => route.usedBridgeNames[0] !== "connext") ||
     // routes[0];
@@ -180,7 +189,7 @@ export const getRoute = async (
     }
     console.log("Available bridge routes: ", routes);
     console.log("Selected bridge route: ", route);
-    const approvalData = route.userTxs[0].approvalData as ApprovalData;
+    const approvalData = route.userTxs[0].approvalData as SocketApprovalData;
 
     return { route, approvalData };
 };

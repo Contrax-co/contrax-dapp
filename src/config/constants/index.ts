@@ -21,13 +21,12 @@ export const SNAPSHOT_GRAPHQL_URL = "https://hub.snapshot.org/graphql";
 export const MAX_GAS_UNITS_PER_TRANSACTION = "700000";
 export const defaultChainId = CHAIN_ID.ARBITRUM; // Arbitrum
 export const defaultNetworkName = "arbitrum";
-export const web3AuthConnectorId = "web3auth";
 export const walletConnectProjectId = import.meta.env.REACT_APP_WALLET_CONNECT_PROJECT_ID as string;
 export const isDev = import.meta.env.NODE_ENV === "development";
 export const isStagging = window.location.hostname.includes("staging.contrax.finance");
 export const GATEFI_MERCHANT_ID = import.meta.env.REACT_APP_GATEFI_MERCHANT_ID as string;
 export const SOCKET_BRIDGE_KEY = import.meta.env.REACT_APP_SOCKET_BRIDGE_KEY;
-export const SOCKET_API_KEY = import.meta.env.REACT_APP_SOCKET_API_KEY;
+export const SOCKET_API_KEY = import.meta.env.REACT_APP_SOCKET_BRIDGE_KEY;
 export const RAMP_TRANSAK_API_KEY = import.meta.env.REACT_APP_RAMP_TRANSAK_API_KEY;
 export const ZERODEV_PROJECT_ID = import.meta.env.REACT_APP_ZERODEV_PROJECT_ID!;
 export const ZERODEV_PROJECT_ID_MAINNET = import.meta.env.REACT_APP_ZERODEV_PROJECT_ID_MAINNET!;

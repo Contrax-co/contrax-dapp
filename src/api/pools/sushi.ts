@@ -33,6 +33,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
         const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
         const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
+        const combinedEthBalance = getCombinedBalance(balances, "eth");
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
 
@@ -47,10 +48,8 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             {
                 tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(BigInt(balances[farm.chainId][zeroAddress] || 0), 18),
-                amountDollar: (
-                    Number(toEth(BigInt(balances[farm.chainId][zeroAddress] || 0), 18)) * ethPrice
-                ).toString(),
+                amount: combinedEthBalance.formattedBalance.toString(),
+                amountDollar: (Number(combinedEthBalance.formattedBalance) * ethPrice).toString(),
                 price: ethPrice,
             },
             {

@@ -81,6 +81,13 @@ export const approveErc20 = async (
     currentWallet: Address,
     client: IClients
 ) => {
+    console.log({
+        contractAddress,
+        spender,
+        amount,
+        currentWallet,
+        client,
+    });
     const contract = getContract({
         abi: erc20Abi,
         address: contractAddress,
