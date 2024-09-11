@@ -380,14 +380,21 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     return assetChanges.difference;
 };
 
-export const slippageOut: SlippageOutBaseFn = async ({ getClients, farm, token, max, amountInWei, currentWallet }) => {
-    const client = await getClients(farm.chainId);
+export const slippageOut: SlippageOutBaseFn = async ({
+    getPublicClient,
+    farm,
+    token,
+    max,
+    amountInWei,
+    currentWallet,
+}) => {
+    const publicClient = getPublicClient(farm.chainId);
     const transaction = {} as Omit<
         TenderlySimulateTransactionBody,
         "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
     >;
     transaction.from = currentWallet;
-    const vaultBalance = await getBalance(farm.vault_addr, currentWallet, client);
+    const vaultBalance = await getBalance(farm.vault_addr, currentWallet, { public: publicClient });
 
     //#region Approve
     transaction.state_overrides = getAllowanceStateOverride([

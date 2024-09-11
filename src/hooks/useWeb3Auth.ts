@@ -1,18 +1,25 @@
+import { IProvider } from "@web3auth/base";
 import { providerToSmartAccountSigner } from "permissionless";
 import { useEffect, useState } from "react";
 import { web3AuthInstance } from "src/config/walletConfig";
-import { createWalletClient, custom } from "viem";
+import { Account, Client, createWalletClient, custom, CustomTransport } from "viem";
 import { arbitrum } from "viem/chains";
 
 const useWeb3Auth = () => {
     const [connected, setConnected] = useState(false);
+    const [client, setClient] = useState<Client<CustomTransport, typeof arbitrum, Account>>();
+    const [isSocial, setIsSocial] = useState(false);
+    const [web3AuthProvider, setWeb3AuthProvider] = useState<IProvider | null>(null);
     const connect = async () => {
         if (web3AuthInstance.status === "not_ready") await web3AuthInstance.initModal();
         const _provider = await web3AuthInstance.connect();
-        if (web3AuthInstance.connectedAdapterName !== "openlogin") {
-            alert("Please use social login!");
-            return;
-        }
+        const _isSocial = web3AuthInstance.connectedAdapterName === "openlogin";
+        setIsSocial(_isSocial);
+        // Only check for migration purpose in alchemy-aa
+        // if (web3AuthInstance.connectedAdapterName !== "openlogin") {
+        //     alert("Please use social login!");
+        //     return;
+        // }
         const smartAccountSigner = await providerToSmartAccountSigner(web3AuthInstance.provider as any);
         const client = createWalletClient({
             account: smartAccountSigner.address,
@@ -20,26 +27,25 @@ const useWeb3Auth = () => {
             chain: arbitrum,
         });
         setConnected(true);
-        return client;
+        setClient(client);
+        setWeb3AuthProvider(web3AuthInstance.provider);
+        return {
+            client,
+            isSocial: _isSocial,
+            provider: web3AuthInstance.provider!,
+            address: smartAccountSigner.address,
+        };
     };
 
     const disconnect = async () => {
         if (web3AuthInstance.status === "not_ready") await web3AuthInstance.initModal();
         await web3AuthInstance.logout();
         setConnected(false);
+        setClient(undefined);
     };
+    console.log("web3AuthInstance =>", web3AuthInstance.status);
 
-    useEffect(() => {
-        (async function () {
-            if (web3AuthInstance.status === "not_ready") {
-                await web3AuthInstance.initModal();
-                // @ts-ignore
-                if (web3AuthInstance.status === "connected") setConnected(true);
-            }
-        })();
-    }, []);
-
-    return { connect, disconnect, connected };
+    return { connect, disconnect, connected, isSocial, client };
 };
 
 export default useWeb3Auth;

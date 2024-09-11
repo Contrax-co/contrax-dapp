@@ -36,7 +36,7 @@ const useVaultMigrate = () => {
             alert("Login first!");
             return;
         }
-        const _walletClient = await connect();
+        const { client: _walletClient } = await connect();
         if (!_walletClient) return;
         setIsLoading(true);
         let id = "";

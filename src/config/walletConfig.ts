@@ -3,6 +3,7 @@ import { arbitrum, mainnet, polygon, optimism, linea, bsc, base } from "viem/cha
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+import { getDefaultExternalAdapters } from "@web3auth/default-evm-adapter";
 import { POLLING_INTERVAL, WEB3AUTH_CLIENT_ID } from "./constants";
 import { Web3Auth } from "@web3auth/modal";
 import { providers } from "ethers";
@@ -77,6 +78,28 @@ const openloginAdapter = new OpenloginAdapter({
     },
 });
 web3AuthInstance.configureAdapter(openloginAdapter);
+
+getDefaultExternalAdapters({
+    options: {
+        clientId,
+        web3AuthNetwork: "cyan",
+        privateKeyProvider: PrivateKeyProvider,
+        chainConfig: {
+            chainId: "0x" + arbitrum.id.toString(16),
+            rpcTarget: ARBITRUM_MAINNET,
+            displayName: arbitrum.name,
+            tickerName: arbitrum.nativeCurrency.name,
+            ticker: arbitrum.nativeCurrency.symbol,
+            blockExplorerUrl: "https://arbiscan.io/",
+            chainNamespace: CHAIN_NAMESPACES.EIP155,
+        },
+    },
+}).then((adapters) => {
+    adapters.forEach((adapter) => {
+        web3AuthInstance.configureAdapter(adapter);
+    });
+});
+
 export const web3authProvider = web3AuthInstance.provider;
 
 export function publicClientToProvider(publicClient: PublicClient) {

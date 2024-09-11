@@ -5,6 +5,19 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@aa-sdk/core@npm:^4.0.0-beta.2":
+  version: 4.0.0-beta.2
+  resolution: "@aa-sdk/core@npm:4.0.0-beta.2"
+  dependencies:
+    abitype: ^0.8.3
+    eventemitter3: ^5.0.1
+    zod: ^3.22.4
+  peerDependencies:
+    viem: ^2.20.0
+  checksum: b41227f452ac2acae81cad1509e37007293873337a351cdfc1b6436c8f986c6413a16cb48130b7a256c664f3f113ce7fc73c31b5446980062e74c1f280cd7015
+  languageName: node
+  linkType: hard
+
 "@adobe/css-tools@npm:^4.0.1":
   version: 4.4.0
   resolution: "@adobe/css-tools@npm:4.4.0"
@@ -1936,12 +1949,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:>=7.17.0, @babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.19.4, @babel/runtime@npm:^7.20.6, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.22.10, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.24.0, @babel/runtime@npm:^7.24.7, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:>=7.17.0, @babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.19.4, @babel/runtime@npm:^7.20.6, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.22.10, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.24.0, @babel/runtime@npm:^7.24.7, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.24.7
   resolution: "@babel/runtime@npm:7.24.7"
   dependencies:
     regenerator-runtime: ^0.14.0
   checksum: d17f29eed6f848ac15cdf4202a910b741facfb0419a9d79e5c7fa37df6362fc3227f1cc2e248cc6db5e53ddffb4caa6686c488e6e80ce3d29c36a4e74c8734ea
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.24.8":
+  version: 7.25.6
+  resolution: "@babel/runtime@npm:7.25.6"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: ee1a69d3ac7802803f5ee6a96e652b78b8addc28c6a38c725a4ad7d61a059d9e6cb9f6550ed2f63cce67a1bd82e0b1ef66a1079d895be6bfb536a5cfbd9ccc32
   languageName: node
   linkType: hard
 
@@ -5643,7 +5665,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/eth-sig-util@npm:^7.0.1, @metamask/eth-sig-util@npm:^7.0.2":
+"@metamask/eth-sig-util@npm:7.0.2, @metamask/eth-sig-util@npm:^7.0.1, @metamask/eth-sig-util@npm:^7.0.2":
   version: 7.0.2
   resolution: "@metamask/eth-sig-util@npm:7.0.2"
   dependencies:
@@ -8500,6 +8522,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@toruslabs/base-controllers@npm:^5.10.0":
+  version: 5.11.0
+  resolution: "@toruslabs/base-controllers@npm:5.11.0"
+  dependencies:
+    "@ethereumjs/util": ^9.0.3
+    "@toruslabs/broadcast-channel": ^10.0.2
+    "@toruslabs/http-helpers": ^6.1.1
+    "@toruslabs/openlogin-jrpc": ^8.3.0
+    "@toruslabs/openlogin-utils": ^8.2.1
+    async-mutex: ^0.5.0
+    bignumber.js: ^9.1.2
+    bowser: ^2.11.0
+    jwt-decode: ^4.0.0
+    loglevel: ^1.9.1
+  peerDependencies:
+    "@babel/runtime": 7.x
+  checksum: dfddcf2ad63a876c1f092a92bcbddc0904b8d0a679db03fee6fd7c2b56f30a5a24372dbe656a5121357132fd4e78754a1b9e078f612aac318fc61b15bb649b62
+  languageName: node
+  linkType: hard
+
 "@toruslabs/base-controllers@npm:^5.5.5, @toruslabs/base-controllers@npm:^5.9.2":
   version: 5.9.2
   resolution: "@toruslabs/base-controllers@npm:5.9.2"
@@ -8700,6 +8742,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@toruslabs/openlogin-jrpc@npm:^8.1.0, @toruslabs/openlogin-jrpc@npm:^8.3.0":
+  version: 8.3.0
+  resolution: "@toruslabs/openlogin-jrpc@npm:8.3.0"
+  dependencies:
+    end-of-stream: ^1.4.4
+    events: ^3.3.0
+    fast-safe-stringify: ^2.1.1
+    once: ^1.4.0
+    pump: ^3.0.0
+    readable-stream: ^4.5.2
+  peerDependencies:
+    "@babel/runtime": 7.x
+  checksum: e1ecd13a8ca0d717445c82ba0d7e774c6b32b965c0dae9ca16a9dbce10bf0499c097ce7ec9c472d8c80e67f684409507b5757e4f15f38600129993b4bcbeccb7
+  languageName: node
+  linkType: hard
+
 "@toruslabs/openlogin-jrpc@npm:^8.1.1":
   version: 8.1.1
   resolution: "@toruslabs/openlogin-jrpc@npm:8.1.1"
@@ -8887,6 +8945,24 @@ __metadata:
   peerDependencies:
     "@babel/runtime": 7.x
   checksum: 96dddb661a9c0e3d279e5c64f5e6d57bece4a82f11f5b2dce3eeaadf1a262fdefc7370a2c0e82e300457f75edf3a407568e39e622fc6655f3010174c88e87503
+  languageName: node
+  linkType: hard
+
+"@toruslabs/torus-embed@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "@toruslabs/torus-embed@npm:5.0.0"
+  dependencies:
+    "@metamask/rpc-errors": ^6.2.1
+    "@toruslabs/http-helpers": ^6.1.1
+    "@toruslabs/openlogin-jrpc": ^8.1.0
+    fast-deep-equal: ^3.1.3
+    lodash.merge: ^4.6.2
+    loglevel: ^1.9.1
+    pump: ^3.0.0
+    readable-stream: ^4.5.2
+  peerDependencies:
+    "@babel/runtime": 7.x
+  checksum: 73723f9927d044bc0592f925c40438a15026452e99f5ea885ad691ead983ca4415df0b49859fabd81ee341fc818a1282e63953665ea56a7f79a9ad264a4f2397
   languageName: node
   linkType: hard
 
@@ -11581,6 +11657,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web3auth/base-evm-adapter@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/base-evm-adapter@npm:8.12.4"
+  dependencies:
+    "@toruslabs/base-controllers": ^5.10.0
+    "@web3auth/base": ^8.12.4
+  peerDependencies:
+    "@babel/runtime": ^7.x
+  checksum: 85f98af8e15a8c9ccc28b361603709c25cf21e86a4a8ea38c19d1c5c2af62985e08b1a7ad655c47bf81f655169da374931413430258ece52dfac87126662d991
+  languageName: node
+  linkType: hard
+
 "@web3auth/base-evm-adapter@npm:^8.8.0":
   version: 8.8.0
   resolution: "@web3auth/base-evm-adapter@npm:8.8.0"
@@ -11623,6 +11711,20 @@ __metadata:
   peerDependencies:
     "@babel/runtime": 7.x
   checksum: fe1419cdd0325cb6b79b872eda8698cd0378471d951076f5325a91d5e5078f15a27cbd5dc7251c02bbf4f160d1af35df4cc50acc5e9688767273bfa32a896a42
+  languageName: node
+  linkType: hard
+
+"@web3auth/base-provider@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/base-provider@npm:8.12.4"
+  dependencies:
+    "@toruslabs/base-controllers": ^5.10.0
+    "@toruslabs/openlogin-jrpc": ^8.3.0
+    "@web3auth/base": ^8.12.4
+    json-rpc-random-id: ^1.0.1
+  peerDependencies:
+    "@babel/runtime": 7.x
+  checksum: 419e5c57eac418eb0ae5771fb628e432bddd981164e14536941a9502e17f673e77e9c9762754176b08bdc715fe5938bc3ee6e97ed8c787e971d3deb0ff46d0c0
   languageName: node
   linkType: hard
 
@@ -11686,7 +11788,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/base@npm:^8.3.0, @web3auth/base@npm:^8.8.0":
+"@web3auth/base@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/base@npm:8.12.4"
+  dependencies:
+    "@toruslabs/constants": ^13.4.0
+    "@toruslabs/http-helpers": ^6.1.1
+    "@toruslabs/openlogin": ^8.2.1
+    "@toruslabs/openlogin-jrpc": ^8.3.0
+    "@toruslabs/openlogin-utils": ^8.2.1
+    jwt-decode: ^4.0.0
+    loglevel: ^1.9.1
+    ts-custom-error: ^3.3.1
+  peerDependencies:
+    "@babel/runtime": ^7.x
+  checksum: 530e0c6aaf3d3836fea8dc302fb5a39963518eaf5f3fcc8fc2f4054e1a63e0b9be743187f4edbcc8e102beea0dd49c67f016c26efcdfa23525877d3445f1c29f
+  languageName: node
+  linkType: hard
+
+"@web3auth/base@npm:^8.8.0":
   version: 8.8.0
   resolution: "@web3auth/base@npm:8.8.0"
   dependencies:
@@ -11718,6 +11838,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web3auth/default-evm-adapter@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/default-evm-adapter@npm:8.12.4"
+  dependencies:
+    "@web3auth/base": ^8.12.4
+    "@web3auth/base-evm-adapter": ^8.12.4
+    "@web3auth/torus-evm-adapter": ^8.12.4
+    "@web3auth/wallet-connect-v2-adapter": ^8.12.4
+    mipd: ^0.0.7
+  peerDependencies:
+    "@babel/runtime": ^7.x
+  checksum: ae1ce9cb440e401c9abc0a444255dba17f3b9f9bdddf51692d030d95532db845716d14e9f26e8eb8d65fdc9ed98743e28844a0ce34b10a55d07ec8dc750cb120
+  languageName: node
+  linkType: hard
+
 "@web3auth/ethereum-provider@npm:^7.3.2":
   version: 7.3.2
   resolution: "@web3auth/ethereum-provider@npm:7.3.2"
@@ -11743,7 +11878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/ethereum-provider@npm:^8.10.1, @web3auth/ethereum-provider@npm:^8.3.0":
+"@web3auth/ethereum-provider@npm:^8.10.1":
   version: 8.10.1
   resolution: "@web3auth/ethereum-provider@npm:8.10.1"
   dependencies:
@@ -11764,6 +11899,29 @@ __metadata:
   peerDependencies:
     "@babel/runtime": 7.x
   checksum: a5fc8626cf7f41a73673deaf66fb947a05c63dde221eb0add1068d1c35327ee1a941bf1db91e4173fc0c03cdedd85e27067bf970f3f43d02320445c6b9add431
+  languageName: node
+  linkType: hard
+
+"@web3auth/ethereum-provider@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/ethereum-provider@npm:8.12.4"
+  dependencies:
+    "@ethereumjs/common": ^4.3.0
+    "@ethereumjs/tx": ^5.3.0
+    "@ethereumjs/util": ^9.0.3
+    "@metamask/eth-sig-util": 7.0.2
+    "@toruslabs/base-controllers": ^5.10.0
+    "@toruslabs/http-helpers": ^6.1.1
+    "@toruslabs/openlogin-jrpc": ^8.3.0
+    "@web3auth/base": ^8.12.4
+    "@web3auth/base-provider": ^8.12.4
+    assert: ^2.1.0
+    bignumber.js: ^9.1.2
+    bn.js: ^5.2.1
+    jsonschema: ^1.4.1
+  peerDependencies:
+    "@babel/runtime": 7.x
+  checksum: 2872b65499aa0916ceef71d8f4b1b9aed290625b51f61431ccba2ca162d4ac3a5146c4d79cd1f6dfdc0bf2148e2a3f05d66b97a3866fac9a8c4515904b043cc5
   languageName: node
   linkType: hard
 
@@ -11816,15 +11974,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/modal@npm:^8.3.0":
-  version: 8.10.1
-  resolution: "@web3auth/modal@npm:8.10.1"
+"@web3auth/modal@npm:^8.12.7":
+  version: 8.12.7
+  resolution: "@web3auth/modal@npm:8.12.7"
   dependencies:
-    "@web3auth/base": ^8.8.0
-    "@web3auth/base-provider": ^8.8.0
-    "@web3auth/no-modal": ^8.10.1
-    "@web3auth/openlogin-adapter": ^8.8.0
-    "@web3auth/ui": ^8.8.0
+    "@web3auth/base": ^8.12.4
+    "@web3auth/base-provider": ^8.12.4
+    "@web3auth/no-modal": ^8.12.4
+    "@web3auth/openlogin-adapter": ^8.12.4
+    "@web3auth/ui": ^8.12.7
     lodash.clonedeep: ^4.5.0
     lodash.merge: ^4.6.2
   peerDependencies:
@@ -11833,7 +11991,7 @@ __metadata:
   peerDependenciesMeta:
     "@web3auth/wallet-connect-v2-adapter":
       optional: true
-  checksum: 713ace17d629c99bec5a28125a949daa8bd9e8671e1d98d729ede474430e122b047946dadc9f72ef4689a7d82c9c08952dd3853000bd27036b2351e59afdef49
+  checksum: fa612735e7d7fcd73b121a803df2e88aa98173fdb029c89ef1c11fe55c710c42369e969bd3c45f00d1174a5d54bda5037228b9f74e52039cf63a226d49640e01
   languageName: node
   linkType: hard
 
@@ -11853,15 +12011,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/no-modal@npm:^8.10.1":
-  version: 8.10.1
-  resolution: "@web3auth/no-modal@npm:8.10.1"
+"@web3auth/no-modal@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/no-modal@npm:8.12.4"
   dependencies:
     "@toruslabs/openlogin": ^8.2.1
-    "@toruslabs/openlogin-jrpc": ^8.1.1
+    "@toruslabs/openlogin-jrpc": ^8.3.0
     "@toruslabs/openlogin-utils": ^8.2.1
-    "@web3auth/base": ^8.8.0
-    "@web3auth/base-provider": ^8.8.0
+    "@web3auth/base": ^8.12.4
+    "@web3auth/base-provider": ^8.12.4
     lodash.clonedeep: ^4.5.0
     lodash.merge: ^4.6.2
   peerDependencies:
@@ -11873,7 +12031,7 @@ __metadata:
       optional: true
     "@web3auth/wallet-connect-v2-adapter":
       optional: true
-  checksum: fdf5b9c70237344efddce70f4d470286fafc1c3660046b9d8964242592f197aafe274eb44cd3045f9dc38f696d236571f505e642ace8a728ede07e8d1b0220a5
+  checksum: 18c0f23b4b9516c6143bbf012254ccea450862707ef3155a3160f3c5cdd32af4c8f781073273e7f669f7e0983f1eeffaa7d95ec733a2a46dc5d22c85084622cc
   languageName: node
   linkType: hard
 
@@ -11893,7 +12051,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/openlogin-adapter@npm:^8.3.0, @web3auth/openlogin-adapter@npm:^8.8.0":
+"@web3auth/openlogin-adapter@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/openlogin-adapter@npm:8.12.4"
+  dependencies:
+    "@toruslabs/openlogin": ^8.2.1
+    "@toruslabs/openlogin-utils": ^8.2.1
+    "@web3auth/base": ^8.12.4
+    "@web3auth/base-provider": ^8.12.4
+    lodash.merge: ^4.6.2
+  peerDependencies:
+    "@babel/runtime": ^7.x
+  checksum: 52c716088e22965c807d54cc58f5f8ebdea13958391bd02623c4d311ebd00c1b19c25233e0aa452ee147677118b09bebb7f65f27ecefca95862b19415c605c47
+  languageName: node
+  linkType: hard
+
+"@web3auth/openlogin-adapter@npm:^8.3.0":
   version: 8.8.0
   resolution: "@web3auth/openlogin-adapter@npm:8.8.0"
   dependencies:
@@ -11958,6 +12131,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@web3auth/torus-evm-adapter@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/torus-evm-adapter@npm:8.12.4"
+  dependencies:
+    "@toruslabs/torus-embed": ^5.0.0
+    "@web3auth/base": ^8.12.4
+    "@web3auth/base-evm-adapter": ^8.12.4
+  peerDependencies:
+    "@babel/runtime": ^7.x
+  checksum: 89807c826f3486cd5b8bf5136dfe449061870efd109ac6fd2f3491ce46e4e320caf670b395ebf34169906e6688de12df550e569af4859e626c77edea3df70cbf
+  languageName: node
+  linkType: hard
+
 "@web3auth/torus-solana-adapter@npm:^7.3.2":
   version: 7.3.2
   resolution: "@web3auth/torus-solana-adapter@npm:7.3.2"
@@ -11999,28 +12185,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/ui@npm:^8.8.0":
-  version: 8.8.0
-  resolution: "@web3auth/ui@npm:8.8.0"
+"@web3auth/ui@npm:^8.12.7":
+  version: 8.12.7
+  resolution: "@web3auth/ui@npm:8.12.7"
   dependencies:
     "@toruslabs/http-helpers": ^6.1.1
     "@toruslabs/openlogin": ^8.2.1
-    "@toruslabs/openlogin-jrpc": ^8.1.1
+    "@toruslabs/openlogin-jrpc": ^8.3.0
     "@toruslabs/openlogin-utils": ^8.2.1
-    "@web3auth/base": ^8.8.0
+    "@web3auth/base": ^8.12.4
     bowser: ^2.11.0
     classnames: ^2.5.1
     copy-to-clipboard: ^3.3.3
-    i18next: ^23.11.5
+    i18next: ^23.12.2
     lodash.clonedeep: ^4.5.0
     lodash.merge: ^4.6.2
-    react-i18next: ^14.1.2
+    react-i18next: ^15.0.1
     react-qrcode-logo: ^3.0.0
   peerDependencies:
     "@babel/runtime": ^7.x
     react: ^18.x
     react-dom: ^18.x
-  checksum: 1cb754dfe733f9d8b115cdac1d1d0a07f2933eaa0fdb93d3f451e9223a30e2266044c15a13dc1979ee63e5ebd88b447be1296afaf80ac6dbac7fbfe018628ff3
+  checksum: 5773337ff4130eb4b2d3832c575b7e2f33888a1a60f16e6861001875e5c36b871e869ee030b57478378c6b0008b0805c8860b6c0a814ab18410d910327098733
   languageName: node
   linkType: hard
 
@@ -12038,6 +12224,25 @@ __metadata:
     "@walletconnect/types": ^2.x
     "@walletconnect/utils": ^2.x
   checksum: f0f2e18f0ab71054a90b4e2702d6f3a413caf042c2a6a3ff628d14b19c1c9b52849fea9493d5e8e119b6b8872c10f1411287af0a090814954e63875b427a8b3e
+  languageName: node
+  linkType: hard
+
+"@web3auth/wallet-connect-v2-adapter@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/wallet-connect-v2-adapter@npm:8.12.4"
+  dependencies:
+    "@toruslabs/openlogin-jrpc": ^8.3.0
+    "@web3auth/base": ^8.12.4
+    "@web3auth/base-evm-adapter": ^8.12.4
+    "@web3auth/base-provider": ^8.12.4
+    "@web3auth/ethereum-provider": ^8.12.4
+    lodash.merge: ^4.6.2
+  peerDependencies:
+    "@babel/runtime": ^7.x
+    "@walletconnect/sign-client": ^2.x
+    "@walletconnect/types": ^2.x
+    "@walletconnect/utils": ^2.x
+  checksum: 471a00900f49dca9e963dc704525b26923aeed143baa12b2dd9aa181d7a69f7370e3e2f364aab86be567b9844a2e5203d06c15f429717cbe5508a8b48766e65f
   languageName: node
   linkType: hard
 
@@ -14812,6 +15017,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "contrax-frontend@workspace:."
   dependencies:
+    "@aa-sdk/core": ^4.0.0-beta.2
     "@alchemy/aa-alchemy": ^3.19.0
     "@alchemy/aa-signers": ^3.19.0
     "@ethersproject/abstract-provider": ^5.7.0
@@ -14843,11 +15049,12 @@ __metadata:
     "@walletconnect/jsonrpc-provider": ^1.0.13
     "@walletconnect/sign-client": ^2.12.2
     "@web3-name-sdk/core": ^0.2.0
-    "@web3auth/base": ^8.3.0
+    "@web3auth/base": ^8.12.4
     "@web3auth/core": ^4.6.0
-    "@web3auth/ethereum-provider": ^8.3.0
+    "@web3auth/default-evm-adapter": ^8.12.4
+    "@web3auth/ethereum-provider": ^8.12.4
     "@web3auth/metamask-adapter": ^8.3.0
-    "@web3auth/modal": ^8.3.0
+    "@web3auth/modal": ^8.12.7
     "@web3auth/openlogin-adapter": ^8.3.0
     "@web3auth/wallet-connect-v2-adapter": ^8.3.0
     "@web3auth/web3auth-wagmi-connector": ^6.0.0
@@ -19222,12 +19429,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:23.11.5, i18next@npm:^23.11.5, i18next@npm:^23.7.16":
+"i18next@npm:23.11.5, i18next@npm:^23.7.16":
   version: 23.11.5
   resolution: "i18next@npm:23.11.5"
   dependencies:
     "@babel/runtime": ^7.23.2
   checksum: e9ec83703af59205af81f10929fd420314c0c976d1f4c42a191dc4d13f1284d13517105325286772571292953839c7183baa92e9bb43f41efe87dbc50c9aed1c
+  languageName: node
+  linkType: hard
+
+"i18next@npm:^23.12.2":
+  version: 23.15.1
+  resolution: "i18next@npm:23.15.1"
+  dependencies:
+    "@babel/runtime": ^7.23.2
+  checksum: f946168f00eeb8b7bd2d52c64489492810a95047bd22392b5d9aa747ad4dbe8294a89c8840ceed53b85598d71c52e6329c6289f44034783a5d3ca724d6934d9b
   languageName: node
   linkType: hard
 
@@ -22957,6 +23173,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mipd@npm:^0.0.7":
+  version: 0.0.7
+  resolution: "mipd@npm:0.0.7"
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 14526f78d6d1bc8580898922508d64714f5abc7293b5998fe93c54237fd1cea120dc98674fe2b329ba3803bda5a85f3e442c3b1fa880e4c6b443bf73018514a8
+  languageName: node
+  linkType: hard
+
 "mkdirp@npm:^0.5.1, mkdirp@npm:~0.5.1":
   version: 0.5.6
   resolution: "mkdirp@npm:0.5.6"
@@ -26055,11 +26283,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^14.1.2":
-  version: 14.1.2
-  resolution: "react-i18next@npm:14.1.2"
+"react-i18next@npm:^15.0.1":
+  version: 15.0.1
+  resolution: "react-i18next@npm:15.0.1"
   dependencies:
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.8
     html-parse-stringify: ^3.0.1
   peerDependencies:
     i18next: ">= 23.2.3"
@@ -26069,7 +26297,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 1e943bc1537136a0054801f2df8cd114e0789aa94dd7397e0b98e2848371a2bb5c7d855e99393ac9381fe5d8242bb4e2c27cc6d8e7f3a0e9c1b241ecd2d4bdab
+  checksum: fdff560f1a7988677fbccab2934d5d253515f5b07ea33d9a6dff8852be4df5cd72a41235d412be7016cbc96c0a33c8471e5ff7e02ee1e149654918082ea43827
   languageName: node
   linkType: hard
 
