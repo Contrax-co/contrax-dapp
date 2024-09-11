@@ -4,19 +4,12 @@ import { resolveDomainFromAddress } from "src/utils/common";
 import { useDispatch } from "react-redux";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { CHAIN_ID } from "src/types/enums";
-import { SupportedChains, web3AuthInstance } from "src/config/walletConfig";
-import { ENTRYPOINT_ADDRESS_V06, providerToSmartAccountSigner } from "permissionless";
+import { SupportedChains } from "src/config/walletConfig";
+import { ENTRYPOINT_ADDRESS_V06 } from "permissionless";
 import { Address, EIP1193Provider, Hex, createPublicClient, createWalletClient, custom, http } from "viem";
 import { EstimateTxGasArgs, IClients } from "src/types";
-import {
-    createModularAccountAlchemyClient,
-    AlchemyWebSigner,
-    createAlchemySmartAccountClient,
-    AlchemySigner,
-} from "@alchemy/aa-alchemy";
-import { WalletClientSigner, type SmartAccountSigner } from "@aa-sdk/core";
+import { createModularAccountAlchemyClient, AlchemyWebSigner } from "@alchemy/aa-alchemy";
 import { defaultChainId } from "src/config/constants";
-import useWeb3Auth from "src/hooks/useWeb3Auth";
 
 export interface IWalletContext {
     /**
@@ -58,7 +51,6 @@ export interface IWalletContext {
     getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
     getClients: (chainId: number) => Promise<IClients>;
     estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
-    connectWeb3Auth: () => Promise<any>;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
@@ -70,20 +62,18 @@ interface IProps {
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [isConnecting, setIsConnecting] = useState(false);
     const [isSponsored] = useState(true);
-    // const [isSocial, setIsSocial] = useState(false);
+    const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
     const [externalChainId, setExternalChainId] = useState(CHAIN_ID.ARBITRUM);
     const _publicClients = useRef<Record<number, IClients["public"]>>({});
     const _walletClients = useRef<Record<number, IClients["wallet"]>>({});
     const dispatch = useDispatch();
     const [domainName, setDomainName] = useState<null | string>(null);
-    const { connect: connectWeb3Auth, disconnect: disconnectWeb3Auth, client: web3authClient } = useWeb3Auth();
-    const [isSocial, setIsSocial] = useState(false);
+    const [alchemySigner, setAlchemySigner] = useState<AlchemyWebSigner>();
 
     const switchExternalChain = async (chainId: number) => {
-        const provider = web3AuthInstance.provider!;
         try {
-            await provider.request({
+            await (window.ethereum as EIP1193Provider).request({
                 method: "wallet_switchEthereumChain",
                 params: [{ chainId: "0x" + chainId.toString(16) }],
             });
@@ -92,7 +82,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             if (e.code === 4902) {
                 const chain = SupportedChains.find((item) => item.id === chainId);
                 if (!chain) throw new Error("Chain not supported!");
-                await provider.request({
+                await (window.ethereum as EIP1193Provider).request({
                     method: "wallet_addEthereumChain",
                     params: [
                         {
@@ -134,46 +124,34 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     // If External, check for chain and switch chain then give wallet client
     // If social return wallet client
-    const getWalletClient = async (
-        chainId: number,
-        _isSocial: boolean | null = isSocial
-    ): Promise<IClients["wallet"]> => {
-        const provider = web3AuthInstance.provider;
-        if (!provider) throw new Error("provider not found");
+    const getWalletClient = async (chainId: number, isExternal: boolean | null = null): Promise<IClients["wallet"]> => {
         const chain = SupportedChains.find((item) => item.id === chainId);
         if (!chain) throw new Error("chain not found");
+        let _isSocial = isSocial;
+        if (isExternal !== null) _isSocial = !isExternal;
         if (_isSocial) {
             if (_walletClients.current[chainId]) return _walletClients.current[chainId];
-            // createAlchemySmartAccountClient
-            const _providerClient = createWalletClient({
-                chain, // can provide a different chain here
-                transport: custom(provider as any),
-            });
-            const signer: SmartAccountSigner = new WalletClientSigner(
-                _providerClient,
-                "json-rpc" // signerType
-            );
-            const _walletClient = createModularAccountAlchemyClient({
+
+            const _walletClient = await createModularAccountAlchemyClient({
                 apiKey: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
                 chain,
-                signer,
+                signer: alchemySigner!,
             });
-
             // @ts-ignore
             _walletClients.current[chainId] = _walletClient;
             // @ts-ignore
             return _walletClient;
         } else {
-            const smartAccountSigner = await providerToSmartAccountSigner(provider as any);
+            const [account] = await (window.ethereum as EIP1193Provider).request({ method: "eth_requestAccounts" });
             // TODO: switch chain, if not exists then add network then switch.
-            await provider.request({
+            await (window.ethereum as EIP1193Provider).request({
                 method: "wallet_switchEthereumChain",
                 params: [{ chainId: "0x" + chainId.toString(16) }],
             });
 
             const _walletClient = createWalletClient({
-                account: smartAccountSigner.address,
-                transport: custom(provider as any),
+                account,
+                transport: custom(window.ethereum as any),
                 chain,
             });
             return _walletClient;
@@ -228,22 +206,22 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         setExternalChainId(Number(newChain));
     }, []);
 
-    const connectWallet = async () => {
+    const connectWallet = async (isExternal = false) => {
         try {
-            const { client, isSocial, address, provider } = await connectWeb3Auth();
             setIsConnecting(true);
-            if (!isSocial) {
-                const _walletClient = await getWalletClient(externalChainId, isSocial);
-                const _internalChain = (await provider.request({ method: "eth_chainId" })) as Hex;
+            if (isExternal) {
+                const _walletClient = await getWalletClient(externalChainId, isExternal);
+                const _internalChain = await (window.ethereum as EIP1193Provider).request({ method: "eth_chainId" });
                 externalWalletChainChanged(_internalChain);
-                provider.on("chainChanged", externalWalletChainChanged);
+                (window.ethereum as EIP1193Provider).on("chainChanged", externalWalletChainChanged);
                 setCurrentWallet(_walletClient.account.address);
                 setIsSocial(false);
+                localStorage.setItem("window.ethereum.connected", "yes");
                 return;
             }
 
             setIsSocial(true);
-            const _walletClient = await getWalletClient(externalChainId, isSocial);
+            const _walletClient = await getWalletClient(externalChainId, false);
             // @ts-ignore
             setCurrentWallet(_walletClient.account.address);
         } catch (error) {
@@ -254,10 +232,11 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     };
 
     async function logout() {
-        disconnectWeb3Auth();
         setCurrentWallet(undefined);
         _walletClients.current = {};
-        web3AuthInstance.provider?.removeListener("chainChanged", externalWalletChainChanged);
+        (window.ethereum as EIP1193Provider).removeListener("chainChanged", externalWalletChainChanged);
+        localStorage.removeItem("window.ethereum.connected");
+        alchemySigner!.disconnect();
     }
     const displayAccount = React.useMemo(
         () =>
@@ -276,6 +255,42 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             // notifyError(errorMessages.privateKeyError());
         }
     };
+
+    useEffect(() => {
+        const _signer = new AlchemyWebSigner({
+            sessionConfig: {
+                expirationTimeMs: 1000 * 60 * 60 * 24 * 7,
+            },
+            client: {
+                connection: {
+                    jwt: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
+                },
+
+                iframeConfig: {
+                    iframeContainerId: "turnkey-iframe-container",
+                },
+            },
+        });
+        setAlchemySigner(_signer);
+        return () => {
+            // In strict mode it was giving error that turnkey iframe exits, so in cleanup we are manually cleaning the iframe
+            // @ts-ignore
+            document.querySelector("#turnkey-iframe-container").innerHTML = "";
+        };
+    }, []);
+
+    React.useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("bundle") && alchemySigner) {
+            // this will complete email auth
+            alchemySigner
+                .authenticate({ type: "email", bundle: urlParams.get("bundle")! })
+                // redirect the user or do w/e you want once the user is authenticated
+                .then(async () => {
+                    await connectWallet();
+                });
+        }
+    }, [alchemySigner]);
 
     React.useEffect(() => {
         const int = setInterval(async () => {
@@ -304,16 +319,31 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     }, [currentWallet]);
 
     useEffect(() => {
-        (async function () {
-            if (web3AuthInstance.status === "not_ready") {
-                await web3AuthInstance.initModal();
-                // @ts-ignore
-                if (web3AuthInstance.status === "connected") {
+        const init = async () => {
+            try {
+                const auth = await alchemySigner!.getAuthDetails().catch((err) => {
+                    console.log("err =>", err);
+                    return null;
+                });
+                console.log("auth =>", auth);
+                if (auth) {
                     connectWallet();
+                } else if (window.ethereum) {
+                    const yes = localStorage.getItem("window.ethereum.connected");
+                    if (yes === "yes") {
+                        // @ts-ignore
+                        const accs = await window.ethereum.request({ method: "eth_accounts" });
+                        if (accs.length > 0) {
+                            connectWallet(true);
+                        }
+                    }
                 }
+            } catch (error) {
+                console.error(error);
             }
-        })();
-    }, []);
+        };
+        if (alchemySigner) init();
+    }, [alchemySigner]);
 
     return (
         <WalletContext.Provider
@@ -325,9 +355,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 // currentWallet: "0x240AEDcD6A9fD9f3CA1fE0ED2e122dA87f5836f1",
                 // currentWallet: "0x71dde932c6fdfd6a2b2e9d2f4f1a2729a3d05981",
                 connectWallet,
-                connectWeb3Auth: connectWallet,
                 isSocial,
-                alchemySigner: undefined,
+                alchemySigner,
                 logout,
                 domainName,
                 displayAccount: displayAccount as Address,

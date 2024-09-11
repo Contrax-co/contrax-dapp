@@ -4,14 +4,17 @@ import { WalletConnectionModal } from "../modals/WalletConnectionModal/WalletCon
 
 const ConnectWalletButton = () => {
     const [open, setOpen] = useState(false);
-    const { displayAccount, logout, connectWallet } = useWallet();
+    const { displayAccount, logout, connectWeb3Auth } = useWallet();
 
     return (
         <div>
             <button
                 style={{ width: 110, height: 40, minHeight: 40, minWidth: 104, padding: 0 }}
                 className="custom-button"
-                onClick={() => (displayAccount ? logout() : setOpen(true))}
+                // For Alchemy
+                // onClick={() => (displayAccount ? logout() : setOpen(true))}
+                // Web3Auth
+                onClick={() => (displayAccount ? logout() : connectWeb3Auth())}
             >
                 {displayAccount ? "Disconnect" : "Sign In/Up"}
             </button>
