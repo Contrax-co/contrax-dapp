@@ -39,6 +39,7 @@ export const zapInBase: ZapInBaseFn = async ({
     amountInWei,
     balances,
     token,
+    isSocial,
     currentWallet,
     estimateTxGas,
     getClients,
@@ -95,24 +96,26 @@ export const zapInBase: ZapInBaseFn = async ({
             if (bridgeStatus) {
                 const client = await getClients(farm.chainId);
                 if (isBridged) amountInWei = finalAmountToDeposit;
-
-                const afterGasCut = await subtractGas(
-                    amountInWei,
-                    { public: publicClient },
-                    estimateTxGas({
-                        to: farm.zapper_addr,
-                        value: amountInWei,
-                        chainId: farm.chainId,
-                        data: encodeFunctionData({
-                            abi: zapperAbi,
-                            functionName: "zapInETH",
-                            args: [farm.vault_addr, 0n, token],
-                        }),
-                    })
-                );
-                if (!afterGasCut) {
-                    dismissNotify(id);
-                    throw new Error("Error subtracting gas!");
+                if (!isSocial && !(await isGasSponsored(currentWallet))) {
+                    const afterGasCut = await subtractGas(
+                        amountInWei,
+                        { public: publicClient },
+                        estimateTxGas({
+                            to: farm.zapper_addr,
+                            value: amountInWei,
+                            chainId: farm.chainId,
+                            data: encodeFunctionData({
+                                abi: zapperAbi,
+                                functionName: "zapInETH",
+                                args: [farm.vault_addr, 0n, token],
+                            }),
+                        })
+                    );
+                    if (!afterGasCut) {
+                        dismissNotify(id);
+                        throw new Error("Error subtracting gas!");
+                    }
+                    amountInWei = afterGasCut;
                 }
 
                 notifyLoading(loadingMessages.zapping(), { id });
@@ -120,7 +123,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 zapperTxn = await awaitTransaction(
                     client.wallet.sendTransaction({
                         to: farm.zapper_addr,
-                        value: afterGasCut,
+                        value: amountInWei,
                         data: encodeFunctionData({
                             abi: zapperAbi,
                             functionName: "zapInETH",

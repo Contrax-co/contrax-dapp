@@ -102,6 +102,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         max,
         tokenIn,
         id,
+        isSocial,
         estimateTxGas,
         prices,
         getPublicClient,
@@ -155,40 +156,44 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 if (bridgeStatus) {
                     const client = await getClients(farm.chainId);
                     if (isBridged) amountInWei = finalAmountToDeposit;
-                    const { packedConfig, packedInput, r, s } = await createClipperData(
-                        amountInWei.toString(),
-                        token === zeroAddress ? wethAddress : token,
-                        farm.zapper_addr
-                    );
-                    const afterGasCut = await subtractGas(
-                        amountInWei,
-                        { public: publicClient },
-                        estimateTxGas({
-                            to: farm.zapper_addr,
-                            value: amountInWei,
-                            chainId: farm.chainId,
-                            data: encodeFunctionData({
-                                abi: clipperZapperAbi,
-                                functionName: "zapInETH",
-                                args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
-                            }),
-                        })
-                    );
-                    if (!afterGasCut) {
-                        dismissNotify(id);
-                        throw new Error("Error subtracting gas!");
+
+                    if (!isSocial && !(await isGasSponsored(currentWallet))) {
+                        const { packedConfig, packedInput, r, s } = await createClipperData(
+                            amountInWei.toString(),
+                            token === zeroAddress ? wethAddress : token,
+                            farm.zapper_addr
+                        );
+                        const afterGasCut = await subtractGas(
+                            amountInWei,
+                            { public: publicClient },
+                            estimateTxGas({
+                                to: farm.zapper_addr,
+                                value: amountInWei,
+                                chainId: farm.chainId,
+                                data: encodeFunctionData({
+                                    abi: clipperZapperAbi,
+                                    functionName: "zapInETH",
+                                    args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
+                                }),
+                            })
+                        );
+                        if (!afterGasCut) {
+                            dismissNotify(id);
+                            throw new Error("Error subtracting gas!");
+                        }
+                        amountInWei = afterGasCut;
                     }
 
                     notifyLoading(loadingMessages.zapping(), { id });
                     const finalConfig = await createClipperData(
-                        afterGasCut.toString(),
+                        amountInWei.toString(),
                         token === zeroAddress ? wethAddress : token,
                         farm.zapper_addr
                     );
                     zapperTxn = await awaitTransaction(
                         client.wallet.sendTransaction({
                             to: farm.zapper_addr,
-                            value: afterGasCut,
+                            value: amountInWei,
                             data: encodeFunctionData({
                                 abi: clipperZapperAbi,
                                 functionName: "zapInETH",

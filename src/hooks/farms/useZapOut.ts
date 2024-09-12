@@ -22,7 +22,7 @@ export interface ZapOut {
 }
 
 const useZapOut = (farm: PoolDef) => {
-    const { currentWallet, getClients, getPublicClient, estimateTxGas, getWalletClient } = useWallet();
+    const { currentWallet, getClients, getPublicClient, isSocial, estimateTxGas, getWalletClient } = useWallet();
     const { reloadBalances, balances } = useBalances();
     const { decimals } = useDecimals();
     const { prices } = usePriceOfTokens();
@@ -52,6 +52,7 @@ const useZapOut = (farm: PoolDef) => {
             getWalletClient,
             estimateTxGas,
             currentWallet,
+            isSocial,
             getClients,
             max,
             token,
@@ -71,6 +72,7 @@ const useZapOut = (farm: PoolDef) => {
             farm,
             balances,
             getClients,
+            isSocial,
             max,
             estimateTxGas,
             getPublicClient,

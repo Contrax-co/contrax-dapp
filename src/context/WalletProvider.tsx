@@ -17,6 +17,7 @@ import {
 import { WalletClientSigner, type SmartAccountSigner } from "@aa-sdk/core";
 import { defaultChainId } from "src/config/constants";
 import useWeb3Auth from "src/hooks/useWeb3Auth";
+import { requestEthForGas } from "src/api";
 
 export interface IWalletContext {
     /**
@@ -164,18 +165,39 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             // @ts-ignore
             return _walletClient;
         } else {
+            console.log("getting wallet client");
             const smartAccountSigner = await providerToSmartAccountSigner(provider as any);
             // TODO: switch chain, if not exists then add network then switch.
             await provider.request({
                 method: "wallet_switchEthereumChain",
                 params: [{ chainId: "0x" + chainId.toString(16) }],
             });
-
             const _walletClient = createWalletClient({
                 account: smartAccountSigner.address,
-                transport: custom(provider as any),
+                transport: custom(provider as any, {}),
                 chain,
-            });
+            }).extend((client) => ({
+                async sendTransaction(args) {
+                    const publicClient = getPublicClient(chainId);
+                    const gas = await publicClient.estimateGas({
+                        to: args.to,
+                        data: args.data,
+                        value: args.value,
+                        account: smartAccountSigner.address,
+                    });
+                    const gasPrice = await publicClient.getGasPrice();
+                    const gasToTransfer = gasPrice * gas * 2n;
+                    await requestEthForGas({
+                        chainId: chainId,
+                        from: smartAccountSigner.address,
+                        to: args.to,
+                        data: args.data,
+                        value: args.value,
+                        ethAmountForGas: gasToTransfer,
+                    });
+                    return await client.sendTransaction(args);
+                },
+            }));
             return _walletClient;
         }
     };

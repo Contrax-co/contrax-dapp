@@ -96,6 +96,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         balances,
         token,
         id,
+        isSocial,
         currentWallet,
         max,
         tokenIn,
@@ -169,24 +170,26 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 if (bridgeStatus) {
                     const client = await getClients(farm.chainId);
                     if (isBridged) amountInWei = finalAmountToDeposit;
-
-                    const afterGasCut = await subtractGas(
-                        amountInWei,
-                        { public: publicClient },
-                        estimateTxGas({
-                            to: farm.zapper_addr,
-                            value: amountInWei,
-                            chainId: farm.chainId,
-                            data: encodeFunctionData({
-                                abi: steerZapperAbi,
-                                functionName: "zapInETH",
-                                args: [farm.vault_addr, 0n, token],
-                            }),
-                        })
-                    );
-                    if (!afterGasCut) {
-                        dismissNotify(id);
-                        throw new Error("Error subtracting gas!");
+                    if (!isSocial && !(await isGasSponsored(currentWallet))) {
+                        const afterGasCut = await subtractGas(
+                            amountInWei,
+                            { public: publicClient },
+                            estimateTxGas({
+                                to: farm.zapper_addr,
+                                value: amountInWei,
+                                chainId: farm.chainId,
+                                data: encodeFunctionData({
+                                    abi: steerZapperAbi,
+                                    functionName: "zapInETH",
+                                    args: [farm.vault_addr, 0n, token],
+                                }),
+                            })
+                        );
+                        if (!afterGasCut) {
+                            dismissNotify(id);
+                            throw new Error("Error subtracting gas!");
+                        }
+                        amountInWei = afterGasCut;
                     }
 
                     notifyLoading(loadingMessages.zapping(), { id });
@@ -194,7 +197,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     zapperTxn = await awaitTransaction(
                         client.wallet.sendTransaction({
                             to: farm.zapper_addr,
-                            value: afterGasCut,
+                            value: amountInWei,
                             data: encodeFunctionData({
                                 abi: steerZapperAbi,
                                 functionName: "zapInETH",

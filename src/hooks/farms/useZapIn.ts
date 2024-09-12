@@ -23,7 +23,7 @@ export interface ZapIn {
 }
 
 const useZapIn = (farm: PoolDef) => {
-    const { currentWallet, getClients, getPublicClient, getWalletClient, estimateTxGas } = useWallet();
+    const { currentWallet, getClients, getPublicClient, getWalletClient, isSocial, estimateTxGas } = useWallet();
     const { reloadBalances, balances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
     const { decimals } = useDecimals();
@@ -49,6 +49,7 @@ const useZapIn = (farm: PoolDef) => {
         await farmFunctions[farm.id].zapIn({
             id,
             currentWallet,
+            isSocial,
             amountInWei,
             balances,
             max,
@@ -75,6 +76,7 @@ const useZapIn = (farm: PoolDef) => {
             amountInWei,
             balances,
             getClients,
+            isSocial,
             farm,
             max,
             estimateTxGas,

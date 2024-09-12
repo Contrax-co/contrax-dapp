@@ -15,6 +15,7 @@ export interface ZapInArgs {
     decimals?: Decimals;
     currentWallet: Address;
     tokenIn?: Address;
+    isSocial: boolean;
     estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     getClients: (chainId: number) => Promise<IClients>;
     getPublicClient: (chainId: number) => IClients["public"];
@@ -26,6 +27,7 @@ export interface ZapOutArgs {
     amountInWei: bigint;
     currentWallet: Address;
     max?: boolean;
+    isSocial: boolean;
     token: Address;
     estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     getClients: (chainId: number) => Promise<IClients>;
