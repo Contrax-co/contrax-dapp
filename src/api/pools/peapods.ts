@@ -18,7 +18,7 @@ import {
     ZapOutFn,
 } from "./types";
 import { defaultChainId } from "src/config/constants";
-import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
+import { crossChainBridgeIfNecessary, slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
 import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
 import { isGasSponsored } from "..";
@@ -27,6 +27,9 @@ import { encodeFunctionData, getContract, zeroAddress } from "viem";
 import pools_json from "src/config/constants/pools_json";
 import vaultAbi from "src/assets/abis/vaultAbi";
 import zapperAbi from "src/assets/abis/zapperAbi";
+import store from "src/state";
+import { editTransaction } from "src/state/transactions/transactionsReducer";
+import { TransactionStatus } from "src/state/transactions/types";
 
 const apAbi = [
     {
@@ -144,22 +147,19 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         token,
         currentWallet,
         getClients,
+        id,
+        isSocial,
         max,
         getPublicClient,
         tokenIn,
     }) => {
         const publicClient = getPublicClient(farm.chainId);
         let zapperTxn;
-        let notiId;
         try {
             //#region Select Max
             if (max) {
-                if (token !== zeroAddress) {
-                    const { balance } = getCombinedBalance(balances, "usdc");
-                    amountInWei = BigInt(balance);
-                } else {
-                    amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
-                }
+                const { balance } = getCombinedBalance(balances, token === zeroAddress ? "eth" : "usdc");
+                amountInWei = BigInt(balance);
             }
             //#endregion
 
@@ -172,37 +172,88 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             const [{ token: tokenIn }] = await apContract.read.getAllAssets();
 
             // #region Zapping In
-            notiId = notifyLoading(loadingMessages.zapping());
+            notifyLoading(loadingMessages.zapping(), { id });
 
             // use weth address as tokenId, but in case of some farms (e.g: hop)
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn;
+            const {
+                finalAmountToDeposit,
+                isBridged,
+                status: bridgeStatus,
+            } = await crossChainBridgeIfNecessary({
+                getClients,
+                notificationId: id,
+                balances,
+                currentWallet,
+                toChainId: farm.chainId,
+                toToken: zeroAddress,
+                toTokenAmount: amountInWei,
+                max,
+            });
+            if (bridgeStatus) {
+                const client = await getClients(farm.chainId);
+                if (isBridged) amountInWei = finalAmountToDeposit;
+                if (!isSocial && !(await isGasSponsored(currentWallet))) {
+                    const afterGasCut = await subtractGas(
+                        amountInWei,
+                        { public: publicClient },
+                        estimateTxGas({
+                            to: farm.zapper_addr,
+                            value: amountInWei,
+                            chainId: farm.chainId,
+                            data: encodeFunctionData({
+                                abi: zapperAbi,
+                                functionName: "zapInETH",
+                                args: [farm.vault_addr, 0n, token],
+                            }),
+                        })
+                    );
+                    if (!afterGasCut) {
+                        dismissNotify(id);
+                        throw new Error("Error subtracting gas!");
+                    }
+                    amountInWei = afterGasCut;
+                }
 
-            const client = await getClients(farm.chainId);
-            zapperTxn = await awaitTransaction(
-                client.wallet.sendTransaction({
-                    to: farm.zapper_addr,
-                    value: amountInWei,
-                    data: encodeFunctionData({
-                        abi: zapperAbi,
-                        functionName: "zapInETH",
-                        args: [farm.vault_addr, 0n, token],
+                notifyLoading(loadingMessages.zapping(), { id });
+
+                zapperTxn = await awaitTransaction(
+                    client.wallet.sendTransaction({
+                        to: farm.zapper_addr,
+                        value: amountInWei,
+                        data: encodeFunctionData({
+                            abi: zapperAbi,
+                            functionName: "zapInETH",
+                            args: [farm.vault_addr, 0n, token],
+                        }),
                     }),
-                }),
-                client
-            );
+                    client,
+                    (hash) => {
+                        store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                    }
+                );
+            } else {
+                zapperTxn = {
+                    status: false,
+                    error: "Bridge Failed",
+                };
+            }
 
             if (!zapperTxn.status) {
+                store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
                 throw new Error(zapperTxn.error);
             } else {
-                dismissNotify(notiId);
+                store.dispatch(editTransaction({ id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS }));
+                dismissNotify(id);
                 notifySuccess(successMessages.zapIn());
             }
             // #endregion
         } catch (error: any) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
-            notiId && dismissNotify(notiId);
+            id && dismissNotify(id);
+            store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
             notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };

@@ -267,8 +267,10 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             }
 
             if (!zapperTxn.status) {
+                store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
                 throw new Error(zapperTxn.error);
             } else {
+                store.dispatch(editTransaction({ id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS }));
                 dismissNotify(id);
                 notifySuccess(successMessages.zapIn());
             }
@@ -277,6 +279,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             id && dismissNotify(id);
+            store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
             notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };
