@@ -11,6 +11,11 @@ export enum TransactionStatus {
     FAILED = "FAILED",
 }
 
+export enum BridgeService {
+    LIFI = "LIFI",
+    SOCKET_TECH = "SOCKET_TECH",
+}
+
 export interface Transaction {
     id: string;
     amountInWei: string;
@@ -25,7 +30,6 @@ export interface Transaction {
         txHash: Hex;
         fromChain: number;
         toChain: number;
-        tool: string;
         beforeBridgeBalance: string;
-    };
+    } & ({ bridgeService: BridgeService.LIFI; tool: string } | { bridgeService: BridgeService.SOCKET_TECH });
 }

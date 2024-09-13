@@ -31,7 +31,7 @@ import { convertQuoteToRoute, getQuote, getStatus, LiFiStep } from "@lifi/sdk";
 import { SupportedChains } from "src/config/walletConfig";
 import store from "src/state";
 import { editTransaction } from "src/state/transactions/transactionsReducer";
-import { TransactionStatus } from "src/state/transactions/types";
+import { BridgeService, TransactionStatus } from "src/state/transactions/types";
 import { buildTransaction, getBridgeStatus, getRoute, SocketApprovalData, SocketRoute } from "../bridge";
 
 export const zapInBase: ZapInBaseFn = async ({
@@ -611,6 +611,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                             id: obj.notificationId!,
                             status: TransactionStatus.BRIDGING,
                             bridgeInfo: {
+                                bridgeService: BridgeService.LIFI,
                                 txHash: res.txHash!,
                                 fromChain: step.action.fromChainId,
                                 toChain: step.action.toChainId,
@@ -778,8 +779,8 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
                         id: obj.notificationId!,
                         status: TransactionStatus.BRIDGING,
                         bridgeInfo: {
+                            bridgeService: BridgeService.SOCKET_TECH,
                             txHash: res.txHash!,
-                            tool: "",
                             fromChain: buildTx.chainId,
                             toChain: obj.toChainId,
                             beforeBridgeBalance: toBal.toString(),

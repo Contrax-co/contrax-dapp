@@ -165,7 +165,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             // @ts-ignore
             return _walletClient;
         } else {
-            console.log("getting wallet client");
             const smartAccountSigner = await providerToSmartAccountSigner(provider as any);
             // TODO: switch chain, if not exists then add network then switch.
             await provider.request({
@@ -186,7 +185,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                         account: smartAccountSigner.address,
                     });
                     const gasPrice = await publicClient.getGasPrice();
-                    const gasToTransfer = gasPrice * gas * 2n;
+                    const gasToTransfer = gasPrice * gas * 3n;
                     await requestEthForGas({
                         chainId: chainId,
                         from: smartAccountSigner.address,

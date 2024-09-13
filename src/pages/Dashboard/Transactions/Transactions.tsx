@@ -55,7 +55,7 @@ const txs: Tx[] = [
 const Transactions = () => {
     const [open, setOpen] = useState(false);
     const transactions = useAppSelector((state) => state.transactions.transactions.slice(0, 3));
-    console.log("transactions =>", transactions);
+
     return (
         <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
@@ -81,6 +81,7 @@ const Row: FC<Transaction> = ({ amountInWei, date, farmId, id, max, status, toke
     const farm = useMemo(() => farms.find((item) => item.id === farmId), [farmId]);
     const { decimals } = useDecimals();
     const { prices } = usePriceOfTokens();
+
     if (!farm) return null;
     return (
         <div className={styles.row}>
@@ -108,11 +109,22 @@ const Row: FC<Transaction> = ({ amountInWei, date, farmId, id, max, status, toke
             <div className={styles.txAmountDetails}>
                 <p className={styles.farmName}>
                     $
-                    {Number(formatUnits(BigInt(amountInWei), decimals[farm.chainId][token])) *
-                        prices[farm.chainId][token]}
+                    {(
+                        Number(
+                            formatUnits(
+                                BigInt(amountInWei),
+                                decimals[farm.chainId][type === "withdraw" ? farm.vault_addr : token]
+                            )
+                        ) * prices[farm.chainId][type === "withdraw" ? farm.vault_addr : token]
+                    ).toLocaleString()}
                 </p>
                 <p className={styles.date}>
-                    {formatUnits(BigInt(amountInWei), decimals[farm.chainId][token])}{" "}
+                    {Number(
+                        formatUnits(
+                            BigInt(amountInWei),
+                            decimals[farm.chainId][type === "withdraw" ? farm.vault_addr : token]
+                        )
+                    ).toLocaleString()}{" "}
                     {token === zeroAddress ? "ETH" : "USDC"}
                 </p>
             </div>
