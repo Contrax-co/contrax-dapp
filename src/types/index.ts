@@ -13,6 +13,7 @@ import {
     createWalletClient,
     HttpTransport,
     Hex,
+    LocalAccount,
 } from "viem";
 import { ENTRYPOINT_ADDRESS_V07, SmartAccountClient } from "permissionless";
 import { KernelEcdsaSmartAccount } from "permissionless/accounts";
@@ -282,7 +283,9 @@ export interface EstimateTxGasArgs {
 }
 
 export interface IClients {
-    wallet: ReturnType<typeof createWalletClient<CustomTransport, Chain, JsonRpcAccount, undefined>>;
+    wallet: ReturnType<
+        typeof createWalletClient<CustomTransport | HttpTransport, Chain, JsonRpcAccount | LocalAccount, undefined>
+    >;
     // wallet:
     //     | (
     //           | Awaited<ReturnType<typeof createModularAccountAlchemyClient<Web3AuthSigner>>>

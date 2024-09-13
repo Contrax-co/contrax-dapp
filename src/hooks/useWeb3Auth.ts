@@ -13,7 +13,10 @@ const useWeb3Auth = () => {
     const connect = async () => {
         if (web3AuthInstance.status === "not_ready") await web3AuthInstance.initModal();
         const _provider = await web3AuthInstance.connect();
-        const _isSocial = web3AuthInstance.connectedAdapterName === "openlogin";
+        // const _isSocial = web3AuthInstance.connectedAdapterName === "openlogin";
+        // AA- Account set to false
+        const _isSocial = false;
+
         setIsSocial(_isSocial);
         // Only check for migration purpose in alchemy-aa
         // if (web3AuthInstance.connectedAdapterName !== "openlogin") {
@@ -43,7 +46,6 @@ const useWeb3Auth = () => {
         setConnected(false);
         setClient(undefined);
     };
-    console.log("web3AuthInstance =>", web3AuthInstance.status);
 
     return { connect, disconnect, connected, isSocial, client };
 };

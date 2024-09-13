@@ -5665,7 +5665,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/eth-sig-util@npm:7.0.2, @metamask/eth-sig-util@npm:^7.0.1, @metamask/eth-sig-util@npm:^7.0.2":
+"@metamask/eth-sig-util@npm:7.0.2, @metamask/eth-sig-util@npm:^7.0.1":
   version: 7.0.2
   resolution: "@metamask/eth-sig-util@npm:7.0.2"
   dependencies:
@@ -5741,7 +5741,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/rpc-errors@npm:^6.1.0, @metamask/rpc-errors@npm:^6.2.1, @metamask/rpc-errors@npm:^6.3.0":
+"@metamask/rpc-errors@npm:^6.1.0, @metamask/rpc-errors@npm:^6.2.1":
   version: 6.3.1
   resolution: "@metamask/rpc-errors@npm:6.3.1"
   dependencies:
@@ -8542,7 +8542,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@toruslabs/base-controllers@npm:^5.5.5, @toruslabs/base-controllers@npm:^5.9.2":
+"@toruslabs/base-controllers@npm:^5.5.5":
   version: 5.9.2
   resolution: "@toruslabs/base-controllers@npm:5.9.2"
   dependencies:
@@ -11669,18 +11669,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/base-evm-adapter@npm:^8.8.0":
-  version: 8.8.0
-  resolution: "@web3auth/base-evm-adapter@npm:8.8.0"
-  dependencies:
-    "@toruslabs/base-controllers": ^5.9.2
-    "@web3auth/base": ^8.8.0
-  peerDependencies:
-    "@babel/runtime": ^7.x
-  checksum: e8ae8aea5715a84d086cbf3bc8fdc1f4d1666b0706c223168fa0de3ba82fe3b58160ea06a0ac9ed401b7c477295b8d09c6b107db0d729f9a411db8f0289558ff
-  languageName: node
-  linkType: hard
-
 "@web3auth/base-plugin@npm:^4.6.0":
   version: 4.6.0
   resolution: "@web3auth/base-plugin@npm:4.6.0"
@@ -11725,21 +11713,6 @@ __metadata:
   peerDependencies:
     "@babel/runtime": 7.x
   checksum: 419e5c57eac418eb0ae5771fb628e432bddd981164e14536941a9502e17f673e77e9c9762754176b08bdc715fe5938bc3ee6e97ed8c787e971d3deb0ff46d0c0
-  languageName: node
-  linkType: hard
-
-"@web3auth/base-provider@npm:^8.8.0":
-  version: 8.8.0
-  resolution: "@web3auth/base-provider@npm:8.8.0"
-  dependencies:
-    "@metamask/rpc-errors": ^6.3.0
-    "@toruslabs/base-controllers": ^5.9.2
-    "@toruslabs/openlogin-jrpc": ^8.1.1
-    "@web3auth/base": ^8.8.0
-    json-rpc-random-id: ^1.0.1
-  peerDependencies:
-    "@babel/runtime": 7.x
-  checksum: 6a9799f387c3dc421f01c570f085d30e33a29b757883c14c467c187ff7306837b697ff319d7085f5a24d45c9a87f7da0f75fc24054a5d9c08a4962c65b1bf8c9
   languageName: node
   linkType: hard
 
@@ -11806,24 +11779,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/base@npm:^8.8.0":
-  version: 8.8.0
-  resolution: "@web3auth/base@npm:8.8.0"
-  dependencies:
-    "@toruslabs/constants": ^13.4.0
-    "@toruslabs/http-helpers": ^6.1.1
-    "@toruslabs/openlogin": ^8.2.1
-    "@toruslabs/openlogin-jrpc": ^8.1.1
-    "@toruslabs/openlogin-utils": ^8.2.1
-    jwt-decode: ^4.0.0
-    loglevel: ^1.9.1
-    ts-custom-error: ^3.3.1
-  peerDependencies:
-    "@babel/runtime": ^7.x
-  checksum: 5e376af0b31bb442f3365b643b9007355ee4f64b81a0f89fdd9b86c26b47a95cebb1ae722cbf6c48cec8367e0820feb3262d4d0d9b8c40517a946c6434587b7f
-  languageName: node
-  linkType: hard
-
 "@web3auth/core@npm:^4.6.0":
   version: 4.6.0
   resolution: "@web3auth/core@npm:4.6.0"
@@ -11878,30 +11833,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/ethereum-provider@npm:^8.10.1":
-  version: 8.10.1
-  resolution: "@web3auth/ethereum-provider@npm:8.10.1"
-  dependencies:
-    "@ethereumjs/common": ^4.3.0
-    "@ethereumjs/tx": ^5.3.0
-    "@ethereumjs/util": ^9.0.3
-    "@metamask/eth-sig-util": ^7.0.2
-    "@metamask/rpc-errors": ^6.3.0
-    "@toruslabs/base-controllers": ^5.9.2
-    "@toruslabs/http-helpers": ^6.1.1
-    "@toruslabs/openlogin-jrpc": ^8.1.1
-    "@web3auth/base": ^8.8.0
-    "@web3auth/base-provider": ^8.8.0
-    assert: ^2.1.0
-    bignumber.js: ^9.1.2
-    bn.js: ^5.2.1
-    jsonschema: ^1.4.1
-  peerDependencies:
-    "@babel/runtime": 7.x
-  checksum: a5fc8626cf7f41a73673deaf66fb947a05c63dde221eb0add1068d1c35327ee1a941bf1db91e4173fc0c03cdedd85e27067bf970f3f43d02320445c6b9add431
-  languageName: node
-  linkType: hard
-
 "@web3auth/ethereum-provider@npm:^8.12.4":
   version: 8.12.4
   resolution: "@web3auth/ethereum-provider@npm:8.12.4"
@@ -11938,16 +11869,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3auth/metamask-adapter@npm:^8.3.0":
-  version: 8.8.0
-  resolution: "@web3auth/metamask-adapter@npm:8.8.0"
+"@web3auth/metamask-adapter@npm:^8.12.4":
+  version: 8.12.4
+  resolution: "@web3auth/metamask-adapter@npm:8.12.4"
   dependencies:
     "@metamask/detect-provider": ^2.0.0
-    "@web3auth/base": ^8.8.0
-    "@web3auth/base-evm-adapter": ^8.8.0
+    "@web3auth/base": ^8.12.4
+    "@web3auth/base-evm-adapter": ^8.12.4
   peerDependencies:
     "@babel/runtime": ^7.x
-  checksum: 480dddbfc9ef6680dbd85064c335067595ad74508c10a1ea600105ec71b54efd99660d7c94ca3db47e3b86261f8b4092afc8ae604c7686f655d6080ae2edc8cc
+  checksum: 179a1f437d34bfe1aaec785f20608958bb56460b1a1b7399db7a546c206c4da47e5fa230414900a87399aa7e2a817e9b19114bc26d66f2d1905601743a327313
   languageName: node
   linkType: hard
 
@@ -12063,21 +11994,6 @@ __metadata:
   peerDependencies:
     "@babel/runtime": ^7.x
   checksum: 52c716088e22965c807d54cc58f5f8ebdea13958391bd02623c4d311ebd00c1b19c25233e0aa452ee147677118b09bebb7f65f27ecefca95862b19415c605c47
-  languageName: node
-  linkType: hard
-
-"@web3auth/openlogin-adapter@npm:^8.3.0":
-  version: 8.8.0
-  resolution: "@web3auth/openlogin-adapter@npm:8.8.0"
-  dependencies:
-    "@toruslabs/openlogin": ^8.2.1
-    "@toruslabs/openlogin-utils": ^8.2.1
-    "@web3auth/base": ^8.8.0
-    "@web3auth/base-provider": ^8.8.0
-    lodash.merge: ^4.6.2
-  peerDependencies:
-    "@babel/runtime": ^7.x
-  checksum: 5ff050722ac3ed509362b76df5d805472c142c4ab73a0128b0b198a74ed7392a20347c2e89c36ac261f8d32952d1f9c6a568892129c67368e330b80861b669eb
   languageName: node
   linkType: hard
 
@@ -12243,26 +12159,6 @@ __metadata:
     "@walletconnect/types": ^2.x
     "@walletconnect/utils": ^2.x
   checksum: 471a00900f49dca9e963dc704525b26923aeed143baa12b2dd9aa181d7a69f7370e3e2f364aab86be567b9844a2e5203d06c15f429717cbe5508a8b48766e65f
-  languageName: node
-  linkType: hard
-
-"@web3auth/wallet-connect-v2-adapter@npm:^8.3.0":
-  version: 8.10.1
-  resolution: "@web3auth/wallet-connect-v2-adapter@npm:8.10.1"
-  dependencies:
-    "@metamask/rpc-errors": ^6.3.0
-    "@toruslabs/openlogin-jrpc": ^8.1.1
-    "@web3auth/base": ^8.8.0
-    "@web3auth/base-evm-adapter": ^8.8.0
-    "@web3auth/base-provider": ^8.8.0
-    "@web3auth/ethereum-provider": ^8.10.1
-    lodash.merge: ^4.6.2
-  peerDependencies:
-    "@babel/runtime": ^7.x
-    "@walletconnect/sign-client": ^2.x
-    "@walletconnect/types": ^2.x
-    "@walletconnect/utils": ^2.x
-  checksum: a451e1661387174f8a7710baa2a7b9dbf5ddbe8035f36053d8f4930a770e29109c150c86cbd5eeda00271c45c684859174acf066f0e07ebe7090bcde679f06bd
   languageName: node
   linkType: hard
 
@@ -15053,10 +14949,10 @@ __metadata:
     "@web3auth/core": ^4.6.0
     "@web3auth/default-evm-adapter": ^8.12.4
     "@web3auth/ethereum-provider": ^8.12.4
-    "@web3auth/metamask-adapter": ^8.3.0
+    "@web3auth/metamask-adapter": ^8.12.4
     "@web3auth/modal": ^8.12.7
-    "@web3auth/openlogin-adapter": ^8.3.0
-    "@web3auth/wallet-connect-v2-adapter": ^8.3.0
+    "@web3auth/openlogin-adapter": ^8.12.4
+    "@web3auth/wallet-connect-v2-adapter": ^8.12.4
     "@web3auth/web3auth-wagmi-connector": ^6.0.0
     "@wert-io/widget-initializer": ^3.1.0
     assert: ^2.0.0

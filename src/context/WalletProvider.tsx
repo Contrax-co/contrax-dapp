@@ -7,6 +7,7 @@ import { CHAIN_ID } from "src/types/enums";
 import { SupportedChains, web3AuthInstance } from "src/config/walletConfig";
 import { ENTRYPOINT_ADDRESS_V06, providerToSmartAccountSigner } from "permissionless";
 import { Address, EIP1193Provider, Hex, createPublicClient, createWalletClient, custom, http } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { EstimateTxGasArgs, IClients } from "src/types";
 import {
     createModularAccountAlchemyClient,
@@ -140,6 +141,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         _isSocial: boolean | null = isSocial
     ): Promise<IClients["wallet"]> => {
         const provider = web3AuthInstance.provider;
+        const pkey = await getPkey();
         if (!provider) throw new Error("provider not found");
         const chain = SupportedChains.find((item) => item.id === chainId);
         if (!chain) throw new Error("chain not found");
@@ -172,8 +174,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 params: [{ chainId: "0x" + chainId.toString(16) }],
             });
             const _walletClient = createWalletClient({
-                account: smartAccountSigner.address,
-                transport: custom(provider as any, {}),
+                account: pkey ? privateKeyToAccount(pkey) : smartAccountSigner.address,
+                transport: pkey ? http() : custom(provider as any, {}),
                 chain,
             }).extend((client) => ({
                 async sendTransaction(args) {
@@ -289,12 +291,12 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     );
     const getPkey = async () => {
         try {
-            // const pkey = await web3AuthSigner.inner.provider?.request({ method: "eth_private_key" });
-            // return pkey as string;
-            return "0xNotImplemented";
+            const pkey = await web3AuthInstance.provider?.request({ method: "eth_private_key" });
+            return ("0x" + pkey) as Hex;
+            // return "0xNotImplemented";
         } catch (error) {
-            console.warn("Pkey: Not web3auth signer!");
             // notifyError(errorMessages.privateKeyError());
+            return;
         }
     };
 

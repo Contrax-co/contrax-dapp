@@ -145,7 +145,7 @@ function Dashboard() {
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
                 <DeprecatedWithdraw />
-                <OneClickMigrate />
+                {/* <OneClickMigrate /> */}
                 {earnTraxTermsAgreed && (
                     <>
                         <TraxEarning />

@@ -203,14 +203,9 @@ export const zapInBase: ZapInBaseFn = async ({
 };
 
 export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, getClients, max, id }) => {
-    const client = await getClients(farm.chainId);
-    const zapperContract = getContract({
-        address: farm.zapper_addr as Address,
-        abi: zapperAbi,
-        client,
-    });
     notifyLoading(loadingMessages.approvingWithdraw(), { id });
     try {
+        const client = await getClients(farm.chainId);
         const vaultBalance = await getBalance(farm.vault_addr, currentWallet, client);
 
         //#region Approve
@@ -232,7 +227,14 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         }
         if (token === zeroAddress) {
             withdrawTxn = await awaitTransaction(
-                zapperContract.write.zapOutAndSwapEth([farm.vault_addr, max ? vaultBalance : amountInWei, 0n]),
+                client.wallet.sendTransaction({
+                    to: farm.zapper_addr,
+                    data: encodeFunctionData({
+                        abi: zapperAbi,
+                        functionName: "zapOutAndSwapEth",
+                        args: [farm.vault_addr, max ? vaultBalance : amountInWei, 0n],
+                    }),
+                }),
                 client,
                 (hash) => {
                     store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
@@ -240,14 +242,20 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
             );
         } else {
             withdrawTxn = await awaitTransaction(
-                zapperContract.write.zapOutAndSwap([farm.vault_addr, max ? vaultBalance : amountInWei, token, 0n]),
+                client.wallet.sendTransaction({
+                    to: farm.zapper_addr,
+                    data: encodeFunctionData({
+                        abi: zapperAbi,
+                        functionName: "zapOutAndSwap",
+                        args: [farm.vault_addr, max ? vaultBalance : amountInWei, token, 0n],
+                    }),
+                }),
                 client,
                 (hash) => {
                     store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
                 }
             );
         }
-
         if (!withdrawTxn.status) {
             store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
             throw new Error(withdrawTxn.error);
