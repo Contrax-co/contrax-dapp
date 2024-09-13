@@ -1,4 +1,4 @@
-import { approveErc20, getBalance } from "src/api/token";
+import { approveErc20 } from "src/api/token";
 import { awaitTransaction, getCombinedBalance, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { addressesByChainId } from "src/config/constants/contracts";
@@ -24,13 +24,13 @@ import {
 import { backendApi, isGasSponsored } from "..";
 import { zapOutBase, slippageOut, crossChainBridgeIfNecessary } from "./common";
 import merge from "lodash.merge";
-import { Address, encodeFunctionData, getContract, Hex, zeroAddress } from "viem";
+import { encodeFunctionData, getContract, Hex, zeroAddress } from "viem";
 import pools_json from "src/config/constants/pools_json";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import clipperZapperAbi from "src/assets/abis/clipperZapperAbi";
-import { editTransaction } from "src/state/transactions/transactionsReducer";
 import { TransactionStatus } from "src/state/transactions/types";
 import store from "src/state";
+import { editTransactionDb } from "src/state/transactions/transactionsReducer";
 
 let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
     const farm = pools_json.find((farm) => farm.id === farmId)!;
@@ -208,8 +208,10 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                             }),
                         }),
                         client,
-                        (hash) => {
-                            store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                        async (hash) => {
+                            await store.dispatch(
+                                editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                            );
                         }
                     );
                 } else {
@@ -254,8 +256,10 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                             }),
                         }),
                         client,
-                        (hash) => {
-                            store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                        async (hash) => {
+                            await store.dispatch(
+                                editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                            );
                         }
                     );
                 } else {
@@ -267,10 +271,12 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             }
 
             if (!zapperTxn.status) {
-                store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+                store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
                 throw new Error(zapperTxn.error);
             } else {
-                store.dispatch(editTransaction({ id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS }));
+                store.dispatch(
+                    editTransactionDb({ _id: id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS })
+                );
                 dismissNotify(id);
                 notifySuccess(successMessages.zapIn());
             }
@@ -279,7 +285,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             id && dismissNotify(id);
-            store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+            store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
             notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };

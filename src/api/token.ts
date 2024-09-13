@@ -1,6 +1,6 @@
 import { awaitTransaction } from "src/utils/common";
 import { backendApi } from ".";
-import { PublicClient, Address, erc20Abi, getContract, maxUint256, zeroAddress } from "viem";
+import { PublicClient, Address, erc20Abi, getContract, maxUint256, zeroAddress, encodeFunctionData } from "viem";
 import { IClients } from "src/types";
 
 export const getSpecificTokenPrice = async (tokenAddress: Address, chainId: number) => {
@@ -98,7 +98,17 @@ export const approveErc20 = async (
     const allowance = await contract.read.allowance([currentWallet, spender]);
     // if allowance is lower than amount, approve
     if (amount > allowance) {
-        return await awaitTransaction(contract.write.approve([spender, maxUint256]), client);
+        return await awaitTransaction(
+            client.wallet.sendTransaction({
+                to: contractAddress,
+                data: encodeFunctionData({
+                    abi: erc20Abi,
+                    functionName: "approve",
+                    args: [spender, maxUint256],
+                }),
+            }),
+            client
+        );
     }
     // if already approved just return status as true
     return { status: true };

@@ -28,8 +28,8 @@ import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
 import { encodeFunctionData, zeroAddress } from "viem";
 import store from "src/state";
-import { editTransaction } from "src/state/transactions/transactionsReducer";
 import { TransactionStatus } from "src/state/transactions/types";
+import { editTransactionDb } from "src/state/transactions/transactionsReducer";
 
 let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
     const farm = pools_json.find((farm) => farm.id === farmId)!;
@@ -205,8 +205,10 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                             }),
                         }),
                         client,
-                        (hash) => {
-                            store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                        async (hash) => {
+                            await store.dispatch(
+                                editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                            );
                         }
                     );
                 } else {
@@ -246,8 +248,10 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                             }),
                         }),
                         client,
-                        (hash) => {
-                            store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                        async (hash) => {
+                            await store.dispatch(
+                                editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                            );
                         }
                     );
                 } else {
@@ -259,19 +263,21 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             }
 
             if (!zapperTxn.status) {
-                store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+                store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
                 throw new Error(zapperTxn.error);
             } else {
                 dismissNotify(id);
                 notifySuccess(successMessages.zapIn());
-                store.dispatch(editTransaction({ id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS }));
+                store.dispatch(
+                    editTransactionDb({ _id: id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS })
+                );
             }
             // #endregion
         } catch (error: any) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(id);
-            store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+            store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
             notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };

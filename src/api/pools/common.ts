@@ -15,24 +15,15 @@ import {
     simulateTransaction,
 } from "../tenderly";
 import merge from "lodash.merge";
-import {
-    Address,
-    createPublicClient,
-    encodeFunctionData,
-    getContract,
-    Hex,
-    http,
-    TransactionReceipt,
-    zeroAddress,
-} from "viem";
+import { Address, createPublicClient, encodeFunctionData, Hex, http, zeroAddress } from "viem";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import { CrossChainTransactionObject, IClients } from "src/types";
 import { convertQuoteToRoute, getQuote, getStatus, LiFiStep } from "@lifi/sdk";
 import { SupportedChains } from "src/config/walletConfig";
 import store from "src/state";
-import { editTransaction } from "src/state/transactions/transactionsReducer";
 import { BridgeService, TransactionStatus } from "src/state/transactions/types";
 import { buildTransaction, getBridgeStatus, getRoute, SocketApprovalData, SocketRoute } from "../bridge";
+import { editTransactionDb } from "src/state/transactions/transactionsReducer";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -131,8 +122,10 @@ export const zapInBase: ZapInBaseFn = async ({
                         }),
                     }),
                     client,
-                    (hash) => {
-                        store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                    async (hash) => {
+                        await store.dispatch(
+                            editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                        );
                     }
                 );
             } else {
@@ -172,8 +165,10 @@ export const zapInBase: ZapInBaseFn = async ({
                         }),
                     }),
                     client,
-                    (hash) => {
-                        store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                    async (hash) => {
+                        await store.dispatch(
+                            editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                        );
                     }
                 );
             } else {
@@ -185,10 +180,10 @@ export const zapInBase: ZapInBaseFn = async ({
         }
 
         if (!zapperTxn.status) {
-            store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+            store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
             throw new Error(zapperTxn.error);
         } else {
-            store.dispatch(editTransaction({ id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS }));
+            store.dispatch(editTransactionDb({ _id: id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS }));
             dismissNotify(id);
             notifySuccess(successMessages.zapIn());
         }
@@ -198,7 +193,7 @@ export const zapInBase: ZapInBaseFn = async ({
         let err = JSON.parse(JSON.stringify(error));
         id && dismissNotify(id);
         notifyError(errorMessages.generalError(error.message || err.reason || err.message));
-        store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+        store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
     }
 };
 
@@ -236,8 +231,10 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
                     }),
                 }),
                 client,
-                (hash) => {
-                    store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                async (hash) => {
+                    await store.dispatch(
+                        editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                    );
                 }
             );
         } else {
@@ -251,16 +248,20 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
                     }),
                 }),
                 client,
-                (hash) => {
-                    store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                async (hash) => {
+                    await store.dispatch(
+                        editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                    );
                 }
             );
         }
         if (!withdrawTxn.status) {
-            store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+            store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
             throw new Error(withdrawTxn.error);
         } else {
-            store.dispatch(editTransaction({ id, txHash: withdrawTxn.txHash, status: TransactionStatus.SUCCESS }));
+            store.dispatch(
+                editTransactionDb({ _id: id, txHash: withdrawTxn.txHash, status: TransactionStatus.SUCCESS })
+            );
             dismissNotify(id);
             notifySuccess(successMessages.withdraw());
         }
@@ -270,7 +271,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         let err = JSON.parse(JSON.stringify(error));
         dismissNotify(id);
         notifyError(errorMessages.generalError(error.message || err.reason || err.message));
-        store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+        store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
     }
 };
 
@@ -615,8 +616,8 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
                 try {
                     store.dispatch(
-                        editTransaction({
-                            id: obj.notificationId!,
+                        editTransactionDb({
+                            _id: obj.notificationId!,
                             status: TransactionStatus.BRIDGING,
                             bridgeInfo: {
                                 bridgeService: BridgeService.LIFI,
@@ -783,8 +784,8 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
             if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
             try {
                 store.dispatch(
-                    editTransaction({
-                        id: obj.notificationId!,
+                    editTransactionDb({
+                        _id: obj.notificationId!,
                         status: TransactionStatus.BRIDGING,
                         bridgeInfo: {
                             bridgeService: BridgeService.SOCKET_TECH,

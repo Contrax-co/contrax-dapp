@@ -36,12 +36,11 @@ const rootReducer = combineReducers({
 const persistConfig = getPersistConfig({
     key: "root",
     storage,
-    version: 5,
+    version: 6,
     whitelist: [
         "prices.prices",
         "decimals.decimals",
         "settings.theme",
-        "transactions.transactions",
         "settings.showTokenDetailedBalances",
         "settings.supportChat",
         "account.earnTraxTermsAgreed",

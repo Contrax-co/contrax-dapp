@@ -2,6 +2,7 @@ import { Address, Hex } from "viem";
 
 export interface StateInterface {
     transactions: Transaction[];
+    limit: number;
 }
 
 export enum TransactionStatus {
@@ -17,10 +18,13 @@ export enum BridgeService {
 }
 
 export interface Transaction {
-    id: string;
+    _id: string;
     amountInWei: string;
+    from: Address;
     type: "deposit" | "withdraw";
     farmId: number;
+    tokenPrice?: number;
+    vaultPrice?: number;
     token: Address;
     max: boolean;
     txHash?: Hex;

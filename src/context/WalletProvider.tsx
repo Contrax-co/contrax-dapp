@@ -6,7 +6,7 @@ import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReduc
 import { CHAIN_ID } from "src/types/enums";
 import { SupportedChains, web3AuthInstance } from "src/config/walletConfig";
 import { ENTRYPOINT_ADDRESS_V06, providerToSmartAccountSigner } from "permissionless";
-import { Address, EIP1193Provider, Hex, createPublicClient, createWalletClient, custom, http } from "viem";
+import { Address, EIP1193Provider, Hex, createPublicClient, createWalletClient, custom, getAddress, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { EstimateTxGasArgs, IClients } from "src/types";
 import {
@@ -169,10 +169,14 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         } else {
             const smartAccountSigner = await providerToSmartAccountSigner(provider as any);
             // TODO: switch chain, if not exists then add network then switch.
-            await provider.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x" + chainId.toString(16) }],
-            });
+            try {
+                await provider.request({
+                    method: "wallet_switchEthereumChain",
+                    params: [{ chainId: "0x" + chainId.toString(16) }],
+                });
+            } catch (error) {
+                console.error("Fix this switch network error later.");
+            }
             const _walletClient = createWalletClient({
                 account: pkey ? privateKeyToAccount(pkey) : smartAccountSigner.address,
                 transport: pkey ? http() : custom(provider as any, {}),
@@ -260,7 +264,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 const _internalChain = (await provider.request({ method: "eth_chainId" })) as Hex;
                 externalWalletChainChanged(_internalChain);
                 provider.on("chainChanged", externalWalletChainChanged);
-                setCurrentWallet(_walletClient.account.address);
+                setCurrentWallet(getAddress(_walletClient.account.address));
                 setIsSocial(false);
                 return;
             }
@@ -268,7 +272,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             setIsSocial(true);
             const _walletClient = await getWalletClient(externalChainId, isSocial);
             // @ts-ignore
-            setCurrentWallet(_walletClient.account.address);
+            setCurrentWallet(getAddress(_walletClient.account.address));
         } catch (error) {
             console.error(error);
         } finally {

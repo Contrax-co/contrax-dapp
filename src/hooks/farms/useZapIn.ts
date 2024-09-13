@@ -11,9 +11,8 @@ import usePriceOfTokens from "../usePriceOfTokens";
 import { toEth } from "./../../utils/common";
 import { Address } from "viem";
 import { PoolDef } from "src/config/constants/pools_json";
-import { v4 as uuid } from "uuid";
 import { useAppDispatch } from "src/state";
-import { addTransaction } from "src/state/transactions/transactionsReducer";
+import { addTransactionDb } from "src/state/transactions/transactionsReducer";
 import { TransactionStatus } from "src/state/transactions/types";
 
 export interface ZapIn {
@@ -33,19 +32,20 @@ const useZapIn = (farm: PoolDef) => {
     const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
         if (!currentWallet) return;
         let amountInWei = toWei(zapAmount, decimals[farm.chainId][token]);
-        const id = uuid();
-        dispatch(
-            addTransaction({
+        const dbTx = await dispatch(
+            addTransactionDb({
+                from: currentWallet,
                 amountInWei: amountInWei.toString(),
                 date: new Date().toString(),
                 type: "deposit",
                 farmId: farm.id,
-                id,
                 max: !!max,
                 status: TransactionStatus.PENDING,
                 token,
             })
         );
+        const id = dbTx.payload._id;
+
         await farmFunctions[farm.id].zapIn({
             id,
             currentWallet,

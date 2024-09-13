@@ -23,6 +23,7 @@ import FarmInfo from "./pages/FarmInfo/FarmInfo";
 import { useAppDispatch } from "./state";
 import useApp from "./hooks/useApp";
 import { setOffline } from "./state/internet/internetReducer";
+import useTransactions from "./hooks/useTransactions";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -33,6 +34,7 @@ function Body() {
     const { reloadFarmData } = useFarmDetails();
     const { fetchAccountData } = useAccountData();
     const { lightMode, supportChat, toggleSupportChat } = useApp();
+    const { fetchTransactions } = useTransactions();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -118,6 +120,10 @@ function Body() {
     useEffect(() => {
         reloadFarmData();
     }, [reloadFarmData]);
+
+    useEffect(() => {
+        fetchTransactions();
+    }, [fetchTransactions]);
 
     return (
         <Routes>

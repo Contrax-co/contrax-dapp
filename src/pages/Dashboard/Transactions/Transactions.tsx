@@ -12,46 +12,6 @@ import { useDecimals } from "src/hooks/useDecimals";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { VscError } from "react-icons/vsc";
 
-type Tx = {
-    type: "in" | "out" | "pending";
-    amountUsd: number;
-    amount: number;
-    tokenSymbol: string;
-    date: string;
-    chainId: number;
-    farmId: number;
-};
-
-const txs: Tx[] = [
-    {
-        type: "pending",
-        amountUsd: 2,
-        amount: 3,
-        tokenSymbol: "USDC",
-        date: new Date().toString(),
-        chainId: 42161,
-        farmId: 16,
-    },
-    {
-        type: "out",
-        amountUsd: 2,
-        amount: 3,
-        tokenSymbol: "USDC",
-        date: new Date().toString(),
-        chainId: 42161,
-        farmId: 40,
-    },
-    {
-        type: "in",
-        amountUsd: 2,
-        amount: 3,
-        tokenSymbol: "USDC",
-        date: new Date().toString(),
-        chainId: 42161,
-        farmId: 19,
-    },
-];
-
 const Transactions = () => {
     const [open, setOpen] = useState(false);
     const transactions = useAppSelector((state) => state.transactions.transactions.slice(0, 3));
@@ -77,12 +37,35 @@ const Transactions = () => {
 
 export default Transactions;
 
-const Row: FC<Transaction> = ({ amountInWei, date, farmId, id, max, status, token, type, bridgeInfo, txHash }) => {
+const Row: FC<Transaction> = ({
+    amountInWei,
+    date,
+    farmId,
+    tokenPrice,
+    vaultPrice,
+    _id,
+    max,
+    status,
+    token,
+    type,
+    bridgeInfo,
+    txHash,
+}) => {
     const farm = useMemo(() => farms.find((item) => item.id === farmId), [farmId]);
     const { decimals } = useDecimals();
     const { prices } = usePriceOfTokens();
 
     if (!farm) return null;
+
+    let tokenAmount = 0;
+    if (type === "deposit") {
+        tokenAmount = Number(formatUnits(BigInt(amountInWei), decimals[farm.chainId][token]));
+    } else {
+        tokenAmount =
+            (Number(formatUnits(BigInt(amountInWei), decimals[farm.chainId][farm.vault_addr])) *
+                (vaultPrice || prices[farm.chainId][farm.vault_addr])) /
+            (tokenPrice || prices[farm.chainId][token]);
+    }
     return (
         <div className={styles.row}>
             <div className={styles.txTypeArrowWrapper}>
@@ -115,17 +98,14 @@ const Row: FC<Transaction> = ({ amountInWei, date, farmId, id, max, status, toke
                                 BigInt(amountInWei),
                                 decimals[farm.chainId][type === "withdraw" ? farm.vault_addr : token]
                             )
-                        ) * prices[farm.chainId][type === "withdraw" ? farm.vault_addr : token]
+                        ) *
+                        (type === "withdraw"
+                            ? vaultPrice || prices[farm.chainId][farm.vault_addr]
+                            : (tokenPrice || prices[farm.chainId][token])!)
                     ).toLocaleString()}
                 </p>
                 <p className={styles.date}>
-                    {Number(
-                        formatUnits(
-                            BigInt(amountInWei),
-                            decimals[farm.chainId][type === "withdraw" ? farm.vault_addr : token]
-                        )
-                    ).toLocaleString()}{" "}
-                    {token === zeroAddress ? "ETH" : "USDC"}
+                    {tokenAmount.toLocaleString()} {token === zeroAddress ? "ETH" : "USDC"}
                 </p>
             </div>
         </div>

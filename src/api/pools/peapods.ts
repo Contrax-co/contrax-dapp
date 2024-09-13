@@ -1,18 +1,13 @@
-import { approveErc20, getBalance } from "src/api/token";
 import { awaitTransaction, getCombinedBalance, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 import {
-    DepositFn,
     FarmFunctions,
     GetFarmDataProcessedFn,
-    SlippageDepositBaseFn,
     SlippageInBaseFn,
     SlippageOutBaseFn,
-    SlippageWithdrawBaseFn,
     TokenAmounts,
-    WithdrawFn,
     ZapInBaseFn,
     ZapInFn,
     ZapOutFn,
@@ -20,16 +15,15 @@ import {
 import { defaultChainId } from "src/config/constants";
 import { crossChainBridgeIfNecessary, slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
-import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
+import { filterAssetChanges, simulateTransaction } from "../tenderly";
 import { isGasSponsored } from "..";
 import { FarmType } from "src/types/enums";
 import { encodeFunctionData, getContract, zeroAddress } from "viem";
 import pools_json from "src/config/constants/pools_json";
-import vaultAbi from "src/assets/abis/vaultAbi";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import store from "src/state";
-import { editTransaction } from "src/state/transactions/transactionsReducer";
 import { TransactionStatus } from "src/state/transactions/types";
+import { editTransactionDb } from "src/state/transactions/transactionsReducer";
 
 const apAbi = [
     {
@@ -230,7 +224,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     }),
                     client,
                     (hash) => {
-                        store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
+                        store.dispatch(editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING }));
                     }
                 );
             } else {
@@ -241,10 +235,12 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             }
 
             if (!zapperTxn.status) {
-                store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+                store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
                 throw new Error(zapperTxn.error);
             } else {
-                store.dispatch(editTransaction({ id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS }));
+                store.dispatch(
+                    editTransactionDb({ _id: id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS })
+                );
                 dismissNotify(id);
                 notifySuccess(successMessages.zapIn());
             }
@@ -253,7 +249,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             id && dismissNotify(id);
-            store.dispatch(editTransaction({ id, status: TransactionStatus.FAILED }));
+            store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
             notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };
