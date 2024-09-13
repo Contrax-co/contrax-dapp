@@ -15,7 +15,7 @@ export const useSlippageDeposit = (maxAmounts: number[], tokens: Address[], farm
     const { decimals } = useDecimals();
     const { balances } = useBalances();
     const { prices } = usePriceOfTokens();
-    const { currentWallet, getClients, estimateTxGas, getPublicClient, getWalletClient } = useWallet();
+    const { currentWallet, getClients, estimateTxGas, getPublicClient, getWalletClient, isSocial } = useWallet();
 
     const fetchSlippage = async () => {
         setLoadingDeposit(true);
@@ -39,6 +39,7 @@ export const useSlippageDeposit = (maxAmounts: number[], tokens: Address[], farm
                             amountInWei,
                             balances,
                             max: false,
+                            isSocial,
                             token,
                             prices,
                             estimateTxGas,
@@ -77,7 +78,7 @@ export const useSlippageWithdraw = (maxAmounts: number[], tokens: Address[], far
     const { decimals } = useDecimals();
     const { balances } = useBalances();
     const { prices } = usePriceOfTokens();
-    const { currentWallet, getClients, estimateTxGas, getPublicClient, getWalletClient } = useWallet();
+    const { currentWallet, getClients, estimateTxGas, getPublicClient, getWalletClient, isSocial } = useWallet();
 
     const fetchSlippage = async () => {
         setLoadingWithdraw(true);
@@ -94,6 +95,7 @@ export const useSlippageWithdraw = (maxAmounts: number[], tokens: Address[], far
                         id,
                         currentWallet: currentWallet!,
                         amountInWei,
+                        isSocial,
                         balances,
                         max: false,
                         estimateTxGas,
