@@ -19,7 +19,7 @@ import { WalletClientSigner, type SmartAccountSigner } from "@aa-sdk/core";
 import { defaultChainId } from "src/config/constants";
 import useWeb3Auth from "src/hooks/useWeb3Auth";
 import { requestEthForGas } from "src/api";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 
 export interface IWalletContext {
     /**
@@ -80,6 +80,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const _publicClients = useRef<Record<number, IClients["public"]>>({});
     const _walletClients = useRef<Record<number, IClients["wallet"]>>({});
     const dispatch = useDispatch();
+    const { disconnectAsync } = useDisconnect();
     const [domainName, setDomainName] = useState<null | string>(null);
     const { connect: connectWeb3Auth, disconnect: disconnectWeb3Auth, client: web3authClient } = useWeb3Auth();
     const [isSocial, setIsSocial] = useState(false);
@@ -284,6 +285,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     async function logout() {
         disconnectWeb3Auth();
+        await disconnectAsync();
         setCurrentWallet(undefined);
         _walletClients.current = {};
         web3AuthInstance.provider?.removeListener("chainChanged", externalWalletChainChanged);

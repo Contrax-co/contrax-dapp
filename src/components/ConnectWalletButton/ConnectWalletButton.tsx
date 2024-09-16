@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import useWallet from "src/hooks/useWallet";
 import { WalletConnectionModal } from "../modals/WalletConnectionModal/WalletConnectionModal";
+import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 
 const ConnectWalletButton = () => {
     const [open, setOpen] = useState(false);
     const { displayAccount, logout, connectWeb3Auth } = useWallet();
+    const { openConnectModal } = useConnectModal();
 
     return (
         <div>
@@ -14,7 +16,8 @@ const ConnectWalletButton = () => {
                 // For Alchemy
                 // onClick={() => (displayAccount ? logout() : setOpen(true))}
                 // Web3Auth
-                onClick={() => (displayAccount ? logout() : connectWeb3Auth())}
+                // onClick={() => (displayAccount ? logout() : connectWeb3Auth())}
+                onClick={() => (displayAccount ? logout() : openConnectModal!())}
             >
                 {displayAccount ? "Disconnect" : "Sign In/Up"}
             </button>
