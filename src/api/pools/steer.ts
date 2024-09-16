@@ -115,17 +115,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             }
             //#endregion
 
-            // #region Approve
-            // first approve tokens, if zap is not in eth
-            if (token !== zeroAddress) {
-                notifyLoading(loadingMessages.approvingZapping(), { id });
-                const client = await getClients(farm.chainId);
-                const response = await approveErc20(token, farm.zapper_addr, amountInWei, currentWallet, client);
-                if (!response.status) throw new Error("Error approving vault!");
-                dismissNotify(id);
-            }
-            // #endregion
-
             // #region Zapping In
             notifyLoading(loadingMessages.zapping(), { id });
 
@@ -237,6 +226,22 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 if (bridgeStatus) {
                     const client = await getClients(farm.chainId);
                     if (isBridged) amountInWei = finalAmountToDeposit;
+
+                    // #region Approve
+                    // first approve tokens, if zap is not in eth
+                    if (token !== zeroAddress) {
+                        notifyLoading(loadingMessages.approvingZapping(), { id });
+                        const response = await approveErc20(
+                            token,
+                            farm.zapper_addr,
+                            amountInWei,
+                            currentWallet,
+                            client
+                        );
+                        if (!response.status) throw new Error("Error approving vault!");
+                    }
+                    // #endregion
+
                     notifyLoading(loadingMessages.zapping(), { id });
                     zapperTxn = await awaitTransaction(
                         client.wallet.sendTransaction({
