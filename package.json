@@ -84,7 +84,7 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "cross-env NODE_OPTIONS='--max-old-space-size=8192' tsc && vite build",
+    "build": "tsc && vite build",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "find-deadcode": "ts-prune",
     "upgrade-packages": "upgrade-interactive"
