@@ -3,7 +3,6 @@ import React, { useMemo } from "react";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import useWallet from "src/hooks/useWallet";
-import { useEthersSigner, walletClientToSigner } from "src/config/walletConfig";
 import { SOCKET_BRIDGE_KEY, defaultChainId } from "src/config/constants";
 import "./Bridge.css";
 
