@@ -11,8 +11,10 @@ const useWeb3Auth = () => {
     const [isSocial, setIsSocial] = useState(false);
     const [web3AuthProvider, setWeb3AuthProvider] = useState<IProvider | null>(null);
     const connect = async () => {
-        if (web3AuthInstance.status === "not_ready") await web3AuthInstance.initModal();
-        const _provider = await web3AuthInstance.connect();
+        // Commented below two lines for web3auth rainbowkit integration
+        // if (web3AuthInstance.status === "not_ready") await web3AuthInstance.initModal();
+        // const _provider = await web3AuthInstance.connect();
+        // commented cause we say no to aa accuont for the time being
         // const _isSocial = web3AuthInstance.connectedAdapterName === "openlogin";
         // AA- Account set to false
         const _isSocial = false;
@@ -41,7 +43,7 @@ const useWeb3Auth = () => {
     };
 
     const disconnect = async () => {
-        if (web3AuthInstance.status === "not_ready") await web3AuthInstance.initModal();
+        // if (web3AuthInstance.status === "not_ready") await web3AuthInstance.initModal();
         await web3AuthInstance.logout();
         setConnected(false);
         setClient(undefined);

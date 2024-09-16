@@ -14,12 +14,16 @@ import steerZapperAbi from "src/assets/abis/steerZapperAbi";
 import { awaitTransaction, toWei } from "src/utils/common";
 import { approveErc20, getBalance } from "src/api/token";
 import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useConnectors } from "wagmi";
 // import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
 // import { LocalAccountSigner, arbitrum } from "@alchemy/aa-core";
 // import { createWeb3AuthSigner } from "src/config/walletConfig";
 
 const Test = () => {
+    const { openConnectModal } = useConnectModal();
     const { currentWallet, getWalletClient, getPublicClient } = useWallet();
+    const connectors = useConnectors();
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
     const [modelOpen, setModelOpen] = useState(false);
@@ -30,21 +34,7 @@ const Test = () => {
     const { migrate } = useVaultMigrate();
 
     const fn = async () => {
-        if (!currentWallet) return;
-        const client = await getWalletClient(42161);
-        const bal = await getBalance("0xDa7c0de432a9346bB6e96aC74e3B61A36d8a77eB", currentWallet, {
-            public: getPublicClient(42161),
-        });
-        const tx = await client.sendTransaction({
-            value: 0n,
-            to: "0xDa7c0de432a9346bB6e96aC74e3B61A36d8a77eB",
-            data: encodeFunctionData({
-                abi: erc20Abi,
-                functionName: "transfer",
-                args: ["0x5C70387dbC7C481dbc54D6D6080A5C936a883Ba8", bal],
-            }),
-        });
-        console.log("tx =>", tx);
+        openConnectModal && openConnectModal();
 
         // const executedRoute = await executeRoute(route, {
         //     // Gets called once the route object gets new updates

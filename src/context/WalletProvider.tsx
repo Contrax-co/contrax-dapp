@@ -19,6 +19,7 @@ import { WalletClientSigner, type SmartAccountSigner } from "@aa-sdk/core";
 import { defaultChainId } from "src/config/constants";
 import useWeb3Auth from "src/hooks/useWeb3Auth";
 import { requestEthForGas } from "src/api";
+import { useAccount } from "wagmi";
 
 export interface IWalletContext {
     /**
@@ -72,6 +73,7 @@ interface IProps {
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [isConnecting, setIsConnecting] = useState(false);
     const [isSponsored] = useState(true);
+    const { address: rainbowkitAddress, status, isConnected, isConnecting: isConnectingWagmi } = useAccount();
     // const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
     const [externalChainId, setExternalChainId] = useState(CHAIN_ID.ARBITRUM);
@@ -330,17 +332,21 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     }, [currentWallet]);
 
+    // useEffect(() => {
+    //     (async function () {
+    //         if (web3AuthInstance.status === "not_ready") {
+    //             await web3AuthInstance.init();
+    //             // @ts-ignore
+    //             if (web3AuthInstance.status === "connected") {
+    //                 connectWallet();
+    //             }
+    //         }
+    //     })();
+    // }, []);
+
     useEffect(() => {
-        (async function () {
-            if (web3AuthInstance.status === "not_ready") {
-                await web3AuthInstance.initModal();
-                // @ts-ignore
-                if (web3AuthInstance.status === "connected") {
-                    connectWallet();
-                }
-            }
-        })();
-    }, []);
+        if (rainbowkitAddress && status === "connected") connectWallet();
+    }, [rainbowkitAddress, status]);
 
     return (
         <WalletContext.Provider
