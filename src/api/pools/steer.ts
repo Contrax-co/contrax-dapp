@@ -42,6 +42,9 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
         const combinedEthBalance = getCombinedBalance(balances, "eth");
         const usdcAddress = addressesByChainId[farm.chainId].usdcAddress;
+        let isCrossChain = true;
+        const usdcCurrentChainBalance = Number(toEth(combinedUsdcBalance.chainBalances[farm.chainId], 6));
+        if (usdcCurrentChainBalance >= 1) isCrossChain = false;
 
         let depositableAmounts: TokenAmounts[] = [
             {
@@ -84,6 +87,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         const result = {
             depositableAmounts,
             withdrawableAmounts,
+            isCrossChain,
             vaultBalanceFormated: (Number(toEth(BigInt(vaultTotalSupply ?? 0))) * vaultTokenPrice).toString(),
             id: farm.id,
         };

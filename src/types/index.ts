@@ -53,7 +53,9 @@ export interface Token {
     price: number;
 }
 export interface FarmData extends FarmDataProcessed {}
-
+export interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, PoolDef {
+    apy: number;
+}
 export interface NotifyMessage {
     title: string;
     message: string | ((params: string) => string);

@@ -68,6 +68,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                 <div style={{ position: "absolute", right: 10, display: "flex", gap: 5, top: 10 }}>
                     {farm.isDeprecated && <FarmRowChip text="Deprecated" color="warning" />}
                     {farm.token_type === "LP Token" && <FarmRowChip text="Advance" />}
+                    {farmData?.isCrossChain && <FarmRowChip text="Cross Chain" />}
                 </div>
 
                 {/* Asset Name and Logo */}

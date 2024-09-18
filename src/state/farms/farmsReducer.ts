@@ -18,7 +18,7 @@ import { FarmTransactionType } from "src/types/enums";
 
 const initialState: StateInterface = {
     farmDetails: {},
-    isLoading: false,
+    isLoading: true,
     isFetched: false,
     account: "",
     earnings: {},

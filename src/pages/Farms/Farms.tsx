@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useApp from "src/hooks/useApp";
 import useFarms from "src/hooks/farms/useFarms";
 import FarmRow from "src/components/FarmItem/FarmRow";
-import { FarmData } from "src/types";
+import { FarmData, FarmDataExtended } from "src/types";
 import { FarmSortOptions, FarmTableColumns } from "src/types/enums";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import useWallet from "src/hooks/useWallet";
@@ -19,57 +19,27 @@ import { TbArrowsSort } from "react-icons/tb";
 import SortPopup from "./components/SortPopup";
 import OutsideClickHandler from "react-outside-click-handler";
 import FarmRowChip from "src/components/FarmItem/components/FarmRowChip/FarmRowChip";
+import useEarnPage from "src/hooks/farms/useEarnPage";
 
-interface FarmDataExtended extends Partial<Omit<FarmData, "id">>, PoolDef {
-    apy: number;
-}
 function Farms() {
     const { lightMode } = useApp();
-    const { farms } = useFarms();
-    const { currentWallet } = useWallet();
-    const { apys } = useFarmApys();
-    const { farmDetails } = useFarmDetails();
-    const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
+    // const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
     const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
     const [decOrder, setDecOrder] = useState<boolean>(false);
     const [openedFarm, setOpenedFarm] = useState<number | undefined>();
-    const [selectedPlatform, setSelectedPlatform] = useState<null | string>(null);
     const [sortPopup, setSortPopup] = useState(false);
-    const [sortSelected, setSortSelected] = useState<FarmSortOptions>(FarmSortOptions.Default);
+    const {
+        farmDetails,
+        apys,
+        sortedFarms,
+        farms,
+        selectedPlatform,
+        setSelectedPlatform,
+        setSortSelected,
+        sortSelected,
+    } = useEarnPage();
 
-    useEffect(() => {
-        if (sortedBuy) {
-            handleSort(sortedBuy);
-        }
-    }, [sortedBuy, apys, decOrder]);
-
-    const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDataExtended, b: FarmDataExtended) =>
-        (decOrder ? 1 : -1) *
-        (column === FarmTableColumns.Deposited
-            ? Number(a.withdrawableAmounts![0].amountDollar) < Number(b.withdrawableAmounts![0].amountDollar)
-                ? -1
-                : Number(a.withdrawableAmounts![0].amountDollar) > Number(b.withdrawableAmounts![0].amountDollar)
-                ? 1
-                : 0
-            : column === FarmTableColumns.APY
-            ? a.apy < b.apy
-                ? -1
-                : a.apy > b.apy
-                ? 1
-                : 0
-            : 0);
-
-    const handleSort = (column: FarmTableColumns) => {
-        const data: FarmDataExtended[] = farms.map((ele) => {
-            const queryData = Object.values(farmDetails).find((item: FarmData) => item?.id === ele.id);
-            return {
-                ...ele,
-                ...queryData,
-                apy: apys[ele.id].apy,
-            };
-        });
-        setSortedFarms(data.sort(dynamicSort(column, decOrder)));
-    };
+    // const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDataExtended, b: FarmDataExtended) =>
 
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>

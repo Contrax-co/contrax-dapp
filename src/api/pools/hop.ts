@@ -25,6 +25,9 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
         const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
         const combinedEthBalance = getCombinedBalance(balances, "eth");
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
+        let isCrossChain = true;
+        const usdcCurrentChainBalance = Number(toEth(combinedUsdcBalance.chainBalances[farm.chainId], 6));
+        if (usdcCurrentChainBalance >= 100) isCrossChain = false;
 
         let depositableAmounts: TokenAmounts[] = [
             {
@@ -91,6 +94,7 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
         return {
             depositableAmounts,
             withdrawableAmounts,
+            isCrossChain,
             vaultBalanceFormated: (
                 Number(toEth(BigInt(vaultTotalSupply || 0n), farm.decimals)) * vaultTokenPrice
             ).toString(),

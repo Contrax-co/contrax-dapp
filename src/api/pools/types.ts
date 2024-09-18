@@ -66,6 +66,7 @@ export interface FarmDataProcessed {
     depositableAmounts: TokenAmounts[];
     withdrawableAmounts: TokenAmounts[];
     vaultBalanceFormated: string;
+    isCrossChain: boolean;
     id: number;
 }
 

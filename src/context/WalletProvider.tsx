@@ -345,9 +345,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     //         }
     //     })();
     // }, []);
-
     useEffect(() => {
         if (rainbowkitAddress && status === "connected") connectWallet();
+        if (status === "disconnected") logout();
     }, [rainbowkitAddress, status]);
 
     return (

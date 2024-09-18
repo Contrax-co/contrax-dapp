@@ -43,6 +43,7 @@ const useFarmDetails = () => {
     }, [account, currentWallet]);
 
     return {
+        isFetched,
         isLoading: isLoading && !isFetched,
         isFetching: isLoading,
         reloadFarmData,

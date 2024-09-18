@@ -36,6 +36,9 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         const combinedEthBalance = getCombinedBalance(balances, "eth");
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
+        let isCrossChain = true;
+        const usdcCurrentChainBalance = Number(toEth(combinedUsdcBalance.chainBalances[farm.chainId], 6));
+        if (usdcCurrentChainBalance >= 100) isCrossChain = false;
 
         let depositableAmounts: TokenAmounts[] = [
             {
@@ -95,6 +98,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         const result = {
             depositableAmounts,
             withdrawableAmounts,
+            isCrossChain,
             vaultBalanceFormated: (Number(toEth(BigInt(vaultTotalSupply || 0))) * vaultTokenPrice).toString(),
             id: farm.id,
         };
