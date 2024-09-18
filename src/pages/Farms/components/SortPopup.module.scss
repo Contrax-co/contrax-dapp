@@ -1,0 +1,30 @@
+@import "./../../../styles/_mixins.scss";
+@import "./../../../styles/_variables.scss";
+
+.container {
+    z-index: 99;
+    color: var(--color_text);
+    background-color: var(--background_primary);
+    // box-shadow: 0px 0px 6px var(--color_grey);
+    border: 1px solid var(--color_primary);
+    position: absolute;
+    top: 0%;
+    border-radius: 6px;
+    padding:0px 16px;
+    left: calc(100% + 10px);
+}
+
+.row {
+    white-space: pre;
+    color: var(--color_grey);
+    border-bottom: 1px solid var(--color_grey);
+    padding: 8px 4px;
+    font-weight: 600;
+    cursor: default;
+    &:last-child {
+        border-bottom: transparent;
+    }
+    &:hover {
+        color: var(--color_primary);
+    }
+}

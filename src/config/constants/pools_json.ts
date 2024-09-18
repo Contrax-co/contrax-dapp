@@ -843,3 +843,18 @@ export let Common_Chains_State: Record<number, Record<any, any>> = {};
 pools_chain_ids.forEach((item) => {
     Common_Chains_State[item] = [] as any;
 });
+
+export const platformNames = pools_json.reduce((acc, curr) => {
+    if (curr.platform && curr.platform_logo) {
+        const exists = acc.some((item) => item.name === curr.platform);
+        if (!exists) {
+            const count = pools_json.filter((item) => item.platform === curr.platform && !item.isDeprecated).length;
+            acc.push({
+                name: curr.platform,
+                logo: curr.platform_logo,
+                count,
+            });
+        }
+    }
+    return acc;
+}, [] as { name: string; logo: string; count: number }[]);

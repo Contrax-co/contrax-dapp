@@ -34,6 +34,15 @@ export enum CHAIN_ID {
     OPTIMISM = 10,
     BASE = 8453,
 }
+export enum FarmSortOptions {
+    Default = "Default",
+    APY_Low_to_High = "APY: Low to High",
+    APY_High_to_Low = " APY: High to Low",
+    Deposit_High_to_Low = "Deposit: High to Low",
+    Deposit_Low_to_High = "Deposit: Low to High",
+    Farms_Onchain = "Farms: Onchain",
+    Farms_Cross_Chain = "Farms: Cross Chain",
+}
 
 export enum UsersTableColumns {
     Address = "address",

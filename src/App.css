@@ -22,6 +22,7 @@
     --border_color: #022b55;
     --border_color-secondary: #043b71;
     --border_color_light: #d2e8ef;
+    --border_light: #022b55;
 }
 
 [data-lightMode="true"] {
@@ -43,6 +44,7 @@
     /* ///// Border Colors ///// */
     --border_color: #d9d9d9;
     --border_color_light: #d2e8ef;
+    --border_light: #d9d9d9;
 }
 
 ::-moz-selection {
