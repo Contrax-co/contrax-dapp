@@ -168,26 +168,6 @@ export const useTokens = () => {
             };
             return obj;
         });
-        const traxAddr = arbTokens.find((item) => item.name === "xTrax")?.address!;
-        const traxToken: Token = {
-            address: arbTokens.find((item) => item.name === "xTrax")?.address!,
-            logo: arbTokens.find((item) => item.name === "xTrax")?.logo!,
-            decimals: 18,
-            balance: formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]
-                ? formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]! < 1 / 10 ** tokenBalDecimalPlaces
-                    ? noExponents(formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]!.toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]!, tokenBalDecimalPlaces).toString()
-                : "0",
-            usdBalance: formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]
-                ? formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]! < 1 / 10 ** tokenBalDecimalPlaces
-                    ? noExponents(formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]!.toPrecision(2)).slice(0, -1)
-                    : toFixedFloor(formattedBalances[CHAIN_ID.ARBITRUM][traxAddr]!, tokenBalDecimalPlaces).toString()
-                : "0",
-            name: "xTrax",
-            price: 0,
-            networkId: defaultChainId,
-            token_type: FarmType.normal,
-        };
 
         // Native coins for each chain
         Object.entries(formattedBalances).map(([chainId, value]) => {
@@ -221,7 +201,7 @@ export const useTokens = () => {
             };
             tokens.unshift(token);
         });
-        tokens.unshift(traxToken);
+        console.log("tokens =>", tokens);        
 
         setTokens(tokens);
         setLpTokens(lpTokens);

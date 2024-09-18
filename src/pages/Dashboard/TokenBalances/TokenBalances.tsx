@@ -15,6 +15,9 @@ import { useAppDispatch, useAppSelector } from "src/state";
 import { toggleTokenDetailBalances } from "src/state/settings/settingsReducer";
 import { getCombinedBalance } from "src/utils/common";
 import useBalances from "src/hooks/useBalances";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
+import { CHAIN_ID } from "src/types/enums";
+import { zeroAddress } from "viem";
 
 interface IProps {}
 
@@ -24,9 +27,27 @@ export const TokenBalances: FC<IProps> = () => {
     const [selectedToken, setSelectedToken] = useState<Token>();
     const showTokenDetailedBalances = useAppSelector((state) => state.settings.showTokenDetailedBalances);
     const { balances } = useBalances();
+    const { prices } = usePriceOfTokens();
 
     const handleCloseModal = useCallback(() => setSelectedToken(undefined), [setSelectedToken]);
     const usdcBalance = useMemo(() => getCombinedBalance(balances, "usdc"), [balances]);
+    const ethBalance = useMemo(() => getCombinedBalance(balances, "eth"), [balances]);
+
+    const filteredTokens = useMemo(() => {
+        return tokens.filter((item) => {
+            if (Number(item.usdBalance) < 0.01) return false;
+            if (!showTokenDetailedBalances)
+                switch (item.name) {
+                    case "USDC":
+                        return false;
+                    case "ETH":
+                        return false;
+                    default:
+                        return true;
+                }
+            else return true;
+        });
+    }, [tokens, showTokenDetailedBalances]);
 
     return (
         <>
@@ -57,76 +78,103 @@ export const TokenBalances: FC<IProps> = () => {
             {(UIState === UIStateEnum.SHOW_TOKENS_TOKENS || UIState === UIStateEnum.SHOW_TOKENS) && (
                 <div className={styles.container}>
                     {!showTokenDetailedBalances && (
-                        <div
-                            className={`${styles.tokenCardBase} ${lightMode && styles.tokenCardLight}`}
-                            // onClick={() => setSelectedToken(tokens.find((item) => item.name === "USDC"))}
-                        >
-                            <img
-                                className={styles.tokenLogo}
-                                src={
-                                    "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png"
-                                }
-                                alt="logo"
-                            />
-                            <div>
-                                <p className={styles.name}>{"USDC"}</p>
-                                <p className={styles.balance}>
-                                    {ethers.utils.commify(Number(usdcBalance?.formattedBalance || 0).toString())}
-                                </p>
-                            </div>
-                            <p className={styles.usdBalance}>
-                                {Number(usdcBalance?.formattedBalance || 0)
-                                    .toLocaleString("en-US", {
-                                        style: "currency",
-                                        currency: "USD",
-                                        minimumFractionDigits: 3,
-                                    })
-                                    .slice(0, -1)}
-                            </p>
-                        </div>
-                    )}
-                    {tokens
-                        .filter(
-                            (token) =>
-                                Number(token.usdBalance) > 0.01 && (showTokenDetailedBalances || token.name !== "USDC")
-                        )
-                        .map((token, i) => (
+                        <>
                             <div
-                                key={i}
-                                className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
-                                onClick={() => setSelectedToken(token)}
+                                className={`${styles.tokenCardBase} ${lightMode && styles.tokenCardLight}`}
+                                // onClick={() => setSelectedToken(tokens.find((item) => item.name === "USDC"))}
                             >
-                                <img className={styles.tokenLogo} src={token.logo} alt="logo" />
                                 <img
-                                    className={styles.networkLogo}
-                                    src={`https://github.com/Contrax-co/tokens/blob/main/chains/${token.networkId}.png?raw=true`}
-                                    alt={token.networkId.toString()}
+                                    className={styles.tokenLogo}
+                                    src={
+                                        "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png"
+                                    }
+                                    alt="logo"
                                 />
                                 <div>
-                                    <p className={styles.name}>
-                                        {token.name}
-                                        {showTokenDetailedBalances && (
-                                            <span className={styles.networkName}>
-                                                ({SupportedChains.find((item) => item.id === token.networkId)?.name})
-                                            </span>
-                                        )}
-                                    </p>
+                                    <p className={styles.name}>{"USDC"}</p>
                                     <p className={styles.balance}>
-                                        {ethers.utils.commify(Number(token.balance).toString())}
+                                        {ethers.utils.commify(Number(usdcBalance?.formattedBalance || 0).toString())}
                                     </p>
                                 </div>
                                 <p className={styles.usdBalance}>
-                                    {token.name !== "xTrax" &&
-                                        Number(token.usdBalance)
-                                            .toLocaleString("en-US", {
-                                                style: "currency",
-                                                currency: "USD",
-                                                minimumFractionDigits: 3,
-                                            })
-                                            .slice(0, -1)}
+                                    {Number(usdcBalance?.formattedBalance || 0)
+                                        .toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            minimumFractionDigits: 3,
+                                        })
+                                        .slice(0, -1)}
                                 </p>
                             </div>
-                        ))}
+                            <div
+                                className={`${styles.tokenCardBase} ${lightMode && styles.tokenCardLight}`}
+                                // onClick={() => setSelectedToken(tokens.find((item) => item.name === "USDC"))}
+                            >
+                                <img
+                                    className={styles.tokenLogo}
+                                    src={
+                                        "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png"
+                                    }
+                                    alt="logo"
+                                />
+                                <div>
+                                    <p className={styles.name}>{"ETH"}</p>
+                                    <p className={styles.balance}>
+                                        {ethers.utils.commify(Number(ethBalance?.formattedBalance || 0).toString())}
+                                    </p>
+                                </div>
+                                <p className={styles.usdBalance}>
+                                    {(
+                                        Number(ethBalance?.formattedBalance || 0) *
+                                        prices[CHAIN_ID.ARBITRUM][zeroAddress]
+                                    )
+                                        .toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            minimumFractionDigits: 3,
+                                        })
+                                        .slice(0, -1)}
+                                </p>
+                            </div>
+                        </>
+                    )}
+                    {filteredTokens.map((token, i) => (
+                        <div
+                            key={i}
+                            className={`${styles.tokenCard} ${lightMode && styles.tokenCardLight}`}
+                            onClick={() => setSelectedToken(token)}
+                        >
+                            <img className={styles.tokenLogo} src={token.logo} alt="logo" />
+                            <img
+                                className={styles.networkLogo}
+                                src={`https://github.com/Contrax-co/tokens/blob/main/chains/${token.networkId}.png?raw=true`}
+                                alt={token.networkId.toString()}
+                            />
+                            <div>
+                                <p className={styles.name}>
+                                    {token.name}
+                                    {showTokenDetailedBalances && (
+                                        <span className={styles.networkName}>
+                                            ({SupportedChains.find((item) => item.id === token.networkId)?.name})
+                                        </span>
+                                    )}
+                                </p>
+                                <p className={styles.balance}>
+                                    {ethers.utils.commify(Number(token.balance).toString())}
+                                </p>
+                            </div>
+                            <p className={styles.usdBalance}>
+                                {token.name !== "xTrax" &&
+                                    Number(token.usdBalance)
+                                        .toLocaleString("en-US", {
+                                            style: "currency",
+                                            currency: "USD",
+                                            minimumFractionDigits: 3,
+                                        })
+                                        .slice(0, -1)}
+                            </p>
+                        </div>
+                    ))}
                     {selectedToken ? <TransferToken token={selectedToken} handleClose={handleCloseModal} /> : null}
                 </div>
             )}
