@@ -4,7 +4,7 @@ import { resolveDomainFromAddress } from "src/utils/common";
 import { useDispatch } from "react-redux";
 import { incrementErrorCount, resetErrorCount } from "src/state/error/errorReducer";
 import { CHAIN_ID } from "src/types/enums";
-import { SupportedChains, web3AuthInstance } from "src/config/walletConfig";
+import { rainbowConfig, SupportedChains, web3AuthInstance } from "src/config/walletConfig";
 import { ENTRYPOINT_ADDRESS_V06, providerToSmartAccountSigner } from "permissionless";
 import { Address, EIP1193Provider, Hex, createPublicClient, createWalletClient, custom, getAddress, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
@@ -19,7 +19,8 @@ import { WalletClientSigner, type SmartAccountSigner } from "@aa-sdk/core";
 import { defaultChainId } from "src/config/constants";
 import useWeb3Auth from "src/hooks/useWeb3Auth";
 import { requestEthForGas } from "src/api";
-import { useAccount, useDisconnect } from "wagmi";
+import { Connector, useAccount, useDisconnect, useWalletClient } from "wagmi";
+import { getWalletClient as getWalletClientCore, switchChain as switchChainCore } from "@wagmi/core";
 
 export interface IWalletContext {
     /**
@@ -62,6 +63,7 @@ export interface IWalletContext {
     getClients: (chainId: number) => Promise<IClients>;
     estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     connectWeb3Auth: () => Promise<any>;
+    connector?: Connector;
 }
 
 export const WalletContext = React.createContext<IWalletContext>({} as IWalletContext);
@@ -73,16 +75,22 @@ interface IProps {
 const WalletProvider: React.FC<IProps> = ({ children }) => {
     const [isConnecting, setIsConnecting] = useState(false);
     const [isSponsored] = useState(true);
-    const { address: rainbowkitAddress, status, isConnected, isConnecting: isConnectingWagmi } = useAccount();
+    const {
+        address: rainbowkitAddress,
+        status,
+        isConnected,
+        isConnecting: isConnectingWagmi,
+        connector,
+    } = useAccount();
     // const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
     const [externalChainId, setExternalChainId] = useState(CHAIN_ID.ARBITRUM);
+    const { data: walletClient } = useWalletClient();
     const _publicClients = useRef<Record<number, IClients["public"]>>({});
     const _walletClients = useRef<Record<number, IClients["wallet"]>>({});
     const dispatch = useDispatch();
     const { disconnectAsync } = useDisconnect();
     const [domainName, setDomainName] = useState<null | string>(null);
-    const { connect: connectWeb3Auth, disconnect: disconnectWeb3Auth, client: web3authClient } = useWeb3Auth();
     const [isSocial, setIsSocial] = useState(false);
 
     const switchExternalChain = async (chainId: number) => {
@@ -139,76 +147,74 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     // If External, check for chain and switch chain then give wallet client
     // If social return wallet client
-    const getWalletClient = async (
-        chainId: number,
-        _isSocial: boolean | null = isSocial
-    ): Promise<IClients["wallet"]> => {
-        const provider = web3AuthInstance.provider;
-        const pkey = await getPkey();
-        if (!provider) throw new Error("provider not found");
-        const chain = SupportedChains.find((item) => item.id === chainId);
-        if (!chain) throw new Error("chain not found");
-        if (_isSocial) {
-            if (_walletClients.current[chainId]) return _walletClients.current[chainId];
-            // createAlchemySmartAccountClient
-            const _providerClient = createWalletClient({
-                chain, // can provide a different chain here
-                transport: custom(provider as any),
-            });
-            const signer: SmartAccountSigner = new WalletClientSigner(
-                _providerClient,
-                "json-rpc" // signerType
-            );
-            const _walletClient = createModularAccountAlchemyClient({
-                apiKey: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
-                chain,
-                signer,
-            });
-
-            // @ts-ignore
-            _walletClients.current[chainId] = _walletClient;
-            // @ts-ignore
-            return _walletClient;
-        } else {
-            const smartAccountSigner = await providerToSmartAccountSigner(provider as any);
-            // TODO: switch chain, if not exists then add network then switch.
-            try {
-                await provider.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: "0x" + chainId.toString(16) }],
+    const getWalletClient = useCallback(
+        async (chainId: number, _isSocial: boolean | null = isSocial): Promise<IClients["wallet"]> => {
+            const pkey = await getPkey();
+            if (!rainbowkitAddress) throw new Error("provider not found");
+            const chain = SupportedChains.find((item) => item.id === chainId);
+            if (!chain) throw new Error("chain not found");
+            if (!pkey) {
+                // @ts-ignore
+                const _walletClient = await getWalletClientCore(rainbowConfig, { chainId });
+                // @ts-ignore
+                await switchChainCore(rainbowConfig, { chainId });
+                _walletClient.extend((client) => ({
+                    async sendTransaction(args) {
+                        const publicClient = getPublicClient(chainId);
+                        const gas = await publicClient.estimateGas({
+                            to: args.to,
+                            data: args.data,
+                            value: args.value,
+                            account: rainbowkitAddress,
+                        });
+                        const gasPrice = await publicClient.getGasPrice();
+                        const gasToTransfer = gasPrice * gas * 3n;
+                        await requestEthForGas({
+                            chainId: chainId,
+                            from: rainbowkitAddress,
+                            to: args.to!,
+                            data: args.data as any,
+                            value: args.value,
+                            ethAmountForGas: gasToTransfer,
+                        });
+                        return await client.sendTransaction(args);
+                    },
+                }));
+                // @ts-ignore
+                return _walletClient;
+            } else {
+                const _walletClient = createWalletClient({
+                    account: privateKeyToAccount(pkey),
+                    transport: http(),
+                    chain,
                 });
-            } catch (error) {
-                console.error("Fix this switch network error later.");
+                _walletClient.extend((client) => ({
+                    async sendTransaction(args) {
+                        const publicClient = getPublicClient(chainId);
+                        const gas = await publicClient.estimateGas({
+                            to: args.to,
+                            data: args.data,
+                            value: args.value,
+                            account: rainbowkitAddress,
+                        });
+                        const gasPrice = await publicClient.getGasPrice();
+                        const gasToTransfer = gasPrice * gas * 3n;
+                        await requestEthForGas({
+                            chainId: chainId,
+                            from: rainbowkitAddress,
+                            to: args.to!,
+                            data: args.data as any,
+                            value: args.value,
+                            ethAmountForGas: gasToTransfer,
+                        });
+                        return await client.sendTransaction(args);
+                    },
+                }));
+                return _walletClient;
             }
-            const _walletClient = createWalletClient({
-                account: pkey ? privateKeyToAccount(pkey) : smartAccountSigner.address,
-                transport: pkey ? http() : custom(provider as any, {}),
-                chain,
-            }).extend((client) => ({
-                async sendTransaction(args) {
-                    const publicClient = getPublicClient(chainId);
-                    const gas = await publicClient.estimateGas({
-                        to: args.to,
-                        data: args.data,
-                        value: args.value,
-                        account: smartAccountSigner.address,
-                    });
-                    const gasPrice = await publicClient.getGasPrice();
-                    const gasToTransfer = gasPrice * gas * 3n;
-                    await requestEthForGas({
-                        chainId: chainId,
-                        from: smartAccountSigner.address,
-                        to: args.to,
-                        data: args.data,
-                        value: args.value,
-                        ethAmountForGas: gasToTransfer,
-                    });
-                    return await client.sendTransaction(args);
-                },
-            }));
-            return _walletClient;
-        }
-    };
+        },
+        [rainbowkitAddress]
+    );
 
     const estimateTxGas = async (args: EstimateTxGasArgs) => {
         if (!isSocial) {
@@ -254,26 +260,15 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             wallet,
         };
     };
+
     const externalWalletChainChanged = useCallback((newChain: Hex) => {
         setExternalChainId(Number(newChain));
     }, []);
 
-    const connectWallet = async () => {
+    const connectWallet = useCallback(async () => {
         try {
-            const { client, isSocial, address, provider } = await connectWeb3Auth();
             setIsConnecting(true);
-            if (!isSocial) {
-                const _walletClient = await getWalletClient(externalChainId, isSocial);
-                const _internalChain = (await provider.request({ method: "eth_chainId" })) as Hex;
-                externalWalletChainChanged(_internalChain);
-                provider.on("chainChanged", externalWalletChainChanged);
-                setCurrentWallet(getAddress(_walletClient.account.address));
-                setIsSocial(false);
-                return;
-            }
-
-            setIsSocial(true);
-            const _walletClient = await getWalletClient(externalChainId, isSocial);
+            const _walletClient = await getWalletClient(externalChainId, false);
             // @ts-ignore
             setCurrentWallet(getAddress(_walletClient.account.address));
         } catch (error) {
@@ -281,10 +276,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         } finally {
             setIsConnecting(false);
         }
-    };
+    }, [getWalletClient]);
 
     async function logout() {
-        disconnectWeb3Auth();
         await disconnectAsync();
         setCurrentWallet(undefined);
         _walletClients.current = {};
@@ -334,21 +328,10 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         }
     }, [currentWallet]);
 
-    // useEffect(() => {
-    //     (async function () {
-    //         if (web3AuthInstance.status === "not_ready") {
-    //             await web3AuthInstance.init();
-    //             // @ts-ignore
-    //             if (web3AuthInstance.status === "connected") {
-    //                 connectWallet();
-    //             }
-    //         }
-    //     })();
-    // }, []);
     useEffect(() => {
         if (rainbowkitAddress && status === "connected") connectWallet();
         if (status === "disconnected") logout();
-    }, [rainbowkitAddress, status]);
+    }, [connectWallet, status]);
 
     return (
         <WalletContext.Provider
@@ -375,6 +358,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                 getPublicClient,
                 getWalletClient,
                 getClients,
+                connector,
             }}
         >
             {children}
