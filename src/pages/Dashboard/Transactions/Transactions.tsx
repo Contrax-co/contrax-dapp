@@ -71,19 +71,19 @@ const Row: FC<Transaction> = ({
     }
     return (
         <div className={styles.row}>
-            <div className={styles.txTypeArrowWrapper} style={{ color: type === "deposit" ? "green" : "red" }}>
+            <div className={styles.txTypeArrowWrapper}>
                 {type === "deposit" && status === TransactionStatus.SUCCESS && (
-                    <IoArrowDownOutline style={{ width: 24, height: 24 }} />
+                    <IoArrowDownOutline style={{ width: 24, height: 24, color: "green" }} />
                 )}
                 {type === "withdraw" && status === TransactionStatus.SUCCESS && (
-                    <IoArrowUpOutline style={{ width: 24, height: 24 }} />
+                    <IoArrowUpOutline style={{ width: 24, height: 24, color: "red" }} />
                 )}
-                {status === TransactionStatus.FAILED && <VscError style={{ width: 24, height: 24 }} />}
+                {status === TransactionStatus.FAILED && <VscError style={{ width: 24, height: 24, color: "red" }} />}
                 {(status === TransactionStatus.PENDING || status === TransactionStatus.BRIDGING) && (
                     <div className={styles.loader} />
                 )}
                 {status === TransactionStatus.INTERRUPTED && (
-                    <FaInfo style={{ width: 24, height: 24, color: "black" }} />
+                    <FaInfo style={{ width: 24, height: 24, color: "var(--color_text)" }} />
                 )}
                 <img
                     className={styles.networkLogo}

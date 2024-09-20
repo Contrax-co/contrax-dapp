@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { StateInterface, Transaction, TransactionStatus } from "./types";
+import { BridgeService, StateInterface, Transaction, TransactionStatus } from "./types";
 import { backendApi } from "src/api";
 import { Address, createPublicClient, http, TransactionReceipt } from "viem";
 import { RootState } from "..";
@@ -7,6 +7,8 @@ import pools_json from "src/config/constants/pools_json";
 import { SupportedChains } from "src/config/walletConfig";
 import { IClients } from "src/types";
 import moment from "moment";
+import { getStatus } from "@lifi/sdk";
+import { getBridgeStatus } from "src/api/bridge";
 
 const initialState: StateInterface = {
     transactions: [],
@@ -84,6 +86,37 @@ export const checkPendingTransactionsStatus = createAsyncThunk(
                 thunkApi.dispatch(editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED }));
             }
         });
+        txs.filter((item) => !item.txHash && item.status === TransactionStatus.BRIDGING && item.bridgeInfo).forEach(
+            (item) => {
+                const { fromChain, toChain, txHash } = item.bridgeInfo!;
+                if (item.bridgeInfo!.bridgeService === BridgeService.LIFI) {
+                    getStatus({
+                        txHash,
+                        fromChain,
+                        toChain,
+                        bridge: item.bridgeInfo!.tool,
+                    }).then((res) => {
+                        if (res.status === "DONE") {
+                            thunkApi.dispatch(
+                                editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED })
+                            );
+                        } else if (res.status === "FAILED") {
+                            thunkApi.dispatch(editTransactionDb({ _id: item._id, status: TransactionStatus.FAILED }));
+                        }
+                    });
+                } else if (item.bridgeInfo!.bridgeService === BridgeService.SOCKET_TECH) {
+                    getBridgeStatus(item.bridgeInfo!.txHash, item.bridgeInfo!.fromChain, item.bridgeInfo!.toChain).then(
+                        (res) => {
+                            if (res.destinationTxStatus === "COMPLETED") {
+                                thunkApi.dispatch(
+                                    editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED })
+                                );
+                            }
+                        }
+                    );
+                }
+            }
+        );
     }
 );
 
