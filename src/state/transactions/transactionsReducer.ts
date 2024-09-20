@@ -10,7 +10,8 @@ import moment from "moment";
 
 const initialState: StateInterface = {
     transactions: [],
-    limit: 10,
+    limit: 20,
+    fetchedAll: false,
 };
 
 export const addTransactionDb = createAsyncThunk(
@@ -35,7 +36,7 @@ export const getTransactionsDb = createAsyncThunk(
         const tx = (_thunkApi.getState() as RootState).transactions.transactions.at(-1);
         const limit = (_thunkApi.getState() as RootState).transactions.limit;
         const res = await backendApi.get(
-            `transaction/tx-history?from=${walletAddress}&limit=${limit}&sort=-date${tx ? `&_id[gt]=${tx._id}` : ""}`
+            `transaction/tx-history?from=${walletAddress}&limit=${limit}&sort=-date${tx ? `&_id[lt]=${tx._id}` : ""}`
         );
         return { transactions: res.data.data };
     }
@@ -101,6 +102,9 @@ const transactionsSlice = createSlice({
         });
         builder.addCase(getTransactionsDb.fulfilled, (state, action) => {
             state.transactions = state.transactions.concat(action.payload.transactions);
+        });
+        builder.addCase(getTransactionsDb.rejected, (state) => {
+            state.fetchedAll = true;
         });
         builder.addCase(editTransactionDb.fulfilled, (state, action) => {
             const ind = state.transactions.findIndex((tx) => tx._id === action.payload._id);

@@ -11,8 +11,9 @@ export const ModalLayout: FC<IProps> = ({ onClose, children, style, className, .
     const { lightMode } = useApp();
 
     return (
-        <div className={styles.backdrop} onClick={(e) => onClose(e)} {...rest}>
+        <div className={styles.backdrop} onClick={(e) => onClose(e)}>
             <div
+                {...rest}
                 className={`${styles.container} ${lightMode && styles.container_light} ${className}`}
                 onClick={(e) => e.stopPropagation()}
                 style={style}

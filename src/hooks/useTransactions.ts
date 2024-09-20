@@ -1,4 +1,4 @@
-import { useAppDispatch } from "src/state";
+import { useAppDispatch, useAppSelector } from "src/state";
 import { checkPendingTransactionsStatus, getTransactionsDb, reset } from "src/state/transactions/transactionsReducer";
 import useWallet from "./useWallet";
 import { useCallback, useEffect, useState } from "react";
@@ -7,6 +7,7 @@ const useTransactions = () => {
     const dispatch = useAppDispatch();
     const { currentWallet } = useWallet();
     const [isLoading, setIsLoading] = useState(false);
+    const fetchedAll = useAppSelector((state) => state.transactions.fetchedAll);
 
     const fetchTransactions = useCallback(async () => {
         setIsLoading(true);
@@ -27,7 +28,7 @@ const useTransactions = () => {
         }
     }, [currentWallet]);
 
-    return { fetchTransactions, isLoading, reset: resetFn };
+    return { fetchTransactions, isLoading, fetchedAll, reset: resetFn };
 };
 
 export default useTransactions;

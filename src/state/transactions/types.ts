@@ -3,6 +3,7 @@ import { Address, Hex } from "viem";
 export interface StateInterface {
     transactions: Transaction[];
     limit: number;
+    fetchedAll: boolean;
 }
 
 export enum TransactionStatus {

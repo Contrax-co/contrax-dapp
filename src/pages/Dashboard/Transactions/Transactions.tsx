@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, useMemo, useRef, useState } from "react";
 import styles from "./Transactions.module.scss";
 import { IoArrowUpOutline } from "react-icons/io5";
 import { IoArrowDownOutline } from "react-icons/io5";
@@ -13,6 +13,7 @@ import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { VscError } from "react-icons/vsc";
 // import { FaInfo } from "react-icons/fa";
 import { FaInfo } from "react-icons/fa6";
+import useTransactions from "src/hooks/useTransactions";
 
 const Transactions = () => {
     const [open, setOpen] = useState(false);
@@ -119,13 +120,23 @@ const Row: FC<Transaction> = ({
 
 const TransactionsModal: FC<{ setOpenModal: (value: boolean) => void }> = ({ setOpenModal }) => {
     const transactions = useAppSelector((state) => state.transactions.transactions);
+    const { fetchTransactions, isLoading, fetchedAll } = useTransactions();
+    const timeout = useRef<NodeJS.Timeout>();
 
     return (
         <ModalLayout
             onClose={() => setOpenModal(false)}
             className={styles.modalContainer}
-            onScroll={(e) => {
-                console.log(e.target);
+            onWheel={(e) => {
+                if (fetchedAll) return;
+                let ele: Element = e.currentTarget as Element;
+                let percent = (ele.scrollTop / (ele.scrollHeight - ele.clientHeight)) * 100;
+                if (percent === 100 && !isLoading) {
+                    clearTimeout(timeout.current);
+                    timeout.current = setTimeout(() => {
+                        fetchTransactions();
+                    }, 1000);
+                }
             }}
         >
             <p className={`${styles.section_title}`}>Transactions</p>
@@ -133,6 +144,17 @@ const TransactionsModal: FC<{ setOpenModal: (value: boolean) => void }> = ({ set
                 {transactions.map((item, i) => (
                     <Row {...item} key={i} />
                 ))}
+                {/* {transactions.map((item, i) => (
+                    <Row {...item} key={i} />
+                ))}
+                {transactions.map((item, i) => (
+                    <Row {...item} key={i} />
+                ))} */}
+                {isLoading && (
+                    <div className="center">
+                        <div className={styles.loader} />
+                    </div>
+                )}
             </div>
         </ModalLayout>
     );
