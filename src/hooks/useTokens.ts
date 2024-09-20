@@ -201,7 +201,6 @@ export const useTokens = () => {
             };
             tokens.unshift(token);
         });
-        console.log("tokens =>", tokens);        
 
         setTokens(tokens);
         setLpTokens(lpTokens);

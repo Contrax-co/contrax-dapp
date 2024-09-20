@@ -8,6 +8,7 @@ export interface StateInterface {
 export enum TransactionStatus {
     PENDING = "PENDING",
     BRIDGING = "BRIDGING",
+    INTERRUPTED = "INTERRUPTED",
     SUCCESS = "SUCCESS",
     FAILED = "FAILED",
 }

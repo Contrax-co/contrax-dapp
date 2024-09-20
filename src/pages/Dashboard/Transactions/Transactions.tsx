@@ -11,6 +11,8 @@ import { formatUnits, zeroAddress } from "viem";
 import { useDecimals } from "src/hooks/useDecimals";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 import { VscError } from "react-icons/vsc";
+// import { FaInfo } from "react-icons/fa";
+import { FaInfo } from "react-icons/fa6";
 
 const Transactions = () => {
     const [open, setOpen] = useState(false);
@@ -68,16 +70,19 @@ const Row: FC<Transaction> = ({
     }
     return (
         <div className={styles.row}>
-            <div className={styles.txTypeArrowWrapper}>
-                {type === "withdraw" && status === TransactionStatus.SUCCESS && (
+            <div className={styles.txTypeArrowWrapper} style={{ color: type === "deposit" ? "green" : "red" }}>
+                {type === "deposit" && status === TransactionStatus.SUCCESS && (
                     <IoArrowDownOutline style={{ width: 24, height: 24 }} />
                 )}
-                {type === "deposit" && status === TransactionStatus.SUCCESS && (
+                {type === "withdraw" && status === TransactionStatus.SUCCESS && (
                     <IoArrowUpOutline style={{ width: 24, height: 24 }} />
                 )}
                 {status === TransactionStatus.FAILED && <VscError style={{ width: 24, height: 24 }} />}
                 {(status === TransactionStatus.PENDING || status === TransactionStatus.BRIDGING) && (
                     <div className={styles.loader} />
+                )}
+                {status === TransactionStatus.INTERRUPTED && (
+                    <FaInfo style={{ width: 24, height: 24, color: "black" }} />
                 )}
                 <img
                     className={styles.networkLogo}
@@ -113,10 +118,16 @@ const Row: FC<Transaction> = ({
 };
 
 const TransactionsModal: FC<{ setOpenModal: (value: boolean) => void }> = ({ setOpenModal }) => {
-    const transactions = useAppSelector((state) => state.transactions.transactions.slice(0, 3));
+    const transactions = useAppSelector((state) => state.transactions.transactions);
 
     return (
-        <ModalLayout onClose={() => setOpenModal(false)} className={styles.modalContainer}>
+        <ModalLayout
+            onClose={() => setOpenModal(false)}
+            className={styles.modalContainer}
+            onScroll={(e) => {
+                console.log(e.target);
+            }}
+        >
             <p className={`${styles.section_title}`}>Transactions</p>
             <div className={styles.rowsContainer}>
                 {transactions.map((item, i) => (

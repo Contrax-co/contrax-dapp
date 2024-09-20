@@ -44,7 +44,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         const usdcAddress = addressesByChainId[farm.chainId].usdcAddress;
         let isCrossChain = true;
         const usdcCurrentChainBalance = Number(toEth(combinedUsdcBalance.chainBalances[farm.chainId], 6));
-        if (usdcCurrentChainBalance >= 1) isCrossChain = false;
+        if (usdcCurrentChainBalance >= 100) isCrossChain = false;
 
         let depositableAmounts: TokenAmounts[] = [
             {
