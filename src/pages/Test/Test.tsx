@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import useNotify from "src/hooks/useNotify";
 import { commify } from "ethers/lib/utils.js";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
@@ -30,55 +30,21 @@ const Test = () => {
     const [model1Open, set1ModelOpen] = useState(false);
     const { connectWallet, switchExternalChain, getClients } = useWallet();
     const { platformTVL } = usePlatformTVL();
+    const clickMeButtonRef = useRef<HTMLButtonElement>(null);
 
     const { migrate } = useVaultMigrate();
 
     const fn = async () => {
-        openConnectModal && openConnectModal();
-
-        // const executedRoute = await executeRoute(route, {
-        //     // Gets called once the route object gets new updates
-        //     updateRouteHook(route) {
-        //         console.log(route);
-        //     },
-        // });
-        // switchExternalChain(CHAIN_ID.OPTIMISM);
-        // @ts-ignore
-        // connectWallet({ email: "abdulrafay@contrax.finance" });
-        // const signer = await createWeb3AuthSigner();
-        // console.log('signer =>', signer);
-        // const client = await createModularAccountAlchemyClient({
-        //     apiKey: "MhcCg7EZrUvXXCLYNZS81ncK2fJh0OCc",
-        //     chain: arbitrum,
-        //     // you can swap this out for any SmartAccountSigner
-        //     signer
-        // });
-        // console.log("client =>", client);
-        // if (!currentWallet) return;
-        // const contract = getContract({
-        //     address: addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress as Address,
-        //     abi: erc20Abi,
-        //     client,
-        // });
-        // const allowance = await contract.read.allowance([currentWallet, "0x1A4f0075987f557AE59caF559Dc7c98Ee86A8D1f"]);
-        // console.log("allowance =>", allowance);
-        // const hash = await contract.write.approve([
-        //     addressesByChainId[CHAIN_ID.ARBITRUM].universalPaymaster!,
-        //     maxUint256,
-        // ]);
-        // console.log(hash);
-        // get Arb price
-        // await getPriceFromUsdcPair(multicallProvider, arbAddr);
-        // get Weth and hEth Price
-        // await getPriceFromWethPair(multicallProvider, hEthAddr);
-        // await getPriceFromHopLp(multicallProvider, "0x59745774Ed5EfF903e615F5A2282Cae03484985a");
+        setModelOpen(true);
     };
 
     return (
         <div style={{ color: "red" }}>
             Test
+            <button onClick={fn} ref={clickMeButtonRef}>
+                Click Me
+            </button>
             <button onClick={() => migrate()}>Migrate</button>
-            <button onClick={fn}>Click Me</button>
             <button
                 onClick={() => {
                     notifySuccess("Approving Zapping!", "Please wait...a sadasfas fsa fsafsafsaf saf");

@@ -74,7 +74,6 @@
     "redux-persist": "^6.0.0",
     "sass": "^1.62.1",
     "styled-components": "^5.3.6",
-    "sweetalert": "^2.1.2",
     "uuid": "^9.0.0",
     "viem": "^2.19.4",
     "vite-plugin-svgr": "3.3.0",

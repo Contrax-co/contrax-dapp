@@ -14,6 +14,9 @@ import { VscError } from "react-icons/vsc";
 // import { FaInfo } from "react-icons/fa";
 import { FaInfo } from "react-icons/fa6";
 import useTransactions from "src/hooks/useTransactions";
+import TransactionDetails from "./components/TransactionDetails";
+import { IoChevronUpOutline } from "react-icons/io5";
+import { IoChevronDownOutline } from "react-icons/io5";
 
 const Transactions = () => {
     const [open, setOpen] = useState(false);
@@ -21,7 +24,14 @@ const Transactions = () => {
 
     return (
         <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: 10,
+                }}
+            >
                 <p className={`${styles.section_title}`}>Transactions</p>
                 <p style={{ cursor: "pointer" }} onClick={() => setOpen(true)}>
                     See all
@@ -57,6 +67,7 @@ const Row: FC<Transaction> = ({
     const farm = useMemo(() => farms.find((item) => item.id === farmId), [farmId]);
     const { decimals } = useDecimals();
     const { prices } = usePriceOfTokens();
+    const [open, setOpen] = useState(false);
 
     if (!farm) return null;
 
@@ -70,51 +81,65 @@ const Row: FC<Transaction> = ({
             (tokenPrice || prices[farm.chainId][token]);
     }
     return (
-        <div className={styles.row}>
-            <div className={styles.txTypeArrowWrapper}>
-                {type === "deposit" && status === TransactionStatus.SUCCESS && (
-                    <IoArrowDownOutline style={{ width: 24, height: 24, color: "green" }} />
-                )}
-                {type === "withdraw" && status === TransactionStatus.SUCCESS && (
-                    <IoArrowUpOutline style={{ width: 24, height: 24, color: "red" }} />
-                )}
-                {status === TransactionStatus.FAILED && <VscError style={{ width: 24, height: 24, color: "red" }} />}
-                {(status === TransactionStatus.PENDING || status === TransactionStatus.BRIDGING) && (
-                    <div className={styles.loader} />
-                )}
-                {status === TransactionStatus.INTERRUPTED && (
-                    <FaInfo style={{ width: 24, height: 24, color: "var(--color_text)" }} />
-                )}
-                <img
-                    className={styles.networkLogo}
-                    src={`https://github.com/Contrax-co/tokens/blob/main/chains/${farm.chainId}.png?raw=true`}
-                    alt={farm.chainId.toString()}
-                />
+        <>
+            <div className={styles.rowWrapper}>
+                <div className={styles.row} onClick={() => setOpen(!open)}>
+                    <div className={styles.txTypeArrowWrapper}>
+                        {type === "deposit" && status === TransactionStatus.SUCCESS && (
+                            <IoArrowDownOutline style={{ width: 24, height: 24, color: "green" }} />
+                        )}
+                        {type === "withdraw" && status === TransactionStatus.SUCCESS && (
+                            <IoArrowUpOutline style={{ width: 24, height: 24, color: "red" }} />
+                        )}
+                        {status === TransactionStatus.FAILED && (
+                            <VscError style={{ width: 24, height: 24, color: "red" }} />
+                        )}
+                        {(status === TransactionStatus.PENDING || status === TransactionStatus.BRIDGING) && (
+                            <div className={styles.loader} />
+                        )}
+                        {status === TransactionStatus.INTERRUPTED && (
+                            <FaInfo style={{ width: 24, height: 24, color: "var(--color_text)" }} />
+                        )}
+                        <img
+                            className={styles.networkLogo}
+                            src={`https://github.com/Contrax-co/tokens/blob/main/chains/${farm.chainId}.png?raw=true`}
+                            alt={farm.chainId.toString()}
+                        />
+                    </div>
+                    <div className={styles.txDetailsFarm}>
+                        <p className={styles.farmName}>{farm.name}</p>
+                        <p className={styles.date}>{moment(date).fromNow()}</p>
+                    </div>
+                    <div className={styles.txAmountDetails}>
+                        <p className={styles.farmName}>
+                            $
+                            {(
+                                Number(
+                                    formatUnits(
+                                        BigInt(amountInWei),
+                                        decimals[farm.chainId][type === "withdraw" ? farm.vault_addr : token]
+                                    )
+                                ) *
+                                (type === "withdraw"
+                                    ? vaultPrice || prices[farm.chainId][farm.vault_addr]
+                                    : (tokenPrice || prices[farm.chainId][token])!)
+                            ).toLocaleString()}
+                        </p>
+                        <p className={styles.date}>
+                            {tokenAmount.toLocaleString()} {token === zeroAddress ? "ETH" : "USDC"}
+                        </p>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                        {open ? (
+                            <IoChevronUpOutline style={{ width: 20, height: 20 }} />
+                        ) : (
+                            <IoChevronDownOutline style={{ width: 20, height: 20 }} />
+                        )}
+                    </div>
+                </div>
+                <TransactionDetails transactionId={_id} open={open} />
             </div>
-            <div className={styles.txDetailsFarm}>
-                <p className={styles.farmName}>{farm.name}</p>
-                <p className={styles.date}>{moment(date).fromNow()}</p>
-            </div>
-            <div className={styles.txAmountDetails}>
-                <p className={styles.farmName}>
-                    $
-                    {(
-                        Number(
-                            formatUnits(
-                                BigInt(amountInWei),
-                                decimals[farm.chainId][type === "withdraw" ? farm.vault_addr : token]
-                            )
-                        ) *
-                        (type === "withdraw"
-                            ? vaultPrice || prices[farm.chainId][farm.vault_addr]
-                            : (tokenPrice || prices[farm.chainId][token])!)
-                    ).toLocaleString()}
-                </p>
-                <p className={styles.date}>
-                    {tokenAmount.toLocaleString()} {token === zeroAddress ? "ETH" : "USDC"}
-                </p>
-            </div>
-        </div>
+        </>
     );
 };
 
