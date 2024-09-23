@@ -158,7 +158,7 @@ function Dashboard() {
             </div>
             {currentWallet ? (
                 <>
-                    <div className={`dashboard_section outlinedContainer`} style={{ maxWidth: 500 }}>
+                    <div className={`dashboard_section outlinedContainer`}>
                         <Transactions />
                     </div>
                     <div className={`dashboard_section outlinedContainer`}>

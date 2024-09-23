@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ModalLayout } from "src/components/modals/ModalLayout/ModalLayout";
 import pools_json from "src/config/constants/pools_json";
-import { useAppSelector } from "src/state";
+import { RootState, useAppSelector } from "src/state";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
 import { FaRegCircle } from "react-icons/fa";
+import { createSelector } from "@reduxjs/toolkit";
 
 import styles from "./TransactionDetails.module.scss";
 
@@ -13,10 +13,14 @@ interface IProps {
     open: boolean;
 }
 
+const selectTransactionById = createSelector(
+    (state: RootState) => state.transactions.transactions,
+    (_: any, transactionId: string) => transactionId,
+    (transactions, transactionId: string) => transactions.find((item) => item._id === transactionId)
+);
+
 const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
-    const transaction = useAppSelector((state) =>
-        state.transactions.transactions.find((item) => item._id === transactionId)
-    );
+    const transaction = useAppSelector((state: RootState) => selectTransactionById(state, transactionId));
     const farm = useMemo(() => pools_json.find((item) => item.id === transaction?.farmId), [transaction?.farmId]);
     const [percentage, setPercentage] = useState(0);
     if (!farm) return;
@@ -35,7 +39,7 @@ const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
 
     console.log("transaction =>", transaction);
     return (
-        <div style={{ height: open ? 250 : 0 }} className={styles.container}>
+        <div className={`${styles.container} ${open ? styles.open : styles.closed}`}>
             <div className={styles.loadingBarContainer}>
                 <div style={{ width: `${percentage}%` }} />
             </div>

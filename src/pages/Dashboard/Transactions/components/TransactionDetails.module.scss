@@ -1,9 +1,21 @@
 .container {
     overflow: hidden;
-    transition: height 0.2s ease-in-out;
+    transition: all 0.2s ease-in;
     padding-left: 6px;
     padding-right: 20px;
+    padding-top: 0;
 }
+
+.open {
+    max-height: 400px; /* Set a sufficiently large value */
+    padding-bottom: 10px;
+}
+
+.closed {
+    max-height: 0;
+    padding-bottom: 0px;
+}
+
 .row {
     display: grid;
     align-items: center;
@@ -11,6 +23,7 @@
     margin-top: 20px;
     grid-template-columns: max-content 1fr max-content;
 }
+
 .loadingBarContainer {
     height: 4px;
     border-radius: 360px;
@@ -23,17 +36,21 @@
         background: var(--color_primary);
     }
 }
+
 .stepName {
     font-weight: 600;
 }
+
 .tokenValue {
     color: var(--color_grey);
     font-size: 12px;
 }
+
 .icon {
     width: 24px;
     height: 24px;
 }
+
 .retry {
     color: var(--color_primary);
     cursor: pointer;
