@@ -6,7 +6,7 @@ import farms from "src/config/constants/pools_json";
 import moment from "moment";
 import { ModalLayout } from "src/components/modals/ModalLayout/ModalLayout";
 import { useAppSelector } from "src/state";
-import { Transaction, TransactionStatus } from "src/state/transactions/types";
+import { Transaction, TransactionStatus, TransactionStepStatus } from "src/state/transactions/types";
 import { formatUnits, zeroAddress } from "viem";
 import { useDecimals } from "src/hooks/useDecimals";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
@@ -50,20 +50,7 @@ const Transactions = () => {
 
 export default Transactions;
 
-const Row: FC<Transaction> = ({
-    amountInWei,
-    date,
-    farmId,
-    tokenPrice,
-    vaultPrice,
-    _id,
-    max,
-    status,
-    token,
-    type,
-    bridgeInfo,
-    txHash,
-}) => {
+const Row: FC<Transaction> = ({ amountInWei, date, farmId, tokenPrice, vaultPrice, _id, max, token, type, steps }) => {
     const farm = useMemo(() => farms.find((item) => item.id === farmId), [farmId]);
     const { decimals } = useDecimals();
     const { prices } = usePriceOfTokens();
@@ -80,6 +67,13 @@ const Row: FC<Transaction> = ({
                 (vaultPrice || prices[farm.chainId][farm.vault_addr])) /
             (tokenPrice || prices[farm.chainId][token]);
     }
+    const status = useMemo(() => {
+        if (steps.every((step) => step.status === TransactionStepStatus.COMPLETED)) return TransactionStatus.SUCCESS;
+        if (steps.some((step) => step.status === TransactionStepStatus.FAILED)) return TransactionStatus.FAILED;
+        if (steps.some((step) => step.status === TransactionStepStatus.IN_PROGRESS)) return TransactionStatus.PENDING;
+        return TransactionStatus.INTERRUPTED;
+    }, [steps]);
+
     return (
         <>
             <div className={styles.rowWrapper}>
@@ -94,9 +88,7 @@ const Row: FC<Transaction> = ({
                         {status === TransactionStatus.FAILED && (
                             <VscError style={{ width: 24, height: 24, color: "red" }} />
                         )}
-                        {(status === TransactionStatus.PENDING || status === TransactionStatus.BRIDGING) && (
-                            <div className={styles.loader} />
-                        )}
+                        {status === TransactionStatus.PENDING && <div className={styles.loader} />}
                         {status === TransactionStatus.INTERRUPTED && (
                             <FaInfo style={{ width: 24, height: 24, color: "var(--color_text)" }} />
                         )}

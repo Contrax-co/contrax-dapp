@@ -40,8 +40,8 @@ const useZapIn = (farm: PoolDef) => {
                 type: "deposit",
                 farmId: farm.id,
                 max: !!max,
-                status: TransactionStatus.PENDING,
                 token,
+                steps: [],
             })
         );
         const id = dbTx.payload._id;

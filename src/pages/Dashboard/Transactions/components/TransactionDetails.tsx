@@ -7,6 +7,8 @@ import { FaRegCircle } from "react-icons/fa";
 import { createSelector } from "@reduxjs/toolkit";
 
 import styles from "./TransactionDetails.module.scss";
+import { TransactionStepStatus } from "src/state/transactions/types";
+import { zeroAddress } from "viem";
 
 interface IProps {
     transactionId: string;
@@ -23,61 +25,44 @@ const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
     const transaction = useAppSelector((state: RootState) => selectTransactionById(state, transactionId));
     const farm = useMemo(() => pools_json.find((item) => item.id === transaction?.farmId), [transaction?.farmId]);
     const [percentage, setPercentage] = useState(0);
-    if (!farm) return;
+    if (!farm || !transaction) return;
 
-    useEffect(() => {
-        const int = setInterval(() => {
-            setPercentage((prev) => {
-                if (prev < 100) return prev + 5;
-                else return 0;
-            });
-        }, 2000);
-        return () => {
-            clearInterval(int);
-        };
-    }, []);
-
-    console.log("transaction =>", transaction);
     return (
         <div className={`${styles.container} ${open ? styles.open : styles.closed}`}>
             <div className={styles.loadingBarContainer}>
-                <div style={{ width: `${percentage}%` }} />
+                <div  />
             </div>
             <div style={{ marginTop: 10 }}>
-                <div className={styles.row}>
-                    <IoMdCheckmarkCircleOutline className={styles.icon} style={{ color: "rgb(34 197 94)" }} />
-                    <div>
-                        <p className={styles.stepName}>Bridge</p>
-                        <p className={styles.tokenValue}>12 USDC</p>
-                    </div>
-                </div>
-                <div className={styles.row}>
-                    <MdOutlineCancel className={styles.icon} style={{ color: "red" }} />
-                    <div>
-                        <p className={styles.stepName}>Approve</p>
-                    </div>
-                    <p className={styles.retry}>Retry</p>
-                </div>
-                <div className={styles.row}>
-                    <div className={styles.loader} />
-                    <div>
-                        <p className={styles.stepName}>Approve</p>
-                        <p className={styles.tokenValue}>12 USDC</p>
-                    </div>
-                </div>
-                <div className={styles.row}>
-                    <FaRegCircle
-                        className={styles.icon}
-                        style={{ color: "var(--color_grey)", transform: "scale(0.8)" }}
-                    />
-                    <div>
-                        <p className={styles.stepName}>Zap In</p>
-                        {/* <p className={styles.tokenValue}>12 USDC</p> */}
-                    </div>
-                </div>
+                {transaction.steps.map((step) =>
+                    getStep(step.name, step.status, step.amount, transaction.token === zeroAddress ? "ETH" : "USDC")
+                )}
             </div>
         </div>
     );
 };
 
 export default TransactionDetails;
+
+function getStep(name: string, status: TransactionStepStatus, value?: string, tokenName?: string) {
+    return (
+        <div className={styles.row}>
+            {status === TransactionStepStatus.COMPLETED ? (
+                <IoMdCheckmarkCircleOutline className={styles.icon} style={{ color: "rgb(34 197 94)" }} />
+            ) : status === TransactionStepStatus.FAILED ? (
+                <MdOutlineCancel className={styles.icon} style={{ color: "red" }} />
+            ) : status === TransactionStepStatus.PENDING ? (
+                <FaRegCircle className={styles.icon} style={{ color: "var(--color_grey)", transform: "scale(0.8)" }} />
+            ) : (
+                <div className={styles.loader} />
+            )}
+            <div>
+                <p className={styles.stepName}>{name}</p>
+                {value && (
+                    <p className={styles.tokenValue}>
+                        {value} {tokenName}
+                    </p>
+                )}
+            </div>
+        </div>
+    );
+}

@@ -1,14 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BridgeService, StateInterface, Transaction, TransactionStatus } from "./types";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { StateInterface, Transaction, TransactionStep, TransactionStepStatus } from "./types";
 import { backendApi } from "src/api";
-import { Address, createPublicClient, http, TransactionReceipt } from "viem";
-import { RootState } from "..";
-import pools_json from "src/config/constants/pools_json";
-import { SupportedChains } from "src/config/walletConfig";
-import { IClients } from "src/types";
-import moment from "moment";
-import { getStatus } from "@lifi/sdk";
-import { getBridgeStatus } from "src/api/bridge";
+import { Address } from "viem";
 
 const initialState: StateInterface = {
     transactions: [],
@@ -20,7 +13,7 @@ export const addTransactionDb = createAsyncThunk(
     "transactions/addTransactionDb",
     async (transaction: Omit<Transaction, "_id">, _thunkApi) => {
         const res = await backendApi.post("transaction/save-history-tx", transaction);
-        return res.data.data;
+        return { ...res.data.data, steps: [] };
     }
 );
 
@@ -32,91 +25,116 @@ export const editTransactionDb = createAsyncThunk(
     }
 );
 
+export const addTransactionStepDb = createAsyncThunk(
+    "transactions/addTransactionStepDb",
+    async (params: { step: TransactionStep; transactionId: string }, _thunkApi) => {
+        // TODO: add step to db
+        return params;
+    }
+);
+
+export const editTransactionStepDb = createAsyncThunk(
+    "transactions/editTransactionStepDb",
+    async (params: { transactionId: string; stepType: string; status: TransactionStepStatus }, _thunkApi) => {
+        // TODO: edit step in db
+        return params;
+    }
+);
+
+export const markAsFailedDb = createAsyncThunk(
+    "transactions/markAsFailedDb",
+    async (transactionId: string, _thunkApi) => {
+        // TODO: mark as failed in db
+        return transactionId;
+    }
+);
+
 export const getTransactionsDb = createAsyncThunk(
     "transactions/getTransactionsDb",
     async ({ walletAddress }: { walletAddress: Address }, _thunkApi) => {
-        const tx = (_thunkApi.getState() as RootState).transactions.transactions.at(-1);
-        const limit = (_thunkApi.getState() as RootState).transactions.limit;
-        const res = await backendApi.get(
-            `transaction/tx-history?from=${walletAddress}&limit=${limit}&sort=-date${tx ? `&_id[lt]=${tx._id}` : ""}`
-        );
-        return { transactions: res.data.data };
+        // const tx = (_thunkApi.getState() as RootState).transactions.transactions.at(-1);
+        // const limit = (_thunkApi.getState() as RootState).transactions.limit;
+        // const res = await backendApi.get(
+        //     `transaction/tx-history?from=${walletAddress}&limit=${limit}&sort=-date${tx ? `&_id[lt]=${tx._id}` : ""}`
+        // );
+        // return { transactions: res.data.data };
+        return { transactions: [] };
     }
 );
 
 export const checkPendingTransactionsStatus = createAsyncThunk(
     "transactions/checkPendingTransactionsStatus",
     async (_, thunkApi) => {
-        const txs = (thunkApi.getState() as RootState).transactions.transactions;
-        const promises = txs.reduce((acc, curr) => {
-            if (curr.status === TransactionStatus.PENDING && curr.txHash) {
-                const chainId = pools_json.find((item) => item.id === curr.farmId)?.chainId;
-                if (chainId) {
-                    const chain = SupportedChains.find((item) => item.id === chainId);
-                    if (!chain) throw new Error("chain not found");
-                    const publicClient = createPublicClient({
-                        chain: chain,
-                        transport: http(),
-                        batch: {
-                            multicall: {
-                                batchSize: 4096,
-                                wait: 250,
-                            },
-                        },
-                    }) as IClients["public"];
-                    acc.push(publicClient.getTransactionReceipt({ hash: curr.txHash }));
-                }
-            }
-            return acc;
-        }, [] as Promise<TransactionReceipt>[]);
-        const receipts = await Promise.all(promises);
-        receipts.forEach((receipt, index) => {
-            if (receipt) {
-                const tx = txs.find((item) => item.txHash === receipt.transactionHash);
-                if (receipt.status === "success") {
-                    thunkApi.dispatch(editTransactionDb({ _id: tx?._id, status: TransactionStatus.SUCCESS }));
-                } else {
-                    thunkApi.dispatch(editTransactionDb({ _id: tx?._id, status: TransactionStatus.FAILED }));
-                }
-            }
-        });
-        txs.filter((item) => item.status === TransactionStatus.PENDING && !item.txHash).forEach((item) => {
-            // Check if since item.date an hour has passed
-            if (moment().diff(item.date, "hours") > 1) {
-                thunkApi.dispatch(editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED }));
-            }
-        });
-        txs.filter((item) => !item.txHash && item.status === TransactionStatus.BRIDGING && item.bridgeInfo).forEach(
-            (item) => {
-                const { fromChain, toChain, txHash } = item.bridgeInfo!;
-                if (item.bridgeInfo!.bridgeService === BridgeService.LIFI) {
-                    getStatus({
-                        txHash,
-                        fromChain,
-                        toChain,
-                        bridge: item.bridgeInfo!.tool,
-                    }).then((res) => {
-                        if (res.status === "DONE") {
-                            thunkApi.dispatch(
-                                editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED })
-                            );
-                        } else if (res.status === "FAILED") {
-                            thunkApi.dispatch(editTransactionDb({ _id: item._id, status: TransactionStatus.FAILED }));
-                        }
-                    });
-                } else if (item.bridgeInfo!.bridgeService === BridgeService.SOCKET_TECH) {
-                    getBridgeStatus(item.bridgeInfo!.txHash, item.bridgeInfo!.fromChain, item.bridgeInfo!.toChain).then(
-                        (res) => {
-                            if (res.destinationTxStatus === "COMPLETED") {
-                                thunkApi.dispatch(
-                                    editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED })
-                                );
-                            }
-                        }
-                    );
-                }
-            }
-        );
+        // const txs = (thunkApi.getState() as RootState).transactions.transactions;
+        // const promises = txs.reduce((acc, curr) => {
+        //     if (curr.status === TransactionStatus.PENDING && curr.txHash) {
+        //         const chainId = pools_json.find((item) => item.id === curr.farmId)?.chainId;
+        //         if (chainId) {
+        //             const chain = SupportedChains.find((item) => item.id === chainId);
+        //             if (!chain) throw new Error("chain not found");
+        //             const publicClient = createPublicClient({
+        //                 chain: chain,
+        //                 transport: http(),
+        //                 batch: {
+        //                     multicall: {
+        //                         batchSize: 4096,
+        //                         wait: 250,
+        //                     },
+        //                 },
+        //             }) as IClients["public"];
+        //             acc.push(publicClient.getTransactionReceipt({ hash: curr.txHash }));
+        //         }
+        //     }
+        //     return acc;
+        // }, [] as Promise<TransactionReceipt>[]);
+        // const receipts = await Promise.all(promises);
+        // receipts.forEach((receipt, index) => {
+        //     if (receipt) {
+        //         const tx = txs.find((item) => item.txHash === receipt.transactionHash);
+        //         if (receipt.status === "success") {
+        //             thunkApi.dispatch(editTransactionDb({ _id: tx?._id, status: TransactionStatus.SUCCESS }));
+        //         } else {
+        //             thunkApi.dispatch(editTransactionDb({ _id: tx?._id, status: TransactionStatus.FAILED }));
+        //         }
+        //     }
+        // });
+        // txs.filter((item) => item.status === TransactionStatus.PENDING && !item.txHash).forEach((item) => {
+        //     // Check if since item.date an hour has passed
+        //     if (moment().diff(item.date, "hours") > 1) {
+        //         thunkApi.dispatch(editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED }));
+        //     }
+        // });
+        // txs.filter((item) => !item.txHash && item.status === TransactionStatus.BRIDGING && item.bridgeInfo).forEach(
+        //     (item) => {
+        //         const { fromChain, toChain, txHash } = item.bridgeInfo!;
+        //         if (item.bridgeInfo!.bridgeService === BridgeService.LIFI) {
+        //             getStatus({
+        //                 txHash,
+        //                 fromChain,
+        //                 toChain,
+        //                 bridge: item.bridgeInfo!.tool,
+        //             }).then((res) => {
+        //                 if (res.status === "DONE") {
+        //                     thunkApi.dispatch(
+        //                         editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED })
+        //                     );
+        //                 } else if (res.status === "FAILED") {
+        //                     thunkApi.dispatch(editTransactionDb({ _id: item._id, status: TransactionStatus.FAILED }));
+        //                 }
+        //             });
+        //         } else if (item.bridgeInfo!.bridgeService === BridgeService.SOCKET_TECH) {
+        //             getBridgeStatus(item.bridgeInfo!.txHash, item.bridgeInfo!.fromChain, item.bridgeInfo!.toChain).then(
+        //                 (res) => {
+        //                     if (res.destinationTxStatus === "COMPLETED") {
+        //                         thunkApi.dispatch(
+        //                             editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED })
+        //                         );
+        //                     }
+        //                 }
+        //             );
+        //         }
+        //     }
+        // );
     }
 );
 
@@ -138,6 +156,19 @@ const transactionsSlice = createSlice({
         });
         builder.addCase(getTransactionsDb.rejected, (state) => {
             state.fetchedAll = true;
+        });
+        builder.addCase(addTransactionStepDb.fulfilled, (state, action) => {
+            const ind = state.transactions.findIndex((tx) => tx._id === action.payload.transactionId);
+            state.transactions[ind].steps.push(action.payload.step);
+        });
+        builder.addCase(markAsFailedDb.fulfilled, (state, action) => {
+            const ind = state.transactions.findIndex((tx) => tx._id === action.payload);
+            state.transactions[ind].steps.at(-1)!.status = TransactionStepStatus.FAILED;
+        });
+        builder.addCase(editTransactionStepDb.fulfilled, (state, action) => {
+            const ind = state.transactions.findIndex((tx) => tx._id === action.payload.transactionId);
+            const stepInd = state.transactions[ind].steps.findIndex((step) => step.type === action.payload.stepType);
+            state.transactions[ind].steps[stepInd].status = action.payload.status;
         });
         builder.addCase(editTransactionDb.fulfilled, (state, action) => {
             const ind = state.transactions.findIndex((tx) => tx._id === action.payload._id);

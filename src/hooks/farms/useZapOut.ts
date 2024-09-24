@@ -39,8 +39,8 @@ const useZapOut = (farm: PoolDef) => {
                 type: "withdraw",
                 farmId: farm.id,
                 max: !!max,
-                status: TransactionStatus.PENDING,
                 token,
+                steps: [],
             })
         );
         const id = dbTx.payload._id;

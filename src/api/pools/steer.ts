@@ -28,8 +28,19 @@ import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
 import { encodeFunctionData, zeroAddress } from "viem";
 import store from "src/state";
-import { TransactionStatus } from "src/state/transactions/types";
-import { editTransactionDb } from "src/state/transactions/transactionsReducer";
+import {
+    ApproveZapStep,
+    TransactionStatus,
+    TransactionStepStatus,
+    WaitForConfirmationStep,
+    ZapInStep,
+} from "src/state/transactions/types";
+import {
+    addTransactionStepDb,
+    editTransactionDb,
+    editTransactionStepDb,
+    markAsFailedDb,
+} from "src/state/transactions/transactionsReducer";
 
 let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
     const farm = pools_json.find((farm) => farm.id === farmId)!;
@@ -128,24 +139,6 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 // we need the token of liquidity pair, so use tokenIn if provided
                 token = tokenIn ?? wethAddress;
 
-                // const client = await getClients(farm.chainId);
-
-                // zapperTxn = await awaitTransaction(
-                //     client.wallet.sendTransaction({
-                //         to: farm.zapper_addr,
-                //         value: amountInWei,
-                //         data: encodeFunctionData({
-                //             abi: steerZapperAbi,
-                //             functionName: "zapInETH",
-                //             args: [farm.vault_addr, 0n, token],
-                //         }),
-                //     }),
-                //     { public: publicClient },
-                //     (hash) => {
-                //         store.dispatch(editTransaction({ id, txHash: hash, status: TransactionStatus.PENDING }));
-                //     }
-                // );
-
                 const {
                     finalAmountToDeposit,
                     isBridged,
@@ -161,6 +154,16 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     max,
                 });
                 if (bridgeStatus) {
+                    store.dispatch(
+                        addTransactionStepDb({
+                            transactionId: id!,
+                            step: {
+                                type: "ZAP_IN",
+                                name: "Zap In",
+                                status: TransactionStepStatus.IN_PROGRESS,
+                            } as ZapInStep,
+                        })
+                    );
                     const client = await getClients(farm.chainId);
                     if (isBridged) amountInWei = finalAmountToDeposit;
                     if (!isSocial && !(await isGasSponsored(currentWallet))) {
@@ -199,10 +202,32 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                         }),
                         client,
                         async (hash) => {
-                            await store.dispatch(
-                                editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                            store.dispatch(
+                                editTransactionStepDb({
+                                    transactionId: id,
+                                    stepType: "ZAP_IN",
+                                    status: TransactionStepStatus.COMPLETED,
+                                })
+                            );
+                            store.dispatch(
+                                addTransactionStepDb({
+                                    transactionId: id!,
+                                    step: {
+                                        txHash: hash,
+                                        type: "WAIT_FOR_CONFIRMATION",
+                                        name: "Waiting for confirmation",
+                                        status: TransactionStepStatus.IN_PROGRESS,
+                                    } as WaitForConfirmationStep,
+                                })
                             );
                         }
+                    );
+                    store.dispatch(
+                        editTransactionStepDb({
+                            transactionId: id,
+                            stepType: "WAIT_FOR_CONFIRMATION",
+                            status: TransactionStepStatus.COMPLETED,
+                        })
                     );
                 } else {
                     zapperTxn = {
@@ -228,13 +253,23 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     max,
                 });
                 if (bridgeStatus) {
-                    const client = await getClients(farm.chainId);
                     if (isBridged) amountInWei = finalAmountToDeposit;
 
                     // #region Approve
                     // first approve tokens, if zap is not in eth
                     if (token !== zeroAddress) {
                         notifyLoading(loadingMessages.approvingZapping(), { id });
+                        store.dispatch(
+                            addTransactionStepDb({
+                                transactionId: id!,
+                                step: {
+                                    type: "APPROVE_ZAP",
+                                    name: "Approve Zap",
+                                    status: TransactionStepStatus.IN_PROGRESS,
+                                } as ApproveZapStep,
+                            })
+                        );
+                        const client = await getClients(farm.chainId);
                         const response = await approveErc20(
                             token,
                             farm.zapper_addr,
@@ -242,9 +277,27 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                             currentWallet,
                             client
                         );
+                        store.dispatch(
+                            editTransactionStepDb({
+                                transactionId: id,
+                                stepType: "APPROVE_ZAP",
+                                status: TransactionStepStatus.COMPLETED,
+                            })
+                        );
                         if (!response.status) throw new Error("Error approving vault!");
                     }
                     // #endregion
+                    store.dispatch(
+                        addTransactionStepDb({
+                            transactionId: id!,
+                            step: {
+                                type: "ZAP_IN",
+                                name: "Zap In",
+                                status: TransactionStepStatus.IN_PROGRESS,
+                            } as ZapInStep,
+                        })
+                    );
+                    const client = await getClients(farm.chainId);
 
                     notifyLoading(loadingMessages.zapping(), { id });
                     zapperTxn = await awaitTransaction(
@@ -258,10 +311,32 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                         }),
                         client,
                         async (hash) => {
-                            await store.dispatch(
-                                editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                            store.dispatch(
+                                editTransactionStepDb({
+                                    transactionId: id,
+                                    stepType: "ZAP_IN",
+                                    status: TransactionStepStatus.COMPLETED,
+                                })
+                            );
+                            store.dispatch(
+                                addTransactionStepDb({
+                                    transactionId: id!,
+                                    step: {
+                                        txHash: hash,
+                                        type: "WAIT_FOR_CONFIRMATION",
+                                        name: "Waiting for confirmation",
+                                        status: TransactionStepStatus.IN_PROGRESS,
+                                    } as WaitForConfirmationStep,
+                                })
                             );
                         }
+                    );
+                    store.dispatch(
+                        editTransactionStepDb({
+                            transactionId: id,
+                            stepType: "WAIT_FOR_CONFIRMATION",
+                            status: TransactionStepStatus.COMPLETED,
+                        })
                     );
                 } else {
                     zapperTxn = {
@@ -272,21 +347,18 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             }
 
             if (!zapperTxn.status) {
-                store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
+                store.dispatch(markAsFailedDb(id));
                 throw new Error(zapperTxn.error);
             } else {
                 dismissNotify(id);
                 notifySuccess(successMessages.zapIn());
-                store.dispatch(
-                    editTransactionDb({ _id: id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS })
-                );
             }
             // #endregion
         } catch (error: any) {
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             dismissNotify(id);
-            store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
+            store.dispatch(markAsFailedDb(id));
             notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };

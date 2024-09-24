@@ -29,14 +29,29 @@
     border-radius: 360px;
     background: var(--background_light);
     margin-top: 20px;
+    overflow: hidden;
     div {
         height: 100%;
+        width: 50%;
         border-radius: 360px;
-        transition: all 0.3s cubic-bezier(0.42, 0, 0.13, 1.5);
         background: var(--color_primary);
+        animation: loadingBarAnimation 2s linear infinite; // Add animation
     }
 }
-
+@keyframes loadingBarAnimation {
+    0% {
+        width: 20%;
+        transform: translateX(-100%);
+    }
+    50% {
+        width: 50%;
+        transform: translateX(25%);
+    }
+    100% {
+        width: 20%;
+        transform: translateX(500%);
+    }
+}
 .stepName {
     font-weight: 600;
 }

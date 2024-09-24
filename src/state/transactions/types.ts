@@ -6,17 +6,16 @@ export interface StateInterface {
     fetchedAll: boolean;
 }
 
-export enum TransactionStatus {
-    PENDING = "PENDING",
-    BRIDGING = "BRIDGING",
-    INTERRUPTED = "INTERRUPTED",
-    SUCCESS = "SUCCESS",
-    FAILED = "FAILED",
-}
-
 export enum BridgeService {
     LIFI = "LIFI",
     SOCKET_TECH = "SOCKET_TECH",
+}
+
+export enum TransactionStatus {
+    SUCCESS = "SUCCESS",
+    FAILED = "FAILED",
+    PENDING = "PENDING",
+    INTERRUPTED = "INTERRUPTED",
 }
 
 export interface Transaction {
@@ -29,13 +28,76 @@ export interface Transaction {
     vaultPrice?: number;
     token: Address;
     max: boolean;
-    txHash?: Hex;
-    status: TransactionStatus;
     date: string;
-    bridgeInfo?: {
-        txHash: Hex;
+    steps: TransactionStep[];
+}
+
+export type TransactionStep =
+    | GetBridgeQuoteStep
+    | ApproveBridgeStep
+    | InitiateBridgeStep
+    | WaitForBridgeResultsStep
+    | ApproveZapStep
+    | ZapInStep
+    | WaitForConfirmationStep
+    | ZapOutStep;
+export interface GetBridgeQuoteStep extends BaseStep {
+    type: "GET_BRIDGE_QUOTE";
+    name: "Get Bridge Quote";
+}
+
+export interface ApproveBridgeStep extends BaseStep {
+    type: "APPROVE_BRIDGE";
+    name: "Approve Bridge";
+}
+
+export interface InitiateBridgeStep extends BaseStep {
+    type: "INITIATE_BRIDGE";
+    name: "Initiate Bridge";
+}
+
+export interface WaitForBridgeResultsStep extends BaseStep {
+    type: "WAIT_FOR_BRIDGE_RESULTS";
+    name: "Waiting for bridge results";
+    bridgeInfo: {
+        txHash?: Hex;
         fromChain: number;
         toChain: number;
         beforeBridgeBalance: string;
     } & ({ bridgeService: BridgeService.LIFI; tool: string } | { bridgeService: BridgeService.SOCKET_TECH });
+}
+
+export interface ApproveZapStep extends BaseStep {
+    type: "APPROVE_ZAP";
+    name: "Approve Zap";
+    txHash?: Hex;
+}
+
+export interface ZapInStep extends BaseStep {
+    type: "ZAP_IN";
+    name: "Zap In";
+    txHash?: Hex;
+}
+
+export interface ZapOutStep extends BaseStep {
+    type: "ZAP_OUT";
+    name: "Zap Out";
+    txHash?: Hex;
+}
+
+export interface WaitForConfirmationStep extends BaseStep {
+    type: "WAIT_FOR_CONFIRMATION";
+    name: "Waiting for confirmation";
+    txHash: Hex;
+}
+
+export enum TransactionStepStatus {
+    PENDING = "PENDING",
+    IN_PROGRESS = "IN_PROGRESS",
+    COMPLETED = "COMPLETED",
+    FAILED = "FAILED",
+}
+interface BaseStep {
+    status: TransactionStepStatus;
+    amount?: string;
 }
