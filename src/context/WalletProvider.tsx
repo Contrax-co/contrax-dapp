@@ -19,7 +19,7 @@ import { WalletClientSigner, type SmartAccountSigner } from "@aa-sdk/core";
 import { defaultChainId } from "src/config/constants";
 import useWeb3Auth from "src/hooks/useWeb3Auth";
 import { requestEthForGas } from "src/api";
-import { Connector, useAccount, useDisconnect, useWalletClient } from "wagmi";
+import { Connector, useAccount, useChainId, useDisconnect, useWalletClient } from "wagmi";
 import { getWalletClient as getWalletClientCore, switchChain as switchChainCore } from "@wagmi/core";
 
 export interface IWalletContext {
@@ -85,6 +85,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     // const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
     const [externalChainId, setExternalChainId] = useState(CHAIN_ID.ARBITRUM);
+    const wagmiChainId = useChainId();
     const { data: walletClient } = useWalletClient();
     const _publicClients = useRef<Record<number, IClients["public"]>>({});
     const _walletClients = useRef<Record<number, IClients["wallet"]>>({});
@@ -269,7 +270,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     const connectWallet = useCallback(async () => {
         try {
             setIsConnecting(true);
-            const _walletClient = await getWalletClient(externalChainId, false);
+            const _walletClient = await getWalletClient(wagmiChainId, false);
             // @ts-ignore
             setCurrentWallet(getAddress(_walletClient.account.address));
         } catch (error) {
