@@ -22,8 +22,18 @@ import { encodeFunctionData, getContract, zeroAddress } from "viem";
 import pools_json from "src/config/constants/pools_json";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import store from "src/state";
-import { TransactionStatus } from "src/state/transactions/types";
-import { editTransactionDb } from "src/state/transactions/transactionsReducer";
+import {
+    TransactionStatus,
+    TransactionStepStatus,
+    WaitForConfirmationStep,
+    ZapInStep,
+} from "src/state/transactions/types";
+import {
+    addTransactionStepDb,
+    editTransactionDb,
+    editTransactionStepDb,
+    markAsFailedDb,
+} from "src/state/transactions/transactionsReducer";
 
 const apAbi = [
     {
@@ -190,6 +200,16 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 max,
             });
             if (bridgeStatus) {
+                store.dispatch(
+                    addTransactionStepDb({
+                        transactionId: id!,
+                        step: {
+                            type: "ZAP_IN",
+                            name: "Zap In",
+                            status: TransactionStepStatus.IN_PROGRESS,
+                        } as ZapInStep,
+                    })
+                );
                 const client = await getClients(farm.chainId);
                 if (isBridged) amountInWei = finalAmountToDeposit;
                 if (!isSocial && !(await isGasSponsored(currentWallet))) {
@@ -228,8 +248,32 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     }),
                     client,
                     (hash) => {
-                        store.dispatch(editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING }));
+                        store.dispatch(
+                            editTransactionStepDb({
+                                transactionId: id,
+                                stepType: "ZAP_IN",
+                                status: TransactionStepStatus.COMPLETED,
+                            })
+                        );
+                        store.dispatch(
+                            addTransactionStepDb({
+                                transactionId: id!,
+                                step: {
+                                    txHash: hash,
+                                    type: "WAIT_FOR_CONFIRMATION",
+                                    name: "Waiting for confirmation",
+                                    status: TransactionStepStatus.IN_PROGRESS,
+                                } as WaitForConfirmationStep,
+                            })
+                        );
                     }
+                );
+                store.dispatch(
+                    editTransactionStepDb({
+                        transactionId: id,
+                        stepType: "WAIT_FOR_CONFIRMATION",
+                        status: TransactionStepStatus.COMPLETED,
+                    })
                 );
             } else {
                 zapperTxn = {
@@ -239,12 +283,9 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             }
 
             if (!zapperTxn.status) {
-                store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
+                store.dispatch(markAsFailedDb(id));
                 throw new Error(zapperTxn.error);
             } else {
-                store.dispatch(
-                    editTransactionDb({ _id: id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS })
-                );
                 dismissNotify(id);
                 notifySuccess(successMessages.zapIn());
             }
@@ -253,7 +294,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             id && dismissNotify(id);
-            store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
+            store.dispatch(markAsFailedDb(id));
             notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };

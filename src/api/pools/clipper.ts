@@ -28,9 +28,20 @@ import { encodeFunctionData, getContract, Hex, zeroAddress } from "viem";
 import pools_json from "src/config/constants/pools_json";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import clipperZapperAbi from "src/assets/abis/clipperZapperAbi";
-import { TransactionStatus } from "src/state/transactions/types";
+import {
+    ApproveZapStep,
+    TransactionStatus,
+    TransactionStepStatus,
+    WaitForConfirmationStep,
+    ZapInStep,
+} from "src/state/transactions/types";
 import store from "src/state";
-import { editTransactionDb } from "src/state/transactions/transactionsReducer";
+import {
+    addTransactionStepDb,
+    editTransactionDb,
+    editTransactionStepDb,
+    markAsFailedDb,
+} from "src/state/transactions/transactionsReducer";
 
 let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
     const farm = pools_json.find((farm) => farm.id === farmId)!;
@@ -146,6 +157,16 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     max,
                 });
                 if (bridgeStatus) {
+                    store.dispatch(
+                        addTransactionStepDb({
+                            transactionId: id!,
+                            step: {
+                                type: "ZAP_IN",
+                                name: "Zap In",
+                                status: TransactionStepStatus.IN_PROGRESS,
+                            } as ZapInStep,
+                        })
+                    );
                     const client = await getClients(farm.chainId);
                     if (isBridged) amountInWei = finalAmountToDeposit;
 
@@ -201,10 +222,32 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                         }),
                         client,
                         async (hash) => {
-                            await store.dispatch(
-                                editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                            store.dispatch(
+                                editTransactionStepDb({
+                                    transactionId: id,
+                                    stepType: "ZAP_IN",
+                                    status: TransactionStepStatus.COMPLETED,
+                                })
+                            );
+                            store.dispatch(
+                                addTransactionStepDb({
+                                    transactionId: id!,
+                                    step: {
+                                        txHash: hash,
+                                        type: "WAIT_FOR_CONFIRMATION",
+                                        name: "Waiting for confirmation",
+                                        status: TransactionStepStatus.IN_PROGRESS,
+                                    } as WaitForConfirmationStep,
+                                })
                             );
                         }
+                    );
+                    store.dispatch(
+                        editTransactionStepDb({
+                            transactionId: id,
+                            stepType: "WAIT_FOR_CONFIRMATION",
+                            status: TransactionStepStatus.COMPLETED,
+                        })
                     );
                 } else {
                     zapperTxn = {
@@ -236,6 +279,16 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     // first approve tokens, if zap is not in eth
                     if (token !== zeroAddress) {
                         notifyLoading(loadingMessages.approvingZapping(), { id });
+                        store.dispatch(
+                            addTransactionStepDb({
+                                transactionId: id!,
+                                step: {
+                                    type: "APPROVE_ZAP",
+                                    name: "Approve Zap",
+                                    status: TransactionStepStatus.IN_PROGRESS,
+                                } as ApproveZapStep,
+                            })
+                        );
                         const response = await approveErc20(
                             token,
                             farm.zapper_addr,
@@ -243,10 +296,26 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                             currentWallet,
                             client
                         );
+                        store.dispatch(
+                            editTransactionStepDb({
+                                transactionId: id,
+                                stepType: "APPROVE_ZAP",
+                                status: TransactionStepStatus.COMPLETED,
+                            })
+                        );
                         if (!response.status) throw new Error("Error approving vault!");
                     }
                     // #endregion
-
+                    store.dispatch(
+                        addTransactionStepDb({
+                            transactionId: id!,
+                            step: {
+                                type: "ZAP_IN",
+                                name: "Zap In",
+                                status: TransactionStepStatus.IN_PROGRESS,
+                            } as ZapInStep,
+                        })
+                    );
                     const { packedConfig, packedInput, r, s } = await createClipperData(
                         amountInWei.toString(),
                         token === zeroAddress ? wethAddress : token,
@@ -264,10 +333,32 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                         }),
                         client,
                         async (hash) => {
-                            await store.dispatch(
-                                editTransactionDb({ _id: id, txHash: hash, status: TransactionStatus.PENDING })
+                            store.dispatch(
+                                editTransactionStepDb({
+                                    transactionId: id,
+                                    stepType: "ZAP_IN",
+                                    status: TransactionStepStatus.COMPLETED,
+                                })
+                            );
+                            store.dispatch(
+                                addTransactionStepDb({
+                                    transactionId: id!,
+                                    step: {
+                                        txHash: hash,
+                                        type: "WAIT_FOR_CONFIRMATION",
+                                        name: "Waiting for confirmation",
+                                        status: TransactionStepStatus.IN_PROGRESS,
+                                    } as WaitForConfirmationStep,
+                                })
                             );
                         }
+                    );
+                    store.dispatch(
+                        editTransactionStepDb({
+                            transactionId: id,
+                            stepType: "WAIT_FOR_CONFIRMATION",
+                            status: TransactionStepStatus.COMPLETED,
+                        })
                     );
                 } else {
                     zapperTxn = {
@@ -278,12 +369,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             }
 
             if (!zapperTxn.status) {
-                store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
+                store.dispatch(markAsFailedDb(id));
                 throw new Error(zapperTxn.error);
             } else {
-                store.dispatch(
-                    editTransactionDb({ _id: id, txHash: zapperTxn.txHash, status: TransactionStatus.SUCCESS })
-                );
                 dismissNotify(id);
                 notifySuccess(successMessages.zapIn());
             }
@@ -292,7 +380,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
             id && dismissNotify(id);
-            store.dispatch(editTransactionDb({ _id: id, status: TransactionStatus.FAILED }));
+            store.dispatch(markAsFailedDb(id));
             notifyError(errorMessages.generalError(error.message || err.reason || err.message));
         }
     };
