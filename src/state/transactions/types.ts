@@ -68,7 +68,7 @@ export interface InitiateBridgeStep extends BaseStep {
 export interface WaitForBridgeResultsStep extends BaseStep {
     type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS;
     bridgeInfo: {
-        txHash?: string;
+        txHash?: Hex;
         fromChain: number;
         toChain: number;
         beforeBridgeBalance: string;
@@ -77,22 +77,21 @@ export interface WaitForBridgeResultsStep extends BaseStep {
 
 export interface ApproveZapStep extends BaseStep {
     type: TransactionTypes.APPROVE_ZAP;
-    txHash?: string;
+    txHash?: Hex;
 }
 
 export interface ZapInStep extends BaseStep {
     type: TransactionTypes.ZAP_IN;
-    txHash?: string;
+    txHash?: Hex;
 }
 
 export interface ZapOutStep extends BaseStep {
     type: TransactionTypes.ZAP_OUT;
-    txHash?: string;
+    txHash?: Hex;
 }
 
 export interface WaitForConfirmationStep extends BaseStep {
     type: TransactionTypes.WAIT_FOR_CONFIRMATION;
-    txHash: string;
 }
 
 export enum TransactionStepStatus {
@@ -104,4 +103,5 @@ export enum TransactionStepStatus {
 interface BaseStep {
     status: TransactionStepStatus;
     amount?: string;
+    txHash?: Hex;
 }

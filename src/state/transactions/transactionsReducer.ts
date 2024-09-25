@@ -1,8 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { StateInterface, Transaction, TransactionStep, TransactionStepStatus } from "./types";
+import { StateInterface, Transaction, TransactionStep, TransactionStepStatus, TransactionTypes } from "./types";
 import { backendApi } from "src/api";
-import { Address, Hex } from "viem";
+import { Address, createPublicClient, Hex, http, TransactionReceipt } from "viem";
 import { RootState } from "..";
+import pools_json from "src/config/constants/pools_json";
+import { SupportedChains } from "src/config/walletConfig";
+import { IClients } from "src/types";
+import moment from "moment";
 
 const initialState: StateInterface = {
     transactions: [],
@@ -95,45 +99,78 @@ export const getTransactionsDb = createAsyncThunk(
 export const checkPendingTransactionsStatus = createAsyncThunk(
     "transactions/checkPendingTransactionsStatus",
     async (_, thunkApi) => {
-        // const txs = (thunkApi.getState() as RootState).transactions.transactions;
-        // const promises = txs.reduce((acc, curr) => {
-        //     if (curr.status === TransactionStatus.PENDING && curr.txHash) {
-        //         const chainId = pools_json.find((item) => item.id === curr.farmId)?.chainId;
-        //         if (chainId) {
-        //             const chain = SupportedChains.find((item) => item.id === chainId);
-        //             if (!chain) throw new Error("chain not found");
-        //             const publicClient = createPublicClient({
-        //                 chain: chain,
-        //                 transport: http(),
-        //                 batch: {
-        //                     multicall: {
-        //                         batchSize: 4096,
-        //                         wait: 250,
-        //                     },
-        //                 },
-        //             }) as IClients["public"];
-        //             acc.push(publicClient.getTransactionReceipt({ hash: curr.txHash }));
-        //         }
-        //     }
-        //     return acc;
-        // }, [] as Promise<TransactionReceipt>[]);
-        // const receipts = await Promise.all(promises);
-        // receipts.forEach((receipt, index) => {
-        //     if (receipt) {
-        //         const tx = txs.find((item) => item.txHash === receipt.transactionHash);
-        //         if (receipt.status === "success") {
-        //             thunkApi.dispatch(editTransactionDb({ _id: tx?._id, status: TransactionStatus.SUCCESS }));
-        //         } else {
-        //             thunkApi.dispatch(editTransactionDb({ _id: tx?._id, status: TransactionStatus.FAILED }));
-        //         }
-        //     }
-        // });
-        // txs.filter((item) => item.status === TransactionStatus.PENDING && !item.txHash).forEach((item) => {
-        //     // Check if since item.date an hour has passed
-        //     if (moment().diff(item.date, "hours") > 1) {
-        //         thunkApi.dispatch(editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED }));
-        //     }
-        // });
+        const txs = (thunkApi.getState() as RootState).transactions.transactions;
+        const promises = txs.reduce((acc, curr) => {
+            const lastStep = curr.steps.at(-1);
+            if (
+                lastStep &&
+                lastStep.type === TransactionTypes.WAIT_FOR_CONFIRMATION &&
+                lastStep.status === TransactionStepStatus.IN_PROGRESS &&
+                lastStep.txHash
+            ) {
+                const chainId = pools_json.find((item) => item.id === curr.farmId)?.chainId;
+                if (chainId) {
+                    const chain = SupportedChains.find((item) => item.id === chainId);
+                    if (!chain) throw new Error("chain not found");
+                    const publicClient = createPublicClient({
+                        chain: chain,
+                        transport: http(),
+                        batch: {
+                            multicall: {
+                                batchSize: 4096,
+                                wait: 250,
+                            },
+                        },
+                    }) as IClients["public"];
+                    acc.push(publicClient.getTransactionReceipt({ hash: lastStep.txHash }));
+                }
+            }
+            return acc;
+        }, [] as Promise<TransactionReceipt>[]);
+        const receipts = await Promise.all(promises);
+        receipts.forEach((receipt, index) => {
+            if (receipt) {
+                const tx = txs.find((item) => item.steps.at(-1)?.txHash === receipt.transactionHash);
+                if (!tx) return;
+                if (receipt.status === "success") {
+                    thunkApi.dispatch(
+                        editTransactionStepDb({
+                            transactionId: tx._id,
+                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            status: TransactionStepStatus.COMPLETED,
+                        })
+                    );
+                } else {
+                    thunkApi.dispatch(
+                        editTransactionStepDb({
+                            transactionId: tx._id,
+                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            status: TransactionStepStatus.FAILED,
+                        })
+                    );
+                    thunkApi.dispatch(
+                        editTransactionStepDb({
+                            transactionId: tx._id,
+                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            status: TransactionStepStatus.FAILED,
+                        })
+                    );
+                }
+            }
+        });
+
+        txs.filter((item) => item.steps.length > 0).forEach((item) => {
+            const lastStep = item.steps.at(-1)!;
+            // Check if since item.date an hour has passed
+            if (lastStep.status === TransactionStepStatus.IN_PROGRESS)
+                if (moment().diff(item.date, "hours") > 1) {
+                    editTransactionStepDb({
+                        transactionId: item._id,
+                        stepType: lastStep.type,
+                        status: TransactionStepStatus.FAILED,
+                    });
+                }
+        });
         // txs.filter((item) => !item.txHash && item.status === TransactionStatus.BRIDGING && item.bridgeInfo).forEach(
         //     (item) => {
         //         const { fromChain, toChain, txHash } = item.bridgeInfo!;

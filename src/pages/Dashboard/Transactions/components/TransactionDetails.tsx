@@ -43,14 +43,14 @@ const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
                         step.type,
                         step.status,
                         transaction.type === "deposit" ? (transaction.token === zeroAddress ? 18 : 6) : 18,
-                        // transaction.type === "deposit" ?
-                        step.amount,
-                        // : BigInt(step.amount || 0) * BigInt(transaction.vaultPrice || 0),
                         transaction.type === "deposit"
-                            ? transaction.token === zeroAddress
-                                ? "ETH"
-                                : "USDC"
-                            : farm.name!
+                            ? step.amount
+                            : (
+                                  (BigInt(step.amount || 0) *
+                                      BigInt((Number(transaction.vaultPrice) * 100000).toFixed() || 0)) /
+                                  100000n
+                              ).toString(),
+                        transaction.token === zeroAddress ? "ETH" : "USDC"
                     )
                 )}
             </div>
