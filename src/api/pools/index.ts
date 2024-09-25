@@ -46,6 +46,7 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
 
     201: steer(201), // 201: WETH-USDCB
     202: steer(202), // 202: WETH-SNSY
+    203: steer(203), // 203: WETH-cbBTC
 
     40: clipper(40), // 36: Clipper
 };

@@ -155,8 +155,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             if (!chain) throw new Error("chain not found");
             if (!pkey) {
                 // @ts-ignore
-                const _walletClient = await getWalletClientCore(rainbowConfig, { chainId }).extend((client) => ({
-                    async sendTransaction(args: { to: Address; data: Hex; value?: bigint }) {
+                const _walletClient = (await getWalletClientCore(rainbowConfig, { chainId })).extend((client) => ({
+                    // @ts-ignore
+                    async sendTransaction(args) {
                         const publicClient = getPublicClient(chainId);
                         const gas = await publicClient.estimateGas({
                             to: args.to,
@@ -282,7 +283,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         await disconnectAsync();
         setCurrentWallet(undefined);
         _walletClients.current = {};
-        web3AuthInstance.provider?.removeListener("chainChanged", externalWalletChainChanged);
     }
     const displayAccount = React.useMemo(
         () =>

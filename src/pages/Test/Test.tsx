@@ -36,6 +36,7 @@ const Test = () => {
 
     const fn = async () => {
         setModelOpen(true);
+        await getWalletClient(CHAIN_ID.ARBITRUM);
     };
 
     return (
