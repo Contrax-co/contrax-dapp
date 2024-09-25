@@ -155,11 +155,8 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             if (!chain) throw new Error("chain not found");
             if (!pkey) {
                 // @ts-ignore
-                const _walletClient = await getWalletClientCore(rainbowConfig, { chainId });
-                // @ts-ignore
-                await switchChainCore(rainbowConfig, { chainId });
-                _walletClient.extend((client) => ({
-                    async sendTransaction(args) {
+                const _walletClient = await getWalletClientCore(rainbowConfig, { chainId }).extend((client) => ({
+                    async sendTransaction(args: { to: Address; data: Hex; value?: bigint }) {
                         const publicClient = getPublicClient(chainId);
                         const gas = await publicClient.estimateGas({
                             to: args.to,
@@ -180,6 +177,9 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                         return await client.sendTransaction(args);
                     },
                 }));
+                // @ts-ignore
+                await switchChainCore(rainbowConfig, { chainId });
+
                 // @ts-ignore
                 return _walletClient;
             } else {
@@ -187,8 +187,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                     account: privateKeyToAccount(pkey),
                     transport: http(),
                     chain,
-                });
-                _walletClient.extend((client) => ({
+                }).extend((client) => ({
                     async sendTransaction(args) {
                         const publicClient = getPublicClient(chainId);
                         const gas = await publicClient.estimateGas({
@@ -210,6 +209,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                         return await client.sendTransaction(args);
                     },
                 }));
+
                 return _walletClient;
             }
         },
