@@ -25,6 +25,7 @@ import store from "src/state";
 import {
     TransactionStatus,
     TransactionStepStatus,
+    TransactionTypes,
     WaitForConfirmationStep,
     ZapInStep,
 } from "src/state/transactions/types";
@@ -204,8 +205,8 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     addTransactionStepDb({
                         transactionId: id!,
                         step: {
-                            type: "ZAP_IN",
-                            name: "Zap In",
+                            type: TransactionTypes.ZAP_IN,
+                            amount: amountInWei.toString(),
                             status: TransactionStepStatus.IN_PROGRESS,
                         } as ZapInStep,
                     })
@@ -251,7 +252,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                         store.dispatch(
                             editTransactionStepDb({
                                 transactionId: id,
-                                stepType: "ZAP_IN",
+                                stepType: TransactionTypes.ZAP_IN,
                                 status: TransactionStepStatus.COMPLETED,
                             })
                         );
@@ -260,8 +261,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                                 transactionId: id!,
                                 step: {
                                     txHash: hash,
-                                    type: "WAIT_FOR_CONFIRMATION",
-                                    name: "Waiting for confirmation",
+                                    type: TransactionTypes.WAIT_FOR_CONFIRMATION,
                                     status: TransactionStepStatus.IN_PROGRESS,
                                 } as WaitForConfirmationStep,
                             })
@@ -271,7 +271,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 store.dispatch(
                     editTransactionStepDb({
                         transactionId: id,
-                        stepType: "WAIT_FOR_CONFIRMATION",
+                        stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
                         status: TransactionStepStatus.COMPLETED,
                     })
                 );

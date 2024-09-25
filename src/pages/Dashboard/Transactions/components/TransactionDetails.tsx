@@ -8,7 +8,7 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import styles from "./TransactionDetails.module.scss";
 import { TransactionStepStatus } from "src/state/transactions/types";
-import { zeroAddress } from "viem";
+import { formatUnits, parseUnits, zeroAddress } from "viem";
 
 interface IProps {
     transactionId: string;
@@ -24,17 +24,34 @@ const selectTransactionById = createSelector(
 const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
     const transaction = useAppSelector((state: RootState) => selectTransactionById(state, transactionId));
     const farm = useMemo(() => pools_json.find((item) => item.id === transaction?.farmId), [transaction?.farmId]);
-    const [percentage, setPercentage] = useState(0);
     if (!farm || !transaction) return;
 
     return (
         <div className={`${styles.container} ${open ? styles.open : styles.closed}`}>
             <div className={styles.loadingBarContainer}>
-                <div  />
+                <div
+                    className={
+                        transaction.steps.some((item) => item.status === TransactionStepStatus.IN_PROGRESS)
+                            ? styles.loadingBarAnimated
+                            : ""
+                    }
+                />
             </div>
             <div style={{ marginTop: 10 }}>
                 {transaction.steps.map((step) =>
-                    getStep(step.name, step.status, step.amount, transaction.token === zeroAddress ? "ETH" : "USDC")
+                    getStep(
+                        step.type,
+                        step.status,
+                        transaction.type === "deposit" ? (transaction.token === zeroAddress ? 18 : 6) : 18,
+                        // transaction.type === "deposit" ?
+                        step.amount,
+                        // : BigInt(step.amount || 0) * BigInt(transaction.vaultPrice || 0),
+                        transaction.type === "deposit"
+                            ? transaction.token === zeroAddress
+                                ? "ETH"
+                                : "USDC"
+                            : farm.name!
+                    )
                 )}
             </div>
         </div>
@@ -43,7 +60,7 @@ const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
 
 export default TransactionDetails;
 
-function getStep(name: string, status: TransactionStepStatus, value?: string, tokenName?: string) {
+function getStep(name: string, status: TransactionStepStatus, decimals: number, value?: string, tokenName?: string) {
     return (
         <div className={styles.row}>
             {status === TransactionStepStatus.COMPLETED ? (
@@ -59,7 +76,7 @@ function getStep(name: string, status: TransactionStepStatus, value?: string, to
                 <p className={styles.stepName}>{name}</p>
                 {value && (
                     <p className={styles.tokenValue}>
-                        {value} {tokenName}
+                        {Number(formatUnits(BigInt(value), decimals)).toLocaleString()} {tokenName}
                     </p>
                 )}
             </div>

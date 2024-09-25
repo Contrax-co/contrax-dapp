@@ -27,8 +27,8 @@ import {
     BridgeService,
     GetBridgeQuoteStep,
     InitiateBridgeStep,
-    TransactionStatus,
     TransactionStepStatus,
+    TransactionTypes,
     WaitForBridgeResultsStep,
     WaitForConfirmationStep,
     ZapInStep,
@@ -37,7 +37,6 @@ import {
 import { buildTransaction, getBridgeStatus, getRoute, SocketApprovalData, SocketRoute } from "../bridge";
 import {
     addTransactionStepDb,
-    editTransactionDb,
     editTransactionStepDb,
     markAsFailedDb,
 } from "src/state/transactions/transactionsReducer";
@@ -95,8 +94,8 @@ export const zapInBase: ZapInBaseFn = async ({
                     addTransactionStepDb({
                         transactionId: id!,
                         step: {
-                            type: "ZAP_IN",
-                            name: "Zap In",
+                            type: TransactionTypes.ZAP_IN,
+                            amount: amountInWei.toString(),
                             status: TransactionStepStatus.IN_PROGRESS,
                         } as ZapInStep,
                     })
@@ -142,7 +141,7 @@ export const zapInBase: ZapInBaseFn = async ({
                         store.dispatch(
                             editTransactionStepDb({
                                 transactionId: id,
-                                stepType: "ZAP_IN",
+                                stepType: TransactionTypes.ZAP_IN,
                                 status: TransactionStepStatus.COMPLETED,
                             })
                         );
@@ -151,8 +150,7 @@ export const zapInBase: ZapInBaseFn = async ({
                                 transactionId: id!,
                                 step: {
                                     txHash: hash,
-                                    type: "WAIT_FOR_CONFIRMATION",
-                                    name: "Waiting for confirmation",
+                                    type: TransactionTypes.WAIT_FOR_CONFIRMATION,
                                     status: TransactionStepStatus.IN_PROGRESS,
                                 } as WaitForConfirmationStep,
                             })
@@ -162,7 +160,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 store.dispatch(
                     editTransactionStepDb({
                         transactionId: id,
-                        stepType: "WAIT_FOR_CONFIRMATION",
+                        stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
                         status: TransactionStepStatus.COMPLETED,
                     })
                 );
@@ -199,8 +197,7 @@ export const zapInBase: ZapInBaseFn = async ({
                         addTransactionStepDb({
                             transactionId: id!,
                             step: {
-                                type: "APPROVE_ZAP",
-                                name: "Approve Zap",
+                                type: TransactionTypes.APPROVE_ZAP,
                                 status: TransactionStepStatus.IN_PROGRESS,
                             } as ApproveZapStep,
                         })
@@ -217,7 +214,7 @@ export const zapInBase: ZapInBaseFn = async ({
                     store.dispatch(
                         editTransactionStepDb({
                             transactionId: id,
-                            stepType: "APPROVE_ZAP",
+                            stepType: TransactionTypes.APPROVE_ZAP,
                             status: TransactionStepStatus.COMPLETED,
                         })
                     );
@@ -228,8 +225,8 @@ export const zapInBase: ZapInBaseFn = async ({
                     addTransactionStepDb({
                         transactionId: id!,
                         step: {
-                            type: "ZAP_IN",
-                            name: "Zap In",
+                            type: TransactionTypes.ZAP_IN,
+                            amount: amountInWei.toString(),
                             status: TransactionStepStatus.IN_PROGRESS,
                         } as ZapInStep,
                     })
@@ -251,7 +248,7 @@ export const zapInBase: ZapInBaseFn = async ({
                         store.dispatch(
                             editTransactionStepDb({
                                 transactionId: id,
-                                stepType: "ZAP_IN",
+                                stepType: TransactionTypes.ZAP_IN,
                                 status: TransactionStepStatus.COMPLETED,
                             })
                         );
@@ -260,8 +257,7 @@ export const zapInBase: ZapInBaseFn = async ({
                                 transactionId: id!,
                                 step: {
                                     txHash: hash,
-                                    type: "WAIT_FOR_CONFIRMATION",
-                                    name: "Waiting for confirmation",
+                                    type: TransactionTypes.WAIT_FOR_CONFIRMATION,
                                     status: TransactionStepStatus.IN_PROGRESS,
                                 } as WaitForConfirmationStep,
                             })
@@ -271,7 +267,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 store.dispatch(
                     editTransactionStepDb({
                         transactionId: id,
-                        stepType: "WAIT_FOR_CONFIRMATION",
+                        stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
                         status: TransactionStepStatus.COMPLETED,
                     })
                 );
@@ -307,8 +303,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
             addTransactionStepDb({
                 transactionId: id!,
                 step: {
-                    type: "APPROVE_ZAP",
-                    name: "Approve Zap",
+                    type: TransactionTypes.APPROVE_ZAP,
                     status: TransactionStepStatus.IN_PROGRESS,
                 } as ApproveZapStep,
             })
@@ -326,7 +321,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         store.dispatch(
             editTransactionStepDb({
                 transactionId: id,
-                stepType: "APPROVE_ZAP",
+                stepType: TransactionTypes.APPROVE_ZAP,
                 status: TransactionStepStatus.COMPLETED,
             })
         );
@@ -345,8 +340,8 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
             addTransactionStepDb({
                 transactionId: id!,
                 step: {
-                    type: "ZAP_OUT",
-                    name: "Zap Out",
+                    type: TransactionTypes.ZAP_OUT,
+                    amount: amountInWei.toString(),
                     status: TransactionStepStatus.IN_PROGRESS,
                 } as ZapOutStep,
             })
@@ -366,7 +361,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
                     store.dispatch(
                         editTransactionStepDb({
                             transactionId: id,
-                            stepType: "ZAP_OUT",
+                            stepType: TransactionTypes.ZAP_OUT,
                             status: TransactionStepStatus.COMPLETED,
                         })
                     );
@@ -375,8 +370,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
                             transactionId: id!,
                             step: {
                                 txHash: hash,
-                                type: "WAIT_FOR_CONFIRMATION",
-                                name: "Waiting for confirmation",
+                                type: TransactionTypes.WAIT_FOR_CONFIRMATION,
                                 status: TransactionStepStatus.IN_PROGRESS,
                             } as WaitForConfirmationStep,
                         })
@@ -398,7 +392,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
                     store.dispatch(
                         editTransactionStepDb({
                             transactionId: id,
-                            stepType: "ZAP_OUT",
+                            stepType: TransactionTypes.ZAP_OUT,
                             status: TransactionStepStatus.COMPLETED,
                         })
                     );
@@ -407,8 +401,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
                             transactionId: id!,
                             step: {
                                 txHash: hash,
-                                type: "WAIT_FOR_CONFIRMATION",
-                                name: "Waiting for confirmation",
+                                type: TransactionTypes.WAIT_FOR_CONFIRMATION,
                                 status: TransactionStepStatus.IN_PROGRESS,
                             } as WaitForConfirmationStep,
                         })
@@ -419,7 +412,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         store.dispatch(
             editTransactionStepDb({
                 transactionId: id,
-                stepType: "WAIT_FOR_CONFIRMATION",
+                stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
                 status: TransactionStepStatus.COMPLETED,
             })
         );
@@ -695,8 +688,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 addTransactionStepDb({
                     transactionId: obj.notificationId!,
                     step: {
-                        type: "GET_BRIDGE_QUOTE",
-                        name: "Get Bridge Quote",
+                        type: TransactionTypes.GET_BRIDGE_QUOTE,
                         status: TransactionStepStatus.IN_PROGRESS,
                     } as GetBridgeQuoteStep,
                 })
@@ -765,7 +757,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
             store.dispatch(
                 editTransactionStepDb({
                     transactionId: obj.notificationId!,
-                    stepType: "GET_BRIDGE_QUOTE",
+                    stepType: TransactionTypes.GET_BRIDGE_QUOTE,
                     status: TransactionStepStatus.COMPLETED,
                 })
             );
@@ -774,8 +766,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                     addTransactionStepDb({
                         transactionId: obj.notificationId!,
                         step: {
-                            type: "APPROVE_BRIDGE",
-                            name: "Approve Bridge",
+                            type: TransactionTypes.APPROVE_BRIDGE,
                             status: TransactionStepStatus.IN_PROGRESS,
                         } as ApproveBridgeStep,
                     })
@@ -790,7 +781,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 store.dispatch(
                     editTransactionStepDb({
                         transactionId: obj.notificationId!,
-                        stepType: "APPROVE_BRIDGE",
+                        stepType: TransactionTypes.APPROVE_BRIDGE,
                         status: TransactionStepStatus.COMPLETED,
                     })
                 );
@@ -806,8 +797,8 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 addTransactionStepDb({
                     transactionId: obj.notificationId!,
                     step: {
-                        type: "INITIATE_BRIDGE",
-                        name: "Initiate Bridge",
+                        type: TransactionTypes.INITIATE_BRIDGE,
+                        amount: toBalDiff.toString(),
                         status: TransactionStepStatus.IN_PROGRESS,
                     } as InitiateBridgeStep,
                 })
@@ -820,7 +811,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
             store.dispatch(
                 editTransactionStepDb({
                     transactionId: obj.notificationId!,
-                    stepType: "INITIATE_BRIDGE",
+                    stepType: TransactionTypes.INITIATE_BRIDGE,
                     status: TransactionStepStatus.COMPLETED,
                 })
             );
@@ -828,8 +819,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 addTransactionStepDb({
                     transactionId: obj.notificationId!,
                     step: {
-                        type: "WAIT_FOR_BRIDGE_RESULTS",
-                        name: "Waiting for bridge results",
+                        type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
                         status: TransactionStepStatus.IN_PROGRESS,
                         bridgeInfo: {
                             bridgeService: BridgeService.LIFI,
@@ -868,7 +858,8 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 store.dispatch(
                     editTransactionStepDb({
                         transactionId: obj.notificationId!,
-                        stepType: "WAIT_FOR_BRIDGE_RESULTS",
+                        stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+                        amount: (finalAmountToDeposit - toBal).toString(),
                         status: TransactionStepStatus.COMPLETED,
                     })
                 );
@@ -877,7 +868,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 store.dispatch(
                     editTransactionStepDb({
                         transactionId: obj.notificationId!,
-                        stepType: "WAIT_FOR_BRIDGE_RESULTS",
+                        stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
                         status: TransactionStepStatus.FAILED,
                     })
                 );
@@ -965,8 +956,7 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
             addTransactionStepDb({
                 transactionId: obj.notificationId!,
                 step: {
-                    type: "GET_BRIDGE_QUOTE",
-                    name: "Get Bridge Quote",
+                    type: TransactionTypes.GET_BRIDGE_QUOTE,
                     status: TransactionStepStatus.IN_PROGRESS,
                 } as GetBridgeQuoteStep,
             })
@@ -997,7 +987,7 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
         store.dispatch(
             editTransactionStepDb({
                 transactionId: obj.notificationId!,
-                stepType: "GET_BRIDGE_QUOTE",
+                stepType: TransactionTypes.GET_BRIDGE_QUOTE,
                 status: TransactionStepStatus.COMPLETED,
             })
         );
@@ -1006,8 +996,7 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
                 addTransactionStepDb({
                     transactionId: obj.notificationId!,
                     step: {
-                        type: "APPROVE_BRIDGE",
-                        name: "Approve Bridge",
+                        type: TransactionTypes.APPROVE_BRIDGE,
                         status: TransactionStepStatus.IN_PROGRESS,
                     } as ApproveBridgeStep,
                 })
@@ -1022,7 +1011,7 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
             store.dispatch(
                 editTransactionStepDb({
                     transactionId: obj.notificationId!,
-                    stepType: "APPROVE_BRIDGE",
+                    stepType: TransactionTypes.APPROVE_BRIDGE,
                     status: TransactionStepStatus.COMPLETED,
                 })
             );
@@ -1036,8 +1025,7 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
             addTransactionStepDb({
                 transactionId: obj.notificationId!,
                 step: {
-                    type: "INITIATE_BRIDGE",
-                    name: "Initiate Bridge",
+                    type: TransactionTypes.INITIATE_BRIDGE,
                     status: TransactionStepStatus.IN_PROGRESS,
                 } as InitiateBridgeStep,
             })
@@ -1050,7 +1038,7 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
         store.dispatch(
             editTransactionStepDb({
                 transactionId: obj.notificationId!,
-                stepType: "INITIATE_BRIDGE",
+                stepType: TransactionTypes.INITIATE_BRIDGE,
                 status: TransactionStepStatus.COMPLETED,
             })
         );
@@ -1058,8 +1046,7 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
             addTransactionStepDb({
                 transactionId: obj.notificationId!,
                 step: {
-                    type: "WAIT_FOR_BRIDGE_RESULTS",
-                    name: "Waiting for bridge results",
+                    type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
                     status: TransactionStepStatus.IN_PROGRESS,
                     bridgeInfo: {
                         bridgeService: BridgeService.SOCKET_TECH,
@@ -1092,7 +1079,7 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
             store.dispatch(
                 editTransactionStepDb({
                     transactionId: obj.notificationId!,
-                    stepType: "WAIT_FOR_BRIDGE_RESULTS",
+                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
                     status: TransactionStepStatus.COMPLETED,
                 })
             );
@@ -1106,7 +1093,7 @@ export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChai
             store.dispatch(
                 editTransactionStepDb({
                     transactionId: obj.notificationId!,
-                    stepType: "WAIT_FOR_BRIDGE_RESULTS",
+                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
                     status: TransactionStepStatus.FAILED,
                 })
             );

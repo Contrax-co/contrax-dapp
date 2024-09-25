@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { StateInterface, Transaction, TransactionStep, TransactionStepStatus } from "./types";
 import { backendApi } from "src/api";
-import { Address } from "viem";
+import { Address, Hex } from "viem";
+import { RootState } from "..";
 
 const initialState: StateInterface = {
     transactions: [],
@@ -13,7 +14,7 @@ export const addTransactionDb = createAsyncThunk(
     "transactions/addTransactionDb",
     async (transaction: Omit<Transaction, "_id">, _thunkApi) => {
         const res = await backendApi.post("transaction/save-history-tx", transaction);
-        return { ...res.data.data, steps: [] };
+        return { ...res.data.data };
     }
 );
 
@@ -29,14 +30,36 @@ export const addTransactionStepDb = createAsyncThunk(
     "transactions/addTransactionStepDb",
     async (params: { step: TransactionStep; transactionId: string }, _thunkApi) => {
         // TODO: add step to db
+        const res = await backendApi.post(`transaction/add-transaction-step/${params.transactionId}`, params.step);
         return params;
     }
 );
 
 export const editTransactionStepDb = createAsyncThunk(
     "transactions/editTransactionStepDb",
-    async (params: { transactionId: string; stepType: string; status: TransactionStepStatus }, _thunkApi) => {
+    async (
+        params: {
+            transactionId: string;
+            txHash?: Hex;
+            stepType: string;
+            status: TransactionStepStatus;
+            amount?: string;
+        },
+        _thunkApi
+    ) => {
+        const tx = (_thunkApi.getState() as RootState).transactions.transactions.find(
+            (item) => item._id === params.transactionId
+        )!;
+
+        const ind = tx.steps.findIndex((ele) => ele.type === params.stepType);
         // TODO: edit step in db
+        const res = await backendApi.post(`transaction/edit-transaction-step/${params.transactionId}/${ind}`, {
+            ...tx.steps[ind],
+            amount: params.amount || tx.steps[ind].amount,
+            status: params.status,
+            // @ts-ignore
+            txHash: params.txHash || tx.steps[ind].txHash,
+        });
         return params;
     }
 );
@@ -45,6 +68,13 @@ export const markAsFailedDb = createAsyncThunk(
     "transactions/markAsFailedDb",
     async (transactionId: string, _thunkApi) => {
         // TODO: mark as failed in db
+        const tx = (_thunkApi.getState() as RootState).transactions.transactions.find(
+            (item) => item._id === transactionId
+        )!;
+        const ind = tx.steps.length - 1;
+        const res = await backendApi.post(`transaction/save-history-tx/${transactionId}`, {
+            $set: { [`steps.${ind}`]: { status: TransactionStepStatus.FAILED } },
+        });
         return transactionId;
     }
 );
@@ -52,13 +82,13 @@ export const markAsFailedDb = createAsyncThunk(
 export const getTransactionsDb = createAsyncThunk(
     "transactions/getTransactionsDb",
     async ({ walletAddress }: { walletAddress: Address }, _thunkApi) => {
-        // const tx = (_thunkApi.getState() as RootState).transactions.transactions.at(-1);
-        // const limit = (_thunkApi.getState() as RootState).transactions.limit;
-        // const res = await backendApi.get(
-        //     `transaction/tx-history?from=${walletAddress}&limit=${limit}&sort=-date${tx ? `&_id[lt]=${tx._id}` : ""}`
-        // );
-        // return { transactions: res.data.data };
-        return { transactions: [] };
+        const tx = (_thunkApi.getState() as RootState).transactions.transactions.at(-1);
+        const limit = (_thunkApi.getState() as RootState).transactions.limit;
+        const res = await backendApi.get(
+            `transaction/tx-history?from=${walletAddress}&limit=${limit}&sort=-date${tx ? `&_id[lt]=${tx._id}` : ""}`
+        );
+        return { transactions: res.data.data };
+        // return { transactions: [] };
     }
 );
 
@@ -169,6 +199,9 @@ const transactionsSlice = createSlice({
             const ind = state.transactions.findIndex((tx) => tx._id === action.payload.transactionId);
             const stepInd = state.transactions[ind].steps.findIndex((step) => step.type === action.payload.stepType);
             state.transactions[ind].steps[stepInd].status = action.payload.status;
+            // @ts-ignore
+            if (action.payload.txHash) state.transactions[ind].steps[stepInd].txHash = action.payload.txHash;
+            if (action.payload.amount) state.transactions[ind].steps[stepInd].amount = action.payload.amount;
         });
         builder.addCase(editTransactionDb.fulfilled, (state, action) => {
             const ind = state.transactions.findIndex((tx) => tx._id === action.payload._id);

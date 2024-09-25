@@ -41,26 +41,34 @@ export type TransactionStep =
     | ZapInStep
     | WaitForConfirmationStep
     | ZapOutStep;
+
+export enum TransactionTypes {
+    GET_BRIDGE_QUOTE = "Get Bridge Quote",
+    APPROVE_BRIDGE = "Approve Bridge",
+    INITIATE_BRIDGE = "Initiate Bridge",
+    WAIT_FOR_BRIDGE_RESULTS = "Waiting for bridge results",
+    APPROVE_ZAP = "Approve Zap",
+    ZAP_IN = "Zap In",
+    ZAP_OUT = "Zap Out",
+    WAIT_FOR_CONFIRMATION = "Waiting for confirmation",
+}
+
 export interface GetBridgeQuoteStep extends BaseStep {
-    type: "GET_BRIDGE_QUOTE";
-    name: "Get Bridge Quote";
+    type: TransactionTypes.GET_BRIDGE_QUOTE;
 }
 
 export interface ApproveBridgeStep extends BaseStep {
-    type: "APPROVE_BRIDGE";
-    name: "Approve Bridge";
+    type: TransactionTypes.APPROVE_BRIDGE;
 }
 
 export interface InitiateBridgeStep extends BaseStep {
-    type: "INITIATE_BRIDGE";
-    name: "Initiate Bridge";
+    type: TransactionTypes.INITIATE_BRIDGE;
 }
 
 export interface WaitForBridgeResultsStep extends BaseStep {
-    type: "WAIT_FOR_BRIDGE_RESULTS";
-    name: "Waiting for bridge results";
+    type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS;
     bridgeInfo: {
-        txHash?: Hex;
+        txHash?: string;
         fromChain: number;
         toChain: number;
         beforeBridgeBalance: string;
@@ -68,27 +76,23 @@ export interface WaitForBridgeResultsStep extends BaseStep {
 }
 
 export interface ApproveZapStep extends BaseStep {
-    type: "APPROVE_ZAP";
-    name: "Approve Zap";
-    txHash?: Hex;
+    type: TransactionTypes.APPROVE_ZAP;
+    txHash?: string;
 }
 
 export interface ZapInStep extends BaseStep {
-    type: "ZAP_IN";
-    name: "Zap In";
-    txHash?: Hex;
+    type: TransactionTypes.ZAP_IN;
+    txHash?: string;
 }
 
 export interface ZapOutStep extends BaseStep {
-    type: "ZAP_OUT";
-    name: "Zap Out";
-    txHash?: Hex;
+    type: TransactionTypes.ZAP_OUT;
+    txHash?: string;
 }
 
 export interface WaitForConfirmationStep extends BaseStep {
-    type: "WAIT_FOR_CONFIRMATION";
-    name: "Waiting for confirmation";
-    txHash: Hex;
+    type: TransactionTypes.WAIT_FOR_CONFIRMATION;
+    txHash: string;
 }
 
 export enum TransactionStepStatus {
