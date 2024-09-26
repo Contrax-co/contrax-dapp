@@ -885,7 +885,7 @@ const pools_json: PoolDef[] = [
         pair2: "cbBTC",
         token1: "0x4200000000000000000000000000000000000006",
         token2: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
-        zapper_addr: "0x3bf0d50afCa2ab4Ece904AB46e74602d3B87C891",
+        zapper_addr: "0x19af8B3F1bD1a73D6c2501300f302F188e1154C5",
         alt1: "WETH logo",
         alt2: "cbBTC logo",
         logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
@@ -895,7 +895,7 @@ const pools_json: PoolDef[] = [
         isDeprecated: false,
         lp_address: "0xD5A49507197c243895972782C01700ca27090Ee1",
         decimals: 18,
-        vault_addr: "0xC44Bed0Aa68f12AD2D3Eb0da9D119B95f0BD02ca",
+        vault_addr: "0x3736FEFbBC7E8F70b2d5E7f39834b2A9595da652",
     },
 ];
 
