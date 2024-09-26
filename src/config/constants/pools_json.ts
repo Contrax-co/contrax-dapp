@@ -853,7 +853,7 @@ const pools_json: PoolDef[] = [
         pair2: "SNSY",
         token1: "0x4200000000000000000000000000000000000006",
         token2: "0x3124678D62D2aa1f615B54525310fbfDa6DcF7AE",
-        zapper_addr: "0xe99CFDaD03de7CfC44390CCE10C5073b01b66B41",
+        zapper_addr: "0x4a410aada6739Fc1608FEF8d70B4bcEb8289A89e",
         alt1: "WETH logo",
         alt2: "SNSY logo",
         logo1: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0x82aF49447D8a07e3bd95BD0d56f35241523fBab1/logo.png",
@@ -863,7 +863,7 @@ const pools_json: PoolDef[] = [
         isDeprecated: false,
         lp_address: "0x3C88c76783a9f2975C6d58F2aa1437f1E8229335",
         decimals: 18,
-        vault_addr: "0x29f77E05FCCe487035E4d2Ea6b3e59508Da9Ed45",
+        vault_addr: "0xF1C856646E42E717d73f3D8828ee4e76C4A506E5",
     },
     {
         id: 203,
