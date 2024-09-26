@@ -905,215 +905,215 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
         }
     }
 }
-export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChainTransactionObject, "contractCall">>(
-    obj: T
-): Promise<
-    T["simulate"] extends true
-        ? {
-              afterBridgeBal: bigint;
-              amountToBeBridged: bigint;
-              //   amountSentForBridging:bigint;
-              //   amountToGetFromBridging:bigint;
-              //   amountTotalAfterBridging:bigint;
-              //   amountWantedAfterBridging:bigint;
-          }
-        : {
-              status: boolean;
-              error?: string;
-              isBridged: boolean;
-              finalAmountToDeposit: bigint;
-          }
-> {
-    const chain = SupportedChains.find((item) => item.id === obj.toChainId);
-    if (!chain) throw new Error("chain not found");
-    const toPublicClient = createPublicClient({
-        chain: chain,
-        transport: http(),
-        batch: {
-            multicall: {
-                batchSize: 4096,
-                wait: 250,
-            },
-        },
-    }) as IClients["public"];
+// export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChainTransactionObject, "contractCall">>(
+//     obj: T
+// ): Promise<
+//     T["simulate"] extends true
+//         ? {
+//               afterBridgeBal: bigint;
+//               amountToBeBridged: bigint;
+//               //   amountSentForBridging:bigint;
+//               //   amountToGetFromBridging:bigint;
+//               //   amountTotalAfterBridging:bigint;
+//               //   amountWantedAfterBridging:bigint;
+//           }
+//         : {
+//               status: boolean;
+//               error?: string;
+//               isBridged: boolean;
+//               finalAmountToDeposit: bigint;
+//           }
+// > {
+//     const chain = SupportedChains.find((item) => item.id === obj.toChainId);
+//     if (!chain) throw new Error("chain not found");
+//     const toPublicClient = createPublicClient({
+//         chain: chain,
+//         transport: http(),
+//         batch: {
+//             multicall: {
+//                 batchSize: 4096,
+//                 wait: 250,
+//             },
+//         },
+//     }) as IClients["public"];
 
-    const toBal = await getBalance(obj.toToken, obj.currentWallet, { public: toPublicClient });
-    if (toBal < obj.toTokenAmount) {
-        const toBalDiff = obj.toTokenAmount - toBal;
-        const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
-        const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
-            if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
-            return false;
-        })?.[0];
-        if (!fromChainId) {
-            if (obj.simulate) {
-                // @ts-ignore
-                return { afterBridgeBal: BigInt(obj.toTokenAmount), amountToBeBridged: 0n };
-            } else throw new Error("Insufficient balance");
-        }
-        if (obj.notificationId) notifyLoading(loadingMessages.gettingBridgeQuote(), { id: obj.notificationId });
-        store.dispatch(
-            addTransactionStepDb({
-                transactionId: obj.notificationId!,
-                step: {
-                    type: TransactionTypes.GET_BRIDGE_QUOTE,
-                    status: TransactionStepStatus.IN_PROGRESS,
-                } as GetBridgeQuoteStep,
-            })
-        );
-        const { route, approvalData } = await getRoute(
-            Number(fromChainId),
-            obj.toChainId,
-            obj.toToken === zeroAddress
-                ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-                : addressesByChainId[Number(fromChainId)].usdcAddress,
-            obj.toToken === zeroAddress ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : obj.toToken,
-            toBalDiff.toString(),
-            obj.currentWallet
-        );
+//     const toBal = await getBalance(obj.toToken, obj.currentWallet, { public: toPublicClient });
+//     if (toBal < obj.toTokenAmount) {
+//         const toBalDiff = obj.toTokenAmount - toBal;
+//         const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
+//         const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
+//             if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
+//             return false;
+//         })?.[0];
+//         if (!fromChainId) {
+//             if (obj.simulate) {
+//                 // @ts-ignore
+//                 return { afterBridgeBal: BigInt(obj.toTokenAmount), amountToBeBridged: 0n };
+//             } else throw new Error("Insufficient balance");
+//         }
+//         if (obj.notificationId) notifyLoading(loadingMessages.gettingBridgeQuote(), { id: obj.notificationId });
+//         store.dispatch(
+//             addTransactionStepDb({
+//                 transactionId: obj.notificationId!,
+//                 step: {
+//                     type: TransactionTypes.GET_BRIDGE_QUOTE,
+//                     status: TransactionStepStatus.IN_PROGRESS,
+//                 } as GetBridgeQuoteStep,
+//             })
+//         );
+//         const { route, approvalData } = await getRoute(
+//             Number(fromChainId),
+//             obj.toChainId,
+//             obj.toToken === zeroAddress
+//                 ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+//                 : addressesByChainId[Number(fromChainId)].usdcAddress,
+//             obj.toToken === zeroAddress ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : obj.toToken,
+//             toBalDiff.toString(),
+//             obj.currentWallet
+//         );
 
-        if (obj.simulate) {
-            let afterBridgeBal = BigInt(route.toAmount) + toBal;
-            if (afterBridgeBal > BigInt(obj.toTokenAmount)) afterBridgeBal = BigInt(obj.toTokenAmount);
-            // @ts-ignore
-            return { afterBridgeBal, amountToBeBridged: BigInt(route.fromAmount) };
-        }
-        const buildTx = await buildTransaction(route);
-        if (!buildTx) throw new Error("Failed to build bridge transaction");
+//         if (obj.simulate) {
+//             let afterBridgeBal = BigInt(route.toAmount) + toBal;
+//             if (afterBridgeBal > BigInt(obj.toTokenAmount)) afterBridgeBal = BigInt(obj.toTokenAmount);
+//             // @ts-ignore
+//             return { afterBridgeBal, amountToBeBridged: BigInt(route.fromAmount) };
+//         }
+//         const buildTx = await buildTransaction(route);
+//         if (!buildTx) throw new Error("Failed to build bridge transaction");
 
-        let finalAmountToDeposit: bigint = 0n;
-        if (obj.notificationId) notifyLoading(loadingMessages.bridgeStep(1, 1), { id: obj.notificationId });
-        const client = await obj.getClients(buildTx.chainId);
-        store.dispatch(
-            editTransactionStepDb({
-                transactionId: obj.notificationId!,
-                stepType: TransactionTypes.GET_BRIDGE_QUOTE,
-                status: TransactionStepStatus.COMPLETED,
-            })
-        );
-        if (approvalData) {
-            store.dispatch(
-                addTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    step: {
-                        type: TransactionTypes.APPROVE_BRIDGE,
-                        status: TransactionStepStatus.IN_PROGRESS,
-                    } as ApproveBridgeStep,
-                })
-            );
-            await approveErc20(
-                approvalData.approvalTokenAddress,
-                buildTx.txTarget,
-                BigInt(approvalData.minimumApprovalAmount),
-                obj.currentWallet,
-                client
-            );
-            store.dispatch(
-                editTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    stepType: TransactionTypes.APPROVE_BRIDGE,
-                    status: TransactionStepStatus.COMPLETED,
-                })
-            );
-        }
-        const transaction = client.wallet.sendTransaction({
-            data: buildTx.txData,
-            to: buildTx.txTarget,
-            value: BigInt(buildTx.value),
-        });
-        store.dispatch(
-            addTransactionStepDb({
-                transactionId: obj.notificationId!,
-                step: {
-                    type: TransactionTypes.INITIATE_BRIDGE,
-                    status: TransactionStepStatus.IN_PROGRESS,
-                } as InitiateBridgeStep,
-            })
-        );
-        const res = await awaitTransaction(transaction, client);
-        if (!res.status) {
-            throw new Error(res.error);
-        }
-        let status = "PENDING";
-        store.dispatch(
-            editTransactionStepDb({
-                transactionId: obj.notificationId!,
-                stepType: TransactionTypes.INITIATE_BRIDGE,
-                status: TransactionStepStatus.COMPLETED,
-            })
-        );
-        store.dispatch(
-            addTransactionStepDb({
-                transactionId: obj.notificationId!,
-                step: {
-                    type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-                    status: TransactionStepStatus.IN_PROGRESS,
-                    bridgeInfo: {
-                        bridgeService: BridgeService.SOCKET_TECH,
-                        txHash: res.txHash!,
-                        fromChain: buildTx.chainId,
-                        toChain: obj.toChainId,
-                        beforeBridgeBalance: toBal.toString(),
-                    },
-                } as WaitForBridgeResultsStep,
-            })
-        );
-        do {
-            if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
-            try {
-                const result = await getBridgeStatus(res.txHash!, buildTx.chainId, obj.toChainId);
-                // @ts-ignore
-                if (result.destinationTxStatus === "COMPLETED") {
-                    finalAmountToDeposit = BigInt(result.toAmount!) + toBal;
-                }
-                status = result.destinationTxStatus;
-            } catch (_) {}
+//         let finalAmountToDeposit: bigint = 0n;
+//         if (obj.notificationId) notifyLoading(loadingMessages.bridgeStep(1, 1), { id: obj.notificationId });
+//         const client = await obj.getClients(buildTx.chainId);
+//         store.dispatch(
+//             editTransactionStepDb({
+//                 transactionId: obj.notificationId!,
+//                 stepType: TransactionTypes.GET_BRIDGE_QUOTE,
+//                 status: TransactionStepStatus.COMPLETED,
+//             })
+//         );
+//         if (approvalData) {
+//             store.dispatch(
+//                 addTransactionStepDb({
+//                     transactionId: obj.notificationId!,
+//                     step: {
+//                         type: TransactionTypes.APPROVE_BRIDGE,
+//                         status: TransactionStepStatus.IN_PROGRESS,
+//                     } as ApproveBridgeStep,
+//                 })
+//             );
+//             await approveErc20(
+//                 approvalData.approvalTokenAddress,
+//                 buildTx.txTarget,
+//                 BigInt(approvalData.minimumApprovalAmount),
+//                 obj.currentWallet,
+//                 client
+//             );
+//             store.dispatch(
+//                 editTransactionStepDb({
+//                     transactionId: obj.notificationId!,
+//                     stepType: TransactionTypes.APPROVE_BRIDGE,
+//                     status: TransactionStepStatus.COMPLETED,
+//                 })
+//             );
+//         }
+//         const transaction = client.wallet.sendTransaction({
+//             data: buildTx.txData,
+//             to: buildTx.txTarget,
+//             value: BigInt(buildTx.value),
+//         });
+//         store.dispatch(
+//             addTransactionStepDb({
+//                 transactionId: obj.notificationId!,
+//                 step: {
+//                     type: TransactionTypes.INITIATE_BRIDGE,
+//                     status: TransactionStepStatus.IN_PROGRESS,
+//                 } as InitiateBridgeStep,
+//             })
+//         );
+//         const res = await awaitTransaction(transaction, client);
+//         if (!res.status) {
+//             throw new Error(res.error);
+//         }
+//         let status = "PENDING";
+//         store.dispatch(
+//             editTransactionStepDb({
+//                 transactionId: obj.notificationId!,
+//                 stepType: TransactionTypes.INITIATE_BRIDGE,
+//                 status: TransactionStepStatus.COMPLETED,
+//             })
+//         );
+//         store.dispatch(
+//             addTransactionStepDb({
+//                 transactionId: obj.notificationId!,
+//                 step: {
+//                     type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+//                     status: TransactionStepStatus.IN_PROGRESS,
+//                     bridgeInfo: {
+//                         bridgeService: BridgeService.SOCKET_TECH,
+//                         txHash: res.txHash!,
+//                         fromChain: buildTx.chainId,
+//                         toChain: obj.toChainId,
+//                         beforeBridgeBalance: toBal.toString(),
+//                     },
+//                 } as WaitForBridgeResultsStep,
+//             })
+//         );
+//         do {
+//             if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
+//             try {
+//                 const result = await getBridgeStatus(res.txHash!, buildTx.chainId, obj.toChainId);
+//                 // @ts-ignore
+//                 if (result.destinationTxStatus === "COMPLETED") {
+//                     finalAmountToDeposit = BigInt(result.toAmount!) + toBal;
+//                 }
+//                 status = result.destinationTxStatus;
+//             } catch (_) {}
 
-            console.log(`Transaction status for ${res.txHash}:`, status);
+//             console.log(`Transaction status for ${res.txHash}:`, status);
 
-            // Wait for a short period before checking the status again
-            await new Promise((resolve) => setTimeout(resolve, 5000));
-        } while (status !== "COMPLETED");
+//             // Wait for a short period before checking the status again
+//             await new Promise((resolve) => setTimeout(resolve, 5000));
+//         } while (status !== "COMPLETED");
 
-        if (status === "COMPLETED") {
-            store.dispatch(
-                editTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-                    status: TransactionStepStatus.COMPLETED,
-                })
-            );
-            // @ts-ignore
-            return {
-                status: true,
-                isBridged: true,
-                finalAmountToDeposit,
-            };
-        } else {
-            store.dispatch(
-                editTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-                    status: TransactionStepStatus.FAILED,
-                })
-            );
-            // @ts-ignore
-            return {
-                status: false,
-                error: "Target chain error",
-                isBridged: true,
-            };
-        }
-    } else {
-        if (obj.simulate) {
-            // @ts-ignore
-            return {
-                afterBridgeBal: BigInt(obj.toTokenAmount),
-                amountToBeBridged: 0n,
-            };
-        } else {
-            // @ts-ignore
-            return { status: true };
-        }
-    }
-}
+//         if (status === "COMPLETED") {
+//             store.dispatch(
+//                 editTransactionStepDb({
+//                     transactionId: obj.notificationId!,
+//                     stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+//                     status: TransactionStepStatus.COMPLETED,
+//                 })
+//             );
+//             // @ts-ignore
+//             return {
+//                 status: true,
+//                 isBridged: true,
+//                 finalAmountToDeposit,
+//             };
+//         } else {
+//             store.dispatch(
+//                 editTransactionStepDb({
+//                     transactionId: obj.notificationId!,
+//                     stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+//                     status: TransactionStepStatus.FAILED,
+//                 })
+//             );
+//             // @ts-ignore
+//             return {
+//                 status: false,
+//                 error: "Target chain error",
+//                 isBridged: true,
+//             };
+//         }
+//     } else {
+//         if (obj.simulate) {
+//             // @ts-ignore
+//             return {
+//                 afterBridgeBal: BigInt(obj.toTokenAmount),
+//                 amountToBeBridged: 0n,
+//             };
+//         } else {
+//             // @ts-ignore
+//             return { status: true };
+//         }
+//     }
+// }

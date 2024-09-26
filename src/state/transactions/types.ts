@@ -72,6 +72,7 @@ export interface WaitForBridgeResultsStep extends BaseStep {
         fromChain: number;
         toChain: number;
         beforeBridgeBalance: string;
+        tool?: string;
     } & ({ bridgeService: BridgeService.LIFI; tool: string } | { bridgeService: BridgeService.SOCKET_TECH });
 }
 

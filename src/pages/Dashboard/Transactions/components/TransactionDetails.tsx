@@ -1,58 +1,52 @@
-import React, { useEffect, useMemo, useState } from "react";
-import pools_json from "src/config/constants/pools_json";
-import { RootState, useAppSelector } from "src/state";
+import React from "react";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
 import { FaRegCircle } from "react-icons/fa";
-import { createSelector } from "@reduxjs/toolkit";
 
 import styles from "./TransactionDetails.module.scss";
 import { TransactionStepStatus } from "src/state/transactions/types";
-import { formatUnits, parseUnits, zeroAddress } from "viem";
+import { formatUnits, zeroAddress } from "viem";
+import useTransaction from "src/hooks/useTransaction";
 
 interface IProps {
     transactionId: string;
     open: boolean;
 }
 
-const selectTransactionById = createSelector(
-    (state: RootState) => state.transactions.transactions,
-    (_: any, transactionId: string) => transactionId,
-    (transactions, transactionId: string) => transactions.find((item) => item._id === transactionId)
-);
-
 const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
-    const transaction = useAppSelector((state: RootState) => selectTransactionById(state, transactionId));
-    const farm = useMemo(() => pools_json.find((item) => item.id === transaction?.farmId), [transaction?.farmId]);
-    if (!farm || !transaction) return;
+    const { tx, farm } = useTransaction(transactionId);
+    if (!farm || !tx) return;
 
     return (
         <div className={`${styles.container} ${open ? styles.open : styles.closed}`}>
             <div className={styles.loadingBarContainer}>
                 <div
                     className={
-                        transaction.steps.some((item) => item.status === TransactionStepStatus.IN_PROGRESS)
+                        tx.steps.some((item) => item.status === TransactionStepStatus.IN_PROGRESS)
                             ? styles.loadingBarAnimated
                             : ""
                     }
                 />
             </div>
             <div style={{ marginTop: 10 }}>
-                {transaction.steps.map((step) =>
-                    getStep(
-                        step.type,
-                        step.status,
-                        transaction.type === "deposit" ? (transaction.token === zeroAddress ? 18 : 6) : 18,
-                        transaction.type === "deposit"
-                            ? step.amount
-                            : (
-                                  (BigInt(step.amount || 0) *
-                                      BigInt((Number(transaction.vaultPrice) * 100000).toFixed() || 0)) /
-                                  100000n
-                              ).toString(),
-                        transaction.token === zeroAddress ? "ETH" : "USDC"
-                    )
-                )}
+                {tx.steps.map((step, i) => (
+                    <React.Fragment key={i}>
+                        {getStep(
+                            step.type,
+                            step.status,
+                            tx.type === "deposit" ? (tx.token === zeroAddress ? 18 : 6) : 18,
+                            step.amount &&
+                                (tx.type === "deposit"
+                                    ? step.amount
+                                    : (
+                                          (BigInt(step.amount || 0) *
+                                              BigInt((Number(tx.vaultPrice) * 100000).toFixed() || 0)) /
+                                          100000n
+                                      ).toString()),
+                            tx.token === zeroAddress ? "ETH" : "USDC"
+                        )}
+                    </React.Fragment>
+                ))}
             </div>
         </div>
     );

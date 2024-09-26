@@ -17,6 +17,7 @@ import useTransactions from "src/hooks/useTransactions";
 import TransactionDetails from "./components/TransactionDetails";
 import { IoChevronUpOutline } from "react-icons/io5";
 import { IoChevronDownOutline } from "react-icons/io5";
+import useTransaction from "src/hooks/useTransaction";
 
 const Transactions = () => {
     const [open, setOpen] = useState(false);
@@ -40,7 +41,7 @@ const Transactions = () => {
             <div className={styles.rowsContainer}>
                 {transactions.length === 0 && <p className="center">No transactions yet</p>}
                 {transactions.map((item, i) => (
-                    <Row {...item} key={i} />
+                    <Row _id={item._id} key={i} />
                 ))}
             </div>
             {open && <TransactionsModal setOpenModal={setOpen} />}
@@ -50,14 +51,14 @@ const Transactions = () => {
 
 export default Transactions;
 
-const Row: FC<Transaction> = ({ amountInWei, date, farmId, tokenPrice, vaultPrice, _id, max, token, type, steps }) => {
-    const farm = useMemo(() => farms.find((item) => item.id === farmId), [farmId]);
+const Row: FC<{ _id: string }> = ({ _id }) => {
+    const { tx, farm } = useTransaction(_id);
     const { decimals } = useDecimals();
     const { prices } = usePriceOfTokens();
     const [open, setOpen] = useState(false);
 
-    if (!farm) return null;
-
+    if (!farm || !tx) return null;
+    const { type, amountInWei, token, vaultPrice, tokenPrice, steps, date } = tx;
     let tokenAmount = 0;
     if (type === "deposit") {
         tokenAmount = Number(formatUnits(BigInt(amountInWei), decimals[farm.chainId][token]));
@@ -159,7 +160,7 @@ const TransactionsModal: FC<{ setOpenModal: (value: boolean) => void }> = ({ set
             <p className={`${styles.section_title}`}>Transactions</p>
             <div className={styles.rowsContainer}>
                 {transactions.map((item, i) => (
-                    <Row {...item} key={i} />
+                    <Row _id={item._id} key={i} />
                 ))}
                 {/* {transactions.map((item, i) => (
                     <Row {...item} key={i} />

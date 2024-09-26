@@ -1,5 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { StateInterface, Transaction, TransactionStep, TransactionStepStatus, TransactionTypes } from "./types";
+import {
+    BridgeService,
+    StateInterface,
+    Transaction,
+    TransactionStep,
+    TransactionStepStatus,
+    TransactionTypes,
+    WaitForBridgeResultsStep,
+    ZapInStep,
+    ZapOutStep,
+} from "./types";
 import { backendApi } from "src/api";
 import { Address, createPublicClient, Hex, http, TransactionReceipt } from "viem";
 import { RootState } from "..";
@@ -7,6 +17,7 @@ import pools_json from "src/config/constants/pools_json";
 import { SupportedChains } from "src/config/walletConfig";
 import { IClients } from "src/types";
 import moment from "moment";
+import { getStatus } from "@lifi/sdk";
 
 const initialState: StateInterface = {
     transactions: [],
@@ -99,7 +110,9 @@ export const getTransactionsDb = createAsyncThunk(
 export const checkPendingTransactionsStatus = createAsyncThunk(
     "transactions/checkPendingTransactionsStatus",
     async (_, thunkApi) => {
-        const txs = (thunkApi.getState() as RootState).transactions.transactions;
+        let txs = (thunkApi.getState() as RootState).transactions.transactions;
+
+        // #region Check for confirmation tx receipt
         const promises = txs.reduce((acc, curr) => {
             const lastStep = curr.steps.at(-1);
             if (
@@ -158,50 +171,109 @@ export const checkPendingTransactionsStatus = createAsyncThunk(
                 }
             }
         });
+        // #endregion Check for confirmation tx receipt
 
-        txs.filter((item) => item.steps.length > 0).forEach((item) => {
-            const lastStep = item.steps.at(-1)!;
-            // Check if since item.date an hour has passed
-            if (lastStep.status === TransactionStepStatus.IN_PROGRESS)
-                if (moment().diff(item.date, "hours") > 1) {
-                    editTransactionStepDb({
-                        transactionId: item._id,
-                        stepType: lastStep.type,
-                        status: TransactionStepStatus.FAILED,
-                    });
-                }
-        });
-        // txs.filter((item) => !item.txHash && item.status === TransactionStatus.BRIDGING && item.bridgeInfo).forEach(
-        //     (item) => {
-        //         const { fromChain, toChain, txHash } = item.bridgeInfo!;
-        //         if (item.bridgeInfo!.bridgeService === BridgeService.LIFI) {
-        //             getStatus({
-        //                 txHash,
-        //                 fromChain,
-        //                 toChain,
-        //                 bridge: item.bridgeInfo!.tool,
-        //             }).then((res) => {
-        //                 if (res.status === "DONE") {
-        //                     thunkApi.dispatch(
-        //                         editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED })
-        //                     );
-        //                 } else if (res.status === "FAILED") {
-        //                     thunkApi.dispatch(editTransactionDb({ _id: item._id, status: TransactionStatus.FAILED }));
-        //                 }
-        //             });
-        //         } else if (item.bridgeInfo!.bridgeService === BridgeService.SOCKET_TECH) {
-        //             getBridgeStatus(item.bridgeInfo!.txHash, item.bridgeInfo!.fromChain, item.bridgeInfo!.toChain).then(
-        //                 (res) => {
-        //                     if (res.destinationTxStatus === "COMPLETED") {
-        //                         thunkApi.dispatch(
-        //                             editTransactionDb({ _id: item._id, status: TransactionStatus.INTERRUPTED })
+        // #region Check if since item.date an hour has passed and make those steps failed
+        // txs = (thunkApi.getState() as RootState).transactions.transactions;
+        // await Promise.all(
+        //     txs
+        //         .filter((item) => item.steps.length > 0)
+        //         .map((item) => {
+        //             return item.steps.map((step) => {
+        //                 if (step.status === TransactionStepStatus.IN_PROGRESS)
+        //                     if (moment().diff(item.date, "hours") > 1) {
+        //                         // Check if since item.date an hour has passed
+        //                         return thunkApi.dispatch(
+        //                             editTransactionStepDb({
+        //                                 transactionId: item._id,
+        //                                 stepType: step.type,
+        //                                 status: TransactionStepStatus.FAILED,
+        //                             })
         //                         );
         //                     }
-        //                 }
-        //             );
-        //         }
-        //     }
+        //             });
+        //         })
+        //         .filter((item) => !!item)
         // );
+
+        // #endregion Check if since item.date an hour has passed and make those steps failed
+
+        // #region Check for bridge results if last step was bridging
+        txs = (thunkApi.getState() as RootState).transactions.transactions;
+        await Promise.all(
+            txs
+                .filter(
+                    (item) =>
+                        item.steps.at(-1)?.type === TransactionTypes.WAIT_FOR_BRIDGE_RESULTS &&
+                        item.steps.at(-1)?.status === TransactionStepStatus.IN_PROGRESS
+                )
+                .map(async (item) => {
+                    const bridgeStep = item.steps.at(-1) as WaitForBridgeResultsStep;
+                    const { beforeBridgeBalance, bridgeService, fromChain, toChain, txHash } = bridgeStep.bridgeInfo;
+
+                    if (bridgeService === BridgeService.LIFI) {
+                        const res = await getStatus({
+                            txHash: txHash!,
+                            fromChain,
+                            toChain,
+                            bridge: bridgeStep.bridgeInfo.tool!,
+                        });
+                        if (res.status === "DONE") {
+                            await thunkApi.dispatch(
+                                editTransactionStepDb({
+                                    transactionId: item._id,
+                                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+                                    amount: BigInt((res.receiving as any).amount).toString(),
+                                    status: TransactionStepStatus.COMPLETED,
+                                })
+                            );
+                            await thunkApi.dispatch(
+                                addTransactionStepDb({
+                                    transactionId: item._id,
+                                    step: {
+                                        type:
+                                            item.type === "deposit"
+                                                ? TransactionTypes.ZAP_IN
+                                                : TransactionTypes.ZAP_OUT,
+                                        amount: item.amountInWei,
+                                        status: TransactionStepStatus.FAILED,
+                                    } as ZapInStep | ZapOutStep,
+                                })
+                            );
+                        } else if (res.status === "FAILED") {
+                            await thunkApi.dispatch(
+                                editTransactionStepDb({
+                                    transactionId: item._id,
+                                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+                                    status: TransactionStepStatus.FAILED,
+                                })
+                            );
+                        }
+                    }
+                })
+        );
+        // #endregion Check for bridge results if last step was bridging
+
+        // #region fail all the pending steps
+        txs = (thunkApi.getState() as RootState).transactions.transactions;
+        Promise.all(
+            txs
+                .filter((item) => item.steps.some((step) => step.status === TransactionStepStatus.IN_PROGRESS))
+                .map((tx) => {
+                    return tx.steps
+                        .filter((item) => item.status === TransactionStepStatus.IN_PROGRESS)
+                        .map(async (item) => {
+                            await thunkApi.dispatch(
+                                editTransactionStepDb({
+                                    transactionId: tx._id,
+                                    stepType: item.type,
+                                    status: TransactionStepStatus.FAILED,
+                                })
+                            );
+                        });
+                })
+        );
+        // #endregion fail all the pending steps
     }
 );
 
