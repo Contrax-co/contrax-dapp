@@ -28,8 +28,20 @@
     grid-template-columns: 50px 1fr 100px 30px;
     align-items: center;
     @include devices(mobile) {
-        grid-template-columns: 40px 1fr 100px;
+        grid-template-columns: 40px 1fr 100px 24px;
     }
+}
+.retryButton {    
+    border: 1px solid red;
+    border-radius: 6px;
+    padding: 2px 4px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    color: red;
+    font-size: 0.8rem;
+    cursor: pointer;    
 }
 
 .txTypeArrowWrapper {

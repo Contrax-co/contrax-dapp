@@ -79,6 +79,14 @@ export const editTransactionStepDb = createAsyncThunk(
     }
 );
 
+export const deleteTransactionDb = createAsyncThunk(
+    "transactions/deleteTransactionDb",
+    async (transactionId: string, _thunkApi) => {
+        const res = await backendApi.delete(`transaction/tx-history/${transactionId}`);
+        return transactionId;
+    }
+);
+
 export const markAsFailedDb = createAsyncThunk(
     "transactions/markAsFailedDb",
     async (transactionId: string, _thunkApi) => {
@@ -315,6 +323,9 @@ const transactionsSlice = createSlice({
         builder.addCase(editTransactionDb.fulfilled, (state, action) => {
             const ind = state.transactions.findIndex((tx) => tx._id === action.payload._id);
             state.transactions[ind] = action.payload;
+        });
+        builder.addCase(deleteTransactionDb.fulfilled, (state, action) => {
+            state.transactions = state.transactions.filter((tx) => tx._id !== action.payload);
         });
     },
 });

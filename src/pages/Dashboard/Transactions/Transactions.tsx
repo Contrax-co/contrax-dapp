@@ -5,7 +5,7 @@ import { IoArrowDownOutline } from "react-icons/io5";
 import farms from "src/config/constants/pools_json";
 import moment from "moment";
 import { ModalLayout } from "src/components/modals/ModalLayout/ModalLayout";
-import { useAppSelector } from "src/state";
+import { useAppDispatch, useAppSelector } from "src/state";
 import { Transaction, TransactionStatus, TransactionStepStatus } from "src/state/transactions/types";
 import { formatUnits, zeroAddress } from "viem";
 import { useDecimals } from "src/hooks/useDecimals";
@@ -18,6 +18,12 @@ import TransactionDetails from "./components/TransactionDetails";
 import { IoChevronUpOutline } from "react-icons/io5";
 import { IoChevronDownOutline } from "react-icons/io5";
 import useTransaction from "src/hooks/useTransaction";
+import { CiRepeat } from "react-icons/ci";
+import useZapIn from "src/hooks/farms/useZapIn";
+import useZapOut from "src/hooks/farms/useZapOut";
+import useFarms from "src/hooks/farms/useFarms";
+import { toEth } from "src/utils/common";
+import { deleteTransactionDb } from "src/state/transactions/transactionsReducer";
 
 const Transactions = () => {
     const [open, setOpen] = useState(false);
@@ -56,8 +62,11 @@ const Row: FC<{ _id: string }> = ({ _id }) => {
     const { decimals } = useDecimals();
     const { prices } = usePriceOfTokens();
     const [open, setOpen] = useState(false);
+    const dispatch = useAppDispatch();
 
     if (!farm || !tx) return null;
+    const { zapIn } = useZapIn(farm);
+    const { zapOut } = useZapOut(farm);
     const { type, amountInWei, token, vaultPrice, tokenPrice, steps, date } = tx;
     let tokenAmount = 0;
     if (type === "deposit") {
@@ -74,6 +83,24 @@ const Row: FC<{ _id: string }> = ({ _id }) => {
         if (steps.some((step) => step.status === TransactionStepStatus.IN_PROGRESS)) return TransactionStatus.PENDING;
         return TransactionStatus.INTERRUPTED;
     }, [steps]);
+
+    const retryTransaction = (e: any) => {
+        e.stopPropagation();
+        dispatch(deleteTransactionDb(_id));
+        if (tx.type === "deposit") {
+            zapIn({
+                zapAmount: Number(toEth(BigInt(tx.amountInWei), decimals[farm.chainId][token])),
+                max: tx.max,
+                token: tx.token,
+            });
+        } else {
+            zapOut({
+                withdrawAmt: Number(toEth(BigInt(tx.amountInWei), farm.decimals)),
+                max: tx.max,
+                token: tx.token,
+            });
+        }
+    };
 
     return (
         <>
@@ -100,9 +127,17 @@ const Row: FC<{ _id: string }> = ({ _id }) => {
                         />
                     </div>
                     <div className={styles.txDetailsFarm}>
-                        <p className={styles.farmName}>{farm.name}</p>
+                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                            <p className={styles.farmName}>{farm.name}</p>
+                            {tx.steps.some((item) => item.status === TransactionStepStatus.FAILED) && (
+                                <button className={styles.retryButton} onClick={retryTransaction}>
+                                    <CiRepeat /> Retry
+                                </button>
+                            )}
+                        </div>
                         <p className={styles.date}>{moment(date).fromNow()}</p>
                     </div>
+
                     <div className={styles.txAmountDetails}>
                         <p className={styles.farmName}>
                             $
