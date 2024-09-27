@@ -487,7 +487,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         // use weth address as tokenId, but in case of some farms (e.g: hop)
         // we need the token of liquidity pair, so use tokenIn if provided
         token = tokenIn ?? wethAddress;
-        const { afterBridgeBal } = await crossChainBridgeIfNecessarySocket({
+        const { afterBridgeBal } = await crossChainBridgeIfNecessary({
             getClients,
             balances,
             currentWallet,
