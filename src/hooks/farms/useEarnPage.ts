@@ -4,8 +4,10 @@ import useFarms from "./useFarms";
 import { FarmSortOptions } from "src/types/enums";
 import { useFarmApys } from "./useFarmApy";
 import { FarmData, FarmDataExtended } from "src/types";
+import useWallet from "../useWallet";
 
 const useEarnPage = () => {
+    const { externalChainId } = useWallet();
     const { farms } = useFarms();
     const { farmDetails, isLoading, isFetched } = useFarmDetails();
     const [selectedPlatform, setSelectedPlatform] = useState<null | string>(null);
@@ -60,12 +62,20 @@ const useEarnPage = () => {
                 });
                 break;
             case FarmSortOptions.Farms_Cross_Chain:
-                // @ts-ignore
-                data = data.sort((a, b) => b.isCrossChain - a.isCrossChain);
+                if (externalChainId) {
+                    data = data.sort((a, b) => (a.chainId === externalChainId ? 0 : -1));
+                } else {
+                    // @ts-ignore
+                    data = data.sort((a, b) => b.isCrossChain - a.isCrossChain);
+                }
                 break;
             case FarmSortOptions.Farms_Onchain:
-                // @ts-ignore
-                data = data.sort((a, b) => a.isCrossChain - b.isCrossChain);
+                if (externalChainId) {
+                    data = data.sort((a, b) => (a.chainId !== externalChainId ? 0 : -1));
+                } else {
+                    // @ts-ignore
+                    data = data.sort((a, b) => a.isCrossChain - b.isCrossChain);
+                }
                 break;
             default:
                 data = data.sort((a, b) => {
@@ -90,6 +100,18 @@ const useEarnPage = () => {
                         if (b.token_type === "Token") return 1; // Type "B" comes after
                     }
 
+                    // Sort by cross chain for metamask using chain id
+                    if (externalChainId) {
+                        if (a.chainId === b.chainId) {
+                            return 0;
+                        } else if (a.chainId === externalChainId) {
+                            return -1;
+                        } else if (b.chainId === externalChainId) {
+                            return 1;
+                        } else return 0;
+                    }
+
+                    // Sort by cross chain for web3auth
                     // Step 3: If both are the same type, sort by isCrossChain (false first, true after)
                     if (a.isCrossChain !== b.isCrossChain) {
                         // @ts-ignore
@@ -104,7 +126,7 @@ const useEarnPage = () => {
 
     const sortedFarms = useMemo(() => {
         return sortFn();
-    }, [sortSelected, selectedPlatform, farmDetails, farms, isFetched]);
+    }, [sortSelected, selectedPlatform, farmDetails, farms, isFetched, externalChainId]);
 
     return {
         sortedFarms,

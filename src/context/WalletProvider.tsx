@@ -55,7 +55,7 @@ export interface IWalletContext {
     isSponsored: boolean;
     isSocial: boolean;
     alchemySigner?: AlchemyWebSigner;
-    externalChainId: number;
+    externalChainId: number | null;
     switchExternalChain: (chainId: number) => Promise<void>;
     isConnecting: boolean;
     getPublicClient: (chainId: number) => IClients["public"];
@@ -84,13 +84,13 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
     } = useAccount();
     // const [isSocial, setIsSocial] = useState(false);
     const [currentWallet, setCurrentWallet] = useState<Address | undefined>();
-    const [externalChainId, setExternalChainId] = useState(CHAIN_ID.ARBITRUM);
+    const [externalChainId, setExternalChainId] = useState<number | null>(null);
     const wagmiChainId = useChainId();
-    const { data: walletClient } = useWalletClient();
     const _publicClients = useRef<Record<number, IClients["public"]>>({});
     const _walletClients = useRef<Record<number, IClients["wallet"]>>({});
     const dispatch = useDispatch();
     const { disconnectAsync } = useDisconnect();
+
     const [domainName, setDomainName] = useState<null | string>(null);
     const [isSocial, setIsSocial] = useState(false);
 
@@ -263,10 +263,6 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         };
     };
 
-    const externalWalletChainChanged = useCallback((newChain: Hex) => {
-        setExternalChainId(Number(newChain));
-    }, []);
-
     const connectWallet = useCallback(async () => {
         try {
             setIsConnecting(true);
@@ -319,7 +315,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
         };
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (currentWallet) {
             resolveDomainFromAddress(currentWallet).then((res) => {
                 setDomainName(res);
@@ -328,6 +324,14 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             setDomainName(null);
         }
     }, [currentWallet]);
+
+    useEffect(() => {
+        if (connector && connector.id !== "web3auth") {
+            setExternalChainId(wagmiChainId);
+        } else {
+            setExternalChainId(null);
+        }
+    }, [wagmiChainId, connector]);
 
     useEffect(() => {
         if (rainbowkitAddress && status === "connected") connectWallet();

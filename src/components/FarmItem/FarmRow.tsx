@@ -18,6 +18,7 @@ import useTrax from "src/hooks/useTrax";
 import { IS_LEGACY } from "src/config/constants";
 import { PoolDef } from "src/config/constants/pools_json";
 import FarmRowChip from "./components/FarmRowChip/FarmRowChip";
+import useWallet from "src/hooks/useWallet";
 
 const xTraxTokenomics = "https://contraxfi.medium.com/contrax-initial-tokenomics-837d062596a4";
 interface Props {
@@ -28,6 +29,7 @@ interface Props {
 
 const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const { lightMode } = useApp();
+    const { externalChainId } = useWallet();
     const [dropDown, setDropDown] = useState(false);
     const { apy: farmApys, isLoading: isApyLoading } = useFarmApy(farm);
     const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();
@@ -68,7 +70,13 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                 <div style={{ position: "absolute", right: 10, display: "flex", gap: 5, top: 10 }}>
                     {farm.isDeprecated && <FarmRowChip text="Deprecated" color="warning" />}
                     {farm.token_type === "LP Token" && <FarmRowChip text="Advance" />}
-                    {farmData?.isCrossChain && <FarmRowChip text="Cross Chain" />}
+                    {externalChainId ? (
+                        farm.chainId !== externalChainId ? (
+                            <FarmRowChip text="Cross Chain" />
+                        ) : null
+                    ) : (
+                        farmData?.isCrossChain && <FarmRowChip text="Cross Chain" />
+                    )}
                 </div>
 
                 {/* Asset Name and Logo */}

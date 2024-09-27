@@ -23,7 +23,6 @@ interface Props {
 
 const DetailInput: React.FC<Props> = ({ farm }) => {
     const { lightMode } = useApp();
-    const { externalChainId, isSocial } = useWallet();
     const { transactionType, currencySymbol } = useAppSelector((state) => state.farms.farmDetailInputOptions);
     const [showSlippageModal, setShowSlippageModal] = useState(false);
     const [showNotSlipageModal, setShowNotSlipageModal] = useState(false);

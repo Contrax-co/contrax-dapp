@@ -23,23 +23,9 @@ import useEarnPage from "src/hooks/farms/useEarnPage";
 
 function Farms() {
     const { lightMode } = useApp();
-    // const [sortedFarms, setSortedFarms] = useState<FarmDataExtended[]>();
-    const [sortedBuy, setSortedBuy] = useState<FarmTableColumns>();
-    const [decOrder, setDecOrder] = useState<boolean>(false);
     const [openedFarm, setOpenedFarm] = useState<number | undefined>();
     const [sortPopup, setSortPopup] = useState(false);
-    const {
-        farmDetails,
-        apys,
-        sortedFarms,
-        farms,
-        selectedPlatform,
-        setSelectedPlatform,
-        setSortSelected,
-        sortSelected,
-    } = useEarnPage();
-
-    // const dynamicSort = (column: FarmTableColumns, decOrder: boolean) => (a: FarmDataExtended, b: FarmDataExtended) =>
+    const { sortedFarms, farms, selectedPlatform, setSelectedPlatform, setSortSelected, sortSelected } = useEarnPage();
 
     return (
         <div className={`farms ${lightMode && "farms--light"}`}>
