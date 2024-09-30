@@ -90,14 +90,20 @@ export const deleteTransactionDb = createAsyncThunk(
 export const markAsFailedDb = createAsyncThunk(
     "transactions/markAsFailedDb",
     async (transactionId: string, _thunkApi) => {
-        // TODO: mark as failed in db
+        if (!transactionId) throw new Error("transaction not found");
         const tx = (_thunkApi.getState() as RootState).transactions.transactions.find(
             (item) => item._id === transactionId
         )!;
         const ind = tx.steps.length - 1;
-        const res = await backendApi.post(`transaction/save-history-tx/${transactionId}`, {
-            $set: { [`steps.${ind}`]: { status: TransactionStepStatus.FAILED } },
-        });
+        if (ind < 0) {
+            const res = await backendApi.post(`transaction/save-history-tx/${transactionId}`, {
+                $push: { steps: { status: TransactionStepStatus.FAILED, type: TransactionTypes.APPROVE_ZAP } },
+            });
+        } else {
+            const res = await backendApi.post(`transaction/save-history-tx/${transactionId}`, {
+                $set: { [`steps.${ind}`]: { status: TransactionStepStatus.FAILED } },
+            });
+        }
         return transactionId;
     }
 );
