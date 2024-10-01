@@ -22,13 +22,7 @@ import { encodeFunctionData, getContract, zeroAddress } from "viem";
 import pools_json from "src/config/constants/pools_json";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import store from "src/state";
-import {
-    TransactionStatus,
-    TransactionStepStatus,
-    TransactionTypes,
-    WaitForConfirmationStep,
-    ZapInStep,
-} from "src/state/transactions/types";
+import { TransactionStepStatus, TransactionTypes, ZapInStep } from "src/state/transactions/types";
 import {
     addTransactionStepDb,
     editTransactionDb,
@@ -248,22 +242,13 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                         }),
                     }),
                     client,
-                    (hash) => {
-                        store.dispatch(
+                    async (hash) => {
+                        await store.dispatch(
                             editTransactionStepDb({
                                 transactionId: id,
                                 stepType: TransactionTypes.ZAP_IN,
-                                status: TransactionStepStatus.COMPLETED,
-                            })
-                        );
-                        store.dispatch(
-                            addTransactionStepDb({
-                                transactionId: id!,
-                                step: {
-                                    txHash: hash,
-                                    type: TransactionTypes.WAIT_FOR_CONFIRMATION,
-                                    status: TransactionStepStatus.IN_PROGRESS,
-                                } as WaitForConfirmationStep,
+                                status: TransactionStepStatus.IN_PROGRESS,
+                                txHash: hash,
                             })
                         );
                     }
@@ -271,7 +256,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 store.dispatch(
                     editTransactionStepDb({
                         transactionId: id,
-                        stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                        stepType: TransactionTypes.ZAP_IN,
                         status: TransactionStepStatus.COMPLETED,
                     })
                 );

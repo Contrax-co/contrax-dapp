@@ -28,14 +28,7 @@ import { encodeFunctionData, getContract, Hex, zeroAddress } from "viem";
 import pools_json from "src/config/constants/pools_json";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import clipperZapperAbi from "src/assets/abis/clipperZapperAbi";
-import {
-    ApproveZapStep,
-    TransactionStatus,
-    TransactionStepStatus,
-    TransactionTypes,
-    WaitForConfirmationStep,
-    ZapInStep,
-} from "src/state/transactions/types";
+import { ApproveZapStep, TransactionStepStatus, TransactionTypes, ZapInStep } from "src/state/transactions/types";
 import store from "src/state";
 import {
     addTransactionStepDb,
@@ -227,17 +220,8 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                                 editTransactionStepDb({
                                     transactionId: id,
                                     stepType: TransactionTypes.ZAP_IN,
-                                    status: TransactionStepStatus.COMPLETED,
-                                })
-                            );
-                            store.dispatch(
-                                addTransactionStepDb({
-                                    transactionId: id!,
-                                    step: {
-                                        txHash: hash,
-                                        type: TransactionTypes.WAIT_FOR_CONFIRMATION,
-                                        status: TransactionStepStatus.IN_PROGRESS,
-                                    } as WaitForConfirmationStep,
+                                    status: TransactionStepStatus.IN_PROGRESS,
+                                    txHash: hash,
                                 })
                             );
                         }
@@ -245,7 +229,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     store.dispatch(
                         editTransactionStepDb({
                             transactionId: id,
-                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            stepType: TransactionTypes.ZAP_IN,
                             status: TransactionStepStatus.COMPLETED,
                         })
                     );
@@ -336,17 +320,8 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                                 editTransactionStepDb({
                                     transactionId: id,
                                     stepType: TransactionTypes.ZAP_IN,
-                                    status: TransactionStepStatus.COMPLETED,
-                                })
-                            );
-                            store.dispatch(
-                                addTransactionStepDb({
-                                    transactionId: id!,
-                                    step: {
-                                        txHash: hash,
-                                        type: TransactionTypes.WAIT_FOR_CONFIRMATION,
-                                        status: TransactionStepStatus.IN_PROGRESS,
-                                    } as WaitForConfirmationStep,
+                                    status: TransactionStepStatus.IN_PROGRESS,
+                                    txHash: hash,
                                 })
                             );
                         }
@@ -354,7 +329,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     store.dispatch(
                         editTransactionStepDb({
                             transactionId: id,
-                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            stepType: TransactionTypes.ZAP_IN,
                             status: TransactionStepStatus.COMPLETED,
                         })
                     );

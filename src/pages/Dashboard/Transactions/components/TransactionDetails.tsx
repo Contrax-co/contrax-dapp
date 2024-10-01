@@ -38,11 +38,14 @@ const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
                             step.amount &&
                                 (tx.type === "deposit"
                                     ? step.amount
-                                    : (
-                                          (BigInt(step.amount || 0) *
-                                              BigInt((Number(tx.vaultPrice) * 100000).toFixed() || 0)) /
-                                          100000n
-                                      ).toString()),
+                                    : BigInt(
+                                          (
+                                              ((Number(formatUnits(BigInt(step.amount), 18)) * tx.vaultPrice!) /
+                                                  tx.tokenPrice!) *
+                                              1e18
+                                          ).toFixed()
+                                      )
+                                ).toString(),
                             tx.token === zeroAddress ? "ETH" : "USDC"
                         )}
                     </React.Fragment>

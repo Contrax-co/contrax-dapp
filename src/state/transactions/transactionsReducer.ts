@@ -131,7 +131,7 @@ export const checkPendingTransactionsStatus = createAsyncThunk(
             const lastStep = curr.steps.at(-1);
             if (
                 lastStep &&
-                lastStep.type === TransactionTypes.WAIT_FOR_CONFIRMATION &&
+                (lastStep.type === TransactionTypes.ZAP_IN || lastStep.type === TransactionTypes.ZAP_OUT) &&
                 lastStep.status === TransactionStepStatus.IN_PROGRESS &&
                 lastStep.txHash
             ) {
@@ -163,7 +163,7 @@ export const checkPendingTransactionsStatus = createAsyncThunk(
                     thunkApi.dispatch(
                         editTransactionStepDb({
                             transactionId: tx._id,
-                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            stepType: tx.type === "deposit" ? TransactionTypes.ZAP_IN : TransactionTypes.ZAP_OUT,
                             status: TransactionStepStatus.COMPLETED,
                         })
                     );
@@ -171,14 +171,14 @@ export const checkPendingTransactionsStatus = createAsyncThunk(
                     thunkApi.dispatch(
                         editTransactionStepDb({
                             transactionId: tx._id,
-                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            stepType: tx.type === "deposit" ? TransactionTypes.ZAP_IN : TransactionTypes.ZAP_OUT,
                             status: TransactionStepStatus.FAILED,
                         })
                     );
                     thunkApi.dispatch(
                         editTransactionStepDb({
                             transactionId: tx._id,
-                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            stepType: tx.type === "deposit" ? TransactionTypes.ZAP_IN : TransactionTypes.ZAP_OUT,
                             status: TransactionStepStatus.FAILED,
                         })
                     );

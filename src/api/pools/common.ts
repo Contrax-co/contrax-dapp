@@ -30,7 +30,6 @@ import {
     TransactionStepStatus,
     TransactionTypes,
     WaitForBridgeResultsStep,
-    WaitForConfirmationStep,
     ZapInStep,
     ZapOutStep,
 } from "src/state/transactions/types";
@@ -142,17 +141,8 @@ export const zapInBase: ZapInBaseFn = async ({
                             editTransactionStepDb({
                                 transactionId: id,
                                 stepType: TransactionTypes.ZAP_IN,
-                                status: TransactionStepStatus.COMPLETED,
-                            })
-                        );
-                        store.dispatch(
-                            addTransactionStepDb({
-                                transactionId: id!,
-                                step: {
-                                    txHash: hash,
-                                    type: TransactionTypes.WAIT_FOR_CONFIRMATION,
-                                    status: TransactionStepStatus.IN_PROGRESS,
-                                } as WaitForConfirmationStep,
+                                status: TransactionStepStatus.IN_PROGRESS,
+                                txHash: hash,
                             })
                         );
                     }
@@ -160,7 +150,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 store.dispatch(
                     editTransactionStepDb({
                         transactionId: id,
-                        stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                        stepType: TransactionTypes.ZAP_IN,
                         status: TransactionStepStatus.COMPLETED,
                     })
                 );
@@ -249,17 +239,8 @@ export const zapInBase: ZapInBaseFn = async ({
                             editTransactionStepDb({
                                 transactionId: id,
                                 stepType: TransactionTypes.ZAP_IN,
-                                status: TransactionStepStatus.COMPLETED,
-                            })
-                        );
-                        store.dispatch(
-                            addTransactionStepDb({
-                                transactionId: id!,
-                                step: {
-                                    txHash: hash,
-                                    type: TransactionTypes.WAIT_FOR_CONFIRMATION,
-                                    status: TransactionStepStatus.IN_PROGRESS,
-                                } as WaitForConfirmationStep,
+                                status: TransactionStepStatus.IN_PROGRESS,
+                                txHash: hash,
                             })
                         );
                     }
@@ -267,7 +248,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 store.dispatch(
                     editTransactionStepDb({
                         transactionId: id,
-                        stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                        stepType: TransactionTypes.ZAP_IN,
                         status: TransactionStepStatus.COMPLETED,
                     })
                 );
@@ -362,17 +343,8 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
                         editTransactionStepDb({
                             transactionId: id,
                             stepType: TransactionTypes.ZAP_OUT,
-                            status: TransactionStepStatus.COMPLETED,
-                        })
-                    );
-                    store.dispatch(
-                        addTransactionStepDb({
-                            transactionId: id!,
-                            step: {
-                                txHash: hash,
-                                type: TransactionTypes.WAIT_FOR_CONFIRMATION,
-                                status: TransactionStepStatus.IN_PROGRESS,
-                            } as WaitForConfirmationStep,
+                            status: TransactionStepStatus.IN_PROGRESS,
+                            txHash: hash,
                         })
                     );
                 }
@@ -393,17 +365,8 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
                         editTransactionStepDb({
                             transactionId: id,
                             stepType: TransactionTypes.ZAP_OUT,
-                            status: TransactionStepStatus.COMPLETED,
-                        })
-                    );
-                    store.dispatch(
-                        addTransactionStepDb({
-                            transactionId: id!,
-                            step: {
-                                txHash: hash,
-                                type: TransactionTypes.WAIT_FOR_CONFIRMATION,
-                                status: TransactionStepStatus.IN_PROGRESS,
-                            } as WaitForConfirmationStep,
+                            status: TransactionStepStatus.IN_PROGRESS,
+                            txHash: hash,
                         })
                     );
                 }
@@ -412,7 +375,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         store.dispatch(
             editTransactionStepDb({
                 transactionId: id,
-                stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                stepType: TransactionTypes.ZAP_OUT,
                 status: TransactionStepStatus.COMPLETED,
             })
         );

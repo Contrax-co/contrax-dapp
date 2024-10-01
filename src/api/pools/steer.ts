@@ -28,14 +28,7 @@ import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
 import { encodeFunctionData, zeroAddress } from "viem";
 import store from "src/state";
-import {
-    ApproveZapStep,
-    TransactionStatus,
-    TransactionStepStatus,
-    TransactionTypes,
-    WaitForConfirmationStep,
-    ZapInStep,
-} from "src/state/transactions/types";
+import { ApproveZapStep, TransactionStepStatus, TransactionTypes, ZapInStep } from "src/state/transactions/types";
 import {
     addTransactionStepDb,
     editTransactionDb,
@@ -207,17 +200,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                                 editTransactionStepDb({
                                     transactionId: id,
                                     stepType: TransactionTypes.ZAP_IN,
-                                    status: TransactionStepStatus.COMPLETED,
-                                })
-                            );
-                            store.dispatch(
-                                addTransactionStepDb({
-                                    transactionId: id!,
-                                    step: {
-                                        txHash: hash,
-                                        type: TransactionTypes.WAIT_FOR_CONFIRMATION,
-                                        status: TransactionStepStatus.IN_PROGRESS,
-                                    } as WaitForConfirmationStep,
+                                    status: TransactionStepStatus.IN_PROGRESS,
+                                    txHash: hash,
                                 })
                             );
                         }
@@ -225,7 +209,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     store.dispatch(
                         editTransactionStepDb({
                             transactionId: id,
-                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            stepType: TransactionTypes.ZAP_IN,
                             status: TransactionStepStatus.COMPLETED,
                         })
                     );
@@ -313,18 +297,9 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                             store.dispatch(
                                 editTransactionStepDb({
                                     transactionId: id,
+                                    txHash: hash,
                                     stepType: TransactionTypes.ZAP_IN,
-                                    status: TransactionStepStatus.COMPLETED,
-                                })
-                            );
-                            store.dispatch(
-                                addTransactionStepDb({
-                                    transactionId: id!,
-                                    step: {
-                                        txHash: hash,
-                                        type: TransactionTypes.WAIT_FOR_CONFIRMATION,
-                                        status: TransactionStepStatus.IN_PROGRESS,
-                                    } as WaitForConfirmationStep,
+                                    status: TransactionStepStatus.IN_PROGRESS,
                                 })
                             );
                         }
@@ -332,7 +307,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     store.dispatch(
                         editTransactionStepDb({
                             transactionId: id,
-                            stepType: TransactionTypes.WAIT_FOR_CONFIRMATION,
+                            stepType: TransactionTypes.ZAP_IN,
                             status: TransactionStepStatus.COMPLETED,
                         })
                     );

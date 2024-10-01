@@ -39,7 +39,6 @@ export type TransactionStep =
     | WaitForBridgeResultsStep
     | ApproveZapStep
     | ZapInStep
-    | WaitForConfirmationStep
     | ZapOutStep;
 
 export enum TransactionTypes {
@@ -50,7 +49,6 @@ export enum TransactionTypes {
     APPROVE_ZAP = "Approve Zap",
     ZAP_IN = "Zap In",
     ZAP_OUT = "Zap Out",
-    WAIT_FOR_CONFIRMATION = "Waiting for confirmation",
 }
 
 export interface GetBridgeQuoteStep extends BaseStep {
@@ -91,9 +89,6 @@ export interface ZapOutStep extends BaseStep {
     txHash?: Hex;
 }
 
-export interface WaitForConfirmationStep extends BaseStep {
-    type: TransactionTypes.WAIT_FOR_CONFIRMATION;
-}
 
 export enum TransactionStepStatus {
     PENDING = "PENDING",
