@@ -701,7 +701,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
                 toToken: obj.toToken,
                 fromAmount: toBalDiff.toString(),
-                order: "FASTEST",
+                order: "RECOMMENDED",
                 // @ts-ignore
                 denyBridges: "hop",
             });
@@ -729,6 +729,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
             // });
         }
         const route = convertQuoteToRoute(quote);
+        console.log("route =>", route);
         if (obj.simulate) {
             let afterBridgeBal = BigInt(route.toAmount) + toBal;
             if (afterBridgeBal > BigInt(obj.toTokenAmount)) afterBridgeBal = BigInt(obj.toTokenAmount);
@@ -762,7 +763,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                 })
             );
             if (obj.toToken !== zeroAddress) {
-                store.dispatch(
+                await store.dispatch(
                     addTransactionStepDb({
                         transactionId: obj.notificationId!,
                         step: {
@@ -778,7 +779,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                     obj.currentWallet,
                     client
                 );
-                store.dispatch(
+                await store.dispatch(
                     editTransactionStepDb({
                         transactionId: obj.notificationId!,
                         stepType: TransactionTypes.APPROVE_BRIDGE,
