@@ -12,16 +12,18 @@ import useTotalSupplies from "./hooks/useTotalSupplies";
 import { useDecimals } from "./hooks/useDecimals";
 import Buy from "./pages/Buy/Buy";
 import useAccountData from "./hooks/useAccountData";
-import useBridge from "./hooks/bridge/useBridge";
 import Stats from "./pages/Stats/Stats";
 import Front from "./pages/Front/Front";
 import { RoutesPaths } from "./config/constants";
 import Swap from "./pages/Swap/Swap";
 import Bridge from "./pages/Bridge/Bridge";
 import { SignInRequiredWrapper } from "./components/SignInRequiredWrapper/SignInRequiredWrapper";
-import { BridgeDirection } from "./state/ramp/types";
 import { Snapshot } from "./pages/Snapshot/Snapshot";
 import FarmInfo from "./pages/FarmInfo/FarmInfo";
+import { useAppDispatch } from "./state";
+import useApp from "./hooks/useApp";
+import { setOffline } from "./state/internet/internetReducer";
+import useTransactions from "./hooks/useTransactions";
 
 function Body() {
     const { reloadPrices } = usePriceOfTokens();
@@ -31,13 +33,36 @@ function Body() {
     const { reloadSupplies } = useTotalSupplies();
     const { reloadFarmData } = useFarmDetails();
     const { fetchAccountData } = useAccountData();
-    const { isBridgePending } = useBridge(BridgeDirection.USDC_POLYGON_TO_ARBITRUM_USDC);
-    const { isBridgePending: isBridgePendingEth } = useBridge(BridgeDirection.ETH_POLYGON_TO_ARBITRUM_ETH);
+    const { lightMode, supportChat, toggleSupportChat } = useApp();
+    const { fetchTransactions } = useTransactions();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        isBridgePending();
-        isBridgePendingEth();
+        window.addEventListener("online", () => {
+            window.location.reload();
+        });
+        window.addEventListener("offline", () => {
+            dispatch(setOffline());
+        });
     }, []);
+
+    useEffect(() => {
+        console.log("supportChat =>", supportChat);
+        if (supportChat) {
+            // @ts-ignore
+            window.chaport.q("startSession");
+            const chaport = document.querySelector(".chaport-container");
+            // @ts-ignore
+            if (chaport) chaport.style.display = "block";
+        } else {
+            // @ts-ignore
+            window.chaport.q("stopSession");
+            // @ts-ignore
+            const chaport = document.querySelector(".chaport-container");
+            // @ts-ignore
+            if (chaport) chaport.style.display = "none";
+        }
+    }, [supportChat]);
 
     useEffect(() => {
         fetchAccountData();
@@ -95,6 +120,10 @@ function Body() {
     useEffect(() => {
         reloadFarmData();
     }, [reloadFarmData]);
+
+    useEffect(() => {
+        fetchTransactions();
+    }, [fetchTransactions]);
 
     return (
         <Routes>

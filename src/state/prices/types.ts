@@ -1,10 +1,9 @@
-import { Farm } from "src/types";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
-import { Decimals } from "../decimals/types";
+import { PoolDef } from "src/config/constants/pools_json";
+import { Address } from "viem";
 
 export interface StateInterface {
     prices: Prices;
-    oldPrices: Partial<OldPrices>;
+    oldPrices: OldPrices;
     isLoading: boolean;
     isFetched: boolean;
     isLoadedOldPrices: boolean;
@@ -12,32 +11,25 @@ export interface StateInterface {
 }
 
 export interface OldPrices {
-    [key: string]: {
-        timestamp: number;
-        price: number;
-    }[];
+    [chainId: string]: {
+        [address: string]: {
+            timestamp: number;
+            price: number;
+        }[];
+    };
 }
 
 export interface AddPrice {
     [key: string]: number;
 }
-export interface UpdatePricesActionPayload {
-    chainId: number;
-}
-
 export interface GetOldPricesActionPayload {
     lpData: {
-        token0: string;
-        token1: string;
-        totalSupply: string;
-        reserve0: string;
-        reserve1: string;
         tokenId: string;
         blockTimestamp: string;
     }[];
-    farms: Farm[];
+    farms: PoolDef[];
 }
 
 export interface Prices {
-    [key: string]: number;
+    [chainId: number]: Record<Address, number>;
 }

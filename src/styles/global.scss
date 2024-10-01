@@ -150,3 +150,8 @@ select {
 [data-rk] ._1am14410::-webkit-scrollbar-thumb:hover {
     background: #b30000;
 }
+html {
+    @include devices(mobile) {
+        font-size: 80%;
+    }
+}

@@ -3,7 +3,6 @@ import { RiArrowDownSLine } from "react-icons/ri";
 import PoolButton from "src/components/PoolButton/PoolButton";
 import { Tabs } from "src/components/Tabs/Tabs";
 import useApp from "src/hooks/useApp";
-import { Farm } from "src/types";
 import { FarmTransactionType } from "src/types/enums";
 import { Description } from "../Description/Description";
 import DetailInput from "../DetailInput/DetailInput";
@@ -13,8 +12,9 @@ import { useAppDispatch, useAppSelector } from "src/state";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmDetailInputOptions } from "src/state/farms/types";
 import { IS_LEGACY } from "src/config/constants";
+import { PoolDef } from "src/config/constants/pools_json";
 
-export const DropDownView: React.FC<{ farm: Farm }> = ({ farm }) => {
+export const DropDownView: React.FC<{ farm: PoolDef }> = ({ farm }) => {
     const { lightMode } = useApp();
     const [showMoreDetail, setShowMoreDetail] = useState(false);
     const transactionType = useAppSelector((state) =>

@@ -69,10 +69,10 @@ export const checkBridgeStatus = createAsyncThunk(
 export const polyUsdcToArbUsdc = createAsyncThunk(
     "ramp/polyUsdcToArbUsdc",
     async (
-        { polygonSigner, currentWallet, refechBalance, direction, polygonUSDCAmount }: PolyUsdcToArbUsdcArgs,
+        { polygonClient, currentWallet, refechBalance, direction, polygonUSDCAmount }: PolyUsdcToArbUsdcArgs,
         thunkApi
     ) => {
-        if (!polygonSigner) return;
+        if (!polygonClient.wallet) return;
         console.log("polygonUSDCAmount =>", polygonUSDCAmount);
         await sleep(1000);
         let notiId = notifyLoading({
@@ -83,9 +83,9 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
             const polyUsdcBalance = await getBalance(
                 BridgeChainInfo[direction].sourceAddress,
                 currentWallet,
-                polygonSigner
+                polygonClient
             );
-            if (polyUsdcBalance.eq(0)) throw new Error("Insufficient balance");
+            if (polyUsdcBalance === 0n) throw new Error("Insufficient balance");
             thunkApi.dispatch(setBridgeStatus({ status: BridgeStatus.APPROVING, direction }));
             console.log("getting route");
             const { route, approvalData } = await getRoute(
@@ -108,30 +108,30 @@ export const polyUsdcToArbUsdc = createAsyncThunk(
             await approveErc20(
                 approvalData.approvalTokenAddress,
                 approvalData.allowanceTarget,
-                approvalData.minimumApprovalAmount,
+                BigInt(approvalData.minimumApprovalAmount),
                 currentWallet,
-                polygonSigner!
+                polygonClient
             );
             console.log("approval done");
             thunkApi.dispatch(setBridgeStatus({ status: BridgeStatus.PENDING, direction }));
             notifyLoading({ title: "Bridging", message: "Creating transaction - 2/3" }, { id: notiId });
             const buildTx = await buildTransaction(route);
-            const tx = {
-                to: buildTx?.txTarget,
-                data: buildTx?.txData,
-                value: buildTx?.value,
-                chainId: buildTx?.chainId,
-                gasLimit: 1000000,
-            };
             notifyLoading({ title: "Bridging", message: "Sending bridge transaction - 3/3" }, { id: notiId });
-            const { tx: transaction, error } = await awaitTransaction(polygonSigner?.sendTransaction(tx));
-            console.log(transaction, error);
+            const { txHash, error } = await awaitTransaction(
+                polygonClient.wallet.sendTransaction({
+                    to: buildTx?.txTarget,
+                    data: buildTx?.txData,
+                    value: BigInt(buildTx?.value || 0),
+                }),
+                polygonClient
+            );
+            console.log(txHash, error);
             if (error) throw new Error(error);
-            const sourceTxHash: string = transaction.transactionHash || transaction.hash;
-            if (sourceTxHash) {
+
+            if (txHash) {
                 notifySuccess({ title: "Bridge!", message: "Transaction sent" });
             }
-            thunkApi.dispatch(setSourceTxHash({ hash: sourceTxHash, direction }));
+            thunkApi.dispatch(setSourceTxHash({ hash: txHash!, direction }));
             thunkApi.dispatch(checkBridgeStatus({ refechBalance, direction }));
             dismissNotify(notiId);
         } catch (error: any) {

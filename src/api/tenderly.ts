@@ -14,11 +14,15 @@ import {
     TenderlySimulateTransactionBody,
 } from "src/types/tenderly";
 import { zeroAddress } from "viem";
+import { defaultChainId } from "src/config/constants";
 
 // #region Utility functions
-const mapStateOverridesToEncodeStateRequest = (overrides: SimulationParametersOverrides): EncodeStateRequest => {
+const mapStateOverridesToEncodeStateRequest = (
+    overrides: SimulationParametersOverrides,
+    chainId: number
+): EncodeStateRequest => {
     return {
-        networkID: `${Network.ARBITRUM_ONE}`,
+        networkID: chainId.toString(),
         stateOverrides: Object.keys(overrides)
             .map((contractAddress) => ({
                 [contractAddress]: overrides[contractAddress as string].state,
@@ -79,8 +83,11 @@ const mapToEncodedOverrides = (stateOverrides: StateOverride): EncodedStateOverr
         }, {});
 };
 
-export const encodeStateOverrides = async (overrides: SimulationParametersOverrides) => {
-    const encodingRequest = mapStateOverridesToEncodeStateRequest(overrides);
+export const encodeStateOverrides = async (
+    overrides: SimulationParametersOverrides,
+    chainId: number = defaultChainId
+) => {
+    const encodingRequest = mapStateOverridesToEncodeStateRequest(overrides, chainId);
     const res = await tenderlyApi.post(
         `contracts/encode-states
       `,
@@ -88,7 +95,7 @@ export const encodeStateOverrides = async (overrides: SimulationParametersOverri
     );
     const encodedStates = res.data;
     console.log(encodedStates);
-    const result = mapToEncodedOverrides(encodedStates.stateOverrides);
+    const result = mapToEncodedOverrides(encodedStates?.stateOverrides || {});
     console.log(result);
     return result;
 };
@@ -125,7 +132,7 @@ export const filterAssetChanges = (tokenAddress: string, walletAddress: string, 
 export const filterBalanceChanges = (walletAddress: string, balanceChanges: BalanceDiffs[]) => {
     const change = balanceChanges.find((item) => item.address.toLowerCase() === walletAddress.toLowerCase());
 
-    return { before: change?.original, after: change?.dirty };
+    return { before: BigInt(change?.original || 0), after: BigInt(change?.dirty || 0) };
 };
 
 // #endregion Utility functions
@@ -134,18 +141,16 @@ export const simulateTransaction = async (
     data: Omit<
         TenderlySimulateTransactionBody,
         "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
-    >
+    > & { chainId?: number }
 ): Promise<SimulationResponse> => {
     const body: TenderlySimulateTransactionBody = {
         state_objects: {},
         ...data,
-        network_id: `${Network.ARBITRUM_ONE}`,
+        network_id: `${data.chainId || Network.ARBITRUM_ONE}`,
     };
 
-    // State overiding api is not working hence, commented
-    // TODO: uncomment when fixed
     if (data.state_overrides) {
-        const overrides = await encodeStateOverrides(data.state_overrides);
+        const overrides = await encodeStateOverrides(data.state_overrides, data.chainId);
         const contractAddress = Object.keys(overrides);
         const encodedState = contractAddress.map((addr) => ({
             [addr]: {

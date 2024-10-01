@@ -15,16 +15,13 @@ import { MdOutlineQrCode2 } from "react-icons/md";
 import { ExportPrivateKey } from "src/components/modals/ExportPrivateKey/ExportPrivateKey";
 import { ExportPublicKey } from "src/components/modals/ExportPublicKey/ExportPublicKey";
 import SupportChatToggle from "src/components/SupportChatToggle/SupportChatToggle";
-import BridgeBtn from "src/components/BridgeBtn/BridgeBtn";
 import ReferralLink from "src/components/ReferralLink/ReferralLink";
 import ReferBanner from "src/components/ReferBanner/ReferBanner";
 import { NotSignedIn } from "src/components/NotSignedIn/NotSignedIn";
-import { CHAIN_ID } from "src/types/enums";
 import { WrongNetwork } from "src/components/WrongNetwork/WrongNetwork";
 import ReferralEarning from "./ReferralEarning/ReferralEarning";
 import { TraxEarning } from "./TraxEarning/TraxEarning";
 import { TraxReferralEarning } from "./TraxReferralEarning/TraxReferralEarning";
-import BridgeEthBtn from "src/components/BridgeEthBtn/BridgeEthBtn";
 import SwapUSDCBtn from "src/components/SwapUSDCBtn/SwapUSDCBtn";
 import { EarnTrax } from "src/components/modals/EarnTrax/EarnTrax";
 import tickIcon from "src/assets/images/tick-blue.svg";
@@ -36,29 +33,34 @@ import { Skeleton } from "src/components/Skeleton/Skeleton";
 import DeprecatedWithdraw from "src/components/DeprecatedWithdraw/DeprecatedWithdraw";
 import ArbitriumBalances from "src/components/ArbitriumBalances/ArbitriumBalances";
 import BoostedApy from "src/components/BoostedApy/BoostedApy";
+import OneClickMigrate from "src/components/OneClickMigrate/OneClickMigrate";
+import { CHAIN_ID } from "src/types/enums";
+import Transactions from "./Transactions/Transactions";
 
 function Dashboard() {
     const { lightMode } = useApp();
     const { earnTraxTermsAgreed } = useAppSelector((state) => state.account);
     const { vaults, isFetched } = useVaults();
-    const { currentWallet, displayAccount, signer, networkId, domainName } = useWallet();
+    const { currentWallet, displayAccount, domainName } = useWallet();
     const [congModel, setCongModel] = useState(false);
     const [copied, setCopied] = useState(false);
     const [openPrivateKeyModal, setOpenPrivateKeyModal] = useState(false);
     const [openQrCodeModal, setOpenQrCodeModal] = useState(false);
     const [openEarnTraxModal, setOpenEarnTraxModal] = useState(false);
-    const { BLOCK_EXPLORER_URL } = useConstants();
+    const { BLOCK_EXPLORER_URL } = useConstants(CHAIN_ID.ARBITRUM);
 
     const copy = () => {
-        setCopied(true);
-        copyToClipboard(currentWallet, () => setCopied(false));
+        if (currentWallet) {
+            setCopied(true);
+            copyToClipboard(currentWallet, () => setCopied(false));
+        }
     };
 
     return (
         <div className={`dashboard_top_bg ${lightMode && "dashboard_top_bg--light"}`} id="dashboard">
             <div className={`dashboard_header ${lightMode && "dashboard_header--light"}`}>
                 <div className="dashboard_header_left">
-                    <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet)} />
+                    <Jazzicon diameter={100} seed={jsNumberForAddress(currentWallet || "0x")} />
 
                     {currentWallet ? (
                         <>
@@ -110,7 +112,7 @@ function Dashboard() {
 
                 <div className="dashboard-key-icons" style={currentWallet ? {} : { display: "flex" }}>
                     <SupportChatToggle />
-                    {signer && (
+                    {currentWallet && (
                         <>
                             <FaKey
                                 color={lightMode ? "var(--color_grey)" : "#ffffff"}
@@ -143,6 +145,7 @@ function Dashboard() {
             <div className={`dashboard_tvl_section`}>
                 <UserTVL />
                 <DeprecatedWithdraw />
+                {/* <OneClickMigrate /> */}
                 {earnTraxTermsAgreed && (
                     <>
                         <TraxEarning />
@@ -151,57 +154,54 @@ function Dashboard() {
                     </>
                 )}
                 <ReferralEarning />
-                <BridgeBtn />
-                <BridgeEthBtn />
                 <SwapUSDCBtn />
             </div>
             {currentWallet ? (
                 <>
                     <div className={`dashboard_section outlinedContainer`}>
+                        <Transactions />
+                    </div>
+                    <div className={`dashboard_section outlinedContainer`}>
                         <TokenBalances />
                     </div>
-                    {networkId === CHAIN_ID.ARBITRUM ? (
-                        <div className={`dashboard_section outlinedContainer`}>
-                            {isFetched ? (
-                                <>
-                                    {vaults.length > 0 ? (
-                                        <>
-                                            <p
-                                                className={`dashboard_wallet_title ${
-                                                    lightMode && "dashboard_wallet_title--light"
-                                                }`}
-                                            >
-                                                Staked Tokens
+                    <div className={`dashboard_section outlinedContainer`}>
+                        {isFetched ? (
+                            <>
+                                {vaults.length > 0 ? (
+                                    <>
+                                        <p
+                                            className={`dashboard_wallet_title ${
+                                                lightMode && "dashboard_wallet_title--light"
+                                            }`}
+                                        >
+                                            Staked Tokens
+                                        </p>
+                                        <Vaults />
+                                    </>
+                                ) : (
+                                    <div className="dashboard_video_container">
+                                        <div className="dashboard_para">
+                                            <h1 className="dashboard_video_title">New to Contrax?</h1>
+                                            <p className="dashboard_video_content">
+                                                Watch this demo on how to get started!
                                             </p>
-                                            <Vaults />
-                                        </>
-                                    ) : (
-                                        <div className="dashboard_video_container">
-                                            <div className="dashboard_para">
-                                                <h1 className="dashboard_video_title">New to Contrax?</h1>
-                                                <p className="dashboard_video_content">
-                                                    Watch this demo on how to get started!
-                                                </p>
-                                            </div>
-                                            <iframe
-                                                className="dashboard_iframe_video"
-                                                style={{ aspectRatio: "1.7777" }}
-                                                src="https://www.youtube.com/embed/cqJkiNrbVqk?si=XUyQiNVGbg99NnP1"
-                                                title="YouTube video player"
-                                                frameBorder="0"
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                                allowFullScreen
-                                            ></iframe>
                                         </div>
-                                    )}
-                                </>
-                            ) : (
-                                <Skeleton w={"100%"} h={250} bRadius={20} inverted={false} />
-                            )}
-                        </div>
-                    ) : (
-                        <WrongNetwork />
-                    )}
+                                        <iframe
+                                            className="dashboard_iframe_video"
+                                            style={{ aspectRatio: "1.7777" }}
+                                            src="https://www.youtube.com/embed/cqJkiNrbVqk?si=XUyQiNVGbg99NnP1"
+                                            title="YouTube video player"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <Skeleton w={"100%"} h={250} bRadius={20} inverted={false} />
+                        )}
+                    </div>
                 </>
             ) : (
                 <NotSignedIn />

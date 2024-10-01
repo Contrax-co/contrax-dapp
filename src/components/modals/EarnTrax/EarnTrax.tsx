@@ -4,9 +4,9 @@ import styles from "./EarnTrax.module.scss";
 import { useAppDispatch } from "src/state";
 import { acceptTerms, getMessage } from "src/api/trax";
 import useWallet from "src/hooks/useWallet";
-import { useSignMessage } from "wagmi";
 import { setEarnTraxTermsAgreed } from "src/state/account/accountReducer";
 import { ImSpinner8 } from "react-icons/im";
+import { CHAIN_ID } from "src/types/enums";
 
 interface IProps {
     setOpenModal: Function;
@@ -15,15 +15,16 @@ interface IProps {
 
 export const EarnTrax: FC<IProps> = ({ setOpenModal, setCongModal }) => {
     const dispatch = useAppDispatch();
-    const { currentWallet } = useWallet();
-    const { signMessageAsync } = useSignMessage();
+    const { currentWallet, getWalletClient } = useWallet();
     const [agree, setAgree] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleAgree = async () => {
+        if (!currentWallet) return;
+        const client = await getWalletClient(CHAIN_ID.ARBITRUM);
         setIsLoading(true);
         const message = await getMessage();
-        const signature = await signMessageAsync({ message });
+        const signature = await client.signMessage({ message });
         const termsAccepted = await acceptTerms(currentWallet, signature);
         setCongModal(true);
         dispatch(setEarnTraxTermsAgreed(termsAccepted));

@@ -7,13 +7,14 @@ import { BsClipboardData } from "react-icons/bs";
 import { v4 as uuid } from "uuid";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 import { ReferralStats } from "src/api/stats";
+import { CHAIN_ID } from "src/types/enums";
 
 interface ReferralDashboardTableProps {
     referrals: ReferralStats[] | undefined;
 }
 
 export const ReferralDashboardTable: FC<ReferralDashboardTableProps> = ({ referrals }) => {
-    const { BLOCK_EXPLORER_URL } = useConstants();
+    const { BLOCK_EXPLORER_URL } = useConstants(CHAIN_ID.ARBITRUM);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<"tvl" | "referred" | null>(null);
     const [currentPage, setCurrentPage] = useState(1);

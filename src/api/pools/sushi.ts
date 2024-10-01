@@ -1,10 +1,6 @@
-import pools from "src/config/constants/pools.json";
-import { Farm } from "src/types";
-import { constants, BigNumber, Signer, Contract, utils } from "ethers";
 import { approveErc20, getBalance } from "src/api/token";
-import { toEth, validateNumberDecimals } from "src/utils/common";
+import { awaitTransaction, getCombinedBalance, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
-import { blockExplorersByChainId } from "src/config/constants/urls";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 import {
@@ -24,41 +20,50 @@ import { defaultChainId } from "src/config/constants";
 import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
 import { filterAssetChanges, filterStateDiff, getAllowanceStateOverride, simulateTransaction } from "../tenderly";
+import { encodeFunctionData, getContract, zeroAddress } from "viem";
+import pools_json from "src/config/constants/pools_json";
+import vaultAbi from "src/assets/abis/vaultAbi";
 
 let sushi: DynamicFarmFunctions = function (farmId) {
-    const farm = pools.find((farm) => farm.id === farmId) as Farm;
+    const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
-        const ethPrice = prices[constants.AddressZero];
+        const ethPrice = prices[farm.chainId][zeroAddress];
         const lpAddress = farm.lp_address;
-        const vaultTokenPrice = prices[farm.vault_addr];
-        const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
+        const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
+        const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
+        const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
+        const combinedEthBalance = getCombinedBalance(balances, "eth");
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
+        let isCrossChain = true;
+        const usdcCurrentChainBalance = Number(toEth(combinedUsdcBalance.chainBalances[farm.chainId], 6));
+        if (usdcCurrentChainBalance >= 100) isCrossChain = false;
 
         let depositableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
-                amountDollar: (
-                    Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
-                ).toString(),
-                price: prices[usdcAddress],
+                amount: combinedUsdcBalance.formattedBalance.toString(),
+                amountDollar: combinedUsdcBalance.formattedBalance.toString(),
+                price: prices[farm.chainId][usdcAddress],
             },
             {
-                tokenAddress: constants.AddressZero,
+                tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(balances[constants.AddressZero]!, 18),
-                amountDollar: (Number(toEth(balances[constants.AddressZero]!, 18)) * ethPrice).toString(),
+                amount: combinedEthBalance.formattedBalance.toString(),
+                amountDollar: (Number(combinedEthBalance.formattedBalance) * ethPrice).toString(),
                 price: ethPrice,
             },
             {
                 tokenAddress: lpAddress,
                 tokenSymbol: farm.name,
-                amount: toEth(balances[lpAddress]!, decimals[lpAddress]),
-                amountDollar: (Number(toEth(balances[lpAddress]!, decimals[lpAddress])) * prices[lpAddress]).toString(),
-                price: prices[lpAddress],
+                amount: toEth(BigInt(balances[farm.chainId][lpAddress]!), decimals[farm.chainId][lpAddress]),
+                amountDollar: (
+                    Number(toEth(BigInt(balances[farm.chainId][lpAddress]!), decimals[farm.chainId][lpAddress])) *
+                    prices[farm.chainId][lpAddress]
+                ).toString(),
+                price: prices[farm.chainId][lpAddress],
             },
         ];
 
@@ -66,12 +71,15 @@ let sushi: DynamicFarmFunctions = function (farmId) {
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: ((Number(toEth(vaultBalance)) * vaultTokenPrice) / prices[usdcAddress]).toString(),
+                amount: (
+                    (Number(toEth(vaultBalance)) * vaultTokenPrice) /
+                    prices[farm.chainId][usdcAddress]
+                ).toString(),
                 amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
             },
             {
-                tokenAddress: constants.AddressZero,
+                tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
                 amount: ((Number(toEth(vaultBalance)) * vaultTokenPrice) / ethPrice).toString(),
                 amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
@@ -82,7 +90,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 tokenSymbol: farm.name,
                 amount: toEth(vaultBalance),
                 amountDollar: (Number(toEth(vaultBalance)) * vaultTokenPrice).toString(),
-                price: prices[lpAddress],
+                price: prices[farm.chainId][lpAddress],
                 isPrimaryVault: true,
             },
         ];
@@ -90,33 +98,39 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         const result = {
             depositableAmounts,
             withdrawableAmounts,
-            vaultBalanceFormated: (Number(toEth(vaultTotalSupply ?? 0)) * vaultTokenPrice).toString(),
+            isCrossChain,
+            vaultBalanceFormated: (Number(toEth(BigInt(vaultTotalSupply || 0))) * vaultTokenPrice).toString(),
             id: farm.id,
         };
         return result;
     };
 
-    const deposit: DepositFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
-        if (!signer) return;
+    const deposit: DepositFn = async ({ amountInWei, currentWallet, getClients, max }) => {
         let notiId = notifyLoading(loadingMessages.approvingDeposit());
-        const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
         try {
-            const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+            const client = await getClients(farm.chainId);
+            const vaultContract = getContract({
+                abi: vaultAbi,
+                address: farm.vault_addr,
+                client,
+            });
 
-            const lpBalance = await getBalance(farm.lp_address, currentWallet, signer.provider!);
+            const lpBalance = await getBalance(farm.lp_address, currentWallet, client);
 
             // approve the vault to spend asset
-            await approveErc20(farm.lp_address, farm.vault_addr, lpBalance, currentWallet, signer);
+            await approveErc20(farm.lp_address, farm.vault_addr, lpBalance, currentWallet, client);
 
             dismissNotify(notiId);
             notifyLoading(loadingMessages.confirmDeposit(), { id: notiId });
 
             let depositTxn: any;
             if (max) {
-                depositTxn = await vaultContract.depositAll();
+                // @ts-ignore
+                depositTxn = vaultContract.write.depositAll();
             } else {
-                depositTxn = await vaultContract.deposit(amountInWei);
+                depositTxn = vaultContract.write.deposit([amountInWei]);
             }
+
             dismissNotify(notiId);
             notifyLoading(loadingMessages.depositing(depositTxn.transactionHash), {
                 id: notiId,
@@ -129,8 +143,9 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 // ],
             });
 
-            const depositTxnStatus = await depositTxn.wait(1);
-            if (!depositTxnStatus.status) {
+            depositTxn = await awaitTransaction(depositTxn, client);
+
+            if (!depositTxn.status) {
                 throw new Error("Error depositing into vault!");
             } else {
                 notifySuccess(successMessages.deposit());
@@ -144,21 +159,25 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, signer, chainId, max }) => {
-        if (!signer) return;
-        const BLOCK_EXPLORER_URL = blockExplorersByChainId[chainId];
+    const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, getClients, max }) => {
         const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
-            const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+            const client = await getClients(farm.chainId);
+            const vaultContract = getContract({
+                abi: vaultAbi,
+                address: farm.vault_addr,
+                client,
+            });
 
             dismissNotify(notiId);
             notifyLoading(loadingMessages.confirmingWithdraw(), { id: notiId });
 
             let withdrawTxn: any;
             if (max) {
-                withdrawTxn = await vaultContract.withdrawAll();
+                // @ts-ignore
+                withdrawTxn = vaultContract.write.withdrawAll();
             } else {
-                withdrawTxn = await vaultContract.withdraw(amountInWei);
+                withdrawTxn = vaultContract.write.withdraw([amountInWei]);
             }
 
             dismissNotify(notiId);
@@ -173,8 +192,9 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 // ],
             });
 
-            const withdrawTxnStatus = await withdrawTxn.wait(1);
-            if (!withdrawTxnStatus.status) {
+            withdrawTxn = await awaitTransaction(withdrawTxn, client);
+
+            if (!withdrawTxn.status) {
                 throw new Error("Error withdrawing Try again!");
             } else {
                 dismissNotify(notiId);
@@ -188,10 +208,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max, signer }) => {
-        if (!signer) return BigNumber.from(0);
-        const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
-
+    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max, getClients }) => {
         const transaction = {} as Omit<
             TenderlySimulateTransactionBody,
             "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
@@ -208,12 +225,26 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         ]);
 
         if (max) {
-            const populated = await vaultContract.populateTransaction.depositAll();
+            const populated = {
+                data: encodeFunctionData({
+                    abi: vaultAbi,
+                    functionName: "depositAll",
+                    args: [],
+                }),
+                value: 0n,
+            };
 
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
         } else {
-            const populated = await vaultContract.populateTransaction.deposit(amountInWei);
+            const populated = {
+                data: encodeFunctionData({
+                    abi: vaultAbi,
+                    functionName: "deposit",
+                    args: [amountInWei],
+                }),
+                value: 0n,
+            };
 
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
@@ -225,23 +256,14 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         });
 
         const filteredState = filterStateDiff(farm.vault_addr, "_balances", simulationResult.stateDiffs);
-        const difference = BigNumber.from(filteredState.afterChange[currentWallet.toLowerCase()]).sub(
-            BigNumber.from(filteredState.original[currentWallet.toLowerCase()])
-        );
+        const difference =
+            BigInt(filteredState.afterChange[currentWallet.toLowerCase()]) -
+            BigInt(filteredState.original[currentWallet.toLowerCase()]);
 
         return difference;
     };
 
-    const withdrawSlippage: SlippageWithdrawBaseFn = async ({
-        amountInWei,
-        currentWallet,
-        signer,
-        chainId,
-        max,
-        farm,
-    }) => {
-        if (!signer) return BigNumber.from(0);
-        const vaultContract = new Contract(farm.vault_addr, farm.vault_abi, signer);
+    const withdrawSlippage: SlippageWithdrawBaseFn = async ({ amountInWei, currentWallet, max, farm }) => {
         const transaction = {} as Omit<
             TenderlySimulateTransactionBody,
             "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"
@@ -249,12 +271,26 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         transaction.from = currentWallet;
 
         if (max) {
-            const populated = await vaultContract.populateTransaction.withdrawAll();
+            const populated = {
+                data: encodeFunctionData({
+                    abi: vaultAbi,
+                    functionName: "withdrawAll",
+                    args: [],
+                }),
+                value: 0n,
+            };
 
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
         } else {
-            const populated = await vaultContract.populateTransaction.withdraw(amountInWei);
+            const populated = {
+                data: encodeFunctionData({
+                    abi: vaultAbi,
+                    functionName: "withdraw",
+                    args: [amountInWei],
+                }),
+                value: 0n,
+            };
 
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
@@ -267,9 +303,9 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         });
 
         const filteredState = filterStateDiff(farm.lp_address, "balanceOf", simulationResult.stateDiffs);
-        const difference = BigNumber.from(filteredState.afterChange[currentWallet.toLowerCase()]).sub(
-            BigNumber.from(filteredState.original[currentWallet.toLowerCase()])
-        );
+        const difference =
+            BigInt(filteredState.afterChange[currentWallet.toLowerCase()]) -
+            BigInt(filteredState.original[currentWallet.toLowerCase()]);
 
         return difference;
     };

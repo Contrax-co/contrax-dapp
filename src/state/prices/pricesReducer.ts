@@ -1,13 +1,14 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface, UpdatePricesActionPayload } from "./types";
+import { AddPrice, GetOldPricesActionPayload, OldPrices, StateInterface } from "./types";
 import { utils } from "ethers";
-import { getTokenPricesBackend } from "src/api/token";
+import { getPricesByTime, getTokenPricesBackend } from "src/api/token";
 import { defaultChainId } from "src/config/constants";
 import { Address } from "viem";
 import { CHAIN_ID } from "src/types/enums";
+import { Common_Chains_State } from "src/config/constants/pools_json";
 
 const initialState: StateInterface = {
-    prices: {},
+    prices: Common_Chains_State,
     isLoading: false,
     isFetched: false,
     oldPrices: {},
@@ -15,46 +16,36 @@ const initialState: StateInterface = {
     isLoadedOldPrices: false,
 };
 
-export const updatePrices = createAsyncThunk(
-    "prices/updatePrices",
-    async ({ chainId }: UpdatePricesActionPayload, thunkApi) => {
-        try {
-            if (chainId !== defaultChainId) return;
-            const data = await getTokenPricesBackend();
-            return data?.[String(CHAIN_ID.ARBITRUM)];
-        } catch (error) {
-            console.log("Price unable to fetch", chainId, defaultChainId);
-            console.error(error);
-        }
+export const updatePrices = createAsyncThunk("prices/updatePrices", async (_, thunkApi) => {
+    try {
+        const data = await getTokenPricesBackend();
+        return data;
+    } catch (error) {
+        console.log("Price unable to fetch", defaultChainId);
+        console.error(error);
     }
-);
+});
 
 export const getPricesOfLpByTimestamp = createAsyncThunk(
     "prices/getOldPrices",
     async ({ lpData, farms }: GetOldPricesActionPayload, thunkApi) => {
-        let prices: { [key: string]: { timestamp: number; price: number }[] } = {};
         // ----------------- Find Lp Addresses of given lpData -----------------
-        const lps = lpData.map((lp) => ({
-            ...lp,
-            address: farms.find((farm) => farm.id === Number(lp.tokenId))!.vault_addr,
-        }));
+        const lps = lpData
+            .map((lp) => ({
+                ...lp,
+                address: farms.find((farm) => farm.id === Number(lp.tokenId))?.vault_addr!,
+                chainId: farms.find((farm) => farm.id === Number(lp.tokenId))?.chainId!,
+            }))
+            .filter((item) => !!item.chainId);
 
-        // ----------------- Get prices from api, save remaining lps whose prices not available -----------------
-        const remainingLps = (await Promise.all(lps.map((lp) => getTokenPricesBackend(Number(lp.blockTimestamp), 50))))
-            .map((res, index) => {
-                if (res) {
-                    prices[utils.getAddress(lps[index].address)] = [
-                        {
-                            price: res[String(CHAIN_ID.ARBITRUM)][utils.getAddress(lps[index].address) as Address],
-                            timestamp: Number(lps[index].blockTimestamp),
-                        },
-                    ];
-                    return undefined;
-                }
-                return { ...lps[index] };
-            })
-            .filter((lp) => !!lp);
-        thunkApi.dispatch(setOldPrices(prices));
+        const res = await getPricesByTime(
+            lps.map((item) => ({
+                address: item.address,
+                chainId: item.chainId,
+                timestamp: Number(item.blockTimestamp),
+            }))
+        );
+        return res;
     }
 );
 
@@ -81,9 +72,27 @@ const pricesSlice = createSlice({
         builder.addCase(getPricesOfLpByTimestamp.pending, (state) => {
             state.isFetchingOldPrices = true;
         });
-        builder.addCase(getPricesOfLpByTimestamp.fulfilled, (state) => {
+        builder.addCase(getPricesOfLpByTimestamp.fulfilled, (state, action) => {
             state.isFetchingOldPrices = false;
             state.isLoadedOldPrices = true;
+            Object.entries(action.payload!).forEach(([chainId, data]) => {
+                if (!state.oldPrices[chainId]) state.oldPrices[chainId] = {};
+                Object.entries(data).forEach(([tokenAddress, prices]) => {
+                    if (!state.oldPrices[chainId][tokenAddress]) state.oldPrices[chainId][tokenAddress] = [];
+                    // #region remove duplicates
+                    const uniqueMap = new Map();
+                    // Iterate through each item in the array
+                    state.oldPrices[chainId][tokenAddress].concat(prices).forEach((item) => {
+                        if (!uniqueMap.has(item.timestamp)) {
+                            uniqueMap.set(item.timestamp, item);
+                        }
+                    });
+                    // Convert the map back to an array
+                    state.oldPrices[chainId][tokenAddress] = Array.from(uniqueMap.values());
+                    // #endregion remove duplicates
+                });
+            });
+            state.oldPrices = action.payload!;
         });
         builder.addCase(getPricesOfLpByTimestamp.rejected, (state) => {
             state.isFetchingOldPrices = false;

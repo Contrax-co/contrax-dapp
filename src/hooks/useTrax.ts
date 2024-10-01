@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from "react";
 import { useAppSelector } from "src/state";
-import { Address } from "viem";
 import { useVaults } from "./useVaults";
 
 const useTrax = () => {

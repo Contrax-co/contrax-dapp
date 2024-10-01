@@ -10,16 +10,15 @@ import {
     FetchEarningsAction,
     FarmDetailInputOptions,
 } from "./types";
-import { Contract, BigNumber } from "ethers";
 import VaultAbi from "src/assets/abis/vault.json";
-import { erc20ABI } from "wagmi";
+import { Address, erc20Abi, getContract } from "viem";
 import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
 import { IS_LEGACY, defaultChainId } from "src/config/constants";
 import { FarmTransactionType } from "src/types/enums";
 
 const initialState: StateInterface = {
     farmDetails: {},
-    isLoading: false,
+    isLoading: true,
     isFetched: false,
     account: "",
     earnings: {},
@@ -38,24 +37,22 @@ export const updateFarmDetails = createAsyncThunk(
         try {
             const data: FarmDetails = {};
             farms.forEach((farm) => {
-                // @ts-ignore
-                if (farmFunctions[farm.id]?.getProcessedFarmData)
-                    data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(
-                        balances,
-                        prices,
-                        decimals,
-                        totalSupplies[farm.vault_addr]
-                    );
+                data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(
+                    balances,
+                    prices,
+                    decimals,
+                    totalSupplies[farm.chainId][farm.vault_addr]
+                );
             });
-            const usdcI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "USDC");
-            const ethI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "ETH");
+            // const usdcI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "USDC");
+            // const ethI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "ETH");
 
-            if (
-                Number(data[farms[0].id]?.depositableAmounts[ethI!].amountDollar) >
-                Number(data[farms[0].id]?.depositableAmounts[usdcI!].amountDollar)
-            ) {
-                thunkApi.dispatch(setCurrencySymbol("ETH"));
-            }
+            // if (
+            //     Number(data[farms[0].id]?.depositableAmounts[ethI!].amountDollar) >
+            //     Number(data[farms[0].id]?.depositableAmounts[usdcI!].amountDollar)
+            // ) {
+            //     thunkApi.dispatch(setCurrencySymbol("ETH"));
+            // }
 
             return { data, currentWallet };
         } catch (error) {
@@ -68,20 +65,10 @@ export const updateFarmDetails = createAsyncThunk(
 export const updateEarnings = createAsyncThunk(
     "farms/updateEarnings",
     async (
-        {
-            currentWallet,
-            farms,
-            decimals,
-            prices,
-            balances,
-            multicallProvider,
-            totalSupplies,
-            chainId,
-        }: FetchEarningsAction,
+        { currentWallet, farms, decimals, prices, balances, totalSupplies, getPublicClient }: FetchEarningsAction,
         thunkApi
     ) => {
         try {
-            if (chainId !== defaultChainId) throw new Error("Wrong chain");
             await sleep(6000);
             const earns = await getEarnings(currentWallet);
             if (!earns) {
@@ -90,12 +77,27 @@ export const updateEarnings = createAsyncThunk(
             }
 
             const earnings: Earnings = {};
-            const balancesPromises: Promise<BigNumber>[] = [];
+            const balancesPromises: Promise<bigint>[] = [];
             const withdrawableLpAmount: { [farmId: number]: string } = {};
             farms.forEach((farm) => {
-                balancesPromises.push(new Contract(farm.vault_addr, VaultAbi, multicallProvider).balance());
                 balancesPromises.push(
-                    new Contract(farm.lp_address, erc20ABI, multicallProvider).balanceOf(farm.vault_addr)
+                    getContract({
+                        address: farm.vault_addr as Address,
+                        abi: VaultAbi,
+                        client: {
+                            public: getPublicClient(farm.chainId),
+                        },
+                    }).read.balance() as Promise<bigint>
+                );
+
+                balancesPromises.push(
+                    getContract({
+                        address: farm.lp_address as Address,
+                        abi: erc20Abi,
+                        client: {
+                            public: getPublicClient(farm.chainId),
+                        },
+                    }).read.balanceOf([farm.vault_addr as Address]) as Promise<bigint>
                 );
             });
             const vaultBalancesResponse = await Promise.all(balancesPromises);
@@ -103,32 +105,32 @@ export const updateEarnings = createAsyncThunk(
                 const balance = vaultBalancesResponse[i];
                 const b = vaultBalancesResponse[i + 1];
 
-                let r = balance.mul(balances[farms[i / 2].vault_addr]!);
-                if (totalSupplies[farms[i / 2].vault_addr] !== "0") r = r.div(totalSupplies[farms[i / 2].vault_addr]!);
-                if (b.lt(r)) {
-                    const _withdraw = r.sub(b);
-                    const _after = b.add(_withdraw);
-                    const _diff = _after.sub(b);
-                    if (_diff.lt(_withdraw)) {
-                        r = b.add(_diff);
+                let r = balance * BigInt(balances[farms[i / 2].chainId][farms[i / 2].vault_addr]);
+                if (totalSupplies[farms[i / 2].chainId][farms[i / 2].vault_addr] !== "0")
+                    r = r / BigInt(totalSupplies[farms[i / 2].chainId][farms[i / 2].vault_addr]);
+                if (b < r) {
+                    const _withdraw = r - b;
+                    const _after = b + _withdraw;
+                    const _diff = _after - b;
+                    if (_diff < _withdraw) {
+                        r = b + _diff;
                     }
                 }
                 withdrawableLpAmount[farms[i / 2].id] = r.toString();
             }
             earns.forEach((item) => {
-                const farm = farms.find((farm) => farm.vault_addr.toLowerCase() === item.vaultAddress)!;
-                const earnedTokens = (
-                    BigInt(item.withdraw) +
-                    BigInt(withdrawableLpAmount[farm.id]) -
-                    BigInt(item.deposit)
-                ).toString();
-                earnings[farm.id] = Number(toEth(earnedTokens, decimals[farm.lp_address])) * prices[farm.lp_address]!;
-                if (earnings[farm.id] < 0.0001) earnings[farm.id] = 0;
+                const farm = farms.find((farm) => farm.id === Number(item.tokenId));
+                if (farm) {
+                    const earnedTokens =
+                        BigInt(item.withdraw) + BigInt(withdrawableLpAmount[farm.id]) - BigInt(item.deposit);
+                    earnings[farm.id] =
+                        Number(toEth(earnedTokens, decimals[farm.chainId][farm.lp_address])) *
+                        prices[farm.chainId][farm.lp_address]!;
+                    if (earnings[farm.id] < 0.0001) earnings[farm.id] = 0;
+                }
             });
-            thunkApi.dispatch(
-                // @ts-ignore
-                getPricesOfLpByTimestamp({ farms, chainId, lpData: earns, provider: multicallProvider, decimals })
-            );
+
+            thunkApi.dispatch(getPricesOfLpByTimestamp({ farms, lpData: earns }));
             return { earnings, currentWallet };
         } catch (error) {
             console.error(error);

@@ -1,10 +1,10 @@
 import { useMemo, useCallback } from "react";
 import useWallet from "src/hooks/useWallet";
-import * as ethers from "ethers";
 import useFarms from "./farms/useFarms";
 import { useAppDispatch, useAppSelector } from "src/state";
 import { fetchTotalSupplies } from "src/state/supply/supplyReducer";
 import { useDecimals } from "./useDecimals";
+import { Address, formatUnits } from "viem";
 
 /**
  * Returns total supply for all tokens
@@ -12,7 +12,7 @@ import { useDecimals } from "./useDecimals";
 const useTotalSupplies = () => {
     const { farms } = useFarms();
     const { isLoading, totalSupplies, isFetched } = useAppSelector((state) => state.supply);
-    const { networkId, multicallProvider } = useWallet();
+    const { getPublicClient } = useWallet();
     const dispatch = useAppDispatch();
     const {
         decimals,
@@ -22,20 +22,18 @@ const useTotalSupplies = () => {
     } = useDecimals();
 
     const reloadSupplies = useCallback(() => {
-        dispatch(fetchTotalSupplies({ farms, multicallProvider }));
-    }, [farms, networkId, dispatch]);
+        dispatch(fetchTotalSupplies({ farms, getPublicClient }));
+    }, [farms, dispatch]);
 
     const formattedSupplies = useMemo(() => {
-        let b: { [key: string]: number | undefined } = {};
-        Object.entries(totalSupplies).map(([key, value]) => {
-            // Formalize the balance
-            if (!value) {
-                b[key] = undefined;
-                return;
-            }
-            const formattedBal = Number(ethers.utils.formatUnits(value, decimals[key]));
-            b[key] = formattedBal;
-            return;
+        let b: { [chainId: number]: Record<Address, number> } = {};
+        Object.entries(totalSupplies).map(([chainId, values]) => {
+            b[Number(chainId)] = {};
+            Object.entries(values).forEach(([address, value]: [address: Address, value: string]) => {
+                b[Number(chainId)][address] = Number(
+                    formatUnits(BigInt(value), decimals[Number(chainId)][address] || 18)
+                );
+            });
         });
         return b;
     }, [totalSupplies]);

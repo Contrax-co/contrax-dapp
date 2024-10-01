@@ -1,37 +1,58 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { constants, Contract, utils } from "ethers";
-import { erc20ABI } from "wagmi";
+import { Address, erc20Abi, getAddress, getContract, zeroAddress } from "viem";
 import { Decimals, StateInterface, UpdateDecimalsActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
-import { defaultChainId } from "src/config/constants";
+import { Common_Chains_State } from "src/config/constants/pools_json";
+import { CHAIN_ID } from "src/types/enums";
 
-const initialState: StateInterface = { decimals: {}, isLoading: false, isFetched: false };
+const initialState: StateInterface = { decimals: Common_Chains_State, isLoading: false, isFetched: false };
 
 export const fetchDecimals = createAsyncThunk(
     "decimals/fetchDecimals",
-    async ({ farms, multicallProvider }: UpdateDecimalsActionPayload) => {
-        const addresses = new Set<string>();
+    async ({ farms, getPublicClient }: UpdateDecimalsActionPayload) => {
+        const chainIds = farms.reduce((accum, farm) => {
+            if (!accum?.includes(farm.chainId)) accum.push(farm.chainId);
+            return accum;
+        }, [] as number[]);
+        const addresses: Record<number, Set<Address>> = {};
+        chainIds.forEach((chainId) => {
+            addresses[chainId] = new Set();
+        });
         farms.forEach((farm) => {
-            addresses.add(farm.lp_address.toLowerCase());
-            addresses.add(farm.token1.toLowerCase());
-            farm.token2 && addresses.add(farm.token2.toLowerCase());
-            farm.vault_addr && addresses.add(farm.vault_addr.toLowerCase());
+            addresses[farm.chainId].add(getAddress(farm.lp_address));
+            addresses[farm.chainId].add(getAddress(farm.token1));
+            addresses[farm.chainId].add(getAddress(farm.vault_addr));
+            farm.token2 && addresses[farm.chainId].add(getAddress(farm.token2));
         });
         tokens.forEach((token) => {
-            if (token.chainId === defaultChainId) addresses.add(token.address.toLowerCase());
+            addresses[token.chainId].add(getAddress(token.address));
         });
-        const addressesArray = Array.from(addresses);
+        // Extra addresses for balance
+        addresses[CHAIN_ID.BASE].add("0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913");
 
-        let promises = addressesArray.map((address) => new Contract(address, erc20ABI, multicallProvider).decimals());
+        let decimals: Decimals = {};
+        await Promise.all(
+            Object.entries(addresses).map(async ([chainId, set]) => {
+                decimals[Number(chainId)] = {};
+                const arr = Array.from(set);
+                const res = await Promise.all(
+                    arr.map((item) =>
+                        getContract({
+                            address: item,
+                            abi: erc20Abi,
+                            client: {
+                                public: getPublicClient(Number(chainId)),
+                            },
+                        }).read.decimals()
+                    )
+                );
 
-        const decimalsResponses = await Promise.all(promises);
-
-        const decimals: Decimals = decimalsResponses.reduce((accum, decimals, index) => {
-            accum[utils.getAddress(addressesArray[index])] = decimals;
-            return accum;
-        }, {});
-
-        decimals[constants.AddressZero] = 18;
+                decimals[Number(chainId)][zeroAddress] = 18;
+                res.forEach((item, i) => {
+                    decimals[Number(chainId)][arr[i]] = Number(item);
+                });
+            })
+        );
 
         return decimals;
     }
@@ -53,7 +74,7 @@ const decimalsSlice = createSlice({
         builder.addCase(fetchDecimals.rejected, (state) => {
             state.isLoading = false;
             state.isFetched = false;
-            state.decimals = {};
+            state.decimals = Common_Chains_State;
         });
     },
 });

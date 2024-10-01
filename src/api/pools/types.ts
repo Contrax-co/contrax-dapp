@@ -1,51 +1,58 @@
-import { BigNumber, Signer } from "ethers";
+import { PoolDef } from "src/config/constants/pools_json";
 import { Balances } from "src/state/balances/types";
 import { Decimals } from "src/state/decimals/types";
 import { Prices } from "src/state/prices/types";
-import { Farm } from "src/types";
+import { EstimateTxGasArgs, IClients } from "src/types";
+import { Address } from "viem";
 
 export interface ZapInArgs {
-    amountInWei: string | BigNumber;
-    signer?: Signer;
-    chainId: number;
+    id: string;
+    amountInWei: bigint;
     max?: boolean;
-    token: string;
+    token: Address;
     balances: Balances;
     prices?: Prices;
     decimals?: Decimals;
-    currentWallet: string;
-    tokenIn?: string;
+    currentWallet: Address;
+    tokenIn?: Address;
+    isSocial: boolean;
+    estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
+    getClients: (chainId: number) => Promise<IClients>;
+    getPublicClient: (chainId: number) => IClients["public"];
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
 }
 
 export interface ZapOutArgs {
-    amountInWei: string | BigNumber;
-    currentWallet: string;
-    signer?: Signer;
-    chainId: number;
+    id: string;
+    amountInWei: bigint;
+    currentWallet: Address;
     max?: boolean;
-    token: string;
+    isSocial: boolean;
+    token: Address;
+    estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
+    getClients: (chainId: number) => Promise<IClients>;
+    getPublicClient: (chainId: number) => IClients["public"];
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
 }
 
 export interface DepositArgs {
-    amountInWei: string | BigNumber;
-    currentWallet: string;
-    signer?: Signer;
-    chainId: number;
+    amountInWei: bigint;
+    currentWallet: Address;
     max?: boolean;
+    getClients: (chainId: number) => Promise<IClients>;
 }
 
 export interface WithdrawArgs {
-    amountInWei: string | BigNumber;
-    currentWallet: string;
-    signer?: Signer;
-    chainId: number;
+    amountInWei: bigint;
+    currentWallet: Address;
     max?: boolean;
+    getClients: (chainId: number) => Promise<IClients>;
 }
 
 export interface TokenAmounts {
     amount: string;
     amountDollar: string;
-    tokenAddress: string;
+    tokenAddress: Address;
     tokenSymbol: string;
     price: number;
     /**
@@ -59,23 +66,24 @@ export interface FarmDataProcessed {
     depositableAmounts: TokenAmounts[];
     withdrawableAmounts: TokenAmounts[];
     vaultBalanceFormated: string;
+    isCrossChain: boolean;
     id: number;
 }
 
 export type DepositFn = (args: DepositArgs) => Promise<void>;
-export type SlippageDepositBaseFn = (args: DepositArgs & { farm: Farm }) => Promise<BigNumber>;
+export type SlippageDepositBaseFn = (args: DepositArgs & { farm: PoolDef }) => Promise<bigint>;
 export type WithdrawFn = (args: WithdrawArgs) => Promise<void>;
-export type SlippageWithdrawBaseFn = (args: WithdrawArgs & { farm: Farm }) => Promise<BigNumber>;
+export type SlippageWithdrawBaseFn = (args: WithdrawArgs & { farm: PoolDef }) => Promise<bigint>;
 export type ZapInFn = (args: ZapInArgs) => Promise<void>;
-export type ZapInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<void>;
-export type SlippageInBaseFn = (args: ZapInArgs & { farm: Farm }) => Promise<BigNumber>;
-export type SlippageOutBaseFn = (args: ZapOutArgs & { farm: Farm; balances: Balances }) => Promise<BigNumber>;
+export type ZapInBaseFn = (args: ZapInArgs & { farm: PoolDef }) => Promise<void>;
+export type SlippageInBaseFn = (args: ZapInArgs & { farm: PoolDef }) => Promise<bigint>;
+export type SlippageOutBaseFn = (args: ZapOutArgs & { farm: PoolDef; balances: Balances }) => Promise<bigint>;
 export type ZapOutFn = (args: ZapOutArgs) => Promise<void>;
-export type ZapOutBaseFn = (args: ZapOutArgs & { farm: Farm }) => Promise<void>;
+export type ZapOutBaseFn = (args: ZapOutArgs & { farm: PoolDef }) => Promise<void>;
 export type GetFarmDataProcessedFn = (
     balances: Balances,
     prices: Prices,
-    decimals: Partial<Decimals>,
+    decimals: Decimals,
     vaultTotalSupply: string | undefined
 ) => FarmDataProcessed;
 export interface FarmFunctions {

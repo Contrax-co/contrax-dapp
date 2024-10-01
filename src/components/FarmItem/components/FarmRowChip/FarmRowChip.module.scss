@@ -1,0 +1,16 @@
+@import "../../../../styles/_variables.scss";
+@import "../../../../styles/_mixins.scss";
+
+.deprecatedChip {
+    color: var(--color_black);
+    position: relative;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    @include devices(mobile) {
+        font-weight: 600;
+        font-size: 8px;
+        padding: 1px 4px;
+    }
+}

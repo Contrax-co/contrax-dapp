@@ -1,0 +1,63 @@
+@import "../../styles/variables.scss";
+@import "../../styles/mixins";
+
+.container {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    width: auto;
+    gap: 5px;
+    position: relative;
+}
+
+.labeledButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.usdcAmount {
+    color: var(--color_text);
+    white-space: pre;
+    font-weight: 400;
+    b {
+        color: var(--color_primary);
+    }
+}
+
+.disclaimer {
+    color: var(--color_grey);
+    font-size: 12px;
+    margin: 0px;
+    text-align: center;
+    line-height: 15px;
+}
+
+.disclaimerLogo {
+    margin-right: 8px;
+    transform: translateY(1px);
+}
+
+.bridgeButton {
+    padding: 0 !important;
+    min-height: 40px;
+    width: 100%;
+    cursor: pointer;
+    min-width: 0px;
+}
+.logoutButton {
+    padding: 0 !important;
+    min-height: 40px;
+    width: 20px;
+    cursor: pointer;
+    min-width: 0px;
+}
+
+.btnContainer {
+    display: grid;
+    grid-template-columns: 1fr 0.25fr;
+    gap: 5px;
+    // @include devices(mobile) {
+    //     flex-direction: column;
+    // }
+}

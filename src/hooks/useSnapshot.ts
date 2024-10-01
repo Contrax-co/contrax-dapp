@@ -1,9 +1,7 @@
 import snapshot from "@snapshot-labs/snapshot.js";
 import { SNAPSHOT_APP_NAME, SNAPSHOT_HUB_URL, SNAPSHOT_SPACE_ID } from "src/config/constants";
 import { useEthersWeb3Provider } from "src/config/walletConfig";
-import { useAccount } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
-import { useStats } from "./useStats";
 import { SnapshotSpace, SnapshotSpaceProposal, SnapshotSpaceVote } from "src/types/snapshot";
 import { getSnapshotSpace, getSnapshotSpaceProposals, getSnapshotSpaceProposalsVotesByAddress } from "src/api/snapshot";
 import useNotify from "./useNotify";
@@ -13,9 +11,8 @@ const client = new snapshot.Client712(SNAPSHOT_HUB_URL);
 
 export const useSnapshotJoinSpace = () => {
     const [loadingJoinSpace, setLoadingJoinSpace] = useState(false);
-
+    const { currentWallet: address } = useWallet();
     const provider = useEthersWeb3Provider();
-    const { address } = useAccount();
 
     const joinSpace = async () => {
         if (!provider || !address) return;
@@ -40,7 +37,10 @@ export const useSnapshotSpace = () => {
     const [loadingSpace, setLoadingSpace] = useState(false);
     const { currentWallet } = useWallet();
 
-    const isMember = useMemo(() => space?.members.includes(currentWallet), [space, currentWallet]);
+    const isMember = useMemo(
+        () => (currentWallet ? space?.members.includes(currentWallet) : undefined),
+        [space, currentWallet]
+    );
 
     useEffect(() => {
         const fetchSpace = async () => {
@@ -117,7 +117,7 @@ export const useSnapshotSpaceProposals = (snapshotSpaceId = SNAPSHOT_SPACE_ID) =
 export const useSnapshotVote = () => {
     const provider = useEthersWeb3Provider();
     const [loadingVote, setloadingVote] = useState(false);
-    const { address } = useAccount();
+    const { currentWallet: address } = useWallet();
     const { notifyError, notifyLoading, notifySuccess, dismissNotify } = useNotify();
 
     const vote = async (

@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchApysApi } from "src/api/apy";
 import { AddApyAction, AddApysAction, Apys, FetchApysThunk, StateInterface } from "./types";
-import poolsJson from "src/config/constants/pools.json";
+import pools_json from "src/config/constants/pools_json";
 
 const apyObj: { [farmId: number]: Apys } = {};
-poolsJson.forEach((pool) => {
+pools_json.forEach((pool) => {
     apyObj[pool.id] = {
         apy: 0,
         compounding: 0,

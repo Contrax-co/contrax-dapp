@@ -2,7 +2,6 @@
 
 import sushi from "./sushi";
 import hop from "./hop";
-import * as gmx from "./gmx";
 import { FarmFunctions } from "./types";
 import peapods from "./peapods";
 import steer from "./steer";
@@ -14,7 +13,6 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     2: sushi(2), // 2: wethUsdc,
     3: sushi(3), // 3: wethUsdt,
     4: sushi(4), // 4: wethWbtc,
-    5: gmx, // 5: gmx,
     8: sushi(8), // 8: plsWeth,
     10: sushi(10), // 10: wethMagic,
     16: hop(16), // 16: hopEth,
@@ -45,6 +43,10 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     37: steer(37), // 36: WETH-USDC.e
     38: steer(38), // 36: WETH-SUSHI
     39: steer(39), // 36: USDC-USDC.e
+
+    201: steer(201), // 201: WETH-USDCB
+    202: steer(202), // 202: WETH-SNSY
+    203: steer(203), // 203: WETH-cbBTC
 
     40: clipper(40), // 36: Clipper
 };

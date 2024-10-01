@@ -12,16 +12,16 @@ interface Props {
     vault: Vault;
 }
 
-function useOldPrice(address: string) {
+function useOldPrice(chainId: number, address: string) {
     const { isLoadingEarnings } = useFarmDetails();
-    const oldPrice = useAppSelector((state) => state.prices.oldPrices[address]);
+    const oldPrice = useAppSelector((state) => state.prices.oldPrices[chainId]?.[address]);
     const { isFetchingOldPrices, isLoadedOldPrices } = useAppSelector((state) => state.prices);
 
     return { oldPrice, isLoading: (isLoadingEarnings || isFetchingOldPrices) && !isLoadedOldPrices };
 }
 
 const VaultItem: React.FC<Props> = ({ vault }) => {
-    const { oldPrice, isLoading: isLoadingOldData } = useOldPrice(vault.vault_addr);
+    const { oldPrice, isLoading: isLoadingOldData } = useOldPrice(vault.chainId, vault.vault_addr);
     const { getTraxApy } = useTrax();
     const estimateTrax = useMemo(() => getTraxApy(vault.vault_addr), [getTraxApy, vault]);
     const {
@@ -29,7 +29,6 @@ const VaultItem: React.FC<Props> = ({ vault }) => {
         priceOfSingleToken,
         apys: { apy },
     } = vault;
-
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>

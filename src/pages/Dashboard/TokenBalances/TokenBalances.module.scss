@@ -22,9 +22,10 @@
     }
 }
 
-.tokenCard {
+.tokenCardBase {
     // max-width: 400px;
     width: 100%;
+    position: relative;
     display: grid;
     grid-template-columns: max-content 1fr max-content;
     align-items: center;
@@ -37,10 +38,31 @@
     box-sizing: border-box;
     cursor: pointer;
     transition: 0.3s;
+    border-color: var(--color_primary);
     & p {
         margin: 2px 0px;
     }
+}
+.tokenCard {
+    // max-width: 400px;
+    width: 100%;
+    position: relative;
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
+    align-items: center;
+    gap: 18px;
+    color: $color-white;
+    background-color: $background-secondary;
+    padding: 6px 16px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: 0.3s;
     border-color: var(--color_primary);
+    & p {
+        margin: 2px 0px;
+    }
 }
 .tokenCard:hover {
     grid-template-columns: max-content 1fr max-content max-content;
@@ -78,6 +100,15 @@
     width: 35px;
     height: 35px;
 }
+.networkLogo {
+    width: 14px;
+    border-radius: 360px;
+    height: 14px;
+    margin-left: -10px;
+    position: absolute;
+    top: 36px;
+    left: 50px;
+}
 .tokenLogo2 {
     width: 35px;
     height: 35px;
@@ -101,4 +132,28 @@
 .usdBalance {
     margin-left: auto;
     font-weight: 500;
+}
+
+.settingsButton {
+    border-radius: 360px;
+    background: $background-light;
+    // background:var(--border_color);
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+    padding: 2px;
+    padding-left: 6px;
+}
+
+.settingsDialog {
+    position: absolute;
+    right:0px;
+    text-wrap: nowrap;
+    top:30px;
+    border-radius: 4px;    
+    padding:5px 10px;
+    color: var(--color_grey);
+    background: var(--background_primary);
+    border: 1px solid var(--color_primary);
+    z-index: 1;
 }

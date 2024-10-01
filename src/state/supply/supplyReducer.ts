@@ -1,40 +1,58 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Contract, utils } from "ethers";
-import { erc20ABI } from "wagmi";
+import { Address, erc20Abi, getAddress, getContract } from "viem";
 import { StateInterface, UpdateBalancesActionPayload, TotalSupplies } from "./types";
 import tokens from "src/config/constants/tokens";
-import { defaultChainId } from "src/config/constants";
+import { CHAIN_ID } from "src/types/enums";
+import { Common_Chains_State } from "src/config/constants/pools_json";
 
-const initialState: StateInterface = { totalSupplies: {}, isLoading: false, isFetched: false };
+const initialState: StateInterface = {
+    totalSupplies: Common_Chains_State,
+    isLoading: false,
+    isFetched: false,
+};
 
 export const fetchTotalSupplies = createAsyncThunk(
     "supply/fetchTotalSupplies",
-    async ({ farms, multicallProvider }: UpdateBalancesActionPayload, thunkApi) => {
-        const addresses = new Set<string>();
+    async ({ farms, getPublicClient }: UpdateBalancesActionPayload, thunkApi) => {
+        const chainIds = farms.reduce((accum, farm) => {
+            if (!accum?.includes(farm.chainId)) accum.push(farm.chainId);
+            return accum;
+        }, [] as number[]);
+        const addresses: Record<number, Set<Address>> = {};
+        chainIds.forEach((chainId) => {
+            addresses[chainId] = new Set();
+        });
         farms.forEach((farm) => {
-            addresses.add(farm.vault_addr.toLowerCase());
-            addresses.add(farm.lp_address.toLowerCase());
+            addresses[farm.chainId].add(getAddress(farm.vault_addr));
+            addresses[farm.chainId].add(getAddress(farm.lp_address));
         });
         tokens.forEach((token) => {
-            if (token.chainId === defaultChainId) addresses.add(token.address.toLowerCase());
+            addresses[token.chainId].add(getAddress(token.address));
         });
-        const addressesArray = Array.from(addresses);
-        let promises = addressesArray.map((address) =>
-            new Contract(address, erc20ABI, multicallProvider).totalSupply()
-        );
-        promises = [...promises];
-        const balancesResponse = await Promise.all([...promises]);
-        const balances: TotalSupplies = balancesResponse.reduce((accum, balance, index) => {
-            accum[addressesArray[index]] = balance.toString();
-            return accum;
-        }, {});
+        let balances: TotalSupplies = {};
+        await Promise.all(
+            Object.entries(addresses).map(async ([chainId, set]) => {
+                balances[Number(chainId)] = {};
+                const arr = Array.from(set);
+                const res = await Promise.all(
+                    arr.map((item) =>
+                        getContract({
+                            address: item,
+                            abi: erc20Abi,
+                            client: {
+                                public: getPublicClient(Number(chainId)),
+                            },
+                        }).read.totalSupply()
+                    )
+                );
 
-        // create address checksum
-        const checksummed: { [key: string]: string } = {};
-        Object.entries(balances).forEach(([key, value]) => {
-            checksummed[utils.getAddress(key)] = value;
-        });
-        return checksummed;
+                res.forEach((item, i) => {
+                    balances[Number(chainId)][arr[i]] = item.toString();
+                });
+            })
+        );
+
+        return balances;
     }
 );
 
