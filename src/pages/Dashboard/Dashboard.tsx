@@ -143,7 +143,7 @@ function Dashboard() {
             {congModel && <SuccessfulEarnTrax handleClose={() => setCongModel(false)} />}
 
             <div className={`dashboard_tvl_section`}>
-                <UserTVL />
+                 <UserTVL />
                 <DeprecatedWithdraw />
                 {/* <OneClickMigrate /> */}
                 {earnTraxTermsAgreed && (
