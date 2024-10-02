@@ -159,9 +159,6 @@ function Dashboard() {
             {currentWallet ? (
                 <>
                     <div className={`dashboard_section outlinedContainer`}>
-                        <Transactions />
-                    </div>
-                    <div className={`dashboard_section outlinedContainer`}>
                         <TokenBalances />
                     </div>
                     <div className={`dashboard_section outlinedContainer`}>
@@ -201,6 +198,9 @@ function Dashboard() {
                         ) : (
                             <Skeleton w={"100%"} h={250} bRadius={20} inverted={false} />
                         )}
+                    </div>
+                    <div className={`dashboard_section outlinedContainer`}>
+                        <Transactions />
                     </div>
                 </>
             ) : (
