@@ -1,33 +1,39 @@
-import { erc20ABI } from "wagmi";
-import { prepareSendTransaction, sendTransaction } from "@wagmi/core";
+import { Address, erc20Abi, getContract, zeroAddress } from "viem";
 import useWallet from "./useWallet";
 import { useIsMutating } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { TRANSFER_TOKEN } from "src/config/constants/query";
 import useConstants from "./useConstants";
-import { BigNumber, Contract, constants } from "ethers";
-import useBalances from "./useBalances";
 import { errorMessages } from "src/config/constants/notifyMessages";
-import { awaitTransaction, getConnectorId, subtractGas } from "src/utils/common";
-import { notifyError } from "src/api/notify";
-import { web3AuthConnectorId } from "src/config/constants";
-import { isGasSponsored } from "src/api";
+import { awaitTransaction, getNetworkName, subtractGas } from "src/utils/common";
 
 const useTransfer = () => {
-    const { signer, currentWallet } = useWallet();
-    const { NETWORK_NAME } = useConstants();
+    const { currentWallet, estimateTxGas, isSponsored, getClients } = useWallet();
 
-    const _transferEth = async ({ to, amount, max }: { to: string; amount: BigNumber; max?: boolean }) => {
-        if (!signer) return;
-        const balance = await signer.getBalance();
+    const _transferEth = async ({
+        to,
+        amount,
+        max,
+        chainId,
+    }: {
+        to: Address;
+        amount: bigint;
+        max?: boolean;
+        chainId: number;
+    }) => {
+        if (!currentWallet) return;
+        const client = await getClients(chainId);
+        const balance = await client.public.getBalance({ address: currentWallet });
         if (max) amount = balance;
-        if (getConnectorId() !== web3AuthConnectorId || !(await isGasSponsored(currentWallet))) {
+        if (!isSponsored) {
             const afterGasCut = await subtractGas(
                 amount,
-                signer,
-                signer.estimateGas({
-                    to,
+                client,
+                estimateTxGas({
+                    chainId,
+                    to: to,
                     value: amount,
+                    data: "0x",
                 }),
                 false,
                 balance
@@ -38,10 +44,11 @@ const useTransfer = () => {
             amount = afterGasCut;
         }
         const response = await awaitTransaction(
-            signer?.sendTransaction({
+            client.wallet.sendTransaction({
                 to,
                 value: amount,
-            })
+            }),
+            client
         );
         return response;
     };
@@ -51,34 +58,45 @@ const useTransfer = () => {
         to,
         amount,
         max,
+        chainId,
     }: {
-        tokenAddress: string;
-        to: string;
-        amount: BigNumber;
+        tokenAddress: Address;
+        to: Address;
+        amount: bigint;
         max?: boolean;
+        chainId: number;
     }) => {
-        const contract = new Contract(tokenAddress, erc20ABI, signer);
+        if (!currentWallet) return;
+        const client = await getClients(chainId);
+
+        const contract = getContract({
+            address: tokenAddress,
+            abi: erc20Abi,
+            client,
+        });
         if (max) {
-            amount = await contract.balanceOf(currentWallet);
+            amount = await contract.read.balanceOf([currentWallet]);
         }
-        const tx = await contract.populateTransaction.transfer(to, amount);
-        console.log(tx);
-        const response = await awaitTransaction(contract.transfer(to, amount));
+        const response = await awaitTransaction(contract.write.transfer([to, amount]), client);
         return response;
     };
 
-    const _transfer = async (transferInfo: { tokenAddress: string; to: string; amount: BigNumber; max?: boolean }) => {
-        return transferInfo.tokenAddress === constants.AddressZero
-            ? _transferEth(transferInfo)
-            : _transferToken(transferInfo);
+    const _transfer = async (transferInfo: {
+        tokenAddress: Address;
+        to: Address;
+        amount: bigint;
+        max?: boolean;
+        chainId: number;
+    }) => {
+        return transferInfo.tokenAddress === zeroAddress ? _transferEth(transferInfo) : _transferToken(transferInfo);
     };
 
     const { mutateAsync: transfer } = useMutation({
         mutationFn: _transfer,
-        mutationKey: TRANSFER_TOKEN(currentWallet, NETWORK_NAME),
+        mutationKey: TRANSFER_TOKEN(currentWallet!),
     });
 
-    const isMutatingToken = useIsMutating(TRANSFER_TOKEN(currentWallet, NETWORK_NAME));
+    const isMutatingToken = useIsMutating({ mutationKey: TRANSFER_TOKEN(currentWallet!) });
 
     return { transfer, isLoading: isMutatingToken > 0 };
 };

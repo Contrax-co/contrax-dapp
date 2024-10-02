@@ -1,17 +1,18 @@
-import { Farm } from "src/types";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
+import { PoolDef } from "src/config/constants/pools_json";
+import { IClients } from "src/types";
+import { Address } from "viem";
 
 export interface StateInterface {
-    decimals: Partial<Decimals>;
+    decimals: Decimals;
     isLoading: boolean;
     isFetched: boolean;
 }
 
 export interface UpdateDecimalsActionPayload {
-    farms: Farm[];
-    multicallProvider: MulticallProvider;
+    farms: PoolDef[];
+    getPublicClient: (chainId: number) => IClients["public"];
 }
 
 export interface Decimals {
-    [key: string]: number;
+    [chainId: number]: Record<Address, number>;
 }

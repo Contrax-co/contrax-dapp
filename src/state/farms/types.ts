@@ -1,10 +1,11 @@
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
-import { Farm, FarmData } from "src/types";
+import { FarmData, IClients } from "src/types";
 import { Balances } from "../balances/types";
 import { Decimals } from "../decimals/types";
 import { Prices } from "../prices/types";
 import { TotalSupplies } from "../supply/types";
 import { FarmTransactionType } from "src/types/enums";
+import { PublicClient } from "viem";
+import { PoolDef } from "src/config/constants/pools_json";
 
 export interface StateInterface {
     farmDetails: FarmDetails;
@@ -26,12 +27,12 @@ export interface FarmDetails {
 }
 
 export interface FetchFarmDetailsAction {
-    farms: Farm[];
-    totalSupplies: Partial<TotalSupplies>;
+    farms: PoolDef[];
+    totalSupplies: TotalSupplies;
     currentWallet: string;
     balances: Balances;
     prices: Prices;
-    decimals: Partial<Decimals>;
+    decimals: Decimals;
 }
 
 export interface Earnings {
@@ -39,12 +40,11 @@ export interface Earnings {
 }
 
 export interface FetchEarningsAction {
-    farms: Farm[];
+    farms: PoolDef[];
     currentWallet: string;
-    decimals: Partial<Decimals>;
-    prices: Partial<Prices>;
+    decimals: Decimals;
+    prices: Prices;
     balances: Balances;
-    multicallProvider: MulticallProvider;
-    totalSupplies: Partial<TotalSupplies>;
-    chainId: number;
+    totalSupplies: TotalSupplies;
+    getPublicClient: (chainId: number) => IClients["public"];
 }

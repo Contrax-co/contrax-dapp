@@ -15,7 +15,7 @@ import logo2 from "src/assets/images/logo-4x.png";
 import LightModeToggle from "src/components/LightModeToggle/LightModeToggle";
 import "./Sidebar.css";
 import { useNavigate, useLocation } from "react-router-dom";
-import { RoutesPaths } from "src/config/constants";
+import { RoutesPaths, isDev } from "src/config/constants";
 import useApp from "src/hooks/useApp";
 import { Dispatch, SetStateAction } from "react";
 import { FiCommand } from "react-icons/fi";
@@ -82,7 +82,7 @@ function Sidebar({ handleClose }: { handleClose: Dispatch<SetStateAction<boolean
                     onClick={() => handleNavigation(RoutesPaths.Governance)}
                     active={pathname === RoutesPaths.Governance}
                 />
-                {process.env.NODE_ENV === "development" && (
+                {isDev && (
                     <>
                         <SidebarItem
                             title="Stats"

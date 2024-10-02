@@ -1,26 +1,25 @@
-import { Farm } from "src/types";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
+import { PoolDef } from "src/config/constants/pools_json";
+import { IClients } from "src/types";
+import { Address, PublicClient } from "viem";
 
 export interface StateInterface {
     balances: Balances;
-    polygonBalances: Balances;
-    mainnetBalances: Balances;
     isLoading: boolean;
     isFetched: boolean;
-    account: string;
+    account?: Address;
 }
 
 export interface UpdateBalancesActionPayload {
-    account: string;
-    farms: Farm[];
-    multicallProvider: MulticallProvider;
+    account: Address;
+    farms: PoolDef[];
+    getPublicClient: (chainId: number) => IClients["public"];
 }
 export interface UpdatePolygonBalancesActionPayload {
-    account: string;
-    addresses: string[];
-    multicallProvider: MulticallProvider;
+    account: Address;
+    addresses: Address[];
+    publicClient: PublicClient;
 }
 
 export interface Balances {
-    [key: string]: string | undefined;
+    [chainId: number]: Record<Address, string>;
 }

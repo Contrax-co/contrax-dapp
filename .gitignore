@@ -6,6 +6,7 @@
 .pnp.js
 .yarn/*
 !.yarn/releases
+!.yarn/plugins
 
 # testing
 /coverage
@@ -24,3 +25,4 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+tsconfig.tsbuildinfo

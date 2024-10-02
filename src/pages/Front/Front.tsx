@@ -17,14 +17,13 @@ interface IProps {}
 
 const Front: React.FC<IProps> = () => {
     const { lightMode } = useApp();
-    const [mfa, setMfa] = useState("");
     const {
         handleCreateConnection,
         // handleTransfer, holdings,
         loading,
         authData,
         //  mfaRequired, iframeLink
-    } = useFront(mfa);
+    } = useFront();
 
     return (
         <div className={styles.container}>

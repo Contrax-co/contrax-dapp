@@ -1,5 +1,4 @@
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
-import { Farm } from "src/types";
+import { PoolDef } from "src/config/constants/pools_json";
 
 export interface StateInterface {
     apys: { [farmId: number]: Apys };
@@ -26,6 +25,5 @@ export interface AddApyAction {
 
 export interface FetchApysThunk {
     chainId: number;
-    farms: Farm[];
-    multicallProvider: MulticallProvider;
+    farms: PoolDef[];
 }

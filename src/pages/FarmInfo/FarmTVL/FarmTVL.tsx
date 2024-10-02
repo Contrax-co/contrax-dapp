@@ -7,9 +7,9 @@ import { getLpAddressForFarmsPrice } from "src/utils/common";
 import styles from "./FarmTVL.module.scss";
 import uuid from "react-uuid";
 import useFarms from "src/hooks/farms/useFarms";
-import { Farm } from "src/types";
 import useWallet from "src/hooks/useWallet";
 import { BsClipboardData } from "react-icons/bs";
+import { PoolDef } from "src/config/constants/pools_json";
 
 export const FarmTVL: React.FC = () => {
     const { farms } = useFarms();
@@ -51,12 +51,14 @@ export const FarmTVL: React.FC = () => {
     );
 };
 
-const FarmTVLRow: React.FC<{ farm: Farm }> = ({ farm }) => {
+const FarmTVLRow: React.FC<{ farm: PoolDef }> = ({ farm }) => {
     const lpAddress = getLpAddressForFarmsPrice([farm])[0];
     const { formattedSupplies } = useTotalSupplies();
 
     const {
-        prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
+        prices: {
+            [farm.chainId]: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
+        },
     } = usePriceOfTokens();
     return (
         <tr key={uuid()} className={styles.tableRow}>
@@ -73,8 +75,8 @@ const FarmTVLRow: React.FC<{ farm: Farm }> = ({ farm }) => {
             </td>
             <td>
                 <div className={`${styles.tableData}${" " + styles.specificCell}`}>
-                    {formattedSupplies[farm.vault_addr] &&
-                        (formattedSupplies[farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
+                    {formattedSupplies[farm.chainId][farm.vault_addr] &&
+                        (formattedSupplies[farm.chainId][farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
                             style: "currency",
                             currency: "USD",
                             maximumFractionDigits: 0,
@@ -83,8 +85,8 @@ const FarmTVLRow: React.FC<{ farm: Farm }> = ({ farm }) => {
             </td>
             <td>
                 <div className={`${styles.tableData}${" " + styles.specificCell}`}>
-                    {formattedSupplies[farm.lp_address] &&
-                        (formattedSupplies[farm.lp_address]! * lpPrice).toLocaleString("en-US", {
+                    {formattedSupplies[farm.chainId][farm.lp_address] &&
+                        (formattedSupplies[farm.chainId][farm.lp_address]! * lpPrice).toLocaleString("en-US", {
                             style: "currency",
                             currency: "USD",
                             maximumFractionDigits: 0,

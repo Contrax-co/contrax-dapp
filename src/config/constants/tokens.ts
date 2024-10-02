@@ -16,6 +16,13 @@ const tokens = [
         decimals: 18,
         chainId: CHAIN_ID.ARBITRUM,
     },
+    {
+        address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        name: "USDC",
+        logo: "https://raw.githubusercontent.com/Contrax-co/tokens/main/arbitrum-tokens/0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8/logo.png",
+        decimals: 6,
+        chainId: CHAIN_ID.BASE,
+    },
 ] as const;
 
 export default tokens;

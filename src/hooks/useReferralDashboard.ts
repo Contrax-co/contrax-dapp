@@ -10,6 +10,6 @@ export const useReferralDashboard = () => {
     return {
         data,
         isLoading: isLoading || isFetching,
-        error: error as string,
+        error: error as unknown as string,
     };
 };

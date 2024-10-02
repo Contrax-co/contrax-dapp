@@ -35,6 +35,7 @@ export const useTransferToken = (token: Token, handleClose: Function) => {
                 to: addr,
                 amount: getAmountInWei(),
                 max,
+                chainId: token.networkId,
             });
             if (res?.error) throw new Error(res.error);
             notifySuccess(successMessages.tokenTransfered());

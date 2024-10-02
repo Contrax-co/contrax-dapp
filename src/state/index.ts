@@ -15,6 +15,7 @@ import rampReducer from "./ramp/rampReducer";
 import accountReducer from "./account/accountReducer";
 import feesReducer from "./fees/feesReducer";
 import { getPersistConfig } from "redux-deep-persist";
+import transactionsReducer from "./transactions/transactionsReducer";
 
 const rootReducer = combineReducers({
     account: accountReducer,
@@ -29,16 +30,18 @@ const rootReducer = combineReducers({
     supply: supplyReducer,
     ramp: rampReducer,
     fees: feesReducer,
+    transactions: transactionsReducer,
 });
 
 const persistConfig = getPersistConfig({
     key: "root",
     storage,
-    version: 3,
+    version: 6,
     whitelist: [
         "prices.prices",
         "decimals.decimals",
         "settings.theme",
+        "settings.showTokenDetailedBalances",
         "settings.supportChat",
         "account.earnTraxTermsAgreed",
         "account.referrerCode",

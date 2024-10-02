@@ -16,13 +16,6 @@ interface Asset {
     chainAgnosticId: string | null;
 }
 
-interface ApprovalData {
-    minimumApprovalAmount: string;
-    approvalTokenAddress: string;
-    allowanceTarget: string;
-    owner: string;
-}
-
 interface GasFees {
     gasAmount: string;
     gasLimit: number;
@@ -43,7 +36,7 @@ interface UserTx {
     chainId: number;
     protocol: Protocol;
     fromAsset: Asset;
-    approvalData: ApprovalData;
+    approvalData: SocketApprovalData;
     fromAmount: string;
     toAsset: Asset;
     toAmount: string;
@@ -54,7 +47,7 @@ interface UserTx {
     userTxIndex: number;
 }
 
-interface Route {
+export interface SocketRoute {
     routeId: string;
     isOnlySwapRoute: boolean;
     fromAmount: string;
@@ -68,6 +61,8 @@ interface Route {
     outputValueInUsd: number;
     receivedValueInUsd: number;
     inputValueInUsd: number;
+    maxServiceTime: number;
+    serviceTime: number;
 }
 
 interface TokenList {
@@ -81,11 +76,18 @@ interface TokenList {
     symbol: string;
 }
 
+export interface SocketApprovalData {
+    allowanceTarget: Address;
+    approvalTokenAddress: Address;
+    minimumApprovalAmount: string;
+    owner: string;
+}
+
 interface BuildTxResponse {
-    approvalData: ApprovalData;
+    approvalData: SocketApprovalData;
     chainId: number;
-    txData: string;
-    txTarget: string;
+    txData: Address;
+    txTarget: Address;
     txType: string;
     userTxIndex: number;
     userTxType: string;
@@ -149,17 +151,25 @@ const parseError = (error: ErrorObj) => {
 export const getRoute = async (
     fromChainId: number,
     toChainId: number,
-    fromTokenAddress: string,
-    toTokenAddress: string,
+    fromTokenAddress: Address,
+    toTokenAddress: Address,
     fromAmount: string,
-    userAddress: string
+    userAddress: Address
 ) => {
     const res = await socketTechApi.get(
-        `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=output&singleTxOnly=true&excludeBridges=stargate`
+        `quote?fromChainId=${fromChainId}&toChainId=${toChainId}&fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&fromAmount=${fromAmount}&userAddress=${userAddress}&uniqueRoutesPerBridge=true&sort=time&singleTxOnly=true`
     );
     const errors: ErrorObj = res.data.result.bridgeRouteErrors;
-    const routes = res.data.result.routes as Route[];
-    const route = routes.find((e) => e.userTxs.some((tx) => tx.approvalData.allowanceTarget !== ""));
+    const routes = res.data.result.routes as SocketRoute[];
+    const route = routes.sort((a, b) => {
+        return a.serviceTime - b.serviceTime;
+    })[0];
+    // const route = routes.sort((a, b) => {
+    //     return b. - a.outputValueInUsd;
+    // })[0];
+
+    // @ts-ignore
+    // const route = routes.find((e) => e.userTxs.some((tx) => tx.approvalData.allowanceTarget !== ""));
     // routes.find((route) => route.usedBridgeNames[0] !== "connext" && route.usedBridgeNames[0] !== "hop") ||
     // routes.find((route) => route.usedBridgeNames[0] !== "connext") ||
     // routes[0];
@@ -171,16 +181,15 @@ export const getRoute = async (
         if (!priceRes?.[String(fromChainId)][fromTokenAddress as Address]) {
             throw new Error(`Error in getting price for bridge`);
         }
-        // @ts-expect-error
         const price = priceRes[String(fromChainId)][fromTokenAddress]!;
-        const usdAmount = Number(toEth(err.minAmount, res.data.result.fromAsset.decimals)) * price;
+        const usdAmount = Number(toEth(BigInt(err.minAmount), res.data.result.fromAsset.decimals)) * price;
 
         if (!route)
             throw new Error(`Please bridge $${usdAmount.toFixed(2)} ${res.data.result.fromAsset.symbol} or more!`);
     }
     console.log("Available bridge routes: ", routes);
     console.log("Selected bridge route: ", route);
-    const approvalData = route.userTxs[0].approvalData as ApprovalData;
+    const approvalData = route.userTxs[0].approvalData as SocketApprovalData;
 
     return { route, approvalData };
 };

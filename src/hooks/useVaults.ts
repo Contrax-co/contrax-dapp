@@ -24,8 +24,8 @@ export const useVaults = (): { vaults: Vault[]; isLoading: boolean; isFetched: b
             .map((farm) => {
                 return {
                     ...farm,
-                    userVaultBalance: usersVaultBalances[farm.vault_addr] || 0,
-                    priceOfSingleToken: priceOfSingleToken[farm.vault_addr] || (farm.stableCoin ? 1 : 0),
+                    userVaultBalance: usersVaultBalances[farm.chainId][farm.vault_addr] || 0,
+                    priceOfSingleToken: priceOfSingleToken[farm.chainId][farm.vault_addr] || (farm.stableCoin ? 1 : 0),
                     apys: apys[farm.id],
                 };
             })

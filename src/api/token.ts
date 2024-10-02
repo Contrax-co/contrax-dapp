@@ -1,8 +1,7 @@
 import { awaitTransaction } from "src/utils/common";
-import { Contract, providers, BigNumber, Signer, constants } from "ethers";
-import { Address, erc20ABI } from "wagmi";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
 import { backendApi } from ".";
+import { PublicClient, Address, erc20Abi, getContract, maxUint256, zeroAddress, encodeFunctionData } from "viem";
+import { IClients } from "src/types";
 
 export const getSpecificTokenPrice = async (tokenAddress: Address, chainId: number) => {
     const res = await getTokenPricesBackend();
@@ -22,7 +21,6 @@ export const getTokenPricesBackend = async (
             { cache: true }
         );
 
-        console.log("data =>", data.data.allPrices);
         return data.data.allPrices;
     } catch (error) {
         console.error(error);
@@ -30,68 +28,109 @@ export const getTokenPricesBackend = async (
     }
 };
 
-export const getBalance = async (
-    tokenAddress: string,
-    address: string,
-    multicallProvider: MulticallProvider | providers.Provider | Signer
-): Promise<BigNumber> => {
+export const getPricesByTime = async (data: { address: Address; timestamp: number; chainId: number }[]) => {
     try {
-        if (tokenAddress === constants.AddressZero) {
-            // @ts-ignore
-            if (multicallProvider._isSigner) {
-                // @ts-ignore
-                const res = await multicallProvider.getBalance();
-                return res;
-            } else {
-                const res = await multicallProvider.getBalance(address);
-                return res;
-            }
+        const res = await backendApi.post<{
+            data: { [chainId: string]: { [address: string]: { timestamp: number; price: number }[] } };
+        }>("price/time", { query: data }, { cache: true });
+        return res.data.data;
+    } catch (err) {
+        console.error(err);
+        return undefined;
+    }
+};
+
+export const getBalance = async (
+    tokenAddress: Address,
+    address: Address,
+    client: Pick<IClients, "public">
+): Promise<bigint> => {
+    try {
+        if (tokenAddress === zeroAddress) {
+            const res = await client.public.getBalance({ address });
+            return res;
         }
-        const contract = new Contract(
-            tokenAddress,
-            ["function balanceOf(address) view returns (uint)"],
-            multicallProvider
-        );
-        const balancePromise = contract.balanceOf(address);
+        const contract = getContract({
+            address: tokenAddress,
+            abi: erc20Abi,
+            client,
+        });
+
+        const balancePromise = contract.read.balanceOf([address]);
         const balance = await balancePromise;
         return balance;
     } catch (error) {
         console.error(error);
-        return BigNumber.from(0);
+        return 0n;
     }
 };
 
+/**
+ * Checks for allowance, if not met then approves
+ * @param contractAddress
+ * @param spender
+ * @param amount
+ * @param currentWallet wallet address of signer
+ * @param client Both public and wallet client
+ * @returns
+ */
 export const approveErc20 = async (
-    contractAddress: string,
-    spender: string,
-    amount: BigNumber | string,
-    currentWallet: string,
-    signer: Signer
+    contractAddress: Address,
+    spender: Address,
+    amount: bigint,
+    currentWallet: Address,
+    client: IClients
 ) => {
-    const contract = new Contract(contractAddress, erc20ABI, signer);
+    console.log({
+        contractAddress,
+        spender,
+        amount,
+        currentWallet,
+        client,
+    });
+    const contract = getContract({
+        abi: erc20Abi,
+        address: contractAddress,
+        client,
+    });
+
     // check allowance
-    const allowance = await contract.allowance(currentWallet, spender);
+    const allowance = await contract.read.allowance([currentWallet, spender]);
     // if allowance is lower than amount, approve
-    if (BigNumber.from(amount).gt(allowance)) {
-        // approve
-        return await awaitTransaction(contract.approve(spender, constants.MaxUint256));
+    if (amount > allowance) {
+        return await awaitTransaction(
+            client.wallet.sendTransaction({
+                to: contractAddress,
+                data: encodeFunctionData({
+                    abi: erc20Abi,
+                    functionName: "approve",
+                    args: [spender, maxUint256],
+                }),
+            }),
+            client
+        );
     }
     // if already approved just return status as true
     return { status: true };
 };
 
 export const checkApproval = async (
-    contractAddress: string,
-    spender: string,
-    amount: BigNumber | string,
-    currentWallet: string,
-    signer: Signer | providers.Provider
+    contractAddress: Address,
+    spender: Address,
+    amount: bigint,
+    currentWallet: Address,
+    publicClient: PublicClient
 ) => {
-    const contract = new Contract(contractAddress, erc20ABI, signer);
+    const contract = getContract({
+        abi: erc20Abi,
+        address: contractAddress,
+        client: { public: publicClient },
+    });
     // check allowance
-    const allowance = await contract.allowance(currentWallet, spender);
+    const allowance = await contract.read.allowance([currentWallet, spender]);
+
     // if allowance is lower than amount, approve
-    if (BigNumber.from(amount).gt(allowance)) {
+    if (amount > allowance) {
         // approve
         return false;
     }

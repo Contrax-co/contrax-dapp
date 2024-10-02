@@ -1,38 +1,51 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import useNotify from "src/hooks/useNotify";
 import { commify } from "ethers/lib/utils.js";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 import useWallet from "src/hooks/useWallet";
-import { getPriceFromHopLp, getPriceFromUsdcPair, getPriceFromWethPair } from "src/utils/pair";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
-import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
+import { addressesByChainId } from "src/config/constants/contracts";
+import { CHAIN_ID } from "src/types/enums";
+import { Address, encodeFunctionData, erc20Abi, getContract, Hex, maxUint256, parseUnits, zeroAddress } from "viem";
+import useVaultMigrate from "src/hooks/useVaultMigrate";
+import { convertQuoteToRoute, getContractCallsQuote, getStatus } from "@lifi/sdk";
+import steerZapperAbi from "src/assets/abis/steerZapperAbi";
+import { awaitTransaction, toWei } from "src/utils/common";
+import { approveErc20, getBalance } from "src/api/token";
+import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useConnectors } from "wagmi";
+// import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
+// import { LocalAccountSigner, arbitrum } from "@alchemy/aa-core";
+// import { createWeb3AuthSigner } from "src/config/walletConfig";
 
 const Test = () => {
+    const { openConnectModal } = useConnectModal();
+    const { currentWallet, getWalletClient, getPublicClient } = useWallet();
+    const connectors = useConnectors();
     const { dismissNotifyAll, notifyError, notifyLoading, notifySuccess } = useNotify();
     const [url, setUrl] = useState<string>("");
     const [modelOpen, setModelOpen] = useState(false);
     const [model1Open, set1ModelOpen] = useState(false);
+    const { connectWallet, switchExternalChain, getClients } = useWallet();
     const { platformTVL } = usePlatformTVL();
-    const { multicallProvider } = useWallet();
+    const clickMeButtonRef = useRef<HTMLButtonElement>(null);
+
+    const { migrate } = useVaultMigrate();
 
     const fn = async () => {
-        const usdtAddr = "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9";
-        const wethAddr = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
-        const hEthAddr = "0xDa7c0de432a9346bB6e96aC74e3B61A36d8a77eB";
-        const arbAddr = "0x912CE59144191C1204E64559FE8253a0e49E6548";
-        await getPriceFromUsdcPair(multicallProvider, wethAddr);
-        // get Arb price
-        // await getPriceFromUsdcPair(multicallProvider, arbAddr);
-        // get Weth and hEth Price
-        // await getPriceFromWethPair(multicallProvider, hEthAddr);
-        // await getPriceFromHopLp(multicallProvider, "0x59745774Ed5EfF903e615F5A2282Cae03484985a");
+        setModelOpen(true);
+        await getWalletClient(CHAIN_ID.ARBITRUM);
     };
 
     return (
         <div style={{ color: "red" }}>
             Test
-            <button onClick={fn}>Click Me</button>
+            <button onClick={fn} ref={clickMeButtonRef}>
+                Click Me
+            </button>
+            <button onClick={() => migrate()}>Migrate</button>
             <button
                 onClick={() => {
                     notifySuccess("Approving Zapping!", "Please wait...a sadasfas fsa fsafsafsaf saf");
@@ -116,12 +129,6 @@ const Test = () => {
             <br />
             {platformTVL && <h1>Platform TVL: ${commify(platformTVL.toFixed(0))}</h1>}
             <iframe src={url} style={{ width: 400, height: 700 }}></iframe>
-            {modelOpen && (
-                <SlippageNotCalculate
-                    handleClose={() => setModelOpen(false)}
-                    handleSubmit={() => set1ModelOpen(false)}
-                />
-            )}
         </div>
     );
 };

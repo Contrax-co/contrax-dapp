@@ -1,17 +1,18 @@
-import { Farm } from "src/types";
-import { MulticallProvider } from "@0xsequence/multicall/dist/declarations/src/providers";
+import { PoolDef } from "src/config/constants/pools_json";
+import { IClients } from "src/types";
+import { Address } from "viem";
 
 export interface StateInterface {
-    totalSupplies: Partial<TotalSupplies>;
+    totalSupplies: TotalSupplies;
     isLoading: boolean;
     isFetched: boolean;
 }
 
 export interface UpdateBalancesActionPayload {
-    farms: Farm[];
-    multicallProvider: MulticallProvider;
+    farms: PoolDef[];
+    getPublicClient: (chainId: number) => IClients["public"];
 }
 
 export interface TotalSupplies {
-    [key: string]: string;
+    [chainId: number]: Record<Address, string>;
 }

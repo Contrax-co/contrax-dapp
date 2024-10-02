@@ -1,15 +1,5 @@
-import pools from "src/config/constants/pools.json";
-import { Farm } from "src/types";
-import { BigNumber, Signer, Contract, utils, constants } from "ethers";
-import { approveErc20, getBalance } from "src/api/token";
-import { toEth, validateNumberDecimals } from "src/utils/common";
-import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
-import { blockExplorersByChainId } from "src/config/constants/urls";
-import { Balances } from "src/state/balances/types";
-import { Prices } from "src/state/prices/types";
-import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
+import { getCombinedBalance, toEth } from "src/utils/common";
 import {
-    DynamicFarmFunctions,
     FarmFunctions,
     GetFarmDataProcessedFn,
     SlippageInBaseFn,
@@ -19,35 +9,39 @@ import {
     ZapOutFn,
 } from "./types";
 import { addressesByChainId } from "src/config/constants/contracts";
-import { Decimals } from "src/state/decimals/types";
 import { defaultChainId } from "src/config/constants";
 import { slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
+import { zeroAddress } from "viem";
+import pools_json from "src/config/constants/pools_json";
 
 let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
-    const farm = pools.find((farm) => farm.id === farmId) as Farm;
+    const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
-        const ethPrice = prices[constants.AddressZero];
-        const vaultBalance = BigNumber.from(balances[farm.vault_addr]);
-        const vaultTokenPrice = prices[farm.vault_addr];
+        const ethPrice = prices[farm.chainId][zeroAddress];
+        const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
+        const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
         const zapCurriences = farm.zap_currencies;
+        const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
+        const combinedEthBalance = getCombinedBalance(balances, "eth");
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
+        let isCrossChain = true;
+        const usdcCurrentChainBalance = Number(toEth(combinedUsdcBalance.chainBalances[farm.chainId], 6));
+        if (usdcCurrentChainBalance >= 100) isCrossChain = false;
 
         let depositableAmounts: TokenAmounts[] = [
             {
                 tokenAddress: usdcAddress,
                 tokenSymbol: "USDC",
-                amount: toEth(balances[usdcAddress]!, decimals[usdcAddress]),
-                amountDollar: (
-                    Number(toEth(balances[usdcAddress]!, decimals[usdcAddress])) * prices[usdcAddress]
-                ).toString(),
-                price: prices[usdcAddress],
+                amount: combinedUsdcBalance.formattedBalance.toString(),
+                amountDollar: combinedUsdcBalance.formattedBalance.toString(),
+                price: prices[farm.chainId][usdcAddress],
             },
             {
-                tokenAddress: constants.AddressZero,
+                tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
-                amount: toEth(balances[constants.AddressZero]!, 18),
-                amountDollar: (Number(toEth(balances[constants.AddressZero]!, 18)) * ethPrice).toString(),
+                amount: combinedEthBalance.formattedBalance.toString(),
+                amountDollar: (Number(combinedEthBalance.formattedBalance) * ethPrice).toString(),
                 price: ethPrice,
             },
         ];
@@ -57,14 +51,14 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
                 tokenSymbol: "USDC",
                 amount: (
                     (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[usdcAddress]
+                    prices[farm.chainId][usdcAddress]
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-                price: prices[usdcAddress],
+                price: prices[farm.chainId][usdcAddress],
                 isPrimaryVault: "USDC.e" === farm.name,
             },
             {
-                tokenAddress: constants.AddressZero,
+                tokenAddress: zeroAddress,
                 tokenSymbol: "ETH",
                 amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / ethPrice).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
@@ -74,31 +68,36 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
         ];
 
         zapCurriences?.forEach((currency) => {
-            const currencyBalance = BigNumber.from(balances[currency.address]);
-            const currencyPrice = prices[currency.address];
+            const currencyBalance = BigInt(balances[farm.chainId][currency.address] || 0);
+            const currencyPrice = prices[farm.chainId][currency.address];
             depositableAmounts.push({
                 tokenAddress: currency.address,
                 tokenSymbol: currency.symbol,
-                amount: toEth(currencyBalance, decimals[currency.symbol]),
-                amountDollar: (Number(toEth(currencyBalance, decimals[currency.address])) * currencyPrice).toString(),
-                price: prices[currency.address],
+                amount: toEth(currencyBalance, decimals[farm.chainId][currency.address]),
+                amountDollar: (
+                    Number(toEth(currencyBalance, decimals[farm.chainId][currency.address])) * currencyPrice
+                ).toString(),
+                price: prices[farm.chainId][currency.address],
             });
             withdrawableAmounts.push({
                 tokenAddress: currency.address,
                 tokenSymbol: currency.symbol,
                 amount: (
                     (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) /
-                    prices[currency.address]
+                    prices[farm.chainId][currency.address]
                 ).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
-                price: prices[currency.address],
+                price: prices[farm.chainId][currency.address],
                 isPrimaryVault: currency.symbol === farm.name,
             });
         });
         return {
             depositableAmounts,
             withdrawableAmounts,
-            vaultBalanceFormated: (Number(toEth(vaultTotalSupply ?? 0, farm.decimals)) * vaultTokenPrice).toString(),
+            isCrossChain,
+            vaultBalanceFormated: (
+                Number(toEth(BigInt(vaultTotalSupply || 0n), farm.decimals)) * vaultTokenPrice
+            ).toString(),
             id: farm.id,
         };
     };

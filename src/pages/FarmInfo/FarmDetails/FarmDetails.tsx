@@ -1,7 +1,6 @@
 import useFarms from "src/hooks/farms/useFarms";
 import useApp from "src/hooks/useApp";
 import { useSlippageDeposit, useSlippageWithdraw } from "src/hooks/useSlippage";
-import { Farm } from "src/types";
 import { zeroAddress } from "viem";
 import { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "src/components/Skeleton/Skeleton";
@@ -17,6 +16,7 @@ import { PoolFees } from "src/api/fees";
 import FarmApyGraph from "../FarmApyGraph/FarmApyGraph";
 import FarmLpGraph from "../FarmLpGraph/FarmLpGraph";
 import styles from "./styles.module.scss";
+import { PoolDef } from "src/config/constants/pools_json";
 
 const FarmDetails = () => {
     const { lightMode } = useApp();
@@ -49,7 +49,7 @@ const FarmDetails = () => {
     );
 };
 
-const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPoolFees: boolean }> = ({
+const FarmDetailsRow: React.FC<{ farm: PoolDef; poolFees: PoolFees[]; isLoadingPoolFees: boolean }> = ({
     farm,
     poolFees,
     isLoadingPoolFees,
@@ -59,7 +59,9 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
     const lpAddress = getLpAddressForFarmsPrice([farm])[0];
     const { formattedSupplies } = useTotalSupplies();
     const {
-        prices: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
+        prices: {
+            [farm.chainId]: { [farm.token1]: price1, [farm.token2!]: price2, [lpAddress]: lpPrice },
+        },
     } = usePriceOfTokens();
 
     const feesCollected = useMemo(() => {
@@ -92,16 +94,16 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
                         </div>
                     </div>
                     <div className={`tvls ${styles.tvl_underlying} ${lightMode && styles["tvl_underlying--light"]}`}>
-                        {formattedSupplies[farm.vault_addr] &&
-                            (formattedSupplies[farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
+                        {formattedSupplies[farm.chainId][farm.vault_addr] &&
+                            (formattedSupplies[farm.chainId][farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
                                 style: "currency",
                                 currency: "USD",
                                 maximumFractionDigits: 0,
                             })}
                     </div>
                     <div className={`tvls ${styles.tvl_underlying} ${lightMode && styles["tvl_underlying--light"]}`}>
-                        {formattedSupplies[farm.lp_address] &&
-                            (formattedSupplies[farm.lp_address]! * lpPrice).toLocaleString("en-US", {
+                        {formattedSupplies[farm.chainId][farm.lp_address] &&
+                            (formattedSupplies[farm.chainId][farm.lp_address]! * lpPrice).toLocaleString("en-US", {
                                 style: "currency",
                                 currency: "USD",
                                 maximumFractionDigits: 0,
@@ -127,12 +129,15 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
                                     }`}
                                     style={{ width: "100%" }}
                                 >
-                                    {formattedSupplies[farm.vault_addr] &&
-                                        (formattedSupplies[farm.vault_addr]! * lpPrice).toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                            maximumFractionDigits: 0,
-                                        })}
+                                    {formattedSupplies[farm.chainId][farm.vault_addr] &&
+                                        (formattedSupplies[farm.chainId][farm.vault_addr]! * lpPrice).toLocaleString(
+                                            "en-US",
+                                            {
+                                                style: "currency",
+                                                currency: "USD",
+                                                maximumFractionDigits: 0,
+                                            }
+                                        )}
                                 </div>
                             </div>
                             <div>
@@ -148,12 +153,15 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
                                     }`}
                                     style={{ width: "100%" }}
                                 >
-                                    {formattedSupplies[farm.lp_address] &&
-                                        (formattedSupplies[farm.lp_address]! * lpPrice).toLocaleString("en-US", {
-                                            style: "currency",
-                                            currency: "USD",
-                                            maximumFractionDigits: 0,
-                                        })}
+                                    {formattedSupplies[farm.chainId][farm.lp_address] &&
+                                        (formattedSupplies[farm.chainId][farm.lp_address]! * lpPrice).toLocaleString(
+                                            "en-US",
+                                            {
+                                                style: "currency",
+                                                currency: "USD",
+                                                maximumFractionDigits: 0,
+                                            }
+                                        )}
                                 </div>
                             </div>
                         </div>
@@ -185,7 +193,7 @@ const FarmDetailsRow: React.FC<{ farm: Farm; poolFees: PoolFees[]; isLoadingPool
     );
 };
 
-const SlippageIndividual: React.FC<{ farm: Farm }> = ({ farm }) => {
+const SlippageIndividual: React.FC<{ farm: PoolDef }> = ({ farm }) => {
     const { lightMode } = useApp();
     const maxAmounts = [100, 1000, 10000];
     const tokens = [zeroAddress, addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress];

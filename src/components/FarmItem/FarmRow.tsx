@@ -5,29 +5,31 @@ import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
 import useApp from "src/hooks/useApp";
 import uuid from "react-uuid";
-import { Farm } from "src/types";
 import { toFixedFloor } from "src/utils/common";
 import { Skeleton } from "../Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import useFarmApy from "src/hooks/farms/useFarmApy";
 import { DropDownView } from "./components/DropDownView/DropDownView";
-import { DeprecatedChip } from "./components/Chip/DeprecatedChip";
 import { useAppDispatch, useAppSelector } from "src/state";
 import fire from "src/assets/images/fire.png";
 import { setFarmDetailInputOptions } from "src/state/farms/farmsReducer";
 import { FarmTransactionType } from "src/types/enums";
 import useTrax from "src/hooks/useTrax";
 import { IS_LEGACY } from "src/config/constants";
+import { PoolDef } from "src/config/constants/pools_json";
+import FarmRowChip from "./components/FarmRowChip/FarmRowChip";
+import useWallet from "src/hooks/useWallet";
 
 const xTraxTokenomics = "https://contraxfi.medium.com/contrax-initial-tokenomics-837d062596a4";
 interface Props {
-    farm: Farm;
+    farm: PoolDef;
     openedFarm: number | undefined;
     setOpenedFarm: Function;
 }
 
 const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const { lightMode } = useApp();
+    const { externalChainId } = useWallet();
     const [dropDown, setDropDown] = useState(false);
     const { apy: farmApys, isLoading: isApyLoading } = useFarmApy(farm);
     const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();
@@ -65,7 +67,17 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     return (
         <div className={`farm_table_pool ${lightMode && "farm_table_pool_light"}`}>
             <div className="farm_table_row" key={farm?.id} onClick={handleClick}>
-                {farm.isDeprecated && <DeprecatedChip top="20px" right="26px" />}
+                <div style={{ position: "absolute", right: 10, display: "flex", gap: 5, top: 10 }}>
+                    {farm.isDeprecated && <FarmRowChip text="Deprecated" color="warning" />}
+                    {/* {farm.token_type === "LP Token" && <FarmRowChip text="Advance" />} */}
+                    {externalChainId ? (
+                        farm.chainId !== externalChainId ? (
+                            <FarmRowChip text="Cross Chain" />
+                        ) : null
+                    ) : (
+                        farmData?.isCrossChain && <FarmRowChip text="Cross Chain" />
+                    )}
+                </div>
 
                 {/* Asset Name and Logo */}
 
@@ -90,6 +102,13 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                             <div className="rewards_div">
                                 <p className={`farm_type ${lightMode && "farm_type--light"}`}>{farm?.platform}</p>
                                 <img alt={farm?.platform_alt} className="rewards_image" src={farm?.platform_logo} />
+                                <img
+                                    alt={farm.chainId.toString()}
+                                    style={{ marginLeft: 2, border: "none" }}
+                                    className="rewards_image"
+                                    title={farm.chainId.toString()}
+                                    src={`chains/${farm.chainId}.png`}
+                                />
                             </div>
                         </div>
                     </div>
@@ -104,6 +123,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                         ) : (
                             <div className={"innerContainer"}>
                                 <p className={`pool_name ${lightMode && "pool_name--light"}`}>
+                                    APY:{" "}
                                     {farmApys && farmApys.apy < 0.01
                                         ? farmApys.apy.toPrecision(2).slice(0, -1)
                                         : toFixedFloor(farmApys?.apy || 0, 2).toString()}
@@ -181,6 +201,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                     farmData.withdrawableAmounts.find((_) => _.isPrimaryVault)?.amountDollar &&
                     parseFloat(farmData.withdrawableAmounts[0].amountDollar) >= 0.01 ? (
                         <>
+                            <p className={`deposited ${lightMode && "deposited--light"}`}>Deposit</p>
                             <p className={`pool_name ${lightMode && "pool_name--light"}`}>
                                 {parseFloat(
                                     farmData.withdrawableAmounts.find((_) => _.isPrimaryVault)?.amountDollar || "0"
@@ -331,7 +352,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
 
 export default FarmRow;
 
-const FarmRowSkeleton = ({ farm, lightMode }: { farm: Farm; lightMode: boolean }) => {
+const FarmRowSkeleton = ({ farm, lightMode }: { farm: PoolDef; lightMode: boolean }) => {
     const { apy: farmApys, isLoading: isApyLoading } = useFarmApy(farm);
     const key = uuid();
     const { farmDetails, isLoading: isFarmLoading } = useFarmDetails();

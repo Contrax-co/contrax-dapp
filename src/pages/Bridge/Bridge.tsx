@@ -1,11 +1,9 @@
-import React from "react";
-import { Bridge as SocketBridge } from "@socket.tech/plugin";
+import React, { useMemo } from "react";
+// import { Bridge as SocketBridge } from "@socket.tech/plugin";
 import useApp from "src/hooks/useApp";
 import useBalances from "src/hooks/useBalances";
 import useWallet from "src/hooks/useWallet";
-import { useEthersSigner } from "src/config/walletConfig";
 import { SOCKET_BRIDGE_KEY, defaultChainId } from "src/config/constants";
-import { getWeb3AuthProvider } from "src/config/walletConfig";
 import "./Bridge.css";
 
 const darkSocketTheme = {
@@ -39,53 +37,22 @@ const lightSocketTheme = {
 const Bridge = () => {
     const { reloadBalances } = useBalances();
     const { lightMode } = useApp();
-    const { currentWallet, chains } = useWallet();
-    const [chainId, setChainId] = React.useState<number>(defaultChainId);
-    const signer = useEthersSigner({
-        chainId,
-    });
-    const [provider, setProvider] = React.useState<any>();
-    const [isWeb3Auth, setIsWeb3Auth] = React.useState(false);
+    // const { currentWallet, client, setChainId } = useWallet();
 
-    const handleBridgeNetworkChange = async () => {
-        try {
-            // @ts-ignore
-            const pkey = await signer?.provider?.provider?.request({ method: "eth_private_key" });
-            if (!pkey) {
-                setIsWeb3Auth(true);
-                setProvider(undefined);
-                return;
-            }
-            const chain = chains.find((c) => c.id === chainId);
-            const _provider = await getWeb3AuthProvider({
-                chainId: chain?.id!,
-                blockExplorer: chain?.blockExplorers?.default.url!,
-                name: chain?.name!,
-                rpc: chain?.rpcUrls.default.http[0]!,
-                ticker: chain?.nativeCurrency.symbol!,
-                tickerName: chain?.nativeCurrency.name!,
-                pkey,
-            });
-            setProvider(_provider);
-            setIsWeb3Auth(true);
-        } catch {
-            // switchNetworkAsync && (await switchNetworkAsync(chainId));
-            setIsWeb3Auth(false);
-        }
-    };
+    // const provider = useMemo(() => {
+    //     return getEip1193Provider(client);
+    // }, [client]);
 
-    React.useEffect(() => {
-        handleBridgeNetworkChange();
-    }, [currentWallet, chainId, signer]);
-
-    React.useEffect(() => reloadBalances, []);
+    // React.useEffect(() => reloadBalances, []);
 
     if (!SOCKET_BRIDGE_KEY) return null;
     else
         return (
             <div className="BridgeContainer">
-                <SocketBridge
-                    provider={isWeb3Auth ? provider : signer?.provider}
+                Not Available
+                {/* <SocketBridge
+                    // @ts-ignore
+                    provider={provider}
                     onSourceNetworkChange={(network) => {
                         setChainId(network.chainId);
                     }}
@@ -110,13 +77,13 @@ const Bridge = () => {
                     //     "refuel-bridge",
                     // ]}
                     // excludeBridges={[]}
-                    defaultSourceNetwork={1}
-                    defaultDestNetwork={defaultChainId}
+                    defaultSourceNetwork={defaultChainId}
+                    defaultDestNetwork={1}
                     // enableSameChainSwaps
                     // sourceNetworks={[1, 137, defaultChainId]}
                     // destNetworks={[1, 137, defaultChainId]}
                     customize={lightMode ? lightSocketTheme : darkSocketTheme}
-                />
+                /> */}
             </div>
         );
 };

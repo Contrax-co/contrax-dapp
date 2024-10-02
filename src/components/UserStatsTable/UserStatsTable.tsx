@@ -5,7 +5,7 @@ import { customCommify } from "src/utils/common";
 import useConstants from "src/hooks/useConstants";
 import { FiExternalLink } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
-import { UsersTableColumns } from "src/types/enums";
+import { CHAIN_ID, UsersTableColumns } from "src/types/enums";
 import { FaArrowDown, FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 import { v4 as uuid } from "uuid";
 
@@ -24,7 +24,7 @@ export const UserStatsTable: FC = () => {
         search,
         setSearch,
     } = useStats();
-    const { BLOCK_EXPLORER_URL } = useConstants();
+    const { BLOCK_EXPLORER_URL } = useConstants(CHAIN_ID.ARBITRUM);
 
     const handleSorting = (column: UsersTableColumns) => {
         if (column === sortBy) {

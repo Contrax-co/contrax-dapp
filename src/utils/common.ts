@@ -1,21 +1,36 @@
-import { Provider } from "@ethersproject/abstract-provider";
-import { BigNumber, BigNumberish, Signer, constants, utils } from "ethers";
 import { notifyError } from "src/api/notify";
 import { defaultChainId } from "src/config/constants";
 import { errorMessages } from "src/config/constants/notifyMessages";
 import store from "src/state";
-import { Farm } from "src/types";
+import { IClients } from "src/types";
 import { createWeb3Name } from "@web3-name-sdk/core";
-import { getAddress } from "viem";
+import {
+    Address,
+    getAddress,
+    TransactionReceipt,
+    parseUnits,
+    formatUnits,
+    zeroAddress,
+    getContract,
+    erc20Abi,
+    maxUint256,
+} from "viem";
+
+import { waitForTransactionReceipt } from "viem/actions";
+import { addressesByChainId } from "src/config/constants/contracts";
+import { CHAIN_ID } from "src/types/enums";
+import { PoolDef } from "src/config/constants/pools_json";
+import { Balances } from "src/state/balances/types";
+import { SupportedChains } from "src/config/walletConfig";
 
 const web3Name = createWeb3Name();
 
 export const resolveEnsDomain = async (str: string) => {
-    let addr = null;
+    let addr: Address | null = null;
     try {
-        addr = getAddress(str);
+        addr = getAddress(str) as Address;
     } catch {
-        addr = await web3Name.getAddress(str);
+        addr = (await web3Name.getAddress(str)) as Address;
     }
     return addr;
 };
@@ -28,7 +43,7 @@ export const resolveDomainFromAddress = async (addr: string) => {
     return name;
 };
 
-export const getLpAddressForFarmsPrice = (farms: Farm[]) => {
+export const getLpAddressForFarmsPrice = (farms: PoolDef[]) => {
     // temp fix for dodo and stargate wrapped token prices
     // the underlyging tokens are named lp, but they are actaully just wrapped versions of platform tokens, so we
     // cannot calculate their price like normal LP, so instead we just use the base token for price
@@ -94,11 +109,11 @@ export const toWei = (value: string | number, decimals = 18) => {
     value = Number(value)
         .toFixed(decimals + 1)
         .slice(0, -1);
-    return utils.parseUnits(value, decimals);
+    return parseUnits(value, decimals);
 };
 
-export const toEth = (value: string | BigNumberish, decimals = 18) => {
-    return utils.formatUnits(value, decimals);
+export const toEth = (value: bigint, decimals = 18) => {
+    return formatUnits(value, decimals);
 };
 
 export const toFixedFloor = (value: number, decimalPlaces: number) => {
@@ -131,69 +146,51 @@ export const sleep = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const awaitTransaction = async (transaction: any) => {
-    let tx;
-    let receipt;
-    let error;
-    let status;
+export const awaitTransaction = async (
+    transaction: Promise<Address>,
+    client: Omit<IClients, "wallet">,
+    txHashCallback: ((txHash: Address) => any) | undefined = undefined
+) => {
+    let txHash: Address | undefined;
+    let receipt: TransactionReceipt | undefined;
+    let error: string | undefined;
+    let status: boolean;
     try {
-        tx = await transaction;
-        receipt = await tx.wait();
+        txHash = await transaction;
+        if (txHashCallback) txHashCallback(txHash);
+        receipt = await waitForTransactionReceipt(client.public, { hash: txHash });
         status = true;
+        if (receipt.status === "reverted") {
+            throw new Error("Transaction reverted on chain!");
+        }
     } catch (e: any) {
         console.info("awaitTransaction error", e);
-        // temp fix for zerodev timeout error
-        if (Error(e).message === "Error: Timed out") {
-            status = true;
-            return {
-                tx: "",
-                receipt: "",
-                error,
-                status,
-            };
-        }
-
-        if (e.reason) error = e.reason.replace("execution reverted:", "");
-        else if (e.code === 4001) error = "Transaction Denied!";
-        else if (e.code === -32000 || e.data?.code === -32000)
-            error = "Insuficient Funds in your account for transaction";
-        else if (e.data?.message) error = e.data.message;
-        else if (Error(e).message) error = Error(e).message;
         status = false;
+        error = e.details || e.shortMessage || e.message || e.response?.data?.message || "Something went wrong!";
     }
     return {
-        tx,
+        txHash,
         receipt,
         error,
         status,
     };
 };
 
-export const isZeroDevSigner = (signer: any) => {
-    // do we have a better way to do this ?? :/
-    if (signer.zdProvider) return true;
-    return false;
-};
-
-export const getConnectorId = () => {
-    return store.getState().settings.connectorId;
-};
-
 export const subtractGas = async (
-    amountInWei: BigNumber,
-    signerOrProvider: Signer | Provider,
-    estimatedTx: Promise<BigNumber>,
+    amountInWei: bigint,
+    client: Pick<IClients, "public">,
+    estimatedTx: Promise<bigint>,
     showError: boolean = true,
-    _balance: string | BigNumber | undefined = undefined
+    _balance: bigint | undefined = undefined
 ) => {
     const balance = _balance
-        ? BigNumber.from(_balance)
-        : BigNumber.from(store.getState().balances.balances[constants.AddressZero]);
-    const gasPrice = await signerOrProvider.getGasPrice();
+        ? _balance
+        : BigInt(store.getState().balances.balances[client.public.chain.id][zeroAddress] || "0");
+    const gasPrice = await client.public.getGasPrice();
     const gasLimit = await estimatedTx;
-    const gasToRemove = gasLimit.mul(gasPrice).mul(3);
-    if (amountInWei.add(gasToRemove).gte(balance)) amountInWei = amountInWei.sub(gasToRemove);
-    if (amountInWei.lte(0)) {
+    const gasToRemove = gasLimit * gasPrice * 5n;
+    if (amountInWei + gasToRemove >= balance) amountInWei = amountInWei - gasToRemove;
+    if (amountInWei <= 0) {
         showError && notifyError(errorMessages.insufficientGas());
         return undefined;
     }
@@ -218,3 +215,72 @@ export const customCommify = (
 
     return amount;
 };
+
+async function* checkForPaymasterApprovalGenerator(client: IClients) {
+    let txCount = 0;
+    while (true) {
+        if (txCount === 10) {
+            txCount = 0;
+            console.log(`%cChecking USDC allowance, Paymaster`, "color: green;");
+            const contract = getContract({
+                address: addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress as Address,
+                abi: erc20Abi,
+                client,
+            });
+            const allowance = await contract.read.allowance([
+                client.wallet.account.address!,
+                addressesByChainId[CHAIN_ID.ARBITRUM].universalPaymaster!,
+            ]);
+            if (allowance >= parseUnits("10", 6)) yield true;
+            else {
+                const hash = await contract.write.approve([
+                    addressesByChainId[CHAIN_ID.ARBITRUM].universalPaymaster!,
+                    maxUint256,
+                ]);
+                await waitForTransactionReceipt(client.public, { hash });
+                console.log(`%cUSDC approved, Paymaster`, "color: green;");
+                yield true;
+            }
+        } else {
+            txCount++;
+            yield true;
+        }
+    }
+}
+let paymasterApprovalCheckIterator: ReturnType<typeof checkForPaymasterApprovalGenerator>;
+export const checkPaymasterApproval = async (client?: IClients) => {
+    if (!paymasterApprovalCheckIterator && client)
+        paymasterApprovalCheckIterator = checkForPaymasterApprovalGenerator(client);
+    else await paymasterApprovalCheckIterator.next();
+};
+
+export const getNativeCoinInfo = (chainId: number) => {
+    switch (chainId) {
+        case 137:
+            return { logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025", decimal: 18, name: "MATIC" };
+        default:
+            return { logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024", decimal: 18, name: "ETH" };
+    }
+};
+
+export const getCombinedBalance = (balances: Balances, type: "eth" | "usdc") => {
+    let balance = 0n;
+    let chainBalances: { [chainId: string]: bigint } = {};
+    Object.entries(balances || {}).forEach(([chainId, values]) => {
+        const isEth = SupportedChains.find((item) => item.id === Number(chainId))?.nativeCurrency.symbol === "ETH";
+        if (type === "eth" && isEth) {
+            balance += BigInt(values[zeroAddress] || 0);
+            chainBalances[chainId] = BigInt(values[zeroAddress] || 0);
+        } else if (type === "usdc") {
+            // @ts-ignore
+            const usdcAddress = addressesByChainId[chainId].usdcAddress;
+            if (usdcAddress) {
+                balance += BigInt(values[usdcAddress] || 0);
+                chainBalances[chainId] = BigInt(values[usdcAddress] || 0);
+            }
+        }
+    });
+    const formattedBalance = Number(toEth(BigInt(balance), type === "eth" ? 18 : 6));
+    return { formattedBalance, balance, chainBalances };
+};
+

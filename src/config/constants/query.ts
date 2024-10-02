@@ -13,39 +13,17 @@ export const GET_PRICE_TOKEN = (networkName: string, tokenAddress: string) => [
     tokenAddress,
 ];
 
-export const FARM_ZAP_IN = (currentWallet: string, networkName: string, farmId: number) => [
-    "farm",
-    "function",
-    "zapIn",
-    farmId,
-    networkName,
-    currentWallet,
-];
+export const FARM_ZAP_IN = (currentWallet: string, farmId: number) => ["farm", "function", "zapIn", farmId, currentWallet];
 
-export const FARM_ZAP_OUT = (currentWallet: string, networkName: string, farmId: number) => [
-    "farm",
-    "function",
-    "zapOut",
-    farmId,
-    networkName,
-    currentWallet,
-];
+export const FARM_ZAP_OUT = (currentWallet: string, farmId: number) => ["farm", "function", "zapOut", farmId, currentWallet];
 
-export const FARM_DEPOSIT = (currentWallet: string, networkName: string, farmId: number) => [
-    "farm",
-    "function",
-    "deposit",
-    farmId,
-    networkName,
-    currentWallet,
-];
+export const FARM_DEPOSIT = (currentWallet: string, farmId: number) => ["farm", "function", "deposit", farmId, currentWallet];
 
-export const FARM_WITHDRAW = (currentWallet: string, networkName: string, farmId: number) => [
+export const FARM_WITHDRAW = (currentWallet: string, farmId: number) => [
     "farm",
     "function",
     "withdraw",
     farmId,
-    networkName,
     currentWallet,
 ];
 
@@ -57,13 +35,7 @@ export const FARM_DATA = (currentWallet: string, networkName: string, farmId: nu
     currentWallet,
 ];
 
-export const TRANSFER_TOKEN = (currentWallet: string, networkName: string) => [
-    "token",
-    "function",
-    "transfer",
-    networkName,
-    currentWallet,
-];
+export const TRANSFER_TOKEN = (currentWallet: string) => ["token", "function", "transfer", currentWallet];
 
 export const REFFERED_ACCOUNTS = (currentWallet: string) => ["accounts", "reffered-accounts", currentWallet];
 

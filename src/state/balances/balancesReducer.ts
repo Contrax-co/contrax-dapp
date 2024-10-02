@@ -1,114 +1,67 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { constants, Contract, utils } from "ethers";
-import { erc20ABI } from "wagmi";
-import { StateInterface, UpdateBalancesActionPayload, UpdatePolygonBalancesActionPayload } from "./types";
+import { Address, erc20Abi, getAddress, getContract, zeroAddress } from "viem";
+import { Balances, StateInterface, UpdateBalancesActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
-import { defaultChainId } from "src/config/constants";
+import { Common_Chains_State, pools_chain_ids } from "src/config/constants/pools_json";
+import { CHAIN_ID } from "src/types/enums";
 
 const initialState: StateInterface = {
-    balances: {},
-    mainnetBalances: {},
-    polygonBalances: {},
+    balances: Common_Chains_State,
     isLoading: false,
     isFetched: false,
-    account: "",
+    account: undefined,
 };
-
-export const fetchPolygonBalances = createAsyncThunk(
-    "balances/fetchPolygonBalances",
-    async ({ multicallProvider, account, addresses }: UpdatePolygonBalancesActionPayload, thunkApi) => {
-        // console.log("fetchPolygonBalances");
-        // console.trace();
-        let promises = addresses.map((address) =>
-            new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
-        );
-
-        const [maticBalance, ...balancesResponse] = await Promise.all([
-            multicallProvider.getBalance(account),
-            ...promises,
-        ]);
-
-        const balances = balancesResponse.reduce((accum: { [key: string]: string }, balance, index) => {
-            accum[addresses[index]] = balance.toString();
-            return accum;
-        }, {});
-
-        balances[constants.AddressZero] = maticBalance.toString();
-
-        // create address checksum
-        const checksummed: { [key: string]: string } = {};
-        Object.entries(balances).forEach(([key, value]) => {
-            checksummed[utils.getAddress(key)] = value;
-        });
-
-        return checksummed;
-    }
-);
-
-export const fetchMainnetBalances = createAsyncThunk(
-    "balances/fetchMainnetBalances",
-    async ({ multicallProvider, account, addresses }: UpdatePolygonBalancesActionPayload, thunkApi) => {
-        let promises = addresses.map((address) =>
-            new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
-        );
-
-        const [ethBalance, ...balancesResponse] = await Promise.all([
-            multicallProvider.getBalance(account),
-            ...promises,
-        ]);
-
-        const balances = balancesResponse.reduce((accum: { [key: string]: string }, balance, index) => {
-            accum[addresses[index]] = balance.toString();
-            return accum;
-        }, {});
-
-        balances[constants.AddressZero] = ethBalance.toString();
-
-        // create address checksum
-        const checksummed: { [key: string]: string } = {};
-        Object.entries(balances).forEach(([key, value]) => {
-            checksummed[utils.getAddress(key)] = value;
-        });
-
-        return checksummed;
-    }
-);
 
 export const fetchBalances = createAsyncThunk(
     "balances/fetchBalances",
-    async ({ farms, multicallProvider, account }: UpdateBalancesActionPayload, thunkApi) => {
-        const addresses = new Set<string>();
+    async ({ farms, getPublicClient, account }: UpdateBalancesActionPayload, thunkApi) => {
+        const addresses: Record<number, Set<Address>> = {};
+        pools_chain_ids.forEach((chainId) => {
+            addresses[chainId] = new Set();
+        });
         farms.forEach((farm) => {
-            addresses.add(farm.lp_address.toLowerCase());
-            addresses.add(farm.token1.toLowerCase());
-            farm.token2 && addresses.add(farm.token2.toLowerCase());
-            farm.vault_addr && addresses.add(farm.vault_addr.toLowerCase());
+            addresses[farm.chainId].add(getAddress(farm.lp_address));
+            addresses[farm.chainId].add(getAddress(farm.token1));
+            addresses[farm.chainId].add(getAddress(farm.vault_addr));
+            farm.token2 && addresses[farm.chainId].add(getAddress(farm.token2));
         });
         tokens.forEach((token) => {
-            if (token.chainId === defaultChainId) addresses.add(token.address.toLowerCase());
+            addresses[token.chainId].add(getAddress(token.address));
         });
-        const addressesArray = Array.from(addresses);
-        let promises = addressesArray.map((address) =>
-            new Contract(address, erc20ABI, multicallProvider).balanceOf(account)
-        );
-        promises = [...promises];
-        const [ethBalance, ...balancesResponse] = await Promise.all([
-            multicallProvider.getBalance(account),
-            ...promises,
-        ]);
-        const balances = balancesResponse.reduce((accum: { [key: string]: string }, balance, index) => {
-            accum[addressesArray[index]] = balance.toString();
-            return accum;
-        }, {});
-        balances[constants.AddressZero] = ethBalance.toString();
+        // Extra addresses for balance
+        addresses[CHAIN_ID.BASE].add("0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913");
 
-        // create address checksum
-        const checksummed: { [key: string]: string } = {};
-        Object.entries(balances).forEach(([key, value]) => {
-            checksummed[utils.getAddress(key)] = value;
-        });
+        let balances: Balances = {};
+        await Promise.all(
+            Object.entries(addresses).map(async ([chainId, set]) => {
+                balances[Number(chainId)] = {};
+                const arr = Array.from(set);
+                const res = await Promise.all(
+                    arr.map((item) =>
+                        getContract({
+                            address: item,
+                            abi: erc20Abi,
+                            client: {
+                                public: getPublicClient(Number(chainId)),
+                            },
+                        }).read.balanceOf([account])
+                    )
+                );
+
+                res.forEach((item, i) => {
+                    balances[Number(chainId)][arr[i]] = item.toString();
+                });
+            })
+        );
+        await Promise.all(
+            pools_chain_ids.map(async (item) => {
+                const bal = await getPublicClient(item).getBalance({ address: account });
+                balances[item][zeroAddress] = bal.toString();
+            })
+        );
+
         thunkApi.dispatch(setAccount(account));
-        return checksummed;
+        return balances;
     }
 );
 
@@ -116,7 +69,7 @@ const balancesSlice = createSlice({
     name: "balances",
     initialState: initialState,
     reducers: {
-        setAccount(state, action: { payload: string }) {
+        setAccount(state, action: { payload: Address }) {
             state.account = action.payload;
         },
         setIsFetched(state, action: { payload: boolean }) {
@@ -124,11 +77,12 @@ const balancesSlice = createSlice({
         },
         reset(state) {
             state.balances = {};
-            state.mainnetBalances = {};
-            state.polygonBalances = {};
+            pools_chain_ids.forEach((chainId) => {
+                state.balances[chainId] = [] as any;
+            });
             state.isLoading = false;
             state.isFetched = false;
-            state.account = "";
+            state.account = undefined;
         },
     },
     extraReducers(builder) {
@@ -140,22 +94,10 @@ const balancesSlice = createSlice({
             state.isFetched = true;
             state.balances = { ...action.payload };
         });
-        builder.addCase(fetchBalances.rejected, (state) => {
+        builder.addCase(fetchBalances.rejected, (state, ...rest) => {
             state.isLoading = false;
             state.isFetched = false;
-            state.balances = {};
-        });
-        builder.addCase(fetchPolygonBalances.fulfilled, (state, action) => {
-            state.polygonBalances = { ...action.payload };
-        });
-        builder.addCase(fetchMainnetBalances.fulfilled, (state, action) => {
-            state.mainnetBalances = { ...action.payload };
-        });
-        builder.addCase(fetchPolygonBalances.rejected, (state) => {
-            state.polygonBalances = {};
-        });
-        builder.addCase(fetchMainnetBalances.rejected, (state) => {
-            state.mainnetBalances = {};
+            state.balances = Common_Chains_State;
         });
     },
 });

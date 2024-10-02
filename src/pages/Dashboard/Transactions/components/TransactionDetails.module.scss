@@ -1,0 +1,98 @@
+.container {
+    overflow: hidden;
+    transition: all 0.2s ease-in;
+    padding-left: 6px;
+    padding-right: 20px;
+    padding-top: 0;
+}
+
+.open {
+    max-height: 400px; /* Set a sufficiently large value */
+    padding-bottom: 10px;
+}
+
+.closed {
+    max-height: 0;
+    padding-bottom: 0px;
+}
+
+.row {
+    display: grid;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    grid-template-columns: max-content 1fr max-content;
+}
+
+.loadingBarContainer {
+    height: 4px;
+    border-radius: 360px;
+    background: var(--background_light);
+    margin-top: 20px;
+    overflow: hidden;
+    div {
+        height: 100%;
+        width: 100%;
+        border-radius: 360px;
+        background: var(--color_primary);
+    }
+}
+
+.loadingBarAnimated {
+    animation: loadingBarAnimation 2s linear infinite; // Add animation
+}
+
+@keyframes loadingBarAnimation {
+    0% {
+        width: 20%;
+        transform: translateX(-100%);
+    }
+    50% {
+        width: 50%;
+        transform: translateX(25%);
+    }
+    100% {
+        width: 20%;
+        transform: translateX(500%);
+    }
+}
+.stepName {
+    font-weight: 600;
+}
+
+.tokenValue {
+    color: var(--color_grey);
+    font-size: 12px;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+}
+
+.retry {
+    color: var(--color_primary);
+    cursor: pointer;
+}
+
+.loader {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--color_primary);
+    border-bottom-color: transparent;
+    border-right-color: transparent;
+    border-radius: 50%;
+    display: block;
+    scale: 0.8;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

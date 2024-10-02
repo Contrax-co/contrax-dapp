@@ -22,6 +22,7 @@
     --border_color: #022b55;
     --border_color-secondary: #043b71;
     --border_color_light: #d2e8ef;
+    --border_light: #022b55;
 }
 
 [data-lightMode="true"] {
@@ -43,6 +44,7 @@
     /* ///// Border Colors ///// */
     --border_color: #d9d9d9;
     --border_color_light: #d2e8ef;
+    --border_light: #d9d9d9;
 }
 
 ::-moz-selection {
@@ -74,6 +76,9 @@
 .chaport-launcher-operator-photo {
     clip-path: circle(50%);
 }
+#wcm-modal {
+    z-index: 10000;
+}
 
 @media (max-width: 1024px) {
     .chaport-container .chaport-launcher .chaport-launcher-button {
@@ -84,3 +89,4 @@
         right: 1em;
     }
 }
+

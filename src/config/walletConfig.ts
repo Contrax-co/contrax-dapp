@@ -1,31 +1,21 @@
 import { useMemo } from "react";
-import { arbitrum, mainnet, polygon, base, bsc, avalanche, optimism, Chain } from "wagmi/chains";
-
-import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
-import { Web3AuthNoModal } from "@web3auth/no-modal";
+import { arbitrum, mainnet, polygon, optimism, linea, bsc, base, Chain } from "viem/chains";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { ChainProviderFn, WalletClient, configureChains, createConfig, useWalletClient } from "wagmi";
-import { getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { infuraProvider } from "wagmi/providers/infura";
-import { publicProvider } from "wagmi/providers/public";
-import {
-    ALCHEMY_KEY,
-    INFURA_KEY,
-    POLLING_INTERVAL,
-    WEB3AUTH_CLIENT_ID,
-    isDev,
-    walletConnectProjectId,
-} from "./constants";
+import { getDefaultExternalAdapters } from "@web3auth/default-evm-adapter";
+import { POLLING_INTERVAL, walletConnectProjectId, WEB3AUTH_CLIENT_ID } from "./constants";
+// import { Web3Auth } from "@web3auth/modal";
+import { Web3AuthNoModal } from "@web3auth/no-modal";
+import { providers } from "ethers";
+import { PublicClient, WalletClient, http, type HttpTransport } from "viem";
+import { connectorsForWallets, getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
 import googleIcon from "./../assets/images/google-logo.svg";
 import facebookIcon from "./../assets/images/facebook-icon.svg";
 import discordIcon from "./../assets/images/discordapp-icon.svg";
 import githubIcon from "./../assets/images/github-icon.svg";
 import twitterIcon from "./../assets/images/twitter-icon.svg";
-import { providers } from "ethers";
 import {
     injectedWallet,
     rainbowWallet,
@@ -36,86 +26,44 @@ import {
     safeWallet,
     argentWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { type PublicClient, usePublicClient } from "wagmi";
-import { type HttpTransport } from "viem";
+import { createConfig, createConnector as createWagmiConnector } from "wagmi";
 
-export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
-// export const ARBITRUM_MAINNET = "https://rpc.ankr.com/arbitrum";
-
-const clientId = WEB3AUTH_CLIENT_ID as string;
-// arbitrum.rpcUrls.default.http[0] = ARBITRUM_MAINNET;
-// arbitrum.rpcUrls.public.http[0] = ARBITRUM_MAINNET;
-
-const providersArray: ChainProviderFn[] = [];
-
-// if (INFURA_KEY && isDev) {
-//     providersArray.push(
-//         infuraProvider({
-//             apiKey: INFURA_KEY as string,
-//         })
-//     );
-// }
-
-if (ALCHEMY_KEY && !isDev) {
-    providersArray.push(
-        alchemyProvider({
-            apiKey: ALCHEMY_KEY as string,
-        })
-    );
-}
-providersArray.push(publicProvider());
-
-const linea: Chain = {
-    id: 59144,
-    name: "Linea",
-    network: "linea",
-    rpcUrls: {
-        default: {
-            http: ["https://linea.decubate.com"],
-        },
-        public: {
-            http: ["https://linea.decubate.com"],
-        },
-    },
-    nativeCurrency: {
-        decimals: 18,
-        name: "Ethereum",
-        symbol: "ETH",
-    },
-};
-
-export const { chains, publicClient, webSocketPublicClient } = configureChains(
-    [arbitrum, mainnet, polygon, optimism, avalanche, bsc, base, linea],
-    // @ts-ignore
-    providersArray,
-    {
-        batch: {
-            multicall: {
-                batchSize: 2048,
-                wait: 500,
-            },
-        },
-        pollingInterval: POLLING_INTERVAL,
-        retryCount: 3,
-        stallTimeout: 5000,
-    }
-);
-
-// Instantiating Web3Auth
-const web3AuthInstance = new Web3AuthNoModal({
-    clientId,
-    web3AuthNetwork: "cyan",
-    // sessionTime: 604800, // 7 days
-    chainConfig: {
-        chainNamespace: CHAIN_NAMESPACES.EIP155,
-        chainId: "0x" + arbitrum.id.toString(16),
-        rpcTarget: ARBITRUM_MAINNET,
-        displayName: arbitrum.name,
-        tickerName: arbitrum.nativeCurrency.name,
-        ticker: arbitrum.nativeCurrency.symbol,
-        blockExplorerUrl: "https://arbiscan.io/",
+Object.assign(arbitrum.rpcUrls, {
+    alchemy: {
+        http: ["https://arb-mainnet.g.alchemy.com/v2"],
     },
 });
+Object.assign(mainnet.rpcUrls, {
+    alchemy: {
+        http: ["https://eth-mainnet.g.alchemy.com/v2"],
+    },
+});
+Object.assign(polygon.rpcUrls, {
+    alchemy: {
+        http: ["https://polygon-mainnet.g.alchemy.com/v2"],
+    },
+});
+Object.assign(optimism.rpcUrls, {
+    alchemy: {
+        http: ["https://opt-mainnet.g.alchemy.com/v2"],
+    },
+});
+Object.assign(linea.rpcUrls, {
+    alchemy: {
+        http: ["https://linea-mainnet.g.alchemy.com/v2"],
+    },
+});
+Object.assign(base.rpcUrls, {
+    alchemy: {
+        http: ["https://base-mainnet.g.alchemy.com/v2"],
+    },
+});
+
+export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc, base] as const;
+
+// #region web3auth config
+export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
+const clientId = WEB3AUTH_CLIENT_ID as string;
 
 const PrivateKeyProvider = new EthereumPrivateKeyProvider({
     config: {
@@ -131,33 +79,20 @@ const PrivateKeyProvider = new EthereumPrivateKeyProvider({
     },
 });
 
-export async function getWeb3AuthProvider(config: {
-    chainId: number;
-    rpc: string;
-    name: string;
-    tickerName: string;
-    ticker: string;
-    blockExplorer: string;
-    pkey: string;
-}) {
-    const PrivateKeyProvider = new EthereumPrivateKeyProvider({
-        config: {
-            chainConfig: {
-                chainId: "0x" + config.chainId.toString(16),
-                rpcTarget: config.rpc,
-                displayName: config.name,
-                tickerName: config.tickerName,
-                ticker: config.ticker,
-                blockExplorerUrl: config.blockExplorer,
-                chainNamespace: CHAIN_NAMESPACES.EIP155,
-            },
-        },
-    });
-    await PrivateKeyProvider.setupProvider(config.pkey);
-    const provider = new providers.Web3Provider(PrivateKeyProvider.provider!);
-    provider.pollingInterval = POLLING_INTERVAL;
-    return provider;
-}
+// Instantiating Web3Auth
+export const web3AuthInstance = new Web3AuthNoModal({
+    clientId,
+    web3AuthNetwork: "cyan",
+    chainConfig: {
+        chainId: "0x" + arbitrum.id.toString(16),
+        rpcTarget: ARBITRUM_MAINNET,
+        displayName: arbitrum.name,
+        tickerName: arbitrum.nativeCurrency.name,
+        ticker: arbitrum.nativeCurrency.symbol,
+        chainNamespace: CHAIN_NAMESPACES.EIP155,
+    },
+    // privateKeyProvider: PrivateKeyProvider,
+});
 
 const openloginAdapter = new OpenloginAdapter({
     privateKeyProvider: PrivateKeyProvider,
@@ -169,208 +104,168 @@ const openloginAdapter = new OpenloginAdapter({
         replaceUrlOnRedirect: false,
     },
 });
-
 web3AuthInstance.configureAdapter(openloginAdapter);
 
-// const { connectors } = getDefaultWallets({
-//     appName: 'Contrax',
-//     projectId: walletConnectProjectId,
-//     chains
-//   });
-
-const connectors = connectorsForWallets([
-    {
-        groupName: "Social",
-        wallets: [
-            {
-                id: "google",
-                name: "Google",
-                iconUrl: googleIcon,
-                iconBackground: "white",
-                createConnector: () => {
-                    const connector = new Web3AuthConnector({
-                        chains,
-                        options: {
-                            web3AuthInstance,
-                            loginParams: {
-                                loginProvider: "google",
-                            },
-                        },
-                    });
-
-                    return {
-                        connector,
-                    };
-                },
-            },
-            {
-                id: "Facebook",
-                name: "Facebook",
-                iconUrl: facebookIcon,
-                iconBackground: "white",
-                createConnector: () => {
-                    const connector = new Web3AuthConnector({
-                        chains,
-                        options: {
-                            web3AuthInstance,
-                            loginParams: {
-                                loginProvider: "facebook",
-                            },
-                        },
-                    });
-
-                    return {
-                        connector,
-                    };
-                },
-            },
-            {
-                id: "discord",
-                name: "Discord",
-                iconUrl: discordIcon,
-                iconBackground: "white",
-                createConnector: () => {
-                    const connector = new Web3AuthConnector({
-                        chains,
-                        options: {
-                            web3AuthInstance,
-                            loginParams: {
-                                loginProvider: "discord",
-                            },
-                        },
-                    });
-
-                    return {
-                        connector,
-                    };
-                },
-            },
-            {
-                id: "twitter",
-                name: "Twitter",
-                iconUrl: twitterIcon,
-                iconBackground: "white",
-                createConnector: () => {
-                    const connector = new Web3AuthConnector({
-                        chains,
-                        options: {
-                            web3AuthInstance,
-                            loginParams: {
-                                loginProvider: "twitter",
-                            },
-                        },
-                    });
-
-                    return {
-                        connector,
-                    };
-                },
-            },
-            {
-                id: "github",
-                name: "Github",
-                iconUrl: githubIcon,
-                iconBackground: "white",
-                createConnector: () => {
-                    const connector = new Web3AuthConnector({
-                        chains,
-                        options: {
-                            web3AuthInstance,
-                            loginParams: {
-                                loginProvider: "github",
-                            },
-                        },
-                    });
-
-                    return {
-                        connector,
-                    };
-                },
-            },
-        ],
+getDefaultExternalAdapters({
+    options: {
+        clientId,
+        web3AuthNetwork: "cyan",
+        privateKeyProvider: PrivateKeyProvider,
+        chainConfig: {
+            chainId: "0x" + arbitrum.id.toString(16),
+            rpcTarget: ARBITRUM_MAINNET,
+            displayName: arbitrum.name,
+            tickerName: arbitrum.nativeCurrency.name,
+            ticker: arbitrum.nativeCurrency.symbol,
+            blockExplorerUrl: "https://arbiscan.io/",
+            chainNamespace: CHAIN_NAMESPACES.EIP155,
+        },
     },
-    {
-        groupName: "Wallets",
-        wallets: [
-            injectedWallet({ chains }),
-            rainbowWallet({ chains, projectId: walletConnectProjectId }),
-            walletConnectWallet({ chains, projectId: walletConnectProjectId }),
-            braveWallet({ chains }),
-            coinbaseWallet({ chains, appName: "Contrax" }),
-            metaMaskWallet({ chains, projectId: walletConnectProjectId }),
-            safeWallet({ chains }),
-            argentWallet({ chains, projectId: walletConnectProjectId }),
-        ],
-    },
-]);
-
-export const wagmiClient = createConfig({
-    autoConnect: true,
-    connectors,
-    publicClient,
-    webSocketPublicClient,
+}).then((adapters) => {
+    adapters.forEach((adapter) => {
+        web3AuthInstance.configureAdapter(adapter);
+    });
 });
+
 export const web3authProvider = web3AuthInstance.provider;
 
-export function publicClientToProvider(publicClient: PublicClient) {
-    const { chain, transport } = publicClient;
-    const network = {
-        chainId: chain.id,
-        name: chain.name,
-        ensAddress: chain.contracts?.ensRegistry?.address,
-    };
-    if (transport.type === "fallback") {
-        const provider = new providers.FallbackProvider(
-            (transport.transports as ReturnType<HttpTransport>[]).map(
-                ({ value }) => new providers.JsonRpcProvider(value?.url, network)
-            )
-        );
-        provider.pollingInterval = POLLING_INTERVAL;
-        return provider;
-    }
-    const provider = new providers.JsonRpcProvider(transport.url, network);
-    provider.pollingInterval = POLLING_INTERVAL;
-    return provider;
-}
+// #endregion web3auth config
 
-/** Hook to convert a viem Public Client to an ethers.js Provider. */
-export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
-    const publicClient = usePublicClient({ chainId });
-    return useMemo(() => publicClientToProvider(publicClient), [publicClient]);
-}
-
-export function walletClientToSigner(walletClient: WalletClient) {
-    const { account, chain, transport } = walletClient;
-    const network = {
-        chainId: chain.id,
-        name: chain.name,
-        ensAddress: chain.contracts?.ensRegistry?.address,
-    };
-    const provider = new providers.Web3Provider(transport, network);
-    provider.pollingInterval = POLLING_INTERVAL;
-    const signer = provider.getSigner(account.address);
-    return signer;
-}
+export const rainbowConfig = getDefaultConfig({
+    appName: "Contrax",
+    projectId: walletConnectProjectId,
+    chains: SupportedChains,
+    transports: SupportedChains.reduce((acc, curr) => {
+        acc[curr.id] = http();
+        return acc;
+    }, {} as { [key: number]: HttpTransport }),
+    wallets: [
+        {
+            groupName: "Socials",
+            wallets: [
+                () => {
+                    return {
+                        id: "google",
+                        name: "Google",
+                        iconUrl: googleIcon,
+                        installed: true,
+                        downloadUrls: {},
+                        iconBackground: "white",
+                        createConnector: (walletDetails) =>
+                            createWagmiConnector((config) => ({
+                                ...Web3AuthConnector({
+                                    web3AuthInstance,
+                                    loginParams: {
+                                        loginProvider: "google",
+                                    },
+                                })(config),
+                                ...walletDetails,
+                            })),
+                    };
+                },
+                () => {
+                    return {
+                        id: "facebook",
+                        name: "Facebook",
+                        iconUrl: facebookIcon,
+                        iconBackground: "white",
+                        createConnector: (walletDetails) =>
+                            createWagmiConnector((config) => ({
+                                ...Web3AuthConnector({
+                                    web3AuthInstance,
+                                    loginParams: {
+                                        loginProvider: "facebook",
+                                    },
+                                })(config),
+                                ...walletDetails,
+                            })),
+                    };
+                },
+                () => {
+                    return {
+                        id: "discord",
+                        name: "Discord",
+                        iconUrl: discordIcon,
+                        iconBackground: "white",
+                        createConnector: (walletDetails) =>
+                            createWagmiConnector((config) => ({
+                                ...Web3AuthConnector({
+                                    web3AuthInstance,
+                                    loginParams: {
+                                        loginProvider: "discord",
+                                    },
+                                })(config),
+                                ...walletDetails,
+                            })),
+                    };
+                },
+                () => {
+                    return {
+                        id: "twitter",
+                        name: "Twitter",
+                        iconUrl: twitterIcon,
+                        iconBackground: "white",
+                        createConnector: (walletDetails) =>
+                            createWagmiConnector((config) => ({
+                                ...Web3AuthConnector({
+                                    web3AuthInstance,
+                                    loginParams: {
+                                        loginProvider: "twitter",
+                                    },
+                                })(config),
+                                ...walletDetails,
+                            })),
+                    };
+                },
+                () => {
+                    return {
+                        id: "github",
+                        name: "Github",
+                        iconUrl: githubIcon,
+                        iconBackground: "white",
+                        createConnector: (walletDetails) =>
+                            createWagmiConnector((config) => ({
+                                ...Web3AuthConnector({
+                                    web3AuthInstance,
+                                    loginParams: {
+                                        loginProvider: "github",
+                                    },
+                                })(config),
+                                ...walletDetails,
+                            })),
+                    };
+                },
+            ],
+        },
+        {
+            groupName: "Wallets",
+            wallets: [
+                injectedWallet,
+                rainbowWallet,
+                walletConnectWallet,
+                braveWallet,
+                coinbaseWallet,
+                metaMaskWallet,
+                safeWallet,
+                argentWallet,
+            ],
+        },
+    ],
+});
 
 export function walletClientToWeb3Provider(walletClient: WalletClient) {
     const { account, chain, transport } = walletClient;
     const network = {
-        chainId: chain.id,
-        name: chain.name,
-        ensAddress: chain.contracts?.ensRegistry?.address,
+        chainId: chain?.id ?? arbitrum.id,
+        name: chain?.name ?? arbitrum.name,
+        ensAddress: chain?.contracts?.ensRegistry?.address,
     };
     const provider = new providers.Web3Provider(transport, network);
     provider.pollingInterval = POLLING_INTERVAL;
     return provider;
 }
 
-/** Hook to convert a viem Wallet Client to an ethers.js Signer. */
-export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
-    const { data: walletClient } = useWalletClient({ chainId });
-    return useMemo(() => (walletClient ? walletClientToSigner(walletClient) : undefined), [walletClient]);
-}
 /** Hook to convert a viem Wallet Client to an ethers.js Web3Provider. */
-export function useEthersWeb3Provider({ chainId }: { chainId?: number } = {}) {
-    const { data: walletClient } = useWalletClient({ chainId });
+export function useEthersWeb3Provider(walletClient?: WalletClient) {
     return useMemo(() => (walletClient ? walletClientToWeb3Provider(walletClient) : undefined), [walletClient]);
 }
