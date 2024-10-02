@@ -34,7 +34,7 @@ function Farms() {
                 {IS_LEGACY && <VaultsWithFundsToggle />}
             </div>
             <div className={styles.protocols_div}>
-                <h6>Available Protocols:</h6>
+                <h6>Available Protocols</h6>
                 <div className={styles.protocols_container}>
                     {platformNames.map((item, i) => (
                         <div
