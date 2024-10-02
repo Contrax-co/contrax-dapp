@@ -69,7 +69,7 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
             <div className="farm_table_row" key={farm?.id} onClick={handleClick}>
                 <div style={{ position: "absolute", right: 10, display: "flex", gap: 5, top: 10 }}>
                     {farm.isDeprecated && <FarmRowChip text="Deprecated" color="warning" />}
-                    {farm.token_type === "LP Token" && <FarmRowChip text="Advance" />}
+                    {/* {farm.token_type === "LP Token" && <FarmRowChip text="Advance" />} */}
                     {externalChainId ? (
                         farm.chainId !== externalChainId ? (
                             <FarmRowChip text="Cross Chain" />
