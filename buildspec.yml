@@ -1,7 +1,7 @@
 version: 0.2
 
 env:
-  secrets-manager: 
+  secrets-manager:
     REACT_APP_WEB3AUTH_CLIENT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WEB3AUTH_CLIENT_ID_PRODUCTION
     REACT_APP_RAMP_TRANSAK_API_KEY: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:TRANSAK_RAMP_API_KEY_PRODUCTION
     REACT_APP_WERT_PARTNER_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WERT_PARTNER_ID_PRODUCTION
@@ -18,11 +18,10 @@ env:
     REACT_APP_FRONT_CLIENT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:FRONT_CLIENT_ID
     REACT_APP_WALLET_CONNECT_PROJECT_ID: arn:aws:secretsmanager:us-east-1:942360293134:secret:staging/contrax-dapp-AOo0sL:WALLET_CONNECT_PROJECT_ID
 
-
 phases:
   install:
     runtime-versions:
-      nodejs: 16
+      nodejs: 20
   pre_build:
     commands:
       - echo Pre build commands started...
@@ -33,7 +32,7 @@ phases:
   build:
     commands:
       - echo Generating build directory for react.
-      - yarn build 
+      - yarn build
       - echo Finished generating build directory.
 
   post_build:
@@ -50,5 +49,3 @@ artifacts:
     - '**/*'
   discard-paths: no
   base-directory: build
-  
-  
