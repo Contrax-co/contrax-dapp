@@ -3,7 +3,7 @@ import useNotify from "src/hooks/useNotify";
 import { commify } from "ethers/lib/utils.js";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 import useWallet from "src/hooks/useWallet";
-import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
+import SlippageModal from "src/components/modals/SlippageModal/SlippageModal";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
@@ -41,6 +41,13 @@ const Test = () => {
 
     return (
         <div style={{ color: "red" }}>
+            <SlippageModal
+                handleClose={() => {
+                    // setShowSlippageModal(false);
+                }}
+                handleSubmit={() => {}}
+                percentage={12}
+            />
             Test
             <button onClick={fn} ref={clickMeButtonRef}>
                 Click Me

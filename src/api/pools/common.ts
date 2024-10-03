@@ -398,6 +398,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
 };
 
 export const slippageIn: SlippageInBaseFn = async (args) => {
+    let isBridged = false;
     let {
         amountInWei,
         balances,
@@ -450,7 +451,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         // use weth address as tokenId, but in case of some farms (e.g: hop)
         // we need the token of liquidity pair, so use tokenIn if provided
         token = tokenIn ?? wethAddress;
-        const { afterBridgeBal } = await crossChainBridgeIfNecessary({
+        const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
             getClients,
             balances,
             currentWallet,
@@ -460,7 +461,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
             max,
             simulate: true,
         });
-
+        isBridged = amountToBeBridged > 0n;
         const populated = {
             data: encodeFunctionData({
                 abi: zapperAbi,
@@ -483,6 +484,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
             max,
             simulate: true,
         });
+        isBridged = amountToBeBridged > 0n;
         const populated = {
             data: encodeFunctionData({
                 abi: zapperAbi,
@@ -511,7 +513,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     //     BigNumber.from(filteredState.original[farm.vault_addr.toLowerCase()])
     // );
     // const difference = BigNumber.from(assetChanges.added);
-    return assetChanges.difference;
+    return { difference: assetChanges.difference, isBridged };
 };
 
 export const slippageOut: SlippageOutBaseFn = async ({
@@ -593,7 +595,7 @@ export const slippageOut: SlippageOutBaseFn = async ({
         difference = added - subtracted;
     }
 
-    return difference;
+    return { difference };
 };
 
 export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTransactionObject, "contractCall">>(
@@ -630,6 +632,9 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
 
     const toBal = await getBalance(obj.toToken, obj.currentWallet, { public: toPublicClient });
     if (toBal < obj.toTokenAmount) {
+        /**
+         * @description toBalDiff is the amount of token that is needed after subtracting current balance on farm chain
+         */
         const toBalDiff = obj.toTokenAmount - toBal;
         const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
         const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
