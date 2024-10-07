@@ -87,6 +87,9 @@ export interface LoadingMessages {
     gettingBridgeQuote: () => NotifyMessage;
     bridgeStep: (step: number, totalSteps: number) => NotifyMessage;
     bridgeDestTxWait: () => NotifyMessage;
+    withdrawBridgeQuote: () => NotifyMessage;
+    withdrawBridgeStep: (step: number, totalSteps: number) => NotifyMessage;
+    withdrawBridgeDestTxWait: () => NotifyMessage;
 }
 
 export interface AccountInfo {
@@ -312,6 +315,17 @@ export interface CrossChainTransactionObject {
     toTokenAmount: bigint;
     max?: boolean;
     simulate?: boolean;
+    notificationId?: string;
+    getClients: (chainId: number) => Promise<IClients>;
+}
+
+export interface CrossChainBridgeWithdrawObject {
+    currentWallet: Address;
+    toChainId: number;
+    fromChainId: number;
+    fromAmount: bigint;
+    fromToken: Address;
+    toToken: Address;
     notificationId?: string;
     getClients: (chainId: number) => Promise<IClients>;
 }

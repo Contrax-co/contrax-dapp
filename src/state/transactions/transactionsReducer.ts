@@ -241,19 +241,21 @@ export const checkPendingTransactionsStatus = createAsyncThunk(
                                     status: TransactionStepStatus.COMPLETED,
                                 })
                             );
-                            await thunkApi.dispatch(
-                                addTransactionStepDb({
-                                    transactionId: item._id,
-                                    step: {
-                                        type:
-                                            item.type === "deposit"
-                                                ? TransactionTypes.ZAP_IN
-                                                : TransactionTypes.ZAP_OUT,
-                                        amount: item.amountInWei,
-                                        status: TransactionStepStatus.FAILED,
-                                    } as ZapInStep | ZapOutStep,
-                                })
-                            );
+                            if (item.type === "deposit") {
+                                await thunkApi.dispatch(
+                                    addTransactionStepDb({
+                                        transactionId: item._id,
+                                        step: {
+                                            type:
+                                                item.type === "deposit"
+                                                    ? TransactionTypes.ZAP_IN
+                                                    : TransactionTypes.ZAP_OUT,
+                                            amount: item.amountInWei,
+                                            status: TransactionStepStatus.FAILED,
+                                        } as ZapInStep | ZapOutStep,
+                                    })
+                                );
+                            }
                         } else if (res.status === "FAILED") {
                             await thunkApi.dispatch(
                                 editTransactionStepDb({

@@ -13,11 +13,12 @@ import {
     getAllowanceStateOverride,
     getTokenBalanceStateOverride,
     simulateTransaction,
+    traceTransactionAssetChange,
 } from "../tenderly";
 import merge from "lodash.merge";
-import { Address, createPublicClient, encodeFunctionData, Hex, http, zeroAddress } from "viem";
+import { Address, createPublicClient, encodeFunctionData, Hex, http, parseEventLogs, zeroAddress } from "viem";
 import zapperAbi from "src/assets/abis/zapperAbi";
-import { CrossChainTransactionObject, IClients } from "src/types";
+import { CrossChainBridgeWithdrawObject, CrossChainTransactionObject, IClients } from "src/types";
 import { convertQuoteToRoute, getQuote, getStatus, LiFiStep } from "@lifi/sdk";
 import { SupportedChains } from "src/config/walletConfig";
 import store from "src/state";
@@ -39,6 +40,7 @@ import {
     editTransactionStepDb,
     markAsFailedDb,
 } from "src/state/transactions/transactionsReducer";
+import { getWithdrawChainForFarm } from "../transaction";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -313,7 +315,7 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         //#region Zapping Out
         notifyLoading(loadingMessages.withDrawing(), { id });
 
-        let withdrawTxn;
+        let withdrawTxn: Awaited<ReturnType<typeof awaitTransaction>>;
         if (max) {
             amountInWei = vaultBalance;
         }
@@ -381,9 +383,30 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         );
         if (!withdrawTxn.status) {
             store.dispatch(markAsFailedDb(id));
-
             throw new Error(withdrawTxn.error);
         } else {
+            const chainToWithdrawOn = await getWithdrawChainForFarm(currentWallet, farm.id);
+            if (chainToWithdrawOn !== farm.chainId) {
+                const data = await traceTransactionAssetChange({
+                    chainId: farm.chainId,
+                    txHash: withdrawTxn.txHash as Hex,
+                    walletAddress: currentWallet,
+                    tokenAddress: token,
+                });
+                if (data?.difference && data.difference > 0n) {
+                    await zapOutBridge({
+                        fromChainId: farm.chainId,
+                        toChainId: chainToWithdrawOn,
+                        currentWallet,
+                        fromAmount: data.difference,
+                        fromToken: token,
+                        getClients,
+                        notificationId: id,
+                        toToken:
+                            token === zeroAddress ? zeroAddress : addressesByChainId[chainToWithdrawOn].usdcAddress,
+                    });
+                }
+            }
             dismissNotify(id);
             notifySuccess(successMessages.withdraw());
         }
@@ -872,6 +895,197 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
             // @ts-ignore
             return { status: true };
         }
+    }
+}
+
+export async function zapOutBridge(obj: CrossChainBridgeWithdrawObject): Promise<{
+    status: boolean;
+    error?: string;
+    toAmount: bigint;
+}> {
+    const toChain = SupportedChains.find((item) => item.id === obj.toChainId);
+    const fromChain = SupportedChains.find((item) => item.id === obj.fromChainId);
+    if (!toChain || !fromChain) throw new Error("chain not found");
+    console.log("getting bridge quote");
+    let quote: LiFiStep;
+    if (obj.notificationId) notifyLoading(loadingMessages.withdrawBridgeQuote(), { id: obj.notificationId });
+    store.dispatch(
+        addTransactionStepDb({
+            transactionId: obj.notificationId!,
+            step: {
+                type: TransactionTypes.GET_BRIDGE_QUOTE,
+                status: TransactionStepStatus.IN_PROGRESS,
+            } as GetBridgeQuoteStep,
+        })
+    );
+    quote = await getQuote({
+        fromAddress: obj.currentWallet,
+        fromChain: obj.fromChainId,
+        toChain: obj.toChainId,
+        // @ts-ignore
+        fromToken: obj.fromToken,
+        toToken: obj.toToken,
+        fromAmount: obj.fromAmount.toString(),
+        order: "RECOMMENDED",
+        // @ts-ignore
+        denyBridges: "hop",
+    });
+    const route = convertQuoteToRoute(quote);
+    console.log("route =>", route);
+
+    let allStatus: boolean = false;
+    let i = 1;
+    let toAmount: bigint = 0n;
+    for await (const step of route.steps) {
+        if (obj.notificationId)
+            notifyLoading(loadingMessages.withdrawBridgeStep(i, route.steps.length), { id: obj.notificationId });
+        const client = await obj.getClients(step.transactionRequest!.chainId!);
+        const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
+        const tokenBalance = await getBalance(
+            obj.toToken === zeroAddress
+                ? zeroAddress
+                : addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+            obj.currentWallet,
+            client
+        );
+        if (tokenBalance < BigInt(step.estimate.fromAmount)) {
+            throw new Error("Insufficient Balance");
+        }
+        store.dispatch(
+            editTransactionStepDb({
+                transactionId: obj.notificationId!,
+                stepType: TransactionTypes.GET_BRIDGE_QUOTE,
+                status: TransactionStepStatus.COMPLETED,
+            })
+        );
+        if (obj.toToken !== zeroAddress) {
+            await store.dispatch(
+                addTransactionStepDb({
+                    transactionId: obj.notificationId!,
+                    step: {
+                        type: TransactionTypes.APPROVE_BRIDGE,
+                        status: TransactionStepStatus.IN_PROGRESS,
+                    } as ApproveBridgeStep,
+                })
+            );
+            await approveErc20(
+                addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+                step.estimate.approvalAddress as Address,
+                BigInt(step.estimate.fromAmount),
+                obj.currentWallet,
+                client
+            );
+            await store.dispatch(
+                editTransactionStepDb({
+                    transactionId: obj.notificationId!,
+                    stepType: TransactionTypes.APPROVE_BRIDGE,
+                    status: TransactionStepStatus.COMPLETED,
+                })
+            );
+        }
+        const transaction = client.wallet.sendTransaction({
+            data: data as Hex,
+            gasLimit: gasLimit!,
+            gasPrice: BigInt(gasPrice!),
+            to: to as Address,
+            value: BigInt(value!),
+        });
+        store.dispatch(
+            addTransactionStepDb({
+                transactionId: obj.notificationId!,
+                step: {
+                    type: TransactionTypes.INITIATE_BRIDGE,
+                    amount: obj.fromAmount.toString(),
+                    status: TransactionStepStatus.IN_PROGRESS,
+                } as InitiateBridgeStep,
+            })
+        );
+        const res = await awaitTransaction(transaction, client);
+        if (!res.status) {
+            throw new Error(res.error);
+        }
+        let status = "PENDING";
+        store.dispatch(
+            editTransactionStepDb({
+                transactionId: obj.notificationId!,
+                stepType: TransactionTypes.INITIATE_BRIDGE,
+                status: TransactionStepStatus.COMPLETED,
+            })
+        );
+        store.dispatch(
+            addTransactionStepDb({
+                transactionId: obj.notificationId!,
+                step: {
+                    type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+                    status: TransactionStepStatus.IN_PROGRESS,
+                    bridgeInfo: {
+                        bridgeService: BridgeService.LIFI,
+                        txHash: res.txHash!,
+                        fromChain: step.action.fromChainId,
+                        toChain: step.action.toChainId,
+                        tool: step.tool,
+                        beforeBridgeBalance: obj.fromAmount.toString(),
+                    },
+                } as WaitForBridgeResultsStep,
+            })
+        );
+        do {
+            if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
+            try {
+                const result = await getStatus({
+                    txHash: res.txHash!,
+                    fromChain: step.action.fromChainId,
+                    toChain: step.action.toChainId,
+                    bridge: step.tool,
+                });
+                // @ts-ignore
+                if (result.status === "DONE" && result?.receiving?.amount) {
+                    toAmount = BigInt((result.receiving as any).amount);
+                }
+                status = result.status;
+            } catch (_) {}
+
+            console.log(`Transaction status for ${res.txHash}:`, status);
+
+            // Wait for a short period before checking the status again
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+        } while (status !== "DONE" && status !== "FAILED");
+
+        if (status === "DONE") {
+            store.dispatch(
+                editTransactionStepDb({
+                    transactionId: obj.notificationId!,
+                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+                    amount: toAmount.toString(),
+                    status: TransactionStepStatus.COMPLETED,
+                })
+            );
+            allStatus = true;
+        } else {
+            store.dispatch(
+                editTransactionStepDb({
+                    transactionId: obj.notificationId!,
+                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+                    status: TransactionStepStatus.FAILED,
+                })
+            );
+            console.error(`Transaction ${res.txHash} failed`);
+            allStatus = false;
+        }
+        i++;
+    }
+    if (allStatus) {
+        // @ts-ignore
+        return {
+            status: true,
+            toAmount,
+        };
+    } else {
+        // @ts-ignore
+        return {
+            status: false,
+            error: "Target chain error",
+        };
     }
 }
 // export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChainTransactionObject, "contractCall">>(

@@ -89,7 +89,6 @@ export interface BalanceDiffs {
     original: string;
 }
 
-
 export interface SimulationResponse {
     status: boolean;
     value: bigint;
@@ -106,4 +105,49 @@ export interface SimulationResponse {
     stateDiffs: FilteredStateDiff[];
     assetChanges: AssetChanges[];
     balanceDiff: BalanceDiffs[];
+}
+
+export interface TraceAssetChanges {
+    amount?: string;
+    dollarValue?: string;
+    from: string;
+    rawAmount: string;
+    to?: string;
+    type: string;
+    assetInfo: {
+        contractAddress: string;
+        decimals?: number;
+        dollarValue?: string;
+        logo?: string;
+        name?: string;
+        standard: string;
+        symbol?: string;
+        type?: string;
+    };
+}
+
+export interface TraceStateChanges {
+    address: string;
+    balance: {
+        previousValue: string;
+        newValue: string;
+    };
+    nonce?: {
+        previousValue: string;
+        newValue: string;
+    };
+    storage?: {
+        newValue: string;
+        previousValue: string;
+        slot: string;
+    }[];
+}
+export interface TraceTransactionResponse {
+    status: boolean;
+    blockNumber: string;
+    cumulativeGasUsed: string;
+    gasUsed: string;
+    assetChanges: TraceAssetChanges[];
+    stateChanges: TraceStateChanges[];
+    logs: any[];
 }

@@ -83,4 +83,16 @@ export const loadingMessages: LoadingMessages = {
         title: "Creating your stake position...",
         message: `Waiting for destination transaction to be mined`,
     }),
+    withdrawBridgeQuote: () => ({
+        title: "Withdrawing...",
+        message: "Getting Quote for Bridge",
+    }),
+    withdrawBridgeStep: (step: number, totalSteps: number) => ({
+        title: "Withdrawing...",
+        message: `Bridge Step ${step} of ${totalSteps}`,
+    }),
+    withdrawBridgeDestTxWait: () => ({
+        title: "Withdrawing...",
+        message: `Waiting for destination transaction to be mined`,
+    }),
 };

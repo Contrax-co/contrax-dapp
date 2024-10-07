@@ -12,9 +12,11 @@ import {
     FilteredStateDiff,
     SimulationResponse,
     TenderlySimulateTransactionBody,
+    TraceTransactionResponse,
 } from "src/types/tenderly";
-import { zeroAddress } from "viem";
-import { defaultChainId } from "src/config/constants";
+import { Address, createPublicClient, Hex, http, parseUnits, zeroAddress } from "viem";
+import { defaultChainId, TENDERLY_ACCESS_TOKEN, tenderlyRpcs } from "src/config/constants";
+import { CHAIN_ID } from "src/types/enums";
 
 // #region Utility functions
 const mapStateOverridesToEncodeStateRequest = (
@@ -203,4 +205,51 @@ export const simulateTransaction = async (
     };
 
     return processedResponse;
+};
+
+export const traceTransactionAssetChange = async (args: {
+    chainId: number;
+    txHash: Hex;
+    tokenAddress?: Address;
+    walletAddress?: Address;
+}) => {
+    // @ts-ignore
+    let rpc = tenderlyRpcs[chainId];
+    const publicClient = createPublicClient({
+        transport: http(rpc),
+    });
+    const res: TraceTransactionResponse = await publicClient.request({
+        // @ts-expect-error
+        method: "tenderly_traceTransaction",
+        params: [args.txHash],
+    });
+
+    if (args.tokenAddress === zeroAddress) {
+        const walletChange = res.stateChanges.find(
+            (item) => item.address.toLowerCase() === args.walletAddress?.toLowerCase()
+        );
+        if (walletChange) {
+            const newValue = BigInt(walletChange.balance.newValue);
+            const previousValue = BigInt(walletChange.balance.previousValue);
+            return {
+                before: previousValue,
+                after: newValue,
+                difference: newValue - previousValue,
+            };
+        }
+    } else {
+        const assetChange = res.assetChanges?.find(
+            (item) =>
+                item.assetInfo.contractAddress?.toLowerCase() === args.tokenAddress?.toLowerCase() &&
+                item.to?.toLowerCase() === args.walletAddress?.toLowerCase()
+        );
+        if (assetChange) {
+            const amount = BigInt(assetChange.rawAmount || 0);
+            return {
+                before: undefined,
+                after: undefined,
+                difference: amount,
+            };
+        }
+    }
 };
