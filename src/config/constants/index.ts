@@ -59,8 +59,8 @@ export const FRONT_API_KEY = import.meta.env.REACT_APP_FRONT_API_KEY as string;
 export const FRONT_CLIENT_ID = import.meta.env.REACT_APP_FRONT_CLIENT_ID as string;
 
 export const tenderlyRpcs: { [key: string]: string } = {
-    [CHAIN_ID.ARBITRUM]: `https://arbitrum.gateway.tenderly.co/${TENDERLY_ACCESS_TOKEN}`,
-    [CHAIN_ID.BASE]: `https://base.gateway.tenderly.co/${TENDERLY_ACCESS_TOKEN}`,
+    [CHAIN_ID.ARBITRUM]: `https://arbitrum.gateway.tenderly.co/6YtRegY86MErUrbfeB4e8L`,
+    [CHAIN_ID.BASE]: `https://base.gateway.tenderly.co/6lueMXUaDSXb1VtTVFELQ1`,
 };
 
 pools_chain_ids.forEach((item) => {
