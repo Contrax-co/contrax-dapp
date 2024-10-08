@@ -214,7 +214,7 @@ export const traceTransactionAssetChange = async (args: {
     walletAddress?: Address;
 }) => {
     // @ts-ignore
-    let rpc = tenderlyRpcs[chainId];
+    let rpc = tenderlyRpcs[args.chainId];
     const publicClient = createPublicClient({
         transport: http(rpc),
     });
