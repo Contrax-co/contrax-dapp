@@ -65,7 +65,7 @@ const useZapOut = (farm: PoolDef) => {
         let amountInWei = toWei(withdrawAmt, farm.decimals);
 
         // @ts-expect-error
-        const difference = await farmFunctions[farm.id]?.zapOutSlippage({
+        const { difference } = await farmFunctions[farm.id]?.zapOutSlippage({
             currentWallet,
             amountInWei,
             farm,

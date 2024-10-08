@@ -337,6 +337,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
     };
 
     const slippageIn: SlippageInBaseFn = async (args) => {
+        let isBridged = false;
         let {
             amountInWei,
             balances,
@@ -389,7 +390,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn ?? wethAddress;
 
-            const { afterBridgeBal } = await crossChainBridgeIfNecessary({
+            const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
                 getClients,
                 balances,
                 currentWallet,
@@ -399,6 +400,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 max,
                 simulate: true,
             });
+            isBridged = amountToBeBridged > 0n;
             // No gas estimate needed
             //#endregion
             const populated = {
@@ -413,7 +415,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
         } else {
-            const { afterBridgeBal } = await crossChainBridgeIfNecessary({
+            const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
                 getClients,
                 balances,
                 currentWallet,
@@ -423,6 +425,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                 max,
                 simulate: true,
             });
+            isBridged = amountToBeBridged > 0n;
             const populated = {
                 data: encodeFunctionData({
                     abi: steerZapperAbi,
@@ -451,7 +454,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         //     BigNumber.from(filteredState.original[farm.vault_addr.toLowerCase()])
         // );
         // const difference = BigNumber.from(assetChanges.added);
-        return assetChanges.difference;
+        return { difference: assetChanges.difference, isBridged };
     };
 
     const zapIn: ZapInFn = (props) => zapInSteerBase({ ...props, farm });

@@ -70,14 +70,19 @@ export interface FarmDataProcessed {
     id: number;
 }
 
+export interface SlippageOutArgs {
+    difference: bigint;
+    isBridged?: boolean;
+}
+
 export type DepositFn = (args: DepositArgs) => Promise<void>;
 export type SlippageDepositBaseFn = (args: DepositArgs & { farm: PoolDef }) => Promise<bigint>;
 export type WithdrawFn = (args: WithdrawArgs) => Promise<void>;
 export type SlippageWithdrawBaseFn = (args: WithdrawArgs & { farm: PoolDef }) => Promise<bigint>;
 export type ZapInFn = (args: ZapInArgs) => Promise<void>;
 export type ZapInBaseFn = (args: ZapInArgs & { farm: PoolDef }) => Promise<void>;
-export type SlippageInBaseFn = (args: ZapInArgs & { farm: PoolDef }) => Promise<bigint>;
-export type SlippageOutBaseFn = (args: ZapOutArgs & { farm: PoolDef; balances: Balances }) => Promise<bigint>;
+export type SlippageInBaseFn = (args: ZapInArgs & { farm: PoolDef }) => Promise<SlippageOutArgs>;
+export type SlippageOutBaseFn = (args: ZapOutArgs & { farm: PoolDef; balances: Balances }) => Promise<SlippageOutArgs>;
 export type ZapOutFn = (args: ZapOutArgs) => Promise<void>;
 export type ZapOutBaseFn = (args: ZapOutArgs & { farm: PoolDef }) => Promise<void>;
 export type GetFarmDataProcessedFn = (

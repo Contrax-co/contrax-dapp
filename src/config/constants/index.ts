@@ -1,4 +1,5 @@
 import { CHAIN_ID } from "src/types/enums";
+import { pools_chain_ids } from "./pools_json";
 
 export const RoutesPaths = {
     Home: "/",
@@ -56,3 +57,12 @@ export const ALCHEMY_KEY = import.meta.env.REACT_APP_ALCHEMY;
 export const FRONT_URL = import.meta.env.REACT_APP_FRONT_URL as string;
 export const FRONT_API_KEY = import.meta.env.REACT_APP_FRONT_API_KEY as string;
 export const FRONT_CLIENT_ID = import.meta.env.REACT_APP_FRONT_CLIENT_ID as string;
+
+export const tenderlyRpcs: { [key: string]: string } = {
+    [CHAIN_ID.ARBITRUM]: `https://arbitrum.gateway.tenderly.co/6YtRegY86MErUrbfeB4e8L`,
+    [CHAIN_ID.BASE]: `https://base.gateway.tenderly.co/6lueMXUaDSXb1VtTVFELQ1`,
+};
+
+pools_chain_ids.forEach((item) => {
+    if (!tenderlyRpcs[item]) throw new Error(`Must include tenderly rpc for ${item}`);
+});

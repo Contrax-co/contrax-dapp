@@ -359,6 +359,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
     };
 
     const slippageIn: SlippageInBaseFn = async (args) => {
+        let isBridged = false;
         let {
             amountInWei,
             balances,
@@ -415,7 +416,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             // use weth address as tokenId, but in case of some farms (e.g: hop)
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn ?? wethAddress;
-            const { afterBridgeBal } = await crossChainBridgeIfNecessary({
+            const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
                 getClients,
                 balances,
                 currentWallet,
@@ -425,7 +426,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 max,
                 simulate: true,
             });
-
+            isBridged = amountToBeBridged > 0n;
             const { packedConfig, packedInput, r, s } = await createClipperData(
                 afterBridgeBal.toString(),
                 token === zeroAddress ? wethAddress : token,
@@ -443,7 +444,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
         } else {
-            const { afterBridgeBal } = await crossChainBridgeIfNecessary({
+            const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
                 getClients,
                 balances,
                 currentWallet,
@@ -453,7 +454,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 max,
                 simulate: true,
             });
-
+            isBridged = amountToBeBridged > 0n;
             const { packedConfig, packedInput, r, s } = await createClipperData(
                 afterBridgeBal.toString(),
                 token === zeroAddress ? wethAddress : token,
@@ -477,7 +478,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         });
         console.log({ simulationResult });
         const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
-        return assetChanges.difference;
+        return { difference: assetChanges.difference, isBridged };
     };
 
     const zapIn: ZapInFn = (props) => zapInClipperBase({ ...props, farm });

@@ -32,7 +32,7 @@ export const useSlippageDeposit = (maxAmounts: number[], tokens: Address[], farm
                 const id = uuid();
 
                 try {
-                    const difference = await farmFunctions[farm.id]?.zapInSlippage?.(
+                    const { difference } = await farmFunctions[farm.id]?.zapInSlippage?.(
                         {
                             id,
                             currentWallet: currentWallet!,
@@ -91,7 +91,7 @@ export const useSlippageWithdraw = (maxAmounts: number[], tokens: Address[], far
                 const id = uuid();
 
                 try {
-                    const difference = await farmFunctions[farm.id]?.zapOutSlippage?.({
+                    const { difference } = await farmFunctions[farm.id]?.zapOutSlippage?.({
                         id,
                         currentWallet: currentWallet!,
                         amountInWei,
