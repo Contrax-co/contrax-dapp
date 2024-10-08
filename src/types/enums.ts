@@ -33,6 +33,7 @@ export enum CHAIN_ID {
     LINEA = 59144,
     OPTIMISM = 10,
     BASE = 8453,
+    CORE = 1116,
 }
 export enum FarmSortOptions {
     Default = "Default",

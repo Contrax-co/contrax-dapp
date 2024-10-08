@@ -154,6 +154,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         isSocial,
         max,
         getPublicClient,
+        getWalletClient,
         tokenIn,
     }) => {
         const publicClient = getPublicClient(farm.chainId);
@@ -185,7 +186,8 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 isBridged,
                 status: bridgeStatus,
             } = await crossChainBridgeIfNecessary({
-                getClients,
+                getPublicClient,
+                getWalletClient,
                 notificationId: id,
                 balances,
                 currentWallet,

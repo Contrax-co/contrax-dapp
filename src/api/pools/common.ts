@@ -51,6 +51,7 @@ export const zapInBase: ZapInBaseFn = async ({
     currentWallet,
     estimateTxGas,
     getClients,
+    getWalletClient,
     max,
     id,
     getPublicClient,
@@ -81,7 +82,8 @@ export const zapInBase: ZapInBaseFn = async ({
                 isBridged,
                 status: bridgeStatus,
             } = await crossChainBridgeIfNecessary({
-                getClients: getClients,
+                getWalletClient,
+                getPublicClient,
                 notificationId: id,
                 balances: balances,
                 currentWallet: currentWallet,
@@ -170,7 +172,8 @@ export const zapInBase: ZapInBaseFn = async ({
                 isBridged,
                 finalAmountToDeposit,
             } = await crossChainBridgeIfNecessary({
-                getClients,
+                getPublicClient,
+                getWalletClient,
                 notificationId: id,
                 balances,
                 currentWallet,
@@ -201,7 +204,9 @@ export const zapInBase: ZapInBaseFn = async ({
                         farm.zapper_addr as Address,
                         amountInWei,
                         currentWallet,
-                        client
+                        farm.chainId,
+                        getPublicClient,
+                        getWalletClient
                     );
                     store.dispatch(
                         editTransactionStepDb({
@@ -279,7 +284,17 @@ export const zapInBase: ZapInBaseFn = async ({
     }
 };
 
-export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, currentWallet, getClients, max, id }) => {
+export const zapOutBase: ZapOutBaseFn = async ({
+    farm,
+    amountInWei,
+    getPublicClient,
+    getWalletClient,
+    token,
+    currentWallet,
+    getClients,
+    max,
+    id,
+}) => {
     notifyLoading(loadingMessages.approvingWithdraw(), { id });
     try {
         store.dispatch(
@@ -295,10 +310,34 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
         const vaultBalance = await getBalance(farm.vault_addr, currentWallet, client);
 
         //#region Approve
-        if (!(await approveErc20(farm.vault_addr, farm.zapper_addr, vaultBalance, currentWallet, client)).status)
+        if (
+            !(
+                await approveErc20(
+                    farm.vault_addr,
+                    farm.zapper_addr,
+                    vaultBalance,
+                    currentWallet,
+                    farm.chainId,
+                    getPublicClient,
+                    getWalletClient
+                )
+            ).status
+        )
             throw new Error("Error approving vault!");
 
-        if (!(await approveErc20(farm.lp_address, farm.zapper_addr, vaultBalance, currentWallet, client)).status)
+        if (
+            !(
+                await approveErc20(
+                    farm.lp_address,
+                    farm.zapper_addr,
+                    vaultBalance,
+                    currentWallet,
+                    farm.chainId,
+                    getPublicClient,
+                    getWalletClient
+                )
+            ).status
+        )
             throw new Error("Error approving lp!");
 
         store.dispatch(
@@ -400,7 +439,8 @@ export const zapOutBase: ZapOutBaseFn = async ({ farm, amountInWei, token, curre
                         currentWallet,
                         fromAmount: data.difference,
                         fromToken: token,
-                        getClients,
+                        getWalletClient,
+                        getPublicClient,
                         notificationId: id,
                         toToken:
                             token === zeroAddress ? zeroAddress : addressesByChainId[chainToWithdrawOn].usdcAddress,
@@ -430,6 +470,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         estimateTxGas,
         token,
         max,
+        getWalletClient,
         getClients,
         tokenIn,
         farm,
@@ -475,7 +516,8 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         // we need the token of liquidity pair, so use tokenIn if provided
         token = tokenIn ?? wethAddress;
         const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
-            getClients,
+            getPublicClient,
+            getWalletClient,
             balances,
             currentWallet,
             toChainId: farm.chainId,
@@ -498,7 +540,8 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         transaction.value = populated.value?.toString();
     } else {
         const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
-            getClients,
+            getWalletClient,
+            getPublicClient,
             balances,
             currentWallet,
             toChainId: farm.chainId,
@@ -732,16 +775,16 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
         let i = 1;
         let finalAmountToDeposit: bigint = 0n;
         for await (const step of route.steps) {
+            const publicClient = obj.getPublicClient(step.transactionRequest!.chainId!);
             if (obj.notificationId)
                 notifyLoading(loadingMessages.bridgeStep(i, route.steps.length), { id: obj.notificationId });
-            const client = await obj.getClients(step.transactionRequest!.chainId!);
             const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
             const tokenBalance = await getBalance(
                 obj.toToken === zeroAddress
                     ? zeroAddress
                     : addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
                 obj.currentWallet,
-                client
+                { public: publicClient }
             );
             if (tokenBalance < BigInt(step.estimate.fromAmount)) {
                 throw new Error("Insufficient Balance");
@@ -768,7 +811,9 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                     step.estimate.approvalAddress as Address,
                     BigInt(step.estimate.fromAmount),
                     obj.currentWallet,
-                    client
+                    step.transactionRequest!.chainId!,
+                    obj.getPublicClient,
+                    obj.getWalletClient
                 );
                 await store.dispatch(
                     editTransactionStepDb({
@@ -778,7 +823,8 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                     })
                 );
             }
-            const transaction = client.wallet.sendTransaction({
+            const walletClient = await obj.getWalletClient(step.transactionRequest!.chainId!);
+            const transaction = walletClient.sendTransaction({
                 data: data as Hex,
                 gasLimit: gasLimit!,
                 gasPrice: BigInt(gasPrice!),
@@ -795,7 +841,7 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
                     } as InitiateBridgeStep,
                 })
             );
-            const res = await awaitTransaction(transaction, client);
+            const res = await awaitTransaction(transaction, { public: publicClient });
             if (!res.status) {
                 throw new Error(res.error);
             }
@@ -939,14 +985,15 @@ export async function zapOutBridge(obj: CrossChainBridgeWithdrawObject): Promise
     for await (const step of route.steps) {
         if (obj.notificationId)
             notifyLoading(loadingMessages.withdrawBridgeStep(i, route.steps.length), { id: obj.notificationId });
-        const client = await obj.getClients(step.transactionRequest!.chainId!);
+
+        const publicClient = obj.getPublicClient(step.transactionRequest!.chainId!);
         const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
         const tokenBalance = await getBalance(
             obj.toToken === zeroAddress
                 ? zeroAddress
                 : addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
             obj.currentWallet,
-            client
+            { public: publicClient }
         );
         if (tokenBalance < BigInt(step.estimate.fromAmount)) {
             throw new Error("Insufficient Balance");
@@ -973,7 +1020,9 @@ export async function zapOutBridge(obj: CrossChainBridgeWithdrawObject): Promise
                 step.estimate.approvalAddress as Address,
                 BigInt(step.estimate.fromAmount),
                 obj.currentWallet,
-                client
+                step.transactionRequest!.chainId!,
+                obj.getPublicClient,
+                obj.getWalletClient
             );
             await store.dispatch(
                 editTransactionStepDb({
@@ -983,7 +1032,8 @@ export async function zapOutBridge(obj: CrossChainBridgeWithdrawObject): Promise
                 })
             );
         }
-        const transaction = client.wallet.sendTransaction({
+        const walletClient = await obj.getWalletClient(step.transactionRequest!.chainId!);
+        const transaction = walletClient.sendTransaction({
             data: data as Hex,
             gasLimit: gasLimit!,
             gasPrice: BigInt(gasPrice!),
@@ -1000,7 +1050,7 @@ export async function zapOutBridge(obj: CrossChainBridgeWithdrawObject): Promise
                 } as InitiateBridgeStep,
             })
         );
-        const res = await awaitTransaction(transaction, client);
+        const res = await awaitTransaction(transaction, { public: publicClient });
         if (!res.status) {
             throw new Error(res.error);
         }

@@ -108,6 +108,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
         isSocial,
         currentWallet,
         max,
+        getWalletClient,
         tokenIn,
         estimateTxGas,
         getClients,
@@ -138,7 +139,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     isBridged,
                     status: bridgeStatus,
                 } = await crossChainBridgeIfNecessary({
-                    getClients,
+                    getWalletClient,
+                    getPublicClient,
                     notificationId: id,
                     balances,
                     currentWallet,
@@ -227,7 +229,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                     isBridged,
                     finalAmountToDeposit,
                 } = await crossChainBridgeIfNecessary({
-                    getClients,
+                    getWalletClient,
+                    getPublicClient,
                     notificationId: id,
                     balances,
                     currentWallet,
@@ -252,13 +255,14 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                                 } as ApproveZapStep,
                             })
                         );
-                        const client = await getClients(farm.chainId);
                         const response = await approveErc20(
                             token,
                             farm.zapper_addr,
                             amountInWei,
                             currentWallet,
-                            client
+                            farm.chainId,
+                            getPublicClient,
+                            getWalletClient
                         );
                         store.dispatch(
                             editTransactionStepDb({
@@ -280,11 +284,11 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                             } as ZapInStep,
                         })
                     );
-                    const client = await getClients(farm.chainId);
+                    const walletClient = await getWalletClient(farm.chainId);
 
                     notifyLoading(loadingMessages.zapping(), { id });
                     zapperTxn = await awaitTransaction(
-                        client.wallet.sendTransaction({
+                        walletClient.sendTransaction({
                             to: farm.zapper_addr,
                             data: encodeFunctionData({
                                 abi: steerZapperAbi,
@@ -292,7 +296,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
                                 args: [farm.vault_addr, 0n, token, amountInWei],
                             }),
                         }),
-                        client,
+                        { public: publicClient },
                         async (hash) => {
                             store.dispatch(
                                 editTransactionStepDb({
@@ -346,6 +350,7 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             max,
             estimateTxGas,
             getPublicClient,
+            getWalletClient,
             getClients,
             tokenIn,
             farm,
@@ -391,7 +396,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             token = tokenIn ?? wethAddress;
 
             const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
-                getClients,
+                getPublicClient,
+                getWalletClient,
                 balances,
                 currentWallet,
                 toChainId: farm.chainId,
@@ -416,7 +422,8 @@ let steer = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw
             transaction.value = populated.value?.toString();
         } else {
             const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
-                getClients,
+                getPublicClient,
+                getWalletClient,
                 balances,
                 currentWallet,
                 toChainId: farm.chainId,

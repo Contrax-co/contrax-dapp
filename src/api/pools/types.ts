@@ -39,14 +39,16 @@ export interface DepositArgs {
     amountInWei: bigint;
     currentWallet: Address;
     max?: boolean;
-    getClients: (chainId: number) => Promise<IClients>;
+    getPublicClient: (chainId: number) => IClients["public"];
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
 }
 
 export interface WithdrawArgs {
     amountInWei: bigint;
     currentWallet: Address;
     max?: boolean;
-    getClients: (chainId: number) => Promise<IClients>;
+    getPublicClient: (chainId: number) => IClients["public"];
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
 }
 
 export interface TokenAmounts {

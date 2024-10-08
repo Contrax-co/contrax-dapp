@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { arbitrum, mainnet, polygon, optimism, linea, bsc, base, Chain } from "viem/chains";
+import { arbitrum, mainnet, polygon, optimism, linea, bsc, base, Chain, coreDao } from "viem/chains";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -59,7 +59,7 @@ Object.assign(base.rpcUrls, {
     },
 });
 
-export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc, base] as const;
+export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc, base, coreDao] as const;
 
 // #region web3auth config
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";

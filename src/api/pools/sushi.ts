@@ -105,20 +105,29 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         return result;
     };
 
-    const deposit: DepositFn = async ({ amountInWei, currentWallet, getClients, max }) => {
+    const deposit: DepositFn = async ({ amountInWei, currentWallet, getPublicClient, getWalletClient, max }) => {
         let notiId = notifyLoading(loadingMessages.approvingDeposit());
         try {
-            const client = await getClients(farm.chainId);
+            const walletClient = await getWalletClient(farm.chainId);
+            const publicClient = getPublicClient(farm.chainId);
             const vaultContract = getContract({
                 abi: vaultAbi,
                 address: farm.vault_addr,
-                client,
+                client: { wallet: walletClient, public: publicClient },
             });
 
-            const lpBalance = await getBalance(farm.lp_address, currentWallet, client);
+            const lpBalance = await getBalance(farm.lp_address, currentWallet, { public: publicClient });
 
             // approve the vault to spend asset
-            await approveErc20(farm.lp_address, farm.vault_addr, lpBalance, currentWallet, client);
+            await approveErc20(
+                farm.lp_address,
+                farm.vault_addr,
+                lpBalance,
+                currentWallet,
+                farm.chainId,
+                getPublicClient,
+                getWalletClient
+            );
 
             dismissNotify(notiId);
             notifyLoading(loadingMessages.confirmDeposit(), { id: notiId });
@@ -143,7 +152,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 // ],
             });
 
-            depositTxn = await awaitTransaction(depositTxn, client);
+            depositTxn = await awaitTransaction(depositTxn, { public: getPublicClient(farm.chainId) });
 
             if (!depositTxn.status) {
                 throw new Error("Error depositing into vault!");
@@ -159,14 +168,15 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, getClients, max }) => {
+    const withdraw: WithdrawFn = async ({ amountInWei, currentWallet, getWalletClient, getPublicClient, max }) => {
         const notiId = notifyLoading(loadingMessages.approvingWithdraw());
         try {
-            const client = await getClients(farm.chainId);
+            const walletClient = await getWalletClient(farm.chainId);
+            const publicClient = getPublicClient(farm.chainId);
             const vaultContract = getContract({
                 abi: vaultAbi,
                 address: farm.vault_addr,
-                client,
+                client: { wallet: walletClient, public: publicClient },
             });
 
             dismissNotify(notiId);
@@ -192,7 +202,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
                 // ],
             });
 
-            withdrawTxn = await awaitTransaction(withdrawTxn, client);
+            withdrawTxn = await awaitTransaction(withdrawTxn, { public: publicClient });
 
             if (!withdrawTxn.status) {
                 throw new Error("Error withdrawing Try again!");
@@ -208,7 +218,7 @@ let sushi: DynamicFarmFunctions = function (farmId) {
         }
     };
 
-    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max, getClients }) => {
+    const depositSlippage: SlippageDepositBaseFn = async ({ amountInWei, currentWallet, farm, max }) => {
         const transaction = {} as Omit<
             TenderlySimulateTransactionBody,
             "network_id" | "save" | "save_if_fails" | "simulation_type" | "state_objects"

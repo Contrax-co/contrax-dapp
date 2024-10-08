@@ -66,81 +66,81 @@ export const checkBridgeStatus = createAsyncThunk(
     }
 );
 
-export const polyUsdcToArbUsdc = createAsyncThunk(
-    "ramp/polyUsdcToArbUsdc",
-    async (
-        { polygonClient, currentWallet, refechBalance, direction, polygonUSDCAmount }: PolyUsdcToArbUsdcArgs,
-        thunkApi
-    ) => {
-        if (!polygonClient.wallet) return;
-        console.log("polygonUSDCAmount =>", polygonUSDCAmount);
-        await sleep(1000);
-        let notiId = notifyLoading({
-            title: `Bridging Poly ${BridgeChainInfo[direction].sourceName} to Arb ${BridgeChainInfo[direction].dstName}`,
-            message: "Getting bridge route data...",
-        });
-        try {
-            const polyUsdcBalance = await getBalance(
-                BridgeChainInfo[direction].sourceAddress,
-                currentWallet,
-                polygonClient
-            );
-            if (polyUsdcBalance === 0n) throw new Error("Insufficient balance");
-            thunkApi.dispatch(setBridgeStatus({ status: BridgeStatus.APPROVING, direction }));
-            console.log("getting route");
-            const { route, approvalData } = await getRoute(
-                BridgeChainInfo[direction].sourceChainId,
-                BridgeChainInfo[direction].dstChainId,
-                BridgeChainInfo[direction].sourceAddress === constants.AddressZero
-                    ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-                    : BridgeChainInfo[direction].sourceAddress,
-                BridgeChainInfo[direction].dstAddress === constants.AddressZero
-                    ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-                    : BridgeChainInfo[direction].dstAddress,
-                polygonUSDCAmount ? polygonUSDCAmount.toString() : polyUsdcBalance.toString(),
-                currentWallet
-            );
-            console.log("got route", route);
-            notifyLoading(
-                { title: "Bridging", message: `Approving Polygon ${BridgeChainInfo[direction].sourceName} - 1/3` },
-                { id: notiId }
-            );
-            await approveErc20(
-                approvalData.approvalTokenAddress,
-                approvalData.allowanceTarget,
-                BigInt(approvalData.minimumApprovalAmount),
-                currentWallet,
-                polygonClient
-            );
-            console.log("approval done");
-            thunkApi.dispatch(setBridgeStatus({ status: BridgeStatus.PENDING, direction }));
-            notifyLoading({ title: "Bridging", message: "Creating transaction - 2/3" }, { id: notiId });
-            const buildTx = await buildTransaction(route);
-            notifyLoading({ title: "Bridging", message: "Sending bridge transaction - 3/3" }, { id: notiId });
-            const { txHash, error } = await awaitTransaction(
-                polygonClient.wallet.sendTransaction({
-                    to: buildTx?.txTarget,
-                    data: buildTx?.txData,
-                    value: BigInt(buildTx?.value || 0),
-                }),
-                polygonClient
-            );
-            console.log(txHash, error);
-            if (error) throw new Error(error);
+// export const polyUsdcToArbUsdc = createAsyncThunk(
+//     "ramp/polyUsdcToArbUsdc",
+//     async (
+//         { polygonClient, currentWallet, refechBalance, direction, polygonUSDCAmount }: PolyUsdcToArbUsdcArgs,
+//         thunkApi
+//     ) => {
+//         if (!polygonClient.wallet) return;
+//         console.log("polygonUSDCAmount =>", polygonUSDCAmount);
+//         await sleep(1000);
+//         let notiId = notifyLoading({
+//             title: `Bridging Poly ${BridgeChainInfo[direction].sourceName} to Arb ${BridgeChainInfo[direction].dstName}`,
+//             message: "Getting bridge route data...",
+//         });
+//         try {
+//             const polyUsdcBalance = await getBalance(
+//                 BridgeChainInfo[direction].sourceAddress,
+//                 currentWallet,
+//                 polygonClient
+//             );
+//             if (polyUsdcBalance === 0n) throw new Error("Insufficient balance");
+//             thunkApi.dispatch(setBridgeStatus({ status: BridgeStatus.APPROVING, direction }));
+//             console.log("getting route");
+//             const { route, approvalData } = await getRoute(
+//                 BridgeChainInfo[direction].sourceChainId,
+//                 BridgeChainInfo[direction].dstChainId,
+//                 BridgeChainInfo[direction].sourceAddress === constants.AddressZero
+//                     ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+//                     : BridgeChainInfo[direction].sourceAddress,
+//                 BridgeChainInfo[direction].dstAddress === constants.AddressZero
+//                     ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+//                     : BridgeChainInfo[direction].dstAddress,
+//                 polygonUSDCAmount ? polygonUSDCAmount.toString() : polyUsdcBalance.toString(),
+//                 currentWallet
+//             );
+//             console.log("got route", route);
+//             notifyLoading(
+//                 { title: "Bridging", message: `Approving Polygon ${BridgeChainInfo[direction].sourceName} - 1/3` },
+//                 { id: notiId }
+//             );
+//             await approveErc20(
+//                 approvalData.approvalTokenAddress,
+//                 approvalData.allowanceTarget,
+//                 BigInt(approvalData.minimumApprovalAmount),
+//                 currentWallet,
+//                 polygonClient
+//             );
+//             console.log("approval done");
+//             thunkApi.dispatch(setBridgeStatus({ status: BridgeStatus.PENDING, direction }));
+//             notifyLoading({ title: "Bridging", message: "Creating transaction - 2/3" }, { id: notiId });
+//             const buildTx = await buildTransaction(route);
+//             notifyLoading({ title: "Bridging", message: "Sending bridge transaction - 3/3" }, { id: notiId });
+//             const { txHash, error } = await awaitTransaction(
+//                 polygonClient.wallet.sendTransaction({
+//                     to: buildTx?.txTarget,
+//                     data: buildTx?.txData,
+//                     value: BigInt(buildTx?.value || 0),
+//                 }),
+//                 polygonClient
+//             );
+//             console.log(txHash, error);
+//             if (error) throw new Error(error);
 
-            if (txHash) {
-                notifySuccess({ title: "Bridge!", message: "Transaction sent" });
-            }
-            thunkApi.dispatch(setSourceTxHash({ hash: txHash!, direction }));
-            thunkApi.dispatch(checkBridgeStatus({ refechBalance, direction }));
-            dismissNotify(notiId);
-        } catch (error: any) {
-            console.error(error);
-            notifyError({ title: "Error!", message: error.message });
-            dismissNotify(notiId);
-        }
-    }
-);
+//             if (txHash) {
+//                 notifySuccess({ title: "Bridge!", message: "Transaction sent" });
+//             }
+//             thunkApi.dispatch(setSourceTxHash({ hash: txHash!, direction }));
+//             thunkApi.dispatch(checkBridgeStatus({ refechBalance, direction }));
+//             dismissNotify(notiId);
+//         } catch (error: any) {
+//             console.error(error);
+//             notifyError({ title: "Error!", message: error.message });
+//             dismissNotify(notiId);
+//         }
+//     }
+// );
 
 const rampSlice = createSlice({
     name: "ramp",
@@ -170,16 +170,16 @@ const rampSlice = createSlice({
         builder.addCase(checkBridgeStatus.pending, (state: StateInterface, action) => {
             state.bridgeStates[action.meta.arg.direction].checkingStatus = true;
         });
-        builder.addCase(polyUsdcToArbUsdc.pending, (state: StateInterface, action) => {
-            state.bridgeStates[action.meta.arg.direction].isBridging = true;
-        });
-        builder.addCase(polyUsdcToArbUsdc.fulfilled, (state: StateInterface, action) => {
-            state.bridgeStates[action.meta.arg.direction].isBridging = false;
-        });
-        builder.addCase(polyUsdcToArbUsdc.rejected, (state: StateInterface, action) => {
-            console.log(action.meta);
-            state.bridgeStates[action.meta.arg.direction].isBridging = false;
-        });
+        // builder.addCase(polyUsdcToArbUsdc.pending, (state: StateInterface, action) => {
+        //     state.bridgeStates[action.meta.arg.direction].isBridging = true;
+        // });
+        // builder.addCase(polyUsdcToArbUsdc.fulfilled, (state: StateInterface, action) => {
+        //     state.bridgeStates[action.meta.arg.direction].isBridging = false;
+        // });
+        // builder.addCase(polyUsdcToArbUsdc.rejected, (state: StateInterface, action) => {
+        //     console.log(action.meta);
+        //     state.bridgeStates[action.meta.arg.direction].isBridging = false;
+        // });
     },
 });
 

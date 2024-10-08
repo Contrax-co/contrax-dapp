@@ -18,7 +18,7 @@ interface Deposit {
 }
 
 const useDeposit = (farm: PoolDef) => {
-    const { currentWallet, getClients } = useWallet();
+    const { currentWallet, getPublicClient, getWalletClient } = useWallet();
     const { reloadBalances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
     const { decimals } = useDecimals();
@@ -27,7 +27,7 @@ const useDeposit = (farm: PoolDef) => {
     const _deposit = async ({ depositAmount, max }: Deposit) => {
         if (!currentWallet) return;
         let amountInWei = parseUnits(depositAmount.toString(), decimals[farm.chainId][farm.lp_address] || 18);
-        await farmFunctions[farm.id].deposit({ amountInWei, currentWallet, getClients, max });
+        await farmFunctions[farm.id].deposit({ amountInWei, currentWallet, getPublicClient, getWalletClient, max });
         reloadBalances();
         reloadSupplies();
     };
@@ -39,7 +39,8 @@ const useDeposit = (farm: PoolDef) => {
         const difference = await farmFunctions[farm.id]?.depositSlippage({
             amountInWei,
             currentWallet,
-            getClients,
+            getPublicClient,
+            getWalletClient,
             max,
             farm,
         });
