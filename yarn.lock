@@ -5132,6 +5132,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@layerzerolabs/scan-client@npm:^0.0.8":
+  version: 0.0.8
+  resolution: "@layerzerolabs/scan-client@npm:0.0.8"
+  peerDependencies:
+    axios: "*"
+  checksum: 2cab3df81ea6ffe3c80fe74c33b244f8f9ca925e09dab2fd0f68780fe6bd3574011048b71b86b987deb2eac9a466f091c1acfcb86fba435188416a5136495e02
+  languageName: node
+  linkType: hard
+
 "@leichtgewicht/ip-codec@npm:^2.0.1":
   version: 2.0.5
   resolution: "@leichtgewicht/ip-codec@npm:2.0.5"
@@ -15286,6 +15295,7 @@ __metadata:
     "@ethersproject/abstract-provider": ^5.7.0
     "@front-finance/link": ^1.0.7
     "@gatefi/js-sdk": ^0.14.0
+    "@layerzerolabs/scan-client": ^0.0.8
     "@lifi/sdk": ^3.1.5
     "@meshconnect/web-link-sdk": ^2.0.1
     "@rainbow-me/rainbowkit": ^2.1.6

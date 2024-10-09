@@ -16,6 +16,7 @@ import { approveErc20, getBalance } from "src/api/token";
 import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useConnectors } from "wagmi";
+import Bridge from "../../utils/Bridge";
 // import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
 // import { LocalAccountSigner, arbitrum } from "@alchemy/aa-core";
 // import { createWeb3AuthSigner } from "src/config/walletConfig";
@@ -36,18 +37,36 @@ const Test = () => {
 
     const fn = async () => {
         setModelOpen(true);
-        await getWalletClient(CHAIN_ID.ARBITRUM);
+
+        const bridge = new Bridge(
+            currentWallet!,
+            addressesByChainId[CHAIN_ID.CORE].nativeUsdAddress!,
+            addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress!,
+            CHAIN_ID.ARBITRUM,
+            CHAIN_ID.CORE,
+            1000000n,
+            "",
+            getWalletClient
+        );
+        console.log("approve");
+        await bridge.approve();
+        console.log("init");
+        const hash = await bridge.initialize();
+        console.log("hash =>", hash);
+        console.log("waiting for confirm");
+        const message = await bridge.waitForLayerZeroTx();
+        console.log("message =>", message);
     };
 
     return (
         <div style={{ color: "red" }}>
-            <SlippageModal
+            {/* <SlippageModal
                 handleClose={() => {
                     // setShowSlippageModal(false);
                 }}
                 handleSubmit={() => {}}
                 percentage={12}
-            />
+            /> */}
             Test
             <button onClick={fn} ref={clickMeButtonRef}>
                 Click Me

@@ -10,6 +10,7 @@
     "@ethersproject/abstract-provider": "^5.7.0",
     "@front-finance/link": "^1.0.7",
     "@gatefi/js-sdk": "^0.14.0",
+    "@layerzerolabs/scan-client": "^0.0.8",
     "@lifi/sdk": "^3.1.5",
     "@meshconnect/web-link-sdk": "^2.0.1",
     "@rainbow-me/rainbowkit": "^2.1.6",
