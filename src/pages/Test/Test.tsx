@@ -7,7 +7,17 @@ import SlippageModal from "src/components/modals/SlippageModal/SlippageModal";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
-import { Address, encodeFunctionData, erc20Abi, getContract, Hex, maxUint256, parseUnits, zeroAddress } from "viem";
+import {
+    Address,
+    encodeFunctionData,
+    erc20Abi,
+    getContract,
+    Hex,
+    maxUint256,
+    parseEther,
+    parseUnits,
+    zeroAddress,
+} from "viem";
 import useVaultMigrate from "src/hooks/useVaultMigrate";
 import { convertQuoteToRoute, getContractCallsQuote, getStatus } from "@lifi/sdk";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
@@ -40,22 +50,41 @@ const Test = () => {
 
         const bridge = new Bridge(
             currentWallet!,
-            addressesByChainId[CHAIN_ID.CORE].nativeUsdAddress!,
-            addressesByChainId[CHAIN_ID.ARBITRUM].nativeUsdAddress!,
+            CHAIN_ID.BASE,
+            zeroAddress,
             CHAIN_ID.ARBITRUM,
-            CHAIN_ID.CORE,
-            1000000n,
+            zeroAddress,
+            parseEther("0.0005"),
             "",
             getWalletClient
         );
-        console.log("approve");
-        await bridge.approve();
-        console.log("init");
-        const hash = await bridge.initialize();
-        console.log("hash =>", hash);
-        console.log("waiting for confirm");
-        const message = await bridge.waitForLayerZeroTx();
+        // await bridge.approve();
+        // const hash = await bridge.initialize();
+        // console.log("hash =>", hash);
+        // const message = await bridge.waitForLayerZeroTx();
+        const message = await bridge.waitForLayerZeroTx(
+            42161,
+            "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
+        );
         console.log("message =>", message);
+        let res = await bridge.getDestinationBridgedAmt(
+            CHAIN_ID.ARBITRUM,
+            CHAIN_ID.BASE,
+            "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
+        );
+        console.log("Arbitrum to base =>", res);
+        res = await bridge.getDestinationBridgedAmt(
+            CHAIN_ID.CORE,
+            CHAIN_ID.ARBITRUM,
+            "0x10088629459e891ab355cd7b0f613f69d715e19964be9ec470a22799166310cb"
+        );
+        console.log("core to arbitrum =>", res);
+        res = await bridge.getDestinationBridgedAmt(
+            CHAIN_ID.ARBITRUM,
+            CHAIN_ID.CORE,
+            "0x8082d0a012281db0ffb3ae4ef3fcdef4968d9965b984b2d61b791950a3c36dd7"
+        );
+        console.log("arbitrum to core =>", res);
     };
 
     return (

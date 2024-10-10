@@ -2,7 +2,7 @@ import { approveErc20 } from "src/api/token";
 import { SupportedChains } from "src/config/walletConfig";
 import { IClients } from "src/types";
 import { CHAIN_ID } from "src/types/enums";
-import { Address, createPublicClient, Hex, http, zeroAddress } from "viem";
+import { Address, createPublicClient, Hex, http, zeroAddress, padHex, parseEventLogs } from "viem";
 import { waitForMessageReceived } from "@layerzerolabs/scan-client";
 import { addressesByChainId } from "src/config/constants/contracts";
 
@@ -19,10 +19,10 @@ class Bridge {
 
     constructor(
         currentWallet: Address,
-        fromToken: Address,
-        toToken: Address,
-        toChainId: number,
         fromChainId: number,
+        fromToken: Address,
+        toChainId: number,
+        toToken: Address,
         fromTokenAmount: bigint,
         notificationId: string,
         getWalletClient: (chainId: number) => Promise<IClients["wallet"]>
@@ -40,15 +40,65 @@ class Bridge {
     /** Step 1 */
     public async approve() {
         const { bridgeAddr, usdcAddr } = this.getBridgeAndUsdcAddr();
-        return await approveErc20(
-            usdcAddr,
-            bridgeAddr,
-            this.fromTokenAmount,
-            this.currentWallet,
-            this.fromChainId,
-            this.getPublicClient,
-            this.getWalletClient
-        );
+        if (usdcAddr === zeroAddress) return { status: true };
+        else
+            return await approveErc20(
+                usdcAddr,
+                bridgeAddr,
+                this.fromTokenAmount,
+                this.currentWallet,
+                this.fromChainId,
+                this.getPublicClient,
+                this.getWalletClient
+            );
+    }
+
+    private async initializeStargate() {
+        const { bridgeAddr } = this.getBridgeAndUsdcAddr();
+        const publicClient = this.getPublicClient(this.fromChainId);
+
+        const fees = await publicClient.readContract({
+            abi: StargateAbi,
+            address: bridgeAddr,
+            functionName: "quoteSend",
+            args: [
+                {
+                    amountLD: this.fromTokenAmount,
+                    composeMsg: "0x",
+                    dstEid: this.getLayerZeroEid(this.toChainId),
+                    extraOptions: "0x",
+                    minAmountLD: 0n,
+                    oftCmd: "0x",
+                    to: padHex(this.currentWallet, { size: 32 }),
+                },
+                false,
+            ],
+        });
+
+        const walletClient = await this.getWalletClient(this.fromChainId);
+        let value = fees.nativeFee;
+        if (this.fromToken === zeroAddress) value += this.fromTokenAmount;
+        const txHash = await walletClient.writeContract({
+            abi: StargateAbi,
+            address: bridgeAddr,
+            functionName: "send",
+            args: [
+                {
+                    amountLD: this.fromTokenAmount,
+                    composeMsg: "0x",
+                    dstEid: this.getLayerZeroEid(this.toChainId),
+                    extraOptions: "0x",
+                    minAmountLD: 0n,
+                    oftCmd: "0x",
+                    to: padHex(this.currentWallet, { size: 32 }),
+                },
+                fees,
+                this.currentWallet,
+            ],
+            value,
+        });
+        this.srcTxHash = txHash;
+        return txHash;
     }
 
     /** Step 2. Core Bridge only usdc to usdc.c or usdc.c to usdc */
@@ -121,7 +171,10 @@ class Bridge {
     }
 
     /** Step 3 */
-    public async waitForLayerZeroTx(): Promise<{
+    public async waitForLayerZeroTx(
+        srcChainId: number = this.fromChainId,
+        srcTxHash: Hex = this.srcTxHash
+    ): Promise<{
         srcUaAddress: string;
         dstUaAddress: string;
         srcChainId: number;
@@ -134,10 +187,10 @@ class Bridge {
         status: "INFLIGHT" | "DELIVERED" | "FAILED";
         dstTxHash: string;
     }> {
-        const publicClient = this.getPublicClient(this.fromChainId);
-        const { status } = await publicClient.waitForTransactionReceipt({ hash: this.srcTxHash });
+        const publicClient = this.getPublicClient(srcChainId);
+        const { status } = await publicClient.waitForTransactionReceipt({ hash: srcTxHash });
         if (status === "reverted") throw new Error("Transaction Reverted");
-        const message = await waitForMessageReceived(this.getLayerZeroEid(this.fromChainId), this.srcTxHash);
+        const message = await waitForMessageReceived(this.getLayerZeroEid(srcChainId), srcTxHash);
         return message;
     }
 
@@ -145,16 +198,82 @@ class Bridge {
     public async initialize() {
         if (this.toChainId === CHAIN_ID.CORE || this.fromChainId === CHAIN_ID.CORE) {
             return await this.initializeCore();
+        } else {
+            return await this.initializeStargate();
+        }
+    }
+
+    public async getDestinationBridgedAmt(
+        fromChainId: number = this.fromChainId,
+        toChainId: number = this.toChainId,
+        srcTxHash: Hex = this.srcTxHash
+    ) {
+        const publicClient = this.getPublicClient(toChainId);
+        const message = await this.waitForLayerZeroTx(fromChainId, srcTxHash);
+        const receipt = await publicClient.getTransactionReceipt({ hash: message.dstTxHash as Hex });
+
+        if (toChainId === CHAIN_ID.CORE || fromChainId === CHAIN_ID.CORE) {
+            if (toChainId === CHAIN_ID.CORE) {
+                const logs = parseEventLogs({
+                    logs: receipt.logs,
+                    abi: CoreBridgeCoreMainnetAbi,
+                    eventName: "WrapToken",
+                });
+                const log = logs.find((item) => item.eventName === "WrapToken");
+                if (log) {
+                    return { receivedToken: log.args.amount, dstTxHash: message.dstTxHash };
+                }
+            } else {
+                const logs = parseEventLogs({
+                    logs: receipt.logs,
+                    abi: CoreBridgeAbi,
+                    eventName: "ReceiveToken",
+                });
+                const log = logs.find((item) => item.eventName === "ReceiveToken");
+                if (log) {
+                    return { receivedToken: log.args.amount, dstTxHash: message.dstTxHash };
+                }
+            }
+        } else {
+            const logs = parseEventLogs({
+                logs: receipt.logs,
+                abi: StargateAbi,
+                eventName: "OFTReceived",
+            });
+            const log = logs.find((item) => item.eventName === "OFTReceived");
+            if (log) {
+                return { receivedToken: log.args.amountReceivedLD, dstTxHash: message.dstTxHash };
+            }
         }
     }
 
     getBridgeAndUsdcAddr(): { bridgeAddr: Address; usdcAddr: Address } {
+        let bridgeAddr: Address = "" as Address;
+        let usdcAddr: Address = "" as Address;
         if (this.fromChainId === CHAIN_ID.CORE || this.toChainId === CHAIN_ID.CORE) {
-            const bridgeAddr = this.getCoreBridgeAddr(this.fromChainId);
-            const usdcAddr = this.getUsdcAddress(this.fromChainId);
-            return { bridgeAddr, usdcAddr };
+            bridgeAddr = this.getCoreBridgeAddr(this.fromChainId);
+            usdcAddr = this.getUsdcAddress(this.fromChainId);
+        } else {
+            if (this.fromChainId === CHAIN_ID.ARBITRUM) {
+                if (this.fromToken === zeroAddress) {
+                    bridgeAddr = "0xA45B5130f36CDcA45667738e2a258AB09f4A5f7F";
+                    usdcAddr = zeroAddress;
+                } else {
+                    bridgeAddr = "0xe8CDF27AcD73a434D661C84887215F7598e7d0d3";
+                    usdcAddr = addressesByChainId[this.fromChainId].usdcAddress;
+                }
+            } else if (this.fromChainId === CHAIN_ID.BASE) {
+                if (this.fromToken === zeroAddress) {
+                    bridgeAddr = "0xdc181Bd607330aeeBEF6ea62e03e5e1Fb4B6F7C7";
+                    usdcAddr = zeroAddress;
+                } else {
+                    bridgeAddr = "0x27a16dc786820B16E5c9028b75B99F6f604b5d26";
+                    usdcAddr = addressesByChainId[this.fromChainId].usdcAddress;
+                }
+            }
         }
-        throw new Error("Invalid Chain");
+        if (!bridgeAddr || !usdcAddr) throw new Error("Invalid Chain");
+        return { bridgeAddr, usdcAddr };
     }
 
     getCoreBridgeAddr(srcChainId: number) {
@@ -210,6 +329,16 @@ export default Bridge;
 
 const CoreBridgeAbi = [
     {
+        anonymous: false,
+        inputs: [
+            { indexed: false, internalType: "address", name: "token", type: "address" },
+            { indexed: false, internalType: "address", name: "to", type: "address" },
+            { indexed: false, internalType: "uint256", name: "amount", type: "uint256" },
+        ],
+        name: "ReceiveToken",
+        type: "event",
+    },
+    {
         inputs: [
             { internalType: "address", name: "token", type: "address" },
             { internalType: "uint256", name: "amountLD", type: "uint256" },
@@ -247,6 +376,18 @@ const CoreBridgeAbi = [
 
 const CoreBridgeCoreMainnetAbi = [
     {
+        inputs: [
+            { indexed: false, name: "localToken", internalType: "address", type: "address" },
+            { indexed: false, name: "remoteToken", internalType: "address", type: "address" },
+            { indexed: false, name: "remoteChainId", internalType: "uint16", type: "uint16" },
+            { indexed: false, name: "to", internalType: "address", type: "address" },
+            { indexed: false, name: "amount", internalType: "uint256", type: "uint256" },
+        ],
+        name: "WrapToken",
+        anonymous: false,
+        type: "event",
+    },
+    {
         outputs: [
             { name: "nativeFee", internalType: "uint256", type: "uint256" },
             { name: "zroFee", internalType: "uint256", type: "uint256" },
@@ -281,6 +422,113 @@ const CoreBridgeCoreMainnetAbi = [
         ],
         name: "bridge",
         stateMutability: "payable",
+        type: "function",
+    },
+] as const;
+
+const StargateAbi = [
+    {
+        anonymous: false,
+        inputs: [
+            { indexed: true, internalType: "bytes32", name: "guid", type: "bytes32" },
+            { indexed: false, internalType: "uint32", name: "srcEid", type: "uint32" },
+            { indexed: true, internalType: "address", name: "toAddress", type: "address" },
+            { indexed: false, internalType: "uint256", name: "amountReceivedLD", type: "uint256" },
+        ],
+        name: "OFTReceived",
+        type: "event",
+    },
+    {
+        inputs: [
+            {
+                components: [
+                    { internalType: "uint32", name: "dstEid", type: "uint32" },
+                    { internalType: "bytes32", name: "to", type: "bytes32" },
+                    { internalType: "uint256", name: "amountLD", type: "uint256" },
+                    { internalType: "uint256", name: "minAmountLD", type: "uint256" },
+                    { internalType: "bytes", name: "extraOptions", type: "bytes" },
+                    { internalType: "bytes", name: "composeMsg", type: "bytes" },
+                    { internalType: "bytes", name: "oftCmd", type: "bytes" },
+                ],
+                internalType: "struct SendParam",
+                name: "_sendParam",
+                type: "tuple",
+            },
+            {
+                components: [
+                    { internalType: "uint256", name: "nativeFee", type: "uint256" },
+                    { internalType: "uint256", name: "lzTokenFee", type: "uint256" },
+                ],
+                internalType: "struct MessagingFee",
+                name: "_fee",
+                type: "tuple",
+            },
+            { internalType: "address", name: "_refundAddress", type: "address" },
+        ],
+        name: "send",
+        outputs: [
+            {
+                components: [
+                    { internalType: "bytes32", name: "guid", type: "bytes32" },
+                    { internalType: "uint64", name: "nonce", type: "uint64" },
+                    {
+                        components: [
+                            { internalType: "uint256", name: "nativeFee", type: "uint256" },
+                            { internalType: "uint256", name: "lzTokenFee", type: "uint256" },
+                        ],
+                        internalType: "struct MessagingFee",
+                        name: "fee",
+                        type: "tuple",
+                    },
+                ],
+                internalType: "struct MessagingReceipt",
+                name: "msgReceipt",
+                type: "tuple",
+            },
+            {
+                components: [
+                    { internalType: "uint256", name: "amountSentLD", type: "uint256" },
+                    { internalType: "uint256", name: "amountReceivedLD", type: "uint256" },
+                ],
+                internalType: "struct OFTReceipt",
+                name: "oftReceipt",
+                type: "tuple",
+            },
+        ],
+        stateMutability: "payable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                components: [
+                    { internalType: "uint32", name: "dstEid", type: "uint32" },
+                    { internalType: "bytes32", name: "to", type: "bytes32" },
+                    { internalType: "uint256", name: "amountLD", type: "uint256" },
+                    { internalType: "uint256", name: "minAmountLD", type: "uint256" },
+                    { internalType: "bytes", name: "extraOptions", type: "bytes" },
+                    { internalType: "bytes", name: "composeMsg", type: "bytes" },
+                    { internalType: "bytes", name: "oftCmd", type: "bytes" },
+                ],
+                internalType: "struct SendParam",
+                name: "_sendParam",
+                type: "tuple",
+            },
+            { internalType: "bool", name: "_payInLzToken", type: "bool" },
+        ],
+        name: "quoteSend",
+        outputs: [
+            {
+                components: [
+                    { internalType: "uint256", name: "nativeFee", type: "uint256" },
+                    { internalType: "uint256", name: "lzTokenFee", type: "uint256" },
+                ],
+                internalType: "struct MessagingFee",
+                name: "fee",
+                type: "tuple",
+            },
+        ],
+        stateMutability: "view",
         type: "function",
     },
 ] as const;
