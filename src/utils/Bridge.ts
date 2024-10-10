@@ -2,7 +2,7 @@ import { approveErc20 } from "src/api/token";
 import { SupportedChains } from "src/config/walletConfig";
 import { IClients } from "src/types";
 import { CHAIN_ID } from "src/types/enums";
-import { Address, createPublicClient, Hex, http, zeroAddress, padHex, parseEventLogs } from "viem";
+import { Address, createPublicClient, Hex, http, zeroAddress, padHex, parseEventLogs, encodeFunctionData } from "viem";
 import { waitForMessageReceived } from "@layerzerolabs/scan-client";
 import { addressesByChainId } from "src/config/constants/contracts";
 
@@ -16,6 +16,8 @@ class Bridge {
     public notificationId: string;
     public getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
     public srcTxHash: Hex;
+    // To be populated when init bridging
+    public nativeFee: bigint;
 
     constructor(
         currentWallet: Address,
@@ -53,10 +55,41 @@ class Bridge {
             );
     }
 
-    private async initializeStargate() {
+    public async estimateAmountOut() {
         const { bridgeAddr } = this.getBridgeAndUsdcAddr();
         const publicClient = this.getPublicClient(this.fromChainId);
 
+        if (this.toChainId === CHAIN_ID.CORE || this.fromChainId === CHAIN_ID.CORE) {
+            return { amountOut: this.fromTokenAmount };
+        } else {
+            const { value, fees } = await this.getStargateFees();
+            const { result } = await publicClient.simulateContract({
+                account: this.currentWallet,
+                address: bridgeAddr as Address,
+                abi: StargateAbi,
+                functionName: "send",
+                args: [
+                    {
+                        amountLD: this.fromTokenAmount,
+                        composeMsg: "0x",
+                        dstEid: this.getLayerZeroEid(this.toChainId),
+                        extraOptions: "0x",
+                        minAmountLD: 0n,
+                        oftCmd: "0x",
+                        to: padHex(this.currentWallet, { size: 32 }),
+                    },
+                    fees,
+                    this.currentWallet,
+                ],
+                value,
+            });
+            return { amountOut: result[1].amountReceivedLD };
+        }
+    }
+
+    private async getStargateFees() {
+        const { bridgeAddr } = this.getBridgeAndUsdcAddr();
+        const publicClient = this.getPublicClient(this.fromChainId);
         const fees = await publicClient.readContract({
             abi: StargateAbi,
             address: bridgeAddr,
@@ -74,10 +107,20 @@ class Bridge {
                 false,
             ],
         });
-
-        const walletClient = await this.getWalletClient(this.fromChainId);
         let value = fees.nativeFee;
         if (this.fromToken === zeroAddress) value += this.fromTokenAmount;
+
+        return { fees, value };
+    }
+
+    private async initializeStargate() {
+        const { bridgeAddr } = this.getBridgeAndUsdcAddr();
+        const publicClient = this.getPublicClient(this.fromChainId);
+        const { value, fees } = await this.getStargateFees();
+
+        const walletClient = await this.getWalletClient(this.fromChainId);
+
+        this.nativeFee = fees.nativeFee;
         const txHash = await walletClient.writeContract({
             abi: StargateAbi,
             address: bridgeAddr,
@@ -120,6 +163,7 @@ class Bridge {
                 functionName: "estimateBridgeFee",
                 args: [false, "0x"],
             });
+            this.nativeFee = nativeFee;
 
             const walletClient = await this.getWalletClient(this.fromChainId);
             const txHash = await walletClient.writeContract({
@@ -203,6 +247,7 @@ class Bridge {
         }
     }
 
+    /** Gets you the amount of tokens received on the dst chain after bridge */
     public async getDestinationBridgedAmt(
         fromChainId: number = this.fromChainId,
         toChainId: number = this.toChainId,

@@ -47,44 +47,50 @@ const Test = () => {
 
     const fn = async () => {
         setModelOpen(true);
+        console.time("bridge");
 
         const bridge = new Bridge(
             currentWallet!,
-            CHAIN_ID.BASE,
-            zeroAddress,
             CHAIN_ID.ARBITRUM,
-            zeroAddress,
-            parseEther("0.0005"),
+            addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress,
+            CHAIN_ID.BASE,
+            addressesByChainId[CHAIN_ID.BASE].usdcAddress,
+            parseUnits("1", 6),
             "",
             getWalletClient
         );
         // await bridge.approve();
         // const hash = await bridge.initialize();
         // console.log("hash =>", hash);
+        // console.log("bridge.nativeFee =>", bridge.nativeFee);
         // const message = await bridge.waitForLayerZeroTx();
-        const message = await bridge.waitForLayerZeroTx(
-            42161,
-            "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
-        );
-        console.log("message =>", message);
-        let res = await bridge.getDestinationBridgedAmt(
-            CHAIN_ID.ARBITRUM,
-            CHAIN_ID.BASE,
-            "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
-        );
-        console.log("Arbitrum to base =>", res);
-        res = await bridge.getDestinationBridgedAmt(
-            CHAIN_ID.CORE,
-            CHAIN_ID.ARBITRUM,
-            "0x10088629459e891ab355cd7b0f613f69d715e19964be9ec470a22799166310cb"
-        );
-        console.log("core to arbitrum =>", res);
-        res = await bridge.getDestinationBridgedAmt(
-            CHAIN_ID.ARBITRUM,
-            CHAIN_ID.CORE,
-            "0x8082d0a012281db0ffb3ae4ef3fcdef4968d9965b984b2d61b791950a3c36dd7"
-        );
-        console.log("arbitrum to core =>", res);
+        // const message = await bridge.waitForLayerZeroTx(
+        //     42161,
+        //     "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
+        // );
+        // console.log("message =>", message);
+        // const dst = await bridge.getDestinationBridgedAmt();
+        // console.log("dst =>", dst);
+        console.timeEnd("bridge");
+        // let res = await bridge.getDestinationBridgedAmt(
+        //     CHAIN_ID.ARBITRUM,
+        //     CHAIN_ID.BASE,
+        //     "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
+        // );
+        // console.log("Arbitrum to base =>", res);
+        // res = await bridge.getDestinationBridgedAmt(
+        //     CHAIN_ID.CORE,
+        //     CHAIN_ID.ARBITRUM,
+        //     "0x10088629459e891ab355cd7b0f613f69d715e19964be9ec470a22799166310cb"
+        // );
+        // console.log("core to arbitrum =>", res);
+        // res = await bridge.getDestinationBridgedAmt(
+        //     CHAIN_ID.ARBITRUM,
+        //     CHAIN_ID.CORE,
+        //     "0x8082d0a012281db0ffb3ae4ef3fcdef4968d9965b984b2d61b791950a3c36dd7"
+        // );
+        // console.log("arbitrum to core =>", res);
+        await bridge.estimateAmountOut();
     };
 
     return (
