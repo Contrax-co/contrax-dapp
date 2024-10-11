@@ -248,7 +248,7 @@ class Bridge {
     }
 
     /** Gets you the amount of tokens received on the dst chain after bridge */
-    public async getDestinationBridgedAmt(
+    public async waitAndGetDstAmt(
         fromChainId: number = this.fromChainId,
         toChainId: number = this.toChainId,
         srcTxHash: Hex = this.srcTxHash

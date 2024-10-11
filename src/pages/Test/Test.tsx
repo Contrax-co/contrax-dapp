@@ -59,8 +59,8 @@ const Test = () => {
             "",
             getWalletClient
         );
-        // await bridge.approve();
-        // const hash = await bridge.initialize();
+        await bridge.approve();
+        const hash = await bridge.initialize();
         // console.log("hash =>", hash);
         // console.log("bridge.nativeFee =>", bridge.nativeFee);
         // const message = await bridge.waitForLayerZeroTx();
@@ -69,7 +69,7 @@ const Test = () => {
         //     "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
         // );
         // console.log("message =>", message);
-        // const dst = await bridge.getDestinationBridgedAmt();
+        const dst = await bridge.waitAndGetDstAmt();
         // console.log("dst =>", dst);
         console.timeEnd("bridge");
         // let res = await bridge.getDestinationBridgedAmt(
