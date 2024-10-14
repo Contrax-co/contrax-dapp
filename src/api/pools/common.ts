@@ -63,7 +63,7 @@ export const zapInBase: ZapInBaseFn = async ({
     try {
         //#region Select Max
         if (max) {
-            const { balance } = getCombinedBalance(balances, token === zeroAddress ? "eth" : "usdc");
+            const { balance } = getCombinedBalance(balances, farm.chainId, token === zeroAddress ? "native" : "usdc");
             amountInWei = BigInt(balance);
         }
         //#endregion
@@ -485,7 +485,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     transaction.from = currentWallet;
 
     if (max) {
-        const { balance } = getCombinedBalance(balances, token === zeroAddress ? "eth" : "usdc");
+        const { balance } = getCombinedBalance(balances, farm.chainId, token === zeroAddress ? "native" : "usdc");
         amountInWei = BigInt(balance);
     }
 
@@ -702,7 +702,11 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
          * @description toBalDiff is the amount of token that is needed after subtracting current balance on farm chain
          */
         const toBalDiff = obj.toTokenAmount - toBal;
-        const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
+        const { chainBalances } = getCombinedBalance(
+            obj.balances,
+            obj.toChainId,
+            obj.toToken === zeroAddress ? "native" : "usdc"
+        );
         const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
             if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
             return false;

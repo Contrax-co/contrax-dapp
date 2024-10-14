@@ -256,31 +256,48 @@ export const checkPaymasterApproval = async (client?: IClients) => {
 
 export const getNativeCoinInfo = (chainId: number) => {
     switch (chainId) {
-        case 137:
+        case CHAIN_ID.POLYGON:
             return { logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025", decimal: 18, name: "MATIC" };
+        case CHAIN_ID.CORE:
+            return { logo: "https://cryptologos.cc/logos/core-dao-core-logo.png", decimal: 18, name: "CORE" };
         default:
             return { logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024", decimal: 18, name: "ETH" };
     }
 };
 
-export const getCombinedBalance = (balances: Balances, type: "eth" | "usdc") => {
+export const getCombinedBalance = (balances: Balances, primaryChainId: number, type: "native" | "usdc") => {
     let balance = 0n;
     let chainBalances: { [chainId: string]: bigint } = {};
-    Object.entries(balances || {}).forEach(([chainId, values]) => {
-        const isEth = SupportedChains.find((item) => item.id === Number(chainId))?.nativeCurrency.symbol === "ETH";
-        if (type === "eth" && isEth) {
-            balance += BigInt(values[zeroAddress] || 0);
-            chainBalances[chainId] = BigInt(values[zeroAddress] || 0);
-        } else if (type === "usdc") {
-            // @ts-ignore
-            const usdcAddress = addressesByChainId[chainId].usdcAddress;
+    const primaryChain = SupportedChains.find((item) => item.id === Number(primaryChainId));
+    if (!primaryChain) throw new Error("Invalid Chain");
+    if (type === "native") {
+        const chainGroups = Object.groupBy(SupportedChains, ({ nativeCurrency }) => nativeCurrency.symbol);
+        const relatedNativeCoinChains = chainGroups[primaryChain.nativeCurrency.symbol];
+        Object.entries(balances || {}).forEach(([chainId, values]) => {
+            if (relatedNativeCoinChains?.some((item) => item.id === Number(chainId))) {
+                balance += BigInt(values[zeroAddress] || 0);
+                chainBalances[chainId] = BigInt(values[zeroAddress] || 0);
+            }
+        });
+    } else {
+        Object.entries(balances || {}).forEach(([chainId, values]) => {
+            const usdcAddress = addressesByChainId[Number(chainId)].usdcAddress;
             if (usdcAddress) {
                 balance += BigInt(values[usdcAddress] || 0);
                 chainBalances[chainId] = BigInt(values[usdcAddress] || 0);
             }
-        }
-    });
-    const formattedBalance = Number(toEth(BigInt(balance), type === "eth" ? 18 : 6));
-    return { formattedBalance, balance, chainBalances };
+        });
+    }
+    const maxBalance = Object.values(chainBalances).reduce((acc, curr) => {
+        if (curr > acc) return curr;
+        return acc;
+    }, 0n);
+    balance = chainBalances[primaryChainId] + maxBalance;
+    const formattedBalance = Number(toEth(BigInt(balance), type === "usdc" ? 6 : primaryChain.nativeCurrency.decimals));
+    return {
+        formattedBalance,
+        balance,
+        chainBalances,
+        symbol: type === "usdc" ? "USDC" : primaryChain.nativeCurrency.symbol,
+    };
 };
-

@@ -45,8 +45,8 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
         const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
         const zapCurriences = farm.zap_currencies;
-        const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
-        const combinedEthBalance = getCombinedBalance(balances, "eth");
+        const combinedUsdcBalance = getCombinedBalance(balances, farm.chainId, "usdc");
+        const combinedEthBalance = getCombinedBalance(balances, farm.chainId, "native");
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
         let isCrossChain = true;
@@ -63,7 +63,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             },
             {
                 tokenAddress: zeroAddress,
-                tokenSymbol: "ETH",
+                tokenSymbol: combinedEthBalance.symbol,
                 amount: combinedEthBalance.formattedBalance.toString(),
                 amountDollar: (Number(combinedEthBalance.formattedBalance) * ethPrice).toString(),
                 price: ethPrice,
@@ -84,7 +84,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             },
             {
                 tokenAddress: zeroAddress,
-                tokenSymbol: "ETH",
+                tokenSymbol: combinedEthBalance.symbol,
                 amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / ethPrice).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: ethPrice,
@@ -125,7 +125,11 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         try {
             //#region Select Max
             if (max) {
-                const { balance } = getCombinedBalance(balances, token === zeroAddress ? "eth" : "usdc");
+                const { balance } = getCombinedBalance(
+                    balances,
+                    farm.chainId,
+                    token === zeroAddress ? "native" : "usdc"
+                );
                 amountInWei = BigInt(balance);
             }
             // #region Zapping In
@@ -389,7 +393,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
 
         if (max) {
             if (token !== zeroAddress) {
-                const { balance } = getCombinedBalance(balances, "usdc");
+                const { balance } = getCombinedBalance(balances, farm.chainId, "usdc");
                 amountInWei = BigInt(balance);
             } else {
                 amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
