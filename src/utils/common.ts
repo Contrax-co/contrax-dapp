@@ -265,6 +265,14 @@ export const getNativeCoinInfo = (chainId: number) => {
     }
 };
 
+/**
+ * @description This function returns combined balance of native or usdc, if there are two or more chains it will add the primary chain balance and any one of the other chain balance which is highest and return it. So the sum which is returned as balance will always be the amount which can be get by combined two chain balances, which makes it so there is only need to bridge from one chain only.
+ *
+ * @param balances
+ * @param primaryChainId The chain on which farm lives on
+ * @param type Do we want native balance combined or usdc combined
+ * @returns
+ */
 export const getCombinedBalance = (balances: Balances, primaryChainId: number, type: "native" | "usdc") => {
     let balance = 0n;
     let chainBalances: { [chainId: string]: bigint } = {};
@@ -288,8 +296,10 @@ export const getCombinedBalance = (balances: Balances, primaryChainId: number, t
             }
         });
     }
-    const maxBalance = Object.values(chainBalances).reduce((acc, curr) => {
-        if (curr > acc) return curr;
+    const maxBalance = Object.entries(chainBalances).reduce((acc, curr) => {
+        if (curr[0] !== primaryChainId.toString()) {
+            if (curr[1] > acc) return curr[1];
+        }
         return acc;
     }, 0n);
     balance = chainBalances[primaryChainId] + maxBalance;
