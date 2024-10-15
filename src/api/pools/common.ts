@@ -197,8 +197,6 @@ export const zapInBase: ZapInBaseFn = async ({
                             } as ApproveZapStep,
                         })
                     );
-                    const client = await getClients(farm.chainId);
-
                     const response = await approveErc20(
                         token,
                         farm.zapper_addr as Address,
