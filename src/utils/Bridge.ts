@@ -62,7 +62,7 @@ class Bridge {
         if (this.toChainId === CHAIN_ID.CORE || this.fromChainId === CHAIN_ID.CORE) {
             return { amountOut: this.fromTokenAmount };
         } else {
-            const { value, fees } = await this.getStargateFees();
+            const { value, fees } = await this.getStargateFees();            
             const { result } = await publicClient.simulateContract({
                 account: this.currentWallet,
                 address: bridgeAddr as Address,
@@ -115,7 +115,6 @@ class Bridge {
 
     private async initializeStargate() {
         const { bridgeAddr } = this.getBridgeAndUsdcAddr();
-        const publicClient = this.getPublicClient(this.fromChainId);
         const { value, fees } = await this.getStargateFees();
 
         const walletClient = await this.getWalletClient(this.fromChainId);

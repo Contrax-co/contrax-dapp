@@ -13,9 +13,11 @@ import {
     erc20Abi,
     getContract,
     Hex,
+    hexToString,
     maxUint256,
     parseEther,
     parseUnits,
+    toFunctionSignature,
     zeroAddress,
 } from "viem";
 import useVaultMigrate from "src/hooks/useVaultMigrate";
@@ -47,7 +49,69 @@ const Test = () => {
 
     const fn = async () => {
         setModelOpen(true);
+        const signature = toFunctionSignature({
+            inputs: [
+                {
+                    components: [
+                        { internalType: "uint32", name: "dstEid", type: "uint32" },
+                        { internalType: "bytes32", name: "to", type: "bytes32" },
+                        { internalType: "uint256", name: "amountLD", type: "uint256" },
+                        { internalType: "uint256", name: "minAmountLD", type: "uint256" },
+                        { internalType: "bytes", name: "extraOptions", type: "bytes" },
+                        { internalType: "bytes", name: "composeMsg", type: "bytes" },
+                        { internalType: "bytes", name: "oftCmd", type: "bytes" },
+                    ],
+                    internalType: "struct SendParam",
+                    name: "_sendParam",
+                    type: "tuple",
+                },
+                {
+                    components: [
+                        { internalType: "uint256", name: "nativeFee", type: "uint256" },
+                        { internalType: "uint256", name: "lzTokenFee", type: "uint256" },
+                    ],
+                    internalType: "struct MessagingFee",
+                    name: "_fee",
+                    type: "tuple",
+                },
+                { internalType: "address", name: "_refundAddress", type: "address" },
+            ],
+            name: "send",
+            outputs: [
+                {
+                    components: [
+                        { internalType: "bytes32", name: "guid", type: "bytes32" },
+                        { internalType: "uint64", name: "nonce", type: "uint64" },
+                        {
+                            components: [
+                                { internalType: "uint256", name: "nativeFee", type: "uint256" },
+                                { internalType: "uint256", name: "lzTokenFee", type: "uint256" },
+                            ],
+                            internalType: "struct MessagingFee",
+                            name: "fee",
+                            type: "tuple",
+                        },
+                    ],
+                    internalType: "struct MessagingReceipt",
+                    name: "msgReceipt",
+                    type: "tuple",
+                },
+                {
+                    components: [
+                        { internalType: "uint256", name: "amountSentLD", type: "uint256" },
+                        { internalType: "uint256", name: "amountReceivedLD", type: "uint256" },
+                    ],
+                    internalType: "struct OFTReceipt",
+                    name: "oftReceipt",
+                    type: "tuple",
+                },
+            ],
+            stateMutability: "payable",
+            type: "function",
+        });
+        console.log("signature =>", signature);
         console.time("bridge");
+        console.log("jex", hexToString("0x7c75c3d2"));
 
         const bridge = new Bridge(
             currentWallet!,
@@ -59,8 +123,8 @@ const Test = () => {
             "",
             getWalletClient
         );
-        await bridge.approve();
-        const hash = await bridge.initialize();
+        // await bridge.approve();
+        // const hash = await bridge.initialize();
         // console.log("hash =>", hash);
         // console.log("bridge.nativeFee =>", bridge.nativeFee);
         // const message = await bridge.waitForLayerZeroTx();
@@ -69,9 +133,9 @@ const Test = () => {
         //     "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
         // );
         // console.log("message =>", message);
-        const dst = await bridge.waitAndGetDstAmt();
+        // const dst = await bridge.waitAndGetDstAmt();
         // console.log("dst =>", dst);
-        console.timeEnd("bridge");
+        // console.timeEnd("bridge");
         // let res = await bridge.getDestinationBridgedAmt(
         //     CHAIN_ID.ARBITRUM,
         //     CHAIN_ID.BASE,
