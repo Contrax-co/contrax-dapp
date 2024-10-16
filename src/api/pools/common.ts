@@ -39,8 +39,10 @@ import {
     addTransactionStepDb,
     editTransactionStepDb,
     markAsFailedDb,
+    TransactionsDB,
 } from "src/state/transactions/transactionsReducer";
 import { getWithdrawChainForFarm } from "../transaction";
+import Bridge from "src/utils/Bridge";
 
 export const zapInBase: ZapInBaseFn = async ({
     farm,
@@ -60,6 +62,7 @@ export const zapInBase: ZapInBaseFn = async ({
     const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
     const publicClient = getPublicClient(farm.chainId);
     let zapperTxn;
+    const TransactionsStep = new TransactionsDB(id);
     try {
         //#region Select Max
         if (max) {
@@ -93,16 +96,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 max: max,
             });
             if (bridgeStatus) {
-                store.dispatch(
-                    addTransactionStepDb({
-                        transactionId: id!,
-                        step: {
-                            type: TransactionTypes.ZAP_IN,
-                            amount: amountInWei.toString(),
-                            status: TransactionStepStatus.IN_PROGRESS,
-                        } as ZapInStep,
-                    })
-                );
+                await TransactionsStep.addZapIn(amountInWei);
                 const client = await getClients(farm.chainId);
                 if (isBridged) amountInWei = finalAmountToDeposit;
                 if (!isSocial && !(await isGasSponsored(currentWallet))) {
@@ -141,23 +135,10 @@ export const zapInBase: ZapInBaseFn = async ({
                     }),
                     client,
                     async (hash) => {
-                        store.dispatch(
-                            editTransactionStepDb({
-                                transactionId: id,
-                                stepType: TransactionTypes.ZAP_IN,
-                                status: TransactionStepStatus.IN_PROGRESS,
-                                txHash: hash,
-                            })
-                        );
+                        await TransactionsStep.zapIn(TransactionStepStatus.IN_PROGRESS, hash);
                     }
                 );
-                store.dispatch(
-                    editTransactionStepDb({
-                        transactionId: id,
-                        stepType: TransactionTypes.ZAP_IN,
-                        status: TransactionStepStatus.COMPLETED,
-                    })
-                );
+                await TransactionsStep.zapIn(TransactionStepStatus.COMPLETED);
             } else {
                 zapperTxn = {
                     status: false,
@@ -188,15 +169,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 // first approve tokens, if zap is not in eth
                 if (token !== zeroAddress) {
                     notifyLoading(loadingMessages.approvingZapping(), { id });
-                    store.dispatch(
-                        addTransactionStepDb({
-                            transactionId: id!,
-                            step: {
-                                type: TransactionTypes.APPROVE_ZAP,
-                                status: TransactionStepStatus.IN_PROGRESS,
-                            } as ApproveZapStep,
-                        })
-                    );
+                    await TransactionsStep.addApproveZap();
                     const response = await approveErc20(
                         token,
                         farm.zapper_addr as Address,
@@ -206,26 +179,13 @@ export const zapInBase: ZapInBaseFn = async ({
                         getPublicClient,
                         getWalletClient
                     );
-                    store.dispatch(
-                        editTransactionStepDb({
-                            transactionId: id,
-                            stepType: TransactionTypes.APPROVE_ZAP,
-                            status: TransactionStepStatus.COMPLETED,
-                        })
-                    );
+                    await TransactionsStep.approveZap(TransactionStepStatus.COMPLETED);
+
                     if (!response.status) throw new Error("Error approving vault!");
                 }
                 // #endregion
-                store.dispatch(
-                    addTransactionStepDb({
-                        transactionId: id!,
-                        step: {
-                            type: TransactionTypes.ZAP_IN,
-                            amount: amountInWei.toString(),
-                            status: TransactionStepStatus.IN_PROGRESS,
-                        } as ZapInStep,
-                    })
-                );
+                await TransactionsStep.addZapIn(amountInWei);
+
                 notifyLoading(loadingMessages.zapping(), { id });
                 const client = await getClients(farm.chainId);
 
@@ -240,23 +200,10 @@ export const zapInBase: ZapInBaseFn = async ({
                     }),
                     client,
                     async (hash) => {
-                        store.dispatch(
-                            editTransactionStepDb({
-                                transactionId: id,
-                                stepType: TransactionTypes.ZAP_IN,
-                                status: TransactionStepStatus.IN_PROGRESS,
-                                txHash: hash,
-                            })
-                        );
+                        await TransactionsStep.zapIn(TransactionStepStatus.IN_PROGRESS, hash);
                     }
                 );
-                store.dispatch(
-                    editTransactionStepDb({
-                        transactionId: id,
-                        stepType: TransactionTypes.ZAP_IN,
-                        status: TransactionStepStatus.COMPLETED,
-                    })
-                );
+                await TransactionsStep.zapIn(TransactionStepStatus.COMPLETED);
             } else {
                 zapperTxn = {
                     status: false,
@@ -272,7 +219,7 @@ export const zapInBase: ZapInBaseFn = async ({
             dismissNotify(id);
             notifySuccess(successMessages.zapIn());
         }
-        // #endregion
+        // #endregionbn
     } catch (error: any) {
         console.log(error);
         let err = JSON.parse(JSON.stringify(error));
@@ -294,16 +241,10 @@ export const zapOutBase: ZapOutBaseFn = async ({
     id,
 }) => {
     notifyLoading(loadingMessages.approvingWithdraw(), { id });
+    const TransactionsStep = new TransactionsDB(id);
+
     try {
-        store.dispatch(
-            addTransactionStepDb({
-                transactionId: id!,
-                step: {
-                    type: TransactionTypes.APPROVE_ZAP,
-                    status: TransactionStepStatus.IN_PROGRESS,
-                } as ApproveZapStep,
-            })
-        );
+        await TransactionsStep.addApproveZap();
         const client = await getClients(farm.chainId);
         const vaultBalance = await getBalance(farm.vault_addr, currentWallet, client);
 
@@ -338,13 +279,7 @@ export const zapOutBase: ZapOutBaseFn = async ({
         )
             throw new Error("Error approving lp!");
 
-        store.dispatch(
-            editTransactionStepDb({
-                transactionId: id,
-                stepType: TransactionTypes.APPROVE_ZAP,
-                status: TransactionStepStatus.COMPLETED,
-            })
-        );
+        await TransactionsStep.approveZap(TransactionStepStatus.COMPLETED);
 
         dismissNotify(id);
         //#endregion
@@ -356,16 +291,7 @@ export const zapOutBase: ZapOutBaseFn = async ({
         if (max) {
             amountInWei = vaultBalance;
         }
-        store.dispatch(
-            addTransactionStepDb({
-                transactionId: id!,
-                step: {
-                    type: TransactionTypes.ZAP_OUT,
-                    amount: amountInWei.toString(),
-                    status: TransactionStepStatus.IN_PROGRESS,
-                } as ZapOutStep,
-            })
-        );
+        await TransactionsStep.addZapOut(amountInWei);
         if (token === zeroAddress) {
             withdrawTxn = await awaitTransaction(
                 client.wallet.sendTransaction({
@@ -378,14 +304,7 @@ export const zapOutBase: ZapOutBaseFn = async ({
                 }),
                 client,
                 async (hash) => {
-                    store.dispatch(
-                        editTransactionStepDb({
-                            transactionId: id,
-                            stepType: TransactionTypes.ZAP_OUT,
-                            status: TransactionStepStatus.IN_PROGRESS,
-                            txHash: hash,
-                        })
-                    );
+                    await TransactionsStep.zapOut(TransactionStepStatus.IN_PROGRESS, hash);
                 }
             );
         } else {
@@ -400,24 +319,11 @@ export const zapOutBase: ZapOutBaseFn = async ({
                 }),
                 client,
                 async (hash) => {
-                    store.dispatch(
-                        editTransactionStepDb({
-                            transactionId: id,
-                            stepType: TransactionTypes.ZAP_OUT,
-                            status: TransactionStepStatus.IN_PROGRESS,
-                            txHash: hash,
-                        })
-                    );
+                    await TransactionsStep.zapOut(TransactionStepStatus.IN_PROGRESS, hash);
                 }
             );
         }
-        store.dispatch(
-            editTransactionStepDb({
-                transactionId: id,
-                stepType: TransactionTypes.ZAP_OUT,
-                status: TransactionStepStatus.COMPLETED,
-            })
-        );
+        await TransactionsStep.zapOut(TransactionStepStatus.COMPLETED);
         if (!withdrawTxn.status) {
             store.dispatch(markAsFailedDb(id));
             throw new Error(withdrawTxn.error);
@@ -431,18 +337,51 @@ export const zapOutBase: ZapOutBaseFn = async ({
                     tokenAddress: token,
                 });
                 if (data?.difference && data.difference > 0n) {
-                    await zapOutBridge({
-                        fromChainId: farm.chainId,
-                        toChainId: chainToWithdrawOn,
+                    const nativePrice = store.getState().prices.prices[farm.chainId][zeroAddress];
+                    const bridge = new Bridge(
                         currentWallet,
-                        fromAmount: data.difference,
-                        fromToken: token,
+                        farm.chainId,
+                        token,
+                        chainToWithdrawOn,
+                        token === zeroAddress ? zeroAddress : addressesByChainId[chainToWithdrawOn].usdcAddress,
+                        data.difference,
+                        "",
                         getWalletClient,
-                        getPublicClient,
-                        notificationId: id,
-                        toToken:
-                            token === zeroAddress ? zeroAddress : addressesByChainId[chainToWithdrawOn].usdcAddress,
+                        nativePrice
+                    );
+
+                    //#region Approve
+                    notifyLoading(loadingMessages.withdrawBridgeStep(1, 3), {
+                        id,
                     });
+                    await TransactionsStep.addApproveBridge();
+                    await bridge.approve();
+                    await TransactionsStep.approveBridge(TransactionStepStatus.COMPLETED);
+                    //#endregion Approve
+
+                    //#region Initialize
+                    notifyLoading(loadingMessages.withdrawBridgeStep(2, 3), {
+                        id,
+                    });
+                    await TransactionsStep.addInitiateBridge(bridge.fromTokenAmount);
+                    const txHash = await bridge.initialize();
+                    await TransactionsStep.initiateBridge(TransactionStepStatus.COMPLETED);
+                    //#endregion Initialize
+
+                    //#region WaitForBridge
+                    notifyLoading(loadingMessages.withdrawBridgeStep(3, 3), {
+                        id,
+                    });
+                    await TransactionsStep.addWaitForBridge({
+                        bridgeService: BridgeService.LAYER_ZERO,
+                        txHash: txHash,
+                        fromChain: bridge.fromChainId,
+                        toChain: bridge.toChainId,
+                        beforeBridgeBalance: bridge.fromTokenAmount.toString(),
+                    });
+                    await bridge.waitAndGetDstAmt();
+                    await TransactionsStep.waitForBridge(TransactionStepStatus.COMPLETED);
+                    //#endregion WaitForBridge
                 }
             }
             dismissNotify(id);
@@ -473,7 +412,6 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         tokenIn,
         farm,
     } = args;
-    const publicClient = getPublicClient(farm.chainId);
     const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
 
     const transaction = {} as Omit<
@@ -945,410 +883,3 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
         }
     }
 }
-
-export async function zapOutBridge(obj: CrossChainBridgeWithdrawObject): Promise<{
-    status: boolean;
-    error?: string;
-    toAmount: bigint;
-}> {
-    const toChain = SupportedChains.find((item) => item.id === obj.toChainId);
-    const fromChain = SupportedChains.find((item) => item.id === obj.fromChainId);
-    if (!toChain || !fromChain) throw new Error("chain not found");
-    console.log("getting bridge quote");
-    let quote: LiFiStep;
-    if (obj.notificationId) notifyLoading(loadingMessages.withdrawBridgeQuote(), { id: obj.notificationId });
-    store.dispatch(
-        addTransactionStepDb({
-            transactionId: obj.notificationId!,
-            step: {
-                type: TransactionTypes.GET_BRIDGE_QUOTE,
-                status: TransactionStepStatus.IN_PROGRESS,
-            } as GetBridgeQuoteStep,
-        })
-    );
-    quote = await getQuote({
-        fromAddress: obj.currentWallet,
-        fromChain: obj.fromChainId,
-        toChain: obj.toChainId,
-        // @ts-ignore
-        fromToken: obj.fromToken,
-        toToken: obj.toToken,
-        fromAmount: obj.fromAmount.toString(),
-        order: "RECOMMENDED",
-        // @ts-ignore
-        denyBridges: "hop",
-    });
-    const route = convertQuoteToRoute(quote);
-    console.log("route =>", route);
-
-    let allStatus: boolean = false;
-    let i = 1;
-    let toAmount: bigint = 0n;
-    for await (const step of route.steps) {
-        if (obj.notificationId)
-            notifyLoading(loadingMessages.withdrawBridgeStep(i, route.steps.length), { id: obj.notificationId });
-
-        const publicClient = obj.getPublicClient(step.transactionRequest!.chainId!);
-        const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
-        const tokenBalance = await getBalance(
-            obj.toToken === zeroAddress
-                ? zeroAddress
-                : addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
-            obj.currentWallet,
-            { public: publicClient }
-        );
-        if (tokenBalance < BigInt(step.estimate.fromAmount)) {
-            throw new Error("Insufficient Balance");
-        }
-        store.dispatch(
-            editTransactionStepDb({
-                transactionId: obj.notificationId!,
-                stepType: TransactionTypes.GET_BRIDGE_QUOTE,
-                status: TransactionStepStatus.COMPLETED,
-            })
-        );
-        if (obj.toToken !== zeroAddress) {
-            await store.dispatch(
-                addTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    step: {
-                        type: TransactionTypes.APPROVE_BRIDGE,
-                        status: TransactionStepStatus.IN_PROGRESS,
-                    } as ApproveBridgeStep,
-                })
-            );
-            await approveErc20(
-                addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
-                step.estimate.approvalAddress as Address,
-                BigInt(step.estimate.fromAmount),
-                obj.currentWallet,
-                step.transactionRequest!.chainId!,
-                obj.getPublicClient,
-                obj.getWalletClient
-            );
-            await store.dispatch(
-                editTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    stepType: TransactionTypes.APPROVE_BRIDGE,
-                    status: TransactionStepStatus.COMPLETED,
-                })
-            );
-        }
-        const walletClient = await obj.getWalletClient(step.transactionRequest!.chainId!);
-        const transaction = walletClient.sendTransaction({
-            data: data as Hex,
-            gasLimit: gasLimit!,
-            gasPrice: BigInt(gasPrice!),
-            to: to as Address,
-            value: BigInt(value!),
-        });
-        store.dispatch(
-            addTransactionStepDb({
-                transactionId: obj.notificationId!,
-                step: {
-                    type: TransactionTypes.INITIATE_BRIDGE,
-                    amount: obj.fromAmount.toString(),
-                    status: TransactionStepStatus.IN_PROGRESS,
-                } as InitiateBridgeStep,
-            })
-        );
-        const res = await awaitTransaction(transaction, { public: publicClient });
-        if (!res.status) {
-            throw new Error(res.error);
-        }
-        let status = "PENDING";
-        store.dispatch(
-            editTransactionStepDb({
-                transactionId: obj.notificationId!,
-                stepType: TransactionTypes.INITIATE_BRIDGE,
-                status: TransactionStepStatus.COMPLETED,
-            })
-        );
-        store.dispatch(
-            addTransactionStepDb({
-                transactionId: obj.notificationId!,
-                step: {
-                    type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-                    status: TransactionStepStatus.IN_PROGRESS,
-                    bridgeInfo: {
-                        bridgeService: BridgeService.LIFI,
-                        txHash: res.txHash!,
-                        fromChain: step.action.fromChainId,
-                        toChain: step.action.toChainId,
-                        tool: step.tool,
-                        beforeBridgeBalance: obj.fromAmount.toString(),
-                    },
-                } as WaitForBridgeResultsStep,
-            })
-        );
-        do {
-            if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
-            try {
-                const result = await getStatus({
-                    txHash: res.txHash!,
-                    fromChain: step.action.fromChainId,
-                    toChain: step.action.toChainId,
-                    bridge: step.tool,
-                });
-                // @ts-ignore
-                if (result.status === "DONE" && result?.receiving?.amount) {
-                    toAmount = BigInt((result.receiving as any).amount);
-                }
-                status = result.status;
-            } catch (_) {}
-
-            console.log(`Transaction status for ${res.txHash}:`, status);
-
-            // Wait for a short period before checking the status again
-            await new Promise((resolve) => setTimeout(resolve, 5000));
-        } while (status !== "DONE" && status !== "FAILED");
-
-        if (status === "DONE") {
-            store.dispatch(
-                editTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-                    amount: toAmount.toString(),
-                    status: TransactionStepStatus.COMPLETED,
-                })
-            );
-            allStatus = true;
-        } else {
-            store.dispatch(
-                editTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-                    status: TransactionStepStatus.FAILED,
-                })
-            );
-            console.error(`Transaction ${res.txHash} failed`);
-            allStatus = false;
-        }
-        i++;
-    }
-    if (allStatus) {
-        // @ts-ignore
-        return {
-            status: true,
-            toAmount,
-        };
-    } else {
-        // @ts-ignore
-        return {
-            status: false,
-            error: "Target chain error",
-        };
-    }
-}
-// export async function crossChainBridgeIfNecessarySocket<T extends Omit<CrossChainTransactionObject, "contractCall">>(
-//     obj: T
-// ): Promise<
-//     T["simulate"] extends true
-//         ? {
-//               afterBridgeBal: bigint;
-//               amountToBeBridged: bigint;
-//               //   amountSentForBridging:bigint;
-//               //   amountToGetFromBridging:bigint;
-//               //   amountTotalAfterBridging:bigint;
-//               //   amountWantedAfterBridging:bigint;
-//           }
-//         : {
-//               status: boolean;
-//               error?: string;
-//               isBridged: boolean;
-//               finalAmountToDeposit: bigint;
-//           }
-// > {
-//     const chain = SupportedChains.find((item) => item.id === obj.toChainId);
-//     if (!chain) throw new Error("chain not found");
-//     const toPublicClient = createPublicClient({
-//         chain: chain,
-//         transport: http(),
-//         batch: {
-//             multicall: {
-//                 batchSize: 4096,
-//                 wait: 250,
-//             },
-//         },
-//     }) as IClients["public"];
-
-//     const toBal = await getBalance(obj.toToken, obj.currentWallet, { public: toPublicClient });
-//     if (toBal < obj.toTokenAmount) {
-//         const toBalDiff = obj.toTokenAmount - toBal;
-//         const { chainBalances } = getCombinedBalance(obj.balances, obj.toToken === zeroAddress ? "eth" : "usdc");
-//         const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
-//             if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
-//             return false;
-//         })?.[0];
-//         if (!fromChainId) {
-//             if (obj.simulate) {
-//                 // @ts-ignore
-//                 return { afterBridgeBal: BigInt(obj.toTokenAmount), amountToBeBridged: 0n };
-//             } else throw new Error("Insufficient balance");
-//         }
-//         if (obj.notificationId) notifyLoading(loadingMessages.gettingBridgeQuote(), { id: obj.notificationId });
-//         store.dispatch(
-//             addTransactionStepDb({
-//                 transactionId: obj.notificationId!,
-//                 step: {
-//                     type: TransactionTypes.GET_BRIDGE_QUOTE,
-//                     status: TransactionStepStatus.IN_PROGRESS,
-//                 } as GetBridgeQuoteStep,
-//             })
-//         );
-//         const { route, approvalData } = await getRoute(
-//             Number(fromChainId),
-//             obj.toChainId,
-//             obj.toToken === zeroAddress
-//                 ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-//                 : addressesByChainId[Number(fromChainId)].usdcAddress,
-//             obj.toToken === zeroAddress ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" : obj.toToken,
-//             toBalDiff.toString(),
-//             obj.currentWallet
-//         );
-
-//         if (obj.simulate) {
-//             let afterBridgeBal = BigInt(route.toAmount) + toBal;
-//             if (afterBridgeBal > BigInt(obj.toTokenAmount)) afterBridgeBal = BigInt(obj.toTokenAmount);
-//             // @ts-ignore
-//             return { afterBridgeBal, amountToBeBridged: BigInt(route.fromAmount) };
-//         }
-//         const buildTx = await buildTransaction(route);
-//         if (!buildTx) throw new Error("Failed to build bridge transaction");
-
-//         let finalAmountToDeposit: bigint = 0n;
-//         if (obj.notificationId) notifyLoading(loadingMessages.bridgeStep(1, 1), { id: obj.notificationId });
-//         const client = await obj.getClients(buildTx.chainId);
-//         store.dispatch(
-//             editTransactionStepDb({
-//                 transactionId: obj.notificationId!,
-//                 stepType: TransactionTypes.GET_BRIDGE_QUOTE,
-//                 status: TransactionStepStatus.COMPLETED,
-//             })
-//         );
-//         if (approvalData) {
-//             store.dispatch(
-//                 addTransactionStepDb({
-//                     transactionId: obj.notificationId!,
-//                     step: {
-//                         type: TransactionTypes.APPROVE_BRIDGE,
-//                         status: TransactionStepStatus.IN_PROGRESS,
-//                     } as ApproveBridgeStep,
-//                 })
-//             );
-//             await approveErc20(
-//                 approvalData.approvalTokenAddress,
-//                 buildTx.txTarget,
-//                 BigInt(approvalData.minimumApprovalAmount),
-//                 obj.currentWallet,
-//                 client
-//             );
-//             store.dispatch(
-//                 editTransactionStepDb({
-//                     transactionId: obj.notificationId!,
-//                     stepType: TransactionTypes.APPROVE_BRIDGE,
-//                     status: TransactionStepStatus.COMPLETED,
-//                 })
-//             );
-//         }
-//         const transaction = client.wallet.sendTransaction({
-//             data: buildTx.txData,
-//             to: buildTx.txTarget,
-//             value: BigInt(buildTx.value),
-//         });
-//         store.dispatch(
-//             addTransactionStepDb({
-//                 transactionId: obj.notificationId!,
-//                 step: {
-//                     type: TransactionTypes.INITIATE_BRIDGE,
-//                     status: TransactionStepStatus.IN_PROGRESS,
-//                 } as InitiateBridgeStep,
-//             })
-//         );
-//         const res = await awaitTransaction(transaction, client);
-//         if (!res.status) {
-//             throw new Error(res.error);
-//         }
-//         let status = "PENDING";
-//         store.dispatch(
-//             editTransactionStepDb({
-//                 transactionId: obj.notificationId!,
-//                 stepType: TransactionTypes.INITIATE_BRIDGE,
-//                 status: TransactionStepStatus.COMPLETED,
-//             })
-//         );
-//         store.dispatch(
-//             addTransactionStepDb({
-//                 transactionId: obj.notificationId!,
-//                 step: {
-//                     type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-//                     status: TransactionStepStatus.IN_PROGRESS,
-//                     bridgeInfo: {
-//                         bridgeService: BridgeService.SOCKET_TECH,
-//                         txHash: res.txHash!,
-//                         fromChain: buildTx.chainId,
-//                         toChain: obj.toChainId,
-//                         beforeBridgeBalance: toBal.toString(),
-//                     },
-//                 } as WaitForBridgeResultsStep,
-//             })
-//         );
-//         do {
-//             if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
-//             try {
-//                 const result = await getBridgeStatus(res.txHash!, buildTx.chainId, obj.toChainId);
-//                 // @ts-ignore
-//                 if (result.destinationTxStatus === "COMPLETED") {
-//                     finalAmountToDeposit = BigInt(result.toAmount!) + toBal;
-//                 }
-//                 status = result.destinationTxStatus;
-//             } catch (_) {}
-
-//             console.log(`Transaction status for ${res.txHash}:`, status);
-
-//             // Wait for a short period before checking the status again
-//             await new Promise((resolve) => setTimeout(resolve, 5000));
-//         } while (status !== "COMPLETED");
-
-//         if (status === "COMPLETED") {
-//             store.dispatch(
-//                 editTransactionStepDb({
-//                     transactionId: obj.notificationId!,
-//                     stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-//                     status: TransactionStepStatus.COMPLETED,
-//                 })
-//             );
-//             // @ts-ignore
-//             return {
-//                 status: true,
-//                 isBridged: true,
-//                 finalAmountToDeposit,
-//             };
-//         } else {
-//             store.dispatch(
-//                 editTransactionStepDb({
-//                     transactionId: obj.notificationId!,
-//                     stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-//                     status: TransactionStepStatus.FAILED,
-//                 })
-//             );
-//             // @ts-ignore
-//             return {
-//                 status: false,
-//                 error: "Target chain error",
-//                 isBridged: true,
-//             };
-//         }
-//     } else {
-//         if (obj.simulate) {
-//             // @ts-ignore
-//             return {
-//                 afterBridgeBal: BigInt(obj.toTokenAmount),
-//                 amountToBeBridged: 0n,
-//             };
-//         } else {
-//             // @ts-ignore
-//             return { status: true };
-//         }
-//     }
-// }
