@@ -29,6 +29,7 @@ import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useConnectors } from "wagmi";
 import Bridge from "../../utils/Bridge";
+import usePriceOfTokens from "src/hooks/usePriceOfTokens";
 // import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
 // import { LocalAccountSigner, arbitrum } from "@alchemy/aa-core";
 // import { createWeb3AuthSigner } from "src/config/walletConfig";
@@ -42,6 +43,7 @@ const Test = () => {
     const [modelOpen, setModelOpen] = useState(false);
     const [model1Open, set1ModelOpen] = useState(false);
     const { connectWallet, switchExternalChain, getClients } = useWallet();
+    const { prices } = usePriceOfTokens();
     const { platformTVL } = usePlatformTVL();
     const clickMeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -49,90 +51,28 @@ const Test = () => {
 
     const fn = async () => {
         setModelOpen(true);
-        const signature = toFunctionSignature({
-            inputs: [
-                {
-                    components: [
-                        { internalType: "uint32", name: "dstEid", type: "uint32" },
-                        { internalType: "bytes32", name: "to", type: "bytes32" },
-                        { internalType: "uint256", name: "amountLD", type: "uint256" },
-                        { internalType: "uint256", name: "minAmountLD", type: "uint256" },
-                        { internalType: "bytes", name: "extraOptions", type: "bytes" },
-                        { internalType: "bytes", name: "composeMsg", type: "bytes" },
-                        { internalType: "bytes", name: "oftCmd", type: "bytes" },
-                    ],
-                    internalType: "struct SendParam",
-                    name: "_sendParam",
-                    type: "tuple",
-                },
-                {
-                    components: [
-                        { internalType: "uint256", name: "nativeFee", type: "uint256" },
-                        { internalType: "uint256", name: "lzTokenFee", type: "uint256" },
-                    ],
-                    internalType: "struct MessagingFee",
-                    name: "_fee",
-                    type: "tuple",
-                },
-                { internalType: "address", name: "_refundAddress", type: "address" },
-            ],
-            name: "send",
-            outputs: [
-                {
-                    components: [
-                        { internalType: "bytes32", name: "guid", type: "bytes32" },
-                        { internalType: "uint64", name: "nonce", type: "uint64" },
-                        {
-                            components: [
-                                { internalType: "uint256", name: "nativeFee", type: "uint256" },
-                                { internalType: "uint256", name: "lzTokenFee", type: "uint256" },
-                            ],
-                            internalType: "struct MessagingFee",
-                            name: "fee",
-                            type: "tuple",
-                        },
-                    ],
-                    internalType: "struct MessagingReceipt",
-                    name: "msgReceipt",
-                    type: "tuple",
-                },
-                {
-                    components: [
-                        { internalType: "uint256", name: "amountSentLD", type: "uint256" },
-                        { internalType: "uint256", name: "amountReceivedLD", type: "uint256" },
-                    ],
-                    internalType: "struct OFTReceipt",
-                    name: "oftReceipt",
-                    type: "tuple",
-                },
-            ],
-            stateMutability: "payable",
-            type: "function",
-        });
-        console.log("signature =>", signature);
-        console.time("bridge");
-        console.log("jex", hexToString("0x7c75c3d2"));
 
         const bridge = new Bridge(
             currentWallet!,
-            CHAIN_ID.ARBITRUM,
-            addressesByChainId[CHAIN_ID.ARBITRUM].usdcAddress,
+            CHAIN_ID.CORE,
+            addressesByChainId[CHAIN_ID.CORE].usdcAddress,
             CHAIN_ID.BASE,
             addressesByChainId[CHAIN_ID.BASE].usdcAddress,
             parseUnits("1", 6),
             "",
-            getWalletClient
+            getWalletClient,
+            prices[CHAIN_ID.CORE][zeroAddress]
         );
-        // await bridge.approve();
-        // const hash = await bridge.initialize();
-        // console.log("hash =>", hash);
+        await bridge.approve();
+        const hash = await bridge.initialize();
+        console.log("hash =>", hash);
         // console.log("bridge.nativeFee =>", bridge.nativeFee);
-        // const message = await bridge.waitForLayerZeroTx();
+        const message = await bridge.waitForLayerZeroTx();
         // const message = await bridge.waitForLayerZeroTx(
         //     42161,
         //     "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
         // );
-        // console.log("message =>", message);
+        console.log("message =>", message);
         // const dst = await bridge.waitAndGetDstAmt();
         // console.log("dst =>", dst);
         // console.timeEnd("bridge");
@@ -154,7 +94,7 @@ const Test = () => {
         //     "0x8082d0a012281db0ffb3ae4ef3fcdef4968d9965b984b2d61b791950a3c36dd7"
         // );
         // console.log("arbitrum to core =>", res);
-        await bridge.estimateAmountOut();
+        // await bridge.estimateAmountOut();
     };
 
     return (

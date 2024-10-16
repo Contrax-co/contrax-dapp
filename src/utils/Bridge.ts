@@ -2,22 +2,34 @@ import { approveErc20 } from "src/api/token";
 import { SupportedChains } from "src/config/walletConfig";
 import { IClients } from "src/types";
 import { CHAIN_ID } from "src/types/enums";
-import { Address, createPublicClient, Hex, http, zeroAddress, padHex, parseEventLogs, encodeFunctionData } from "viem";
+import {
+    Address,
+    createPublicClient,
+    Hex,
+    http,
+    zeroAddress,
+    padHex,
+    parseEventLogs,
+    encodeFunctionData,
+    parseUnits,
+    formatUnits,
+} from "viem";
 import { waitForMessageReceived } from "@layerzerolabs/scan-client";
 import { addressesByChainId } from "src/config/constants/contracts";
 
 class Bridge {
-    public currentWallet: Address;
-    public fromToken: Address;
-    public toToken: Address;
+    private currentWallet: Address;
+    private fromToken: Address;
+    private toToken: Address;
     public toChainId: number;
     public fromChainId: number;
+    private notificationId: string;
+    private getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
     public fromTokenAmount: bigint;
-    public notificationId: string;
-    public getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
     public srcTxHash: Hex;
     // To be populated when init bridging
     public nativeFee: bigint;
+    private primaryNativePrice: number;
 
     constructor(
         currentWallet: Address,
@@ -27,7 +39,8 @@ class Bridge {
         toToken: Address,
         fromTokenAmount: bigint,
         notificationId: string,
-        getWalletClient: (chainId: number) => Promise<IClients["wallet"]>
+        getWalletClient: (chainId: number) => Promise<IClients["wallet"]>,
+        primaryNativePrice: number
     ) {
         this.currentWallet = currentWallet;
         this.fromToken = fromToken;
@@ -37,17 +50,18 @@ class Bridge {
         this.fromTokenAmount = fromTokenAmount;
         this.notificationId = notificationId;
         this.getWalletClient = getWalletClient;
+        this.primaryNativePrice = primaryNativePrice;
     }
 
     /** Step 1 */
     public async approve() {
-        const { bridgeAddr, usdcAddr } = this.getBridgeAndUsdcAddr();
+        const { bridgeAddr, usdcAddr, zapperBridge } = this.getBridgeAndUsdcAddr();
         if (usdcAddr === zeroAddress) return { status: true };
         else
             return await approveErc20(
                 usdcAddr,
-                bridgeAddr,
-                this.fromTokenAmount,
+                zapperBridge,
+                this.fromTokenAmount + 1000000n,
                 this.currentWallet,
                 this.fromChainId,
                 this.getPublicClient,
@@ -62,7 +76,7 @@ class Bridge {
         if (this.toChainId === CHAIN_ID.CORE || this.fromChainId === CHAIN_ID.CORE) {
             return { amountOut: this.fromTokenAmount };
         } else {
-            const { value, fees } = await this.getStargateFees();            
+            const { value, fees } = await this.getStargateFees();
             const { result } = await publicClient.simulateContract({
                 account: this.currentWallet,
                 address: bridgeAddr as Address,
@@ -114,15 +128,15 @@ class Bridge {
     }
 
     private async initializeStargate() {
-        const { bridgeAddr } = this.getBridgeAndUsdcAddr();
-        const { value, fees } = await this.getStargateFees();
+        const { bridgeAddr, zapperBridge } = this.getBridgeAndUsdcAddr();
+        const { fees } = await this.getStargateFees();
 
         const walletClient = await this.getWalletClient(this.fromChainId);
 
         this.nativeFee = fees.nativeFee;
-        const txHash = await walletClient.writeContract({
+
+        const calldata = encodeFunctionData({
             abi: StargateAbi,
-            address: bridgeAddr,
             functionName: "send",
             args: [
                 {
@@ -137,7 +151,13 @@ class Bridge {
                 fees,
                 this.currentWallet,
             ],
-            value,
+        });
+        const txHash = await walletClient.writeContract({
+            abi: ZapperAbi,
+            address: zapperBridge,
+            functionName: "zapIn",
+            args: [bridgeAddr, calldata, this.nativeToUsdcFee(fees.nativeFee), fees.nativeFee, this.fromTokenAmount],
+            value: 0n,
         });
         this.srcTxHash = txHash;
         return txHash;
@@ -149,11 +169,10 @@ class Bridge {
 
         // Get Address of Orignal Token Bridge
         // Get Address of USDC for to chain
-        const { bridgeAddr, usdcAddr } = this.getBridgeAndUsdcAddr();
+        const { bridgeAddr, usdcAddr, zapperBridge } = this.getBridgeAndUsdcAddr();
 
         const publicClient = this.getPublicClient(this.fromChainId);
-
-        // #region From Core
+        // #region To Core
         if (this.toChainId === CHAIN_ID.CORE) {
             // Get Native Fees Quote
             const [nativeFee] = await publicClient.readContract({
@@ -165,9 +184,8 @@ class Bridge {
             this.nativeFee = nativeFee;
 
             const walletClient = await this.getWalletClient(this.fromChainId);
-            const txHash = await walletClient.writeContract({
+            const calldata = encodeFunctionData({
                 abi: CoreBridgeAbi,
-                address: bridgeAddr,
                 functionName: "bridge",
                 args: [
                     usdcAddr,
@@ -176,13 +194,20 @@ class Bridge {
                     { refundAddress: this.currentWallet, zroPaymentAddress: zeroAddress },
                     "0x",
                 ],
-                value: nativeFee,
             });
+            const txHash = await walletClient.writeContract({
+                abi: ZapperAbi,
+                address: zapperBridge,
+                functionName: "zapIn",
+                args: [bridgeAddr, calldata, this.nativeToUsdcFee(nativeFee), nativeFee, this.fromTokenAmount],
+                value: 0n,
+            });
+
             this.srcTxHash = txHash;
             return txHash;
             // Wait for LayerZeroTx
         }
-        // #endregion From Core
+        // #endregion To Core
         else {
             // Get Native Fees Quote
             const [nativeFee] = await publicClient.readContract({
@@ -193,9 +218,9 @@ class Bridge {
             });
 
             const walletClient = await this.getWalletClient(this.fromChainId);
-            const txHash = await walletClient.writeContract({
+
+            const calldata = encodeFunctionData({
                 abi: CoreBridgeCoreMainnetAbi,
-                address: bridgeAddr,
                 functionName: "bridge",
                 args: [
                     usdcAddr,
@@ -206,8 +231,15 @@ class Bridge {
                     { refundAddress: this.currentWallet, zroPaymentAddress: zeroAddress },
                     "0x",
                 ],
-                value: nativeFee,
             });
+            const txHash = await walletClient.writeContract({
+                abi: ZapperAbi,
+                address: zapperBridge,
+                functionName: "zapIn",
+                args: [bridgeAddr, calldata, this.nativeToUsdcFee(nativeFee), nativeFee, this.fromTokenAmount],
+                value: 0n,
+            });
+
             this.srcTxHash = txHash;
             return txHash;
         }
@@ -237,7 +269,7 @@ class Bridge {
         return message;
     }
 
-    /** Step 1 */
+    /** Step 2 */
     public async initialize() {
         if (this.toChainId === CHAIN_ID.CORE || this.fromChainId === CHAIN_ID.CORE) {
             return await this.initializeCore();
@@ -291,14 +323,17 @@ class Bridge {
         }
     }
 
-    getBridgeAndUsdcAddr(): { bridgeAddr: Address; usdcAddr: Address } {
-        let bridgeAddr: Address = "" as Address;
-        let usdcAddr: Address = "" as Address;
+    private getBridgeAndUsdcAddr(): { bridgeAddr: Address; usdcAddr: Address; zapperBridge: Address } {
+        let bridgeAddr = "" as Address;
+        let usdcAddr = "" as Address;
+        let zapperBridge = "" as Address;
         if (this.fromChainId === CHAIN_ID.CORE || this.toChainId === CHAIN_ID.CORE) {
-            bridgeAddr = this.getCoreBridgeAddr(this.fromChainId);
+            bridgeAddr = this.getCoreBridgeAddr(this.fromChainId).bridgeAddr;
+            zapperBridge = this.getCoreBridgeAddr(this.fromChainId).zapperBridge;
             usdcAddr = this.getUsdcAddress(this.fromChainId);
         } else {
             if (this.fromChainId === CHAIN_ID.ARBITRUM) {
+                zapperBridge = "0x95f368B55AB8eAbE29491C0e9DA38Def6A302868";
                 if (this.fromToken === zeroAddress) {
                     bridgeAddr = "0xA45B5130f36CDcA45667738e2a258AB09f4A5f7F";
                     usdcAddr = zeroAddress;
@@ -307,6 +342,7 @@ class Bridge {
                     usdcAddr = addressesByChainId[this.fromChainId].usdcAddress;
                 }
             } else if (this.fromChainId === CHAIN_ID.BASE) {
+                zapperBridge = "0x914fEf038fE15A3a5b631358Ff4251FAC2d7Dc6b";
                 if (this.fromToken === zeroAddress) {
                     bridgeAddr = "0xdc181Bd607330aeeBEF6ea62e03e5e1Fb4B6F7C7";
                     usdcAddr = zeroAddress;
@@ -316,24 +352,33 @@ class Bridge {
                 }
             }
         }
-        if (!bridgeAddr || !usdcAddr) throw new Error("Invalid Chain");
-        return { bridgeAddr, usdcAddr };
+        if (!bridgeAddr || !usdcAddr || !zapperBridge) throw new Error("Invalid Chain");
+        return { bridgeAddr, usdcAddr, zapperBridge };
     }
 
-    getCoreBridgeAddr(srcChainId: number) {
+    private getCoreBridgeAddr(srcChainId: number) {
+        let bridgeAddr = "" as Address;
+        let zapperBridge = "" as Address;
         switch (srcChainId) {
             case CHAIN_ID.ARBITRUM:
-                return "0x29d096cD18C0dA7500295f082da73316d704031A";
+                zapperBridge = "0x95f368B55AB8eAbE29491C0e9DA38Def6A302868";
+                bridgeAddr = "0x29d096cD18C0dA7500295f082da73316d704031A";
+                break;
             case CHAIN_ID.BASE:
-                return "0x84FB2086Fed7b3c9b3a4Bc559f60fFaA91507879";
+                zapperBridge = "0x914fEf038fE15A3a5b631358Ff4251FAC2d7Dc6b";
+                bridgeAddr = "0x84FB2086Fed7b3c9b3a4Bc559f60fFaA91507879";
+                break;
             case CHAIN_ID.CORE:
-                return "0xA4218e1F39DA4AaDaC971066458Db56e901bcbdE";
+                zapperBridge = "0x4360b1B3ACB5240B0494400D02344Db97103C140";
+                bridgeAddr = "0xA4218e1F39DA4AaDaC971066458Db56e901bcbdE";
+                break;
             default:
                 throw new Error("Invalid Chain");
         }
+        return { bridgeAddr, zapperBridge };
     }
 
-    getLayerZeroEid(chainId: number) {
+    private getLayerZeroEid(chainId: number) {
         switch (chainId) {
             case CHAIN_ID.ARBITRUM:
                 return 30110;
@@ -346,13 +391,13 @@ class Bridge {
         }
     }
 
-    getUsdcAddress(chainId: number) {
+    private getUsdcAddress(chainId: number) {
         const addr = addressesByChainId[chainId].nativeUsdAddress;
         if (!addr) throw new Error("Invalid Chain");
         return addr;
     }
 
-    getPublicClient(chainId: number) {
+    private getPublicClient(chainId: number) {
         const chain = SupportedChains.find((item) => item.id === chainId);
         if (!chain) throw new Error("chain not found");
         const publicClient = createPublicClient({
@@ -367,9 +412,29 @@ class Bridge {
         }) as IClients["public"];
         return publicClient;
     }
+
+    private nativeToUsdcFee(amount: bigint) {
+        return parseUnits((Number(formatUnits(amount, 18)) * this.primaryNativePrice * 1.1).toString(), 6);
+    }
 }
 
 export default Bridge;
+
+const ZapperAbi = [
+    {
+        inputs: [
+            { internalType: "address", name: "_callingContractAddress", type: "address" },
+            { internalType: "bytes", name: "_data", type: "bytes" },
+            { internalType: "uint256", name: "_usdcAmountToZap", type: "uint256" },
+            { internalType: "uint256", name: "_ethAmountOut", type: "uint256" },
+            { internalType: "uint256", name: "_usdcAmountIn", type: "uint256" },
+        ],
+        name: "zapIn",
+        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+        stateMutability: "payable",
+        type: "function",
+    },
+] as const;
 
 const CoreBridgeAbi = [
     {
