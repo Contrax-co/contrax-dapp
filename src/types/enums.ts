@@ -12,6 +12,7 @@ export enum FarmOriginPlatform {
     SwapFish = "SwapFish",
     Clipper = "Clipper",
     Steer = "Steer",
+    Core = "Core",
 }
 export enum FarmTableColumns {
     Token = "Vaults",

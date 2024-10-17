@@ -61,7 +61,7 @@ class Bridge {
             return await approveErc20(
                 usdcAddr,
                 zapperBridge,
-                this.fromTokenAmount + 1000000n,
+                this.fromTokenAmount + 3000000n,
                 this.currentWallet,
                 this.fromChainId,
                 this.getPublicClient,
@@ -369,7 +369,7 @@ class Bridge {
                 bridgeAddr = "0x84FB2086Fed7b3c9b3a4Bc559f60fFaA91507879";
                 break;
             case CHAIN_ID.CORE:
-                zapperBridge = "0x4360b1B3ACB5240B0494400D02344Db97103C140";
+                zapperBridge = "0xcB83907995a41f8406b2De1122ecbc24bf2D311c";
                 bridgeAddr = "0xA4218e1F39DA4AaDaC971066458Db56e901bcbdE";
                 break;
             default:

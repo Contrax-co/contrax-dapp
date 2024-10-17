@@ -6,6 +6,7 @@ import { FarmFunctions } from "./types";
 import peapods from "./peapods";
 import steer from "./steer";
 import clipper from "./clipper";
+import core from "./core";
 
 // TODO: find a better way to add farms here, instead of using the farm id manually
 const farmFunctions: { [key: number]: FarmFunctions } = {
@@ -49,6 +50,8 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     203: steer(203), // 203: WETH-cbBTC
 
     40: clipper(40), // 36: Clipper
+
+    301: core(301), // 301: stCore
 };
 
 export default farmFunctions;
