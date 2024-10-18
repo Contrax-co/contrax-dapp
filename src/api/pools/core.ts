@@ -120,36 +120,36 @@ let core = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"
                 amountInWei = BigInt(balance);
             }
             //#endregion
-            // let state_overrides: SimulationParametersOverrides | undefined = undefined;
-            // let balance_overrides: { [key: string]: string } | undefined = undefined;
-            // if (token !== zeroAddress) {
-            //     state_overrides = getAllowanceStateOverride([
-            //         {
-            //             tokenAddress: token,
-            //             owner: currentWallet,
-            //             spender: farm.zapper_addr,
-            //         },
-            //     ]);
-            //     merge(
-            //         state_overrides,
-            //         getTokenBalanceStateOverride({
-            //             owner: currentWallet,
-            //             tokenAddress: token,
-            //             balance: amountInWei.toString(),
-            //         })
-            //     );
-            // } else {
-            //     balance_overrides = {
-            //         [currentWallet]: amountInWei.toString(),
-            //     };
-            // }
-            // console.log("state_overrides =>", state_overrides);
-            // console.log("balance_overrides =>", balance_overrides);
+            let state_overrides: SimulationParametersOverrides | undefined = undefined;
+            let balance_overrides: { [key: string]: string } | undefined = undefined;
+            if (token !== zeroAddress) {
+                state_overrides = getAllowanceStateOverride([
+                    {
+                        tokenAddress: token,
+                        owner: currentWallet,
+                        spender: farm.zapper_addr,
+                    },
+                ]);
+                merge(
+                    state_overrides,
+                    getTokenBalanceStateOverride({
+                        owner: currentWallet,
+                        tokenAddress: token,
+                        balance: amountInWei.toString(),
+                    })
+                );
+            } else {
+                balance_overrides = {
+                    [currentWallet]: amountInWei.toString(),
+                };
+            }
+            console.log("state_overrides =>", state_overrides);
+            console.log("balance_overrides =>", balance_overrides);
 
-            // if (state_overrides) {
-            //     const overrides = await encodeStateOverrides(state_overrides, farm.chainId);
-            //     console.log("overrides =>", overrides);
-            // }
+            if (state_overrides) {
+                const overrides = await encodeStateOverrides(state_overrides, farm.chainId);
+                console.log("overrides =>", overrides);
+            }
 
             // #region Zapping In
 

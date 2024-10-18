@@ -138,7 +138,7 @@ export const rainbowConfig = getDefaultConfig({
     projectId: walletConnectProjectId,
     chains: SupportedChains as [Chain, ...Chain[]],
     transports: SupportedChains.reduce((acc, curr) => {
-        acc[curr.id] = http();
+        acc[curr.id] = http(curr.rpcUrls?.alchemy?.http[0]);
         return acc;
     }, {} as { [key: number]: HttpTransport }),
     wallets: [
