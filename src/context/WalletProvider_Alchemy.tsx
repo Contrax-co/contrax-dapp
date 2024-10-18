@@ -82,7 +82,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             if (e.code === 4902) {
                 const chain = SupportedChains.find((item) => item.id === chainId);
                 if (!chain) throw new Error("Chain not supported!");
-                await (window.ethereum as EIP1193Provider).request({
+                await(window.ethereum as EIP1193Provider).request({
                     method: "wallet_addEthereumChain",
                     params: [
                         {
@@ -90,7 +90,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                             chainName: chain.name,
                             nativeCurrency: chain.nativeCurrency,
                             rpcUrls: [chain.rpcUrls.default.http[0]],
-                            blockExplorerUrls: [chain.blockExplorers.default.url],
+                            blockExplorerUrls: [chain.blockExplorers!.default.url],
                         },
                     ],
                 });
