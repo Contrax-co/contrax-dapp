@@ -114,7 +114,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
                             chainName: chain.name,
                             nativeCurrency: chain.nativeCurrency,
                             rpcUrls: [chain.rpcUrls.default.http[0]],
-                            blockExplorerUrls: [chain.blockExplorers.default.url],
+                            blockExplorerUrls: [chain.blockExplorers?.default.url],
                         },
                     ],
                 });
@@ -131,7 +131,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             if (!chain) throw new Error("chain not found");
             const _publicClient = createPublicClient({
                 chain: chain,
-                transport: http(),
+                transport: http(chain.rpcUrls?.alchemy?.http[0]),
                 batch: {
                     multicall: {
                         batchSize: 4096,
@@ -187,7 +187,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
             } else {
                 const _walletClient = createWalletClient({
                     account: privateKeyToAccount(pkey),
-                    transport: http(),
+                    transport: http(chain.rpcUrls?.alchemy?.http[0]),
                     chain,
                 }).extend((client) => ({
                     async sendTransaction(args) {

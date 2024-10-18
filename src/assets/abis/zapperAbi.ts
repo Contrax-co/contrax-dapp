@@ -1,24 +1,24 @@
 const zapperAbi = [
     {
+        outputs: [{ name: "vaultBalance", internalType: "uint256", type: "uint256" }],
         inputs: [
-            { internalType: "contract IVault", name: "vault", type: "address" },
-            { internalType: "uint256", name: "tokenAmountOutMin", type: "uint256" },
-            { internalType: "address", name: "tokenIn", type: "address" },
-            { internalType: "uint256", name: "tokenInAmount", type: "uint256" },
+            { name: "vault", internalType: "contract IVault", type: "address" },
+            { name: "tokenAmountOutMin", internalType: "uint256", type: "uint256" },
+            { name: "tokenIn", internalType: "address", type: "address" },
+            { name: "tokenInAmount", internalType: "uint256", type: "uint256" },
         ],
         name: "zapIn",
-        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
     {
+        outputs: [{ name: "vaultBalance", internalType: "uint256", type: "uint256" }],
         inputs: [
-            { internalType: "contract IVault", name: "vault", type: "address" },
-            { internalType: "uint256", name: "tokenAmountOutMin", type: "uint256" },
-            { internalType: "address", name: "tokenIn", type: "address" },
+            { name: "vault", internalType: "contract IVault", type: "address" },
+            { name: "tokenAmountOutMin", internalType: "uint256", type: "uint256" },
+            { name: "tokenIn", internalType: "address", type: "address" },
         ],
         name: "zapInETH",
-        outputs: [],
         stateMutability: "payable",
         type: "function",
     },

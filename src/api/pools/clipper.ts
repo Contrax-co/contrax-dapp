@@ -22,7 +22,7 @@ import {
     simulateTransaction,
 } from "../tenderly";
 import { backendApi, isGasSponsored } from "..";
-import { zapOutBase, slippageOut, crossChainBridgeIfNecessary } from "./common";
+import { zapOutBase, slippageOut, bridgeIfNeededLayerZero } from "./common";
 import merge from "lodash.merge";
 import { encodeFunctionData, getContract, Hex, zeroAddress } from "viem";
 import pools_json from "src/config/constants/pools_json";
@@ -45,8 +45,8 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
         const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
         const zapCurriences = farm.zap_currencies;
-        const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
-        const combinedEthBalance = getCombinedBalance(balances, "eth");
+        const combinedUsdcBalance = getCombinedBalance(balances, farm.chainId, "usdc");
+        const combinedEthBalance = getCombinedBalance(balances, farm.chainId, "native");
 
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
         let isCrossChain = true;
@@ -63,7 +63,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             },
             {
                 tokenAddress: zeroAddress,
-                tokenSymbol: "ETH",
+                tokenSymbol: combinedEthBalance.symbol,
                 amount: combinedEthBalance.formattedBalance.toString(),
                 amountDollar: (Number(combinedEthBalance.formattedBalance) * ethPrice).toString(),
                 price: ethPrice,
@@ -84,7 +84,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             },
             {
                 tokenAddress: zeroAddress,
-                tokenSymbol: "ETH",
+                tokenSymbol: combinedEthBalance.symbol,
                 amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / ethPrice).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: ethPrice,
@@ -115,6 +115,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         estimateTxGas,
         prices,
         getPublicClient,
+        getWalletClient,
         decimals,
     }) => {
         const publicClient = getPublicClient(farm.chainId);
@@ -124,7 +125,11 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         try {
             //#region Select Max
             if (max) {
-                const { balance } = getCombinedBalance(balances, token === zeroAddress ? "eth" : "usdc");
+                const { balance } = getCombinedBalance(
+                    balances,
+                    farm.chainId,
+                    token === zeroAddress ? "native" : "usdc"
+                );
                 amountInWei = BigInt(balance);
             }
             // #region Zapping In
@@ -140,8 +145,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     finalAmountToDeposit,
                     isBridged,
                     status: bridgeStatus,
-                } = await crossChainBridgeIfNecessary({
-                    getClients,
+                } = await bridgeIfNeededLayerZero({
+                    getPublicClient,
+                    getWalletClient,
                     notificationId: id,
                     balances,
                     currentWallet,
@@ -246,8 +252,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     status: bridgeStatus,
                     isBridged,
                     finalAmountToDeposit,
-                } = await crossChainBridgeIfNecessary({
-                    getClients,
+                } = await bridgeIfNeededLayerZero({
+                    getPublicClient,
+                    getWalletClient,
                     notificationId: id,
                     balances,
                     currentWallet,
@@ -257,7 +264,6 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     max,
                 });
                 if (bridgeStatus) {
-                    const client = await getClients(farm.chainId);
                     if (isBridged) amountInWei = finalAmountToDeposit;
                     // #region Approve
                     // first approve tokens, if zap is not in eth
@@ -277,7 +283,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                             farm.zapper_addr,
                             amountInWei,
                             currentWallet,
-                            client
+                            farm.chainId,
+                            getPublicClient,
+                            getWalletClient
                         );
                         store.dispatch(
                             editTransactionStepDb({
@@ -305,8 +313,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                         farm.zapper_addr
                     );
                     notifyLoading(loadingMessages.zapping(), { id });
+                    const walletClient = await getWalletClient(farm.chainId);
                     zapperTxn = await awaitTransaction(
-                        client.wallet.sendTransaction({
+                        walletClient.sendTransaction({
                             to: farm.zapper_addr,
                             data: encodeFunctionData({
                                 abi: clipperZapperAbi,
@@ -314,7 +323,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                                 args: [farm.vault_addr, 0n, packedInput, packedConfig, r, s],
                             }),
                         }),
-                        client,
+                        { public: publicClient },
                         async (hash) => {
                             store.dispatch(
                                 editTransactionStepDb({
@@ -366,6 +375,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             currentWallet,
             estimateTxGas,
             getPublicClient,
+            getWalletClient,
             token,
             max,
             tokenIn,
@@ -383,7 +393,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
 
         if (max) {
             if (token !== zeroAddress) {
-                const { balance } = getCombinedBalance(balances, "usdc");
+                const { balance } = getCombinedBalance(balances, farm.chainId, "usdc");
                 amountInWei = BigInt(balance);
             } else {
                 amountInWei = BigInt(balances[farm.chainId][token] ?? "0");
@@ -416,8 +426,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             // use weth address as tokenId, but in case of some farms (e.g: hop)
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn ?? wethAddress;
-            const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
-                getClients,
+            const { afterBridgeBal, amountToBeBridged } = await bridgeIfNeededLayerZero({
+                getPublicClient,
+                getWalletClient,
                 balances,
                 currentWallet,
                 toChainId: farm.chainId,
@@ -444,8 +455,9 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
         } else {
-            const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
-                getClients,
+            const { afterBridgeBal, amountToBeBridged } = await bridgeIfNeededLayerZero({
+                getPublicClient,
+                getWalletClient,
                 balances,
                 currentWallet,
                 toChainId: farm.chainId,

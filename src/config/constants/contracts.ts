@@ -46,6 +46,21 @@ const baseAddresses: Addresses = {
     swapfishMasterChef: "" as Address,
     usdtAddress: "" as Address,
 };
+
+const coreAddresses: Addresses = {
+    bridgedUsdAddress: "0xa4151B2B3e269645181dCcF2D426cE75fcbDeca9",
+    factoryAddress: "" as Address,
+    wethAddress: "0x40375C92d9FAf44d2f9db9Bd9ba41a3317a2404f",
+    nativeUsdAddress: "0xa4151B2B3e269645181dCcF2D426cE75fcbDeca9",
+    usdcAddress: "0xa4151B2B3e269645181dCcF2D426cE75fcbDeca9",
+    arbitrumAddress: "",
+    sushiAddress: "" as Address,
+    dodoMineAddress: "" as Address,
+    dodoTokenAddress: "" as Address,
+    swapfishMasterChef: "" as Address,
+    usdtAddress: "" as Address,
+};
+
 const polygonAddresses: Addresses = {
     factoryAddress: "" as Address,
     wethAddress: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
@@ -61,4 +76,5 @@ export const addressesByChainId: { [key: number]: Addresses } = {
     0xa4b1: arbitrumAddresses,
     137: polygonAddresses,
     [CHAIN_ID.BASE]: baseAddresses,
+    [CHAIN_ID.CORE]: coreAddresses,
 };

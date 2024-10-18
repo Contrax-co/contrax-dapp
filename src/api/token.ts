@@ -79,27 +79,25 @@ export const approveErc20 = async (
     spender: Address,
     amount: bigint,
     currentWallet: Address,
-    client: IClients
+    chainId: number,
+    getPublicClient: (chainId: number) => IClients["public"],
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>
 ) => {
-    console.log({
-        contractAddress,
-        spender,
-        amount,
-        currentWallet,
-        client,
-    });
     const contract = getContract({
         abi: erc20Abi,
         address: contractAddress,
-        client,
+        client: {
+            public: getPublicClient(chainId),
+        },
     });
 
     // check allowance
     const allowance = await contract.read.allowance([currentWallet, spender]);
     // if allowance is lower than amount, approve
     if (amount > allowance) {
+        const walletClient = await getWalletClient(chainId);
         return await awaitTransaction(
-            client.wallet.sendTransaction({
+            walletClient.sendTransaction({
                 to: contractAddress,
                 data: encodeFunctionData({
                     abi: erc20Abi,
@@ -107,7 +105,7 @@ export const approveErc20 = async (
                     args: [spender, maxUint256],
                 }),
             }),
-            client
+            { public: getPublicClient(chainId) }
         );
     }
     // if already approved just return status as true

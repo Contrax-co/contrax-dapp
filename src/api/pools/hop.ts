@@ -22,8 +22,8 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
         const vaultBalance = BigInt(balances[farm.chainId][farm.vault_addr] || 0);
         const vaultTokenPrice = prices[farm.chainId][farm.vault_addr];
         const zapCurriences = farm.zap_currencies;
-        const combinedUsdcBalance = getCombinedBalance(balances, "usdc");
-        const combinedEthBalance = getCombinedBalance(balances, "eth");
+        const combinedUsdcBalance = getCombinedBalance(balances, farm.chainId, "usdc");
+        const combinedEthBalance = getCombinedBalance(balances, farm.chainId, "native");
         const usdcAddress = addressesByChainId[defaultChainId].usdcAddress;
         let isCrossChain = true;
         const usdcCurrentChainBalance = Number(toEth(combinedUsdcBalance.chainBalances[farm.chainId], 6));
@@ -39,7 +39,7 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
             },
             {
                 tokenAddress: zeroAddress,
-                tokenSymbol: "ETH",
+                tokenSymbol: combinedEthBalance.symbol,
                 amount: combinedEthBalance.formattedBalance.toString(),
                 amountDollar: (Number(combinedEthBalance.formattedBalance) * ethPrice).toString(),
                 price: ethPrice,
@@ -59,7 +59,7 @@ let hop = (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> => {
             },
             {
                 tokenAddress: zeroAddress,
-                tokenSymbol: "ETH",
+                tokenSymbol: combinedEthBalance.symbol,
                 amount: ((Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice) / ethPrice).toString(),
                 amountDollar: (Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice).toString(),
                 price: ethPrice,

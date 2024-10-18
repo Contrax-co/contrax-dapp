@@ -62,7 +62,3 @@ export const tenderlyRpcs: { [key: string]: string } = {
     [CHAIN_ID.ARBITRUM]: `https://arbitrum.gateway.tenderly.co/6YtRegY86MErUrbfeB4e8L`,
     [CHAIN_ID.BASE]: `https://base.gateway.tenderly.co/6lueMXUaDSXb1VtTVFELQ1`,
 };
-
-pools_chain_ids.forEach((item) => {
-    if (!tenderlyRpcs[item]) throw new Error(`Must include tenderly rpc for ${item}`);
-});

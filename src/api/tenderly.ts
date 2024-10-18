@@ -215,6 +215,7 @@ export const traceTransactionAssetChange = async (args: {
 }) => {
     // @ts-ignore
     let rpc = tenderlyRpcs[args.chainId];
+    if (!rpc) throw new Error("Tenderly RPC not present!");
     const publicClient = createPublicClient({
         transport: http(rpc),
     });

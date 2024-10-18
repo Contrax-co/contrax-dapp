@@ -316,7 +316,8 @@ export interface CrossChainTransactionObject {
     max?: boolean;
     simulate?: boolean;
     notificationId?: string;
-    getClients: (chainId: number) => Promise<IClients>;
+    getPublicClient: (chainId: number) => IClients["public"];
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
 }
 
 export interface CrossChainBridgeWithdrawObject {
@@ -327,5 +328,6 @@ export interface CrossChainBridgeWithdrawObject {
     fromToken: Address;
     toToken: Address;
     notificationId?: string;
-    getClients: (chainId: number) => Promise<IClients>;
+    getPublicClient: (chainId: number) => IClients["public"];
+    getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
 }

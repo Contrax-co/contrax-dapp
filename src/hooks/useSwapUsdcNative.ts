@@ -15,7 +15,7 @@ const usdcAddr = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
 const usdceAddress = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 
 const useSwapUsdcNative = () => {
-    const { currentWallet, getClients } = useWallet();
+    const { currentWallet, getClients, getPublicClient, getWalletClient } = useWallet();
     const { balances, reloadBalances } = useBalances();
     const [loading, setLoading] = useState(false);
 
@@ -41,7 +41,9 @@ const useSwapUsdcNative = () => {
                 approvalData.allowanceTarget,
                 BigInt(approvalData.minimumApprovalAmount),
                 currentWallet,
-                client as IClients
+                CHAIN_ID.ARBITRUM,
+                getPublicClient,
+                getWalletClient
             );
             notifyLoading({ title: "Swapping", message: "Creating transaction - 2/3" }, { id: notiId });
             const buildTx = await buildTransaction(route);

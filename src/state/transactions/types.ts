@@ -9,6 +9,7 @@ export interface StateInterface {
 export enum BridgeService {
     LIFI = "LIFI",
     SOCKET_TECH = "SOCKET_TECH",
+    LAYER_ZERO = "LAYER_ZERO",
 }
 
 export enum TransactionStatus {
@@ -71,7 +72,10 @@ export interface WaitForBridgeResultsStep extends BaseStep {
         toChain: number;
         beforeBridgeBalance: string;
         tool?: string;
-    } & ({ bridgeService: BridgeService.LIFI; tool: string } | { bridgeService: BridgeService.SOCKET_TECH });
+    } & (
+        | { bridgeService: BridgeService.LIFI; tool: string }
+        | { bridgeService: BridgeService.SOCKET_TECH | BridgeService.LAYER_ZERO }
+    );
 }
 
 export interface ApproveZapStep extends BaseStep {
@@ -88,7 +92,6 @@ export interface ZapOutStep extends BaseStep {
     type: TransactionTypes.ZAP_OUT;
     txHash?: Hex;
 }
-
 
 export enum TransactionStepStatus {
     PENDING = "PENDING",

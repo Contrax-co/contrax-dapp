@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
+    ApproveBridgeStep,
+    ApproveZapStep,
     BridgeService,
+    InitiateBridgeStep,
     StateInterface,
     Transaction,
     TransactionStep,
@@ -12,7 +15,7 @@ import {
 } from "./types";
 import { backendApi } from "src/api";
 import { Address, createPublicClient, Hex, http, TransactionReceipt } from "viem";
-import { RootState } from "..";
+import store, { RootState } from "..";
 import pools_json from "src/config/constants/pools_json";
 import { SupportedChains } from "src/config/walletConfig";
 import { IClients } from "src/types";
@@ -341,3 +344,148 @@ const transactionsSlice = createSlice({
 export const { reset } = transactionsSlice.actions;
 
 export default transactionsSlice.reducer;
+
+export class TransactionsDB {
+    private id: string;
+    constructor(id: string) {
+        this.id = id;
+    }
+
+    async addApproveZap() {
+        await store.dispatch(
+            addTransactionStepDb({
+                transactionId: this.id,
+                step: {
+                    type: TransactionTypes.APPROVE_ZAP,
+                    status: TransactionStepStatus.IN_PROGRESS,
+                } as ApproveZapStep,
+            })
+        );
+    }
+
+    async approveZap(status: TransactionStepStatus) {
+        await store.dispatch(
+            editTransactionStepDb({
+                transactionId: this.id,
+                stepType: TransactionTypes.APPROVE_ZAP,
+                status,
+            })
+        );
+    }
+
+    async addApproveBridge() {
+        await store.dispatch(
+            addTransactionStepDb({
+                transactionId: this.id,
+                step: {
+                    type: TransactionTypes.APPROVE_BRIDGE,
+                    status: TransactionStepStatus.IN_PROGRESS,
+                } as ApproveBridgeStep,
+            })
+        );
+    }
+
+    async approveBridge(status: TransactionStepStatus) {
+        await store.dispatch(
+            editTransactionStepDb({
+                transactionId: this.id,
+                stepType: TransactionTypes.APPROVE_BRIDGE,
+                status,
+            })
+        );
+    }
+
+    async addZapIn(amountInWei: bigint) {
+        await store.dispatch(
+            addTransactionStepDb({
+                transactionId: this.id,
+                step: {
+                    type: TransactionTypes.ZAP_IN,
+                    amount: amountInWei.toString(),
+                    status: TransactionStepStatus.IN_PROGRESS,
+                } as ZapInStep,
+            })
+        );
+    }
+
+    async zapIn(status: TransactionStepStatus, txHash?: Hex) {
+        await store.dispatch(
+            editTransactionStepDb({
+                transactionId: this.id,
+                stepType: TransactionTypes.ZAP_IN,
+                status,
+                txHash,
+            })
+        );
+    }
+
+    async addZapOut(amountInWei: bigint) {
+        await store.dispatch(
+            addTransactionStepDb({
+                transactionId: this.id,
+                step: {
+                    type: TransactionTypes.ZAP_OUT,
+                    amount: amountInWei.toString(),
+                    status: TransactionStepStatus.IN_PROGRESS,
+                } as ZapOutStep,
+            })
+        );
+    }
+
+    async zapOut(status: TransactionStepStatus, txHash?: Hex) {
+        await store.dispatch(
+            editTransactionStepDb({
+                transactionId: this.id,
+                stepType: TransactionTypes.ZAP_OUT,
+                status,
+                txHash,
+            })
+        );
+    }
+
+    async addInitiateBridge(fromTokenAmount: bigint) {
+        await store.dispatch(
+            addTransactionStepDb({
+                transactionId: this.id,
+                step: {
+                    type: TransactionTypes.INITIATE_BRIDGE,
+                    amount: fromTokenAmount.toString(),
+                    status: TransactionStepStatus.IN_PROGRESS,
+                } as InitiateBridgeStep,
+            })
+        );
+    }
+
+    async initiateBridge(status: TransactionStepStatus) {
+        await store.dispatch(
+            editTransactionStepDb({
+                transactionId: this.id,
+                stepType: TransactionTypes.INITIATE_BRIDGE,
+                status,
+            })
+        );
+    }
+
+    async addWaitForBridge(bridgeInfo?: WaitForBridgeResultsStep["bridgeInfo"]) {
+        await store.dispatch(
+            addTransactionStepDb({
+                transactionId: this.id,
+                step: {
+                    type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+                    status: TransactionStepStatus.IN_PROGRESS,
+                    bridgeInfo,
+                } as WaitForBridgeResultsStep,
+            })
+        );
+    }
+
+    async waitForBridge(status: TransactionStepStatus) {
+        await store.dispatch(
+            editTransactionStepDb({
+                transactionId: this.id,
+                stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+                status,
+            })
+        );
+    }
+}

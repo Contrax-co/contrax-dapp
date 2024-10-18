@@ -30,8 +30,8 @@ export const TokenBalances: FC<IProps> = () => {
     const { prices } = usePriceOfTokens();
 
     const handleCloseModal = useCallback(() => setSelectedToken(undefined), [setSelectedToken]);
-    const usdcBalance = useMemo(() => getCombinedBalance(balances, "usdc"), [balances]);
-    const ethBalance = useMemo(() => getCombinedBalance(balances, "eth"), [balances]);
+    const usdcBalance = useMemo(() => getCombinedBalance(balances, CHAIN_ID.ARBITRUM, "usdc"), [balances]);
+    const ethBalance = useMemo(() => getCombinedBalance(balances, CHAIN_ID.ARBITRUM, "native"), [balances]);
 
     const filteredTokens = useMemo(() => {
         return tokens.filter((item) => {

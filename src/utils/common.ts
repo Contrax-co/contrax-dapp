@@ -256,31 +256,58 @@ export const checkPaymasterApproval = async (client?: IClients) => {
 
 export const getNativeCoinInfo = (chainId: number) => {
     switch (chainId) {
-        case 137:
+        case CHAIN_ID.POLYGON:
             return { logo: "https://cryptologos.cc/logos/polygon-matic-logo.png?v=025", decimal: 18, name: "MATIC" };
+        case CHAIN_ID.CORE:
+            return { logo: "https://cryptologos.cc/logos/core-dao-core-logo.png", decimal: 18, name: "CORE" };
         default:
             return { logo: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=024", decimal: 18, name: "ETH" };
     }
 };
 
-export const getCombinedBalance = (balances: Balances, type: "eth" | "usdc") => {
+/**
+ * @description This function returns combined balance of native or usdc, if there are two or more chains it will add the primary chain balance and any one of the other chain balance which is highest and return it. So the sum which is returned as balance will always be the amount which can be get by combined two chain balances, which makes it so there is only need to bridge from one chain only.
+ *
+ * @param balances
+ * @param primaryChainId The chain on which farm lives on
+ * @param type Do we want native balance combined or usdc combined
+ * @returns
+ */
+export const getCombinedBalance = (balances: Balances, primaryChainId: number, type: "native" | "usdc") => {
     let balance = 0n;
     let chainBalances: { [chainId: string]: bigint } = {};
-    Object.entries(balances || {}).forEach(([chainId, values]) => {
-        const isEth = SupportedChains.find((item) => item.id === Number(chainId))?.nativeCurrency.symbol === "ETH";
-        if (type === "eth" && isEth) {
-            balance += BigInt(values[zeroAddress] || 0);
-            chainBalances[chainId] = BigInt(values[zeroAddress] || 0);
-        } else if (type === "usdc") {
-            // @ts-ignore
-            const usdcAddress = addressesByChainId[chainId].usdcAddress;
+    const primaryChain = SupportedChains.find((item) => item.id === Number(primaryChainId));
+    if (!primaryChain) throw new Error("Invalid Chain");
+    if (type === "native") {
+        const chainGroups = Object.groupBy(SupportedChains, ({ nativeCurrency }) => nativeCurrency.symbol);
+        const relatedNativeCoinChains = chainGroups[primaryChain.nativeCurrency.symbol];
+        Object.entries(balances || {}).forEach(([chainId, values]) => {
+            if (relatedNativeCoinChains?.some((item) => item.id === Number(chainId))) {
+                balance += BigInt(values[zeroAddress] || 0);
+                chainBalances[chainId] = BigInt(values[zeroAddress] || 0);
+            }
+        });
+    } else {
+        Object.entries(balances || {}).forEach(([chainId, values]) => {
+            const usdcAddress = addressesByChainId[Number(chainId)].usdcAddress;
             if (usdcAddress) {
                 balance += BigInt(values[usdcAddress] || 0);
                 chainBalances[chainId] = BigInt(values[usdcAddress] || 0);
             }
+        });
+    }
+    const maxBalance = Object.entries(chainBalances).reduce((acc, curr) => {
+        if (curr[0] !== primaryChainId.toString()) {
+            if (curr[1] > acc) return curr[1];
         }
-    });
-    const formattedBalance = Number(toEth(BigInt(balance), type === "eth" ? 18 : 6));
-    return { formattedBalance, balance, chainBalances };
+        return acc;
+    }, 0n);
+    balance = chainBalances[primaryChainId] + maxBalance;
+    const formattedBalance = Number(toEth(BigInt(balance), type === "usdc" ? 6 : primaryChain.nativeCurrency.decimals));
+    return {
+        formattedBalance,
+        balance,
+        chainBalances,
+        symbol: type === "usdc" ? "USDC" : primaryChain.nativeCurrency.symbol,
+    };
 };
-

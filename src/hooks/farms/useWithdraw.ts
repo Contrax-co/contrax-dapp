@@ -12,7 +12,7 @@ import { parseUnits } from "viem";
 import { PoolDef } from "src/config/constants/pools_json";
 
 const useWithdraw = (farm: PoolDef) => {
-    const { currentWallet, getClients } = useWallet();
+    const { currentWallet, getClients, getPublicClient, getWalletClient } = useWallet();
 
     const { reloadBalances } = useBalances();
     const { reloadSupplies } = useTotalSupplies();
@@ -22,7 +22,7 @@ const useWithdraw = (farm: PoolDef) => {
     const _withdraw = async ({ withdrawAmount, max }: { withdrawAmount: number; max?: boolean }) => {
         if (!currentWallet) return;
         let amountInWei = parseUnits(withdrawAmount.toString(), decimals[farm.chainId][farm.lp_address] || 18);
-        await farmFunctions[farm.id].withdraw({ amountInWei, currentWallet, getClients, max });
+        await farmFunctions[farm.id].withdraw({ amountInWei, currentWallet, getPublicClient, getWalletClient, max });
         reloadBalances();
         reloadSupplies();
     };
@@ -34,7 +34,8 @@ const useWithdraw = (farm: PoolDef) => {
         const difference = await farmFunctions[farm.id]?.withdrawSlippage({
             amountInWei,
             currentWallet,
-            getClients,
+            getPublicClient,
+            getWalletClient,
             max,
             farm,
         });

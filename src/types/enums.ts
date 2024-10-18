@@ -12,6 +12,7 @@ export enum FarmOriginPlatform {
     SwapFish = "SwapFish",
     Clipper = "Clipper",
     Steer = "Steer",
+    Core = "Core",
 }
 export enum FarmTableColumns {
     Token = "Vaults",
@@ -33,6 +34,7 @@ export enum CHAIN_ID {
     LINEA = 59144,
     OPTIMISM = 10,
     BASE = 8453,
+    CORE = 1116,
 }
 export enum FarmSortOptions {
     Default = "Default",
