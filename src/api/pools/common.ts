@@ -84,7 +84,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 finalAmountToDeposit,
                 isBridged,
                 status: bridgeStatus,
-            } = await crossChainBridgeIfNecessary({
+            } = await bridgeIfNeededLayerZero({
                 getWalletClient,
                 getPublicClient,
                 notificationId: id,
@@ -121,8 +121,7 @@ export const zapInBase: ZapInBaseFn = async ({
                     amountInWei = afterGasCut;
                 }
 
-                notifyLoading(loadingMessages.zapping(), { id });
-
+                notifyLoading(loadingMessages.zapping(), { id });                
                 zapperTxn = await awaitTransaction(
                     client.wallet.sendTransaction({
                         to: farm.zapper_addr,
@@ -152,7 +151,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 status: bridgeStatus,
                 isBridged,
                 finalAmountToDeposit,
-            } = await crossChainBridgeIfNecessary({
+            } = await bridgeIfNeededLayerZero({
                 getPublicClient,
                 getWalletClient,
                 notificationId: id,
@@ -451,7 +450,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         // use weth address as tokenId, but in case of some farms (e.g: hop)
         // we need the token of liquidity pair, so use tokenIn if provided
         token = tokenIn ?? wethAddress;
-        const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
+        const { afterBridgeBal, amountToBeBridged } = await bridgeIfNeededLayerZero({
             getPublicClient,
             getWalletClient,
             balances,
@@ -475,7 +474,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
     } else {
-        const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
+        const { afterBridgeBal, amountToBeBridged } = await bridgeIfNeededLayerZero({
             getWalletClient,
             getPublicClient,
             balances,
@@ -600,17 +599,297 @@ export const slippageOut: SlippageOutBaseFn = async ({
     return { difference };
 };
 
-export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTransactionObject, "contractCall">>(
+// export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTransactionObject, "contractCall">>(
+//     obj: T
+// ): Promise<
+//     T["simulate"] extends true
+//         ? {
+//               afterBridgeBal: bigint;
+//               amountToBeBridged: bigint;
+//               //   amountSentForBridging:bigint;
+//               //   amountToGetFromBridging:bigint;
+//               //   amountTotalAfterBridging:bigint;
+//               //   amountWantedAfterBridging:bigint;
+//           }
+//         : {
+//               status: boolean;
+//               error?: string;
+//               isBridged: boolean;
+//               finalAmountToDeposit: bigint;
+//           }
+// > {
+//     const chain = SupportedChains.find((item) => item.id === obj.toChainId);
+//     if (!chain) throw new Error("chain not found");
+//     const toPublicClient = createPublicClient({
+//         chain: chain,
+//         transport: http(),
+//         batch: {
+//             multicall: {
+//                 batchSize: 4096,
+//                 wait: 250,
+//             },
+//         },
+//     }) as IClients["public"];
+
+//     const toBal = await getBalance(obj.toToken, obj.currentWallet, { public: toPublicClient });
+//     if (toBal < obj.toTokenAmount) {
+//         /**
+//          * @description toBalDiff is the amount of token that is needed after subtracting current balance on farm chain
+//          */
+//         const toBalDiff = obj.toTokenAmount - toBal;
+//         const { chainBalances } = getCombinedBalance(
+//             obj.balances,
+//             obj.toChainId,
+//             obj.toToken === zeroAddress ? "native" : "usdc"
+//         );
+//         const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
+//             if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
+//             return false;
+//         })?.[0];
+//         if (!fromChainId) {
+//             if (obj.simulate) {
+//                 // @ts-ignore
+//                 return { afterBridgeBal: BigInt(obj.toTokenAmount), amountToBeBridged: 0n };
+//             } else throw new Error("Insufficient balance");
+//         }
+//         console.log("getting bridge quote");
+//         let quote: LiFiStep;
+//         if (obj.notificationId) notifyLoading(loadingMessages.gettingBridgeQuote(), { id: obj.notificationId });
+
+//         if (true || obj.max) {
+//             store.dispatch(
+//                 addTransactionStepDb({
+//                     transactionId: obj.notificationId!,
+//                     step: {
+//                         type: TransactionTypes.GET_BRIDGE_QUOTE,
+//                         status: TransactionStepStatus.IN_PROGRESS,
+//                     } as GetBridgeQuoteStep,
+//                 })
+//             );
+//             quote = await getQuote({
+//                 fromAddress: obj.currentWallet,
+//                 fromChain: fromChainId,
+//                 toChain: obj.toChainId,
+//                 // @ts-ignore
+//                 fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
+//                 toToken: obj.toToken,
+//                 fromAmount: toBalDiff.toString(),
+//                 order: "RECOMMENDED",
+//                 // @ts-ignore
+//                 denyBridges: "hop",
+//             });
+//         } else {
+//             // quote = await getContractCallsQuote({
+//             //     fromAddress: obj.currentWallet,
+//             //     fromChain: fromChainId,
+//             //     toChain: obj.toChainId,
+//             //     // @ts-ignore
+//             //     fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
+//             //     toToken: obj.toToken,
+//             //     toAmount: toBalDiff.toString(),
+//             //     // toAmount: obj.toTokenAmount.toString(),
+//             //     // contractOutputsToken: obj.contractCall.outputTokenAddress,
+//             //     contractCalls: [
+//             //         // {
+//             //         //     fromAmount: obj.toTokenAmount.toString(),
+//             //         //     fromTokenAddress: obj.toToken,
+//             //         //     toContractAddress: obj.contractCall.to,
+//             //         //     toTokenAddress: obj.contractCall.outputTokenAddress,
+//             //         //     toContractCallData: obj.contractCall.data,
+//             //         //     toContractGasLimit: "2000000",
+//             //         // },
+//             //     ],
+//             // });
+//         }
+//         const route = convertQuoteToRoute(quote);
+//         console.log("route =>", route);
+//         if (obj.simulate) {
+//             let afterBridgeBal = BigInt(route.toAmount) + toBal;
+//             if (afterBridgeBal > BigInt(obj.toTokenAmount)) afterBridgeBal = BigInt(obj.toTokenAmount);
+//             // @ts-ignore
+//             return { afterBridgeBal, amountToBeBridged: BigInt(route.fromAmount) };
+//         }
+
+//         let allStatus: boolean = false;
+//         let i = 1;
+//         let finalAmountToDeposit: bigint = 0n;
+//         for await (const step of route.steps) {
+//             const publicClient = obj.getPublicClient(step.transactionRequest!.chainId!);
+//             if (obj.notificationId)
+//                 notifyLoading(loadingMessages.bridgeStep(i, route.steps.length), { id: obj.notificationId });
+//             const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
+//             const tokenBalance = await getBalance(
+//                 obj.toToken === zeroAddress
+//                     ? zeroAddress
+//                     : addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+//                 obj.currentWallet,
+//                 { public: publicClient }
+//             );
+//             if (tokenBalance < BigInt(step.estimate.fromAmount)) {
+//                 throw new Error("Insufficient Balance");
+//             }
+//             store.dispatch(
+//                 editTransactionStepDb({
+//                     transactionId: obj.notificationId!,
+//                     stepType: TransactionTypes.GET_BRIDGE_QUOTE,
+//                     status: TransactionStepStatus.COMPLETED,
+//                 })
+//             );
+//             if (obj.toToken !== zeroAddress) {
+//                 await store.dispatch(
+//                     addTransactionStepDb({
+//                         transactionId: obj.notificationId!,
+//                         step: {
+//                             type: TransactionTypes.APPROVE_BRIDGE,
+//                             status: TransactionStepStatus.IN_PROGRESS,
+//                         } as ApproveBridgeStep,
+//                     })
+//                 );
+//                 await approveErc20(
+//                     addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
+//                     step.estimate.approvalAddress as Address,
+//                     BigInt(step.estimate.fromAmount),
+//                     obj.currentWallet,
+//                     step.transactionRequest!.chainId!,
+//                     obj.getPublicClient,
+//                     obj.getWalletClient
+//                 );
+//                 await store.dispatch(
+//                     editTransactionStepDb({
+//                         transactionId: obj.notificationId!,
+//                         stepType: TransactionTypes.APPROVE_BRIDGE,
+//                         status: TransactionStepStatus.COMPLETED,
+//                     })
+//                 );
+//             }
+//             const walletClient = await obj.getWalletClient(step.transactionRequest!.chainId!);
+//             const transaction = walletClient.sendTransaction({
+//                 data: data as Hex,
+//                 gasLimit: gasLimit!,
+//                 gasPrice: BigInt(gasPrice!),
+//                 to: to as Address,
+//                 value: BigInt(value!),
+//             });
+//             store.dispatch(
+//                 addTransactionStepDb({
+//                     transactionId: obj.notificationId!,
+//                     step: {
+//                         type: TransactionTypes.INITIATE_BRIDGE,
+//                         amount: toBalDiff.toString(),
+//                         status: TransactionStepStatus.IN_PROGRESS,
+//                     } as InitiateBridgeStep,
+//                 })
+//             );
+//             const res = await awaitTransaction(transaction, { public: publicClient });
+//             if (!res.status) {
+//                 throw new Error(res.error);
+//             }
+//             let status = "PENDING";
+//             store.dispatch(
+//                 editTransactionStepDb({
+//                     transactionId: obj.notificationId!,
+//                     stepType: TransactionTypes.INITIATE_BRIDGE,
+//                     status: TransactionStepStatus.COMPLETED,
+//                 })
+//             );
+//             store.dispatch(
+//                 addTransactionStepDb({
+//                     transactionId: obj.notificationId!,
+//                     step: {
+//                         type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+//                         status: TransactionStepStatus.IN_PROGRESS,
+//                         bridgeInfo: {
+//                             bridgeService: BridgeService.LIFI,
+//                             txHash: res.txHash!,
+//                             fromChain: step.action.fromChainId,
+//                             toChain: step.action.toChainId,
+//                             tool: step.tool,
+//                             beforeBridgeBalance: toBal.toString(),
+//                         },
+//                     } as WaitForBridgeResultsStep,
+//                 })
+//             );
+//             do {
+//                 if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
+//                 try {
+//                     const result = await getStatus({
+//                         txHash: res.txHash!,
+//                         fromChain: step.action.fromChainId,
+//                         toChain: step.action.toChainId,
+//                         bridge: step.tool,
+//                     });
+//                     // @ts-ignore
+//                     if (result.status === "DONE" && result?.receiving?.amount) {
+//                         finalAmountToDeposit = BigInt((result.receiving as any).amount) + toBal;
+//                     }
+//                     status = result.status;
+//                 } catch (_) {}
+
+//                 console.log(`Transaction status for ${res.txHash}:`, status);
+
+//                 // Wait for a short period before checking the status again
+//                 await new Promise((resolve) => setTimeout(resolve, 5000));
+//             } while (status !== "DONE" && status !== "FAILED");
+
+//             if (status === "DONE") {
+//                 store.dispatch(
+//                     editTransactionStepDb({
+//                         transactionId: obj.notificationId!,
+//                         stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+//                         amount: (finalAmountToDeposit - toBal).toString(),
+//                         status: TransactionStepStatus.COMPLETED,
+//                     })
+//                 );
+//                 allStatus = true;
+//             } else {
+//                 store.dispatch(
+//                     editTransactionStepDb({
+//                         transactionId: obj.notificationId!,
+//                         stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+//                         status: TransactionStepStatus.FAILED,
+//                     })
+//                 );
+//                 console.error(`Transaction ${res.txHash} failed`);
+//                 allStatus = false;
+//             }
+//             i++;
+//         }
+//         if (allStatus) {
+//             // @ts-ignore
+//             return {
+//                 status: true,
+//                 isBridged: true,
+//                 finalAmountToDeposit,
+//             };
+//         } else {
+//             // @ts-ignore
+//             return {
+//                 status: false,
+//                 error: "Target chain error",
+//                 isBridged: true,
+//             };
+//         }
+//     } else {
+//         if (obj.simulate) {
+//             // @ts-ignore
+//             return {
+//                 afterBridgeBal: BigInt(obj.toTokenAmount),
+//                 amountToBeBridged: 0n,
+//             };
+//         } else {
+//             // @ts-ignore
+//             return { status: true };
+//         }
+//     }
+// }
+
+export async function bridgeIfNeededLayerZero<T extends Omit<CrossChainTransactionObject, "contractCall">>(
     obj: T
 ): Promise<
     T["simulate"] extends true
         ? {
               afterBridgeBal: bigint;
               amountToBeBridged: bigint;
-              //   amountSentForBridging:bigint;
-              //   amountToGetFromBridging:bigint;
-              //   amountTotalAfterBridging:bigint;
-              //   amountWantedAfterBridging:bigint;
           }
         : {
               status: boolean;
@@ -643,219 +922,78 @@ export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTrans
             obj.toChainId,
             obj.toToken === zeroAddress ? "native" : "usdc"
         );
-        const fromChainId = Object.entries(chainBalances).find(([key, value]) => {
-            if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
-            return false;
-        })?.[0];
+        const fromChainId: number | undefined = Number(
+            Object.entries(chainBalances).find(([key, value]) => {
+                if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
+                return false;
+            })?.[0]
+        );
         if (!fromChainId) {
             if (obj.simulate) {
                 // @ts-ignore
                 return { afterBridgeBal: BigInt(obj.toTokenAmount), amountToBeBridged: 0n };
             } else throw new Error("Insufficient balance");
         }
-        console.log("getting bridge quote");
-        let quote: LiFiStep;
-        if (obj.notificationId) notifyLoading(loadingMessages.gettingBridgeQuote(), { id: obj.notificationId });
 
-        if (true || obj.max) {
-            store.dispatch(
-                addTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    step: {
-                        type: TransactionTypes.GET_BRIDGE_QUOTE,
-                        status: TransactionStepStatus.IN_PROGRESS,
-                    } as GetBridgeQuoteStep,
-                })
-            );
-            quote = await getQuote({
-                fromAddress: obj.currentWallet,
-                fromChain: fromChainId,
-                toChain: obj.toChainId,
-                // @ts-ignore
-                fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
-                toToken: obj.toToken,
-                fromAmount: toBalDiff.toString(),
-                order: "RECOMMENDED",
-                // @ts-ignore
-                denyBridges: "hop",
-            });
-        } else {
-            // quote = await getContractCallsQuote({
-            //     fromAddress: obj.currentWallet,
-            //     fromChain: fromChainId,
-            //     toChain: obj.toChainId,
-            //     // @ts-ignore
-            //     fromToken: obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
-            //     toToken: obj.toToken,
-            //     toAmount: toBalDiff.toString(),
-            //     // toAmount: obj.toTokenAmount.toString(),
-            //     // contractOutputsToken: obj.contractCall.outputTokenAddress,
-            //     contractCalls: [
-            //         // {
-            //         //     fromAmount: obj.toTokenAmount.toString(),
-            //         //     fromTokenAddress: obj.toToken,
-            //         //     toContractAddress: obj.contractCall.to,
-            //         //     toTokenAddress: obj.contractCall.outputTokenAddress,
-            //         //     toContractCallData: obj.contractCall.data,
-            //         //     toContractGasLimit: "2000000",
-            //         // },
-            //     ],
-            // });
-        }
-        const route = convertQuoteToRoute(quote);
-        console.log("route =>", route);
+        const nativePrice = store.getState().prices.prices[fromChainId][zeroAddress];
+        const bridge = new Bridge(
+            obj.currentWallet,
+            fromChainId,
+            obj.toToken === zeroAddress ? zeroAddress : addressesByChainId[fromChainId].usdcAddress,
+            obj.toChainId,
+            obj.toToken,
+            toBalDiff,
+            "",
+            obj.getWalletClient,
+            nativePrice
+        );
+
         if (obj.simulate) {
-            let afterBridgeBal = BigInt(route.toAmount) + toBal;
+            const { amountOut } = await bridge.estimateAmountOut();
+            let afterBridgeBal = amountOut + toBal;
             if (afterBridgeBal > BigInt(obj.toTokenAmount)) afterBridgeBal = BigInt(obj.toTokenAmount);
             // @ts-ignore
-            return { afterBridgeBal, amountToBeBridged: BigInt(route.fromAmount) };
+            return { afterBridgeBal, amountToBeBridged: bridge.fromTokenAmount };
         }
-
-        let allStatus: boolean = false;
-        let i = 1;
+        if (!obj.notificationId) throw new Error("Provide notification id!");
+        const TransactionsStep = new TransactionsDB(obj.notificationId);
         let finalAmountToDeposit: bigint = 0n;
-        for await (const step of route.steps) {
-            const publicClient = obj.getPublicClient(step.transactionRequest!.chainId!);
-            if (obj.notificationId)
-                notifyLoading(loadingMessages.bridgeStep(i, route.steps.length), { id: obj.notificationId });
-            const { data, from, gasLimit, gasPrice, to, value } = step.transactionRequest!;
-            const tokenBalance = await getBalance(
-                obj.toToken === zeroAddress
-                    ? zeroAddress
-                    : addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
-                obj.currentWallet,
-                { public: publicClient }
-            );
-            if (tokenBalance < BigInt(step.estimate.fromAmount)) {
-                throw new Error("Insufficient Balance");
-            }
-            store.dispatch(
-                editTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    stepType: TransactionTypes.GET_BRIDGE_QUOTE,
-                    status: TransactionStepStatus.COMPLETED,
-                })
-            );
-            if (obj.toToken !== zeroAddress) {
-                await store.dispatch(
-                    addTransactionStepDb({
-                        transactionId: obj.notificationId!,
-                        step: {
-                            type: TransactionTypes.APPROVE_BRIDGE,
-                            status: TransactionStepStatus.IN_PROGRESS,
-                        } as ApproveBridgeStep,
-                    })
-                );
-                await approveErc20(
-                    addressesByChainId[step.transactionRequest!.chainId!].usdcAddress,
-                    step.estimate.approvalAddress as Address,
-                    BigInt(step.estimate.fromAmount),
-                    obj.currentWallet,
-                    step.transactionRequest!.chainId!,
-                    obj.getPublicClient,
-                    obj.getWalletClient
-                );
-                await store.dispatch(
-                    editTransactionStepDb({
-                        transactionId: obj.notificationId!,
-                        stepType: TransactionTypes.APPROVE_BRIDGE,
-                        status: TransactionStepStatus.COMPLETED,
-                    })
-                );
-            }
-            const walletClient = await obj.getWalletClient(step.transactionRequest!.chainId!);
-            const transaction = walletClient.sendTransaction({
-                data: data as Hex,
-                gasLimit: gasLimit!,
-                gasPrice: BigInt(gasPrice!),
-                to: to as Address,
-                value: BigInt(value!),
-            });
-            store.dispatch(
-                addTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    step: {
-                        type: TransactionTypes.INITIATE_BRIDGE,
-                        amount: toBalDiff.toString(),
-                        status: TransactionStepStatus.IN_PROGRESS,
-                    } as InitiateBridgeStep,
-                })
-            );
-            const res = await awaitTransaction(transaction, { public: publicClient });
-            if (!res.status) {
-                throw new Error(res.error);
-            }
-            let status = "PENDING";
-            store.dispatch(
-                editTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    stepType: TransactionTypes.INITIATE_BRIDGE,
-                    status: TransactionStepStatus.COMPLETED,
-                })
-            );
-            store.dispatch(
-                addTransactionStepDb({
-                    transactionId: obj.notificationId!,
-                    step: {
-                        type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-                        status: TransactionStepStatus.IN_PROGRESS,
-                        bridgeInfo: {
-                            bridgeService: BridgeService.LIFI,
-                            txHash: res.txHash!,
-                            fromChain: step.action.fromChainId,
-                            toChain: step.action.toChainId,
-                            tool: step.tool,
-                            beforeBridgeBalance: toBal.toString(),
-                        },
-                    } as WaitForBridgeResultsStep,
-                })
-            );
-            do {
-                if (obj.notificationId) notifyLoading(loadingMessages.bridgeDestTxWait(), { id: obj.notificationId });
-                try {
-                    const result = await getStatus({
-                        txHash: res.txHash!,
-                        fromChain: step.action.fromChainId,
-                        toChain: step.action.toChainId,
-                        bridge: step.tool,
-                    });
-                    // @ts-ignore
-                    if (result.status === "DONE" && result?.receiving?.amount) {
-                        finalAmountToDeposit = BigInt((result.receiving as any).amount) + toBal;
-                    }
-                    status = result.status;
-                } catch (_) {}
 
-                console.log(`Transaction status for ${res.txHash}:`, status);
+        //#region Approve
+        notifyLoading(loadingMessages.bridgeStep(1, 3), {
+            id: obj.notificationId,
+        });
+        await TransactionsStep.addApproveBridge();
+        await bridge.approve();
+        await TransactionsStep.approveBridge(TransactionStepStatus.COMPLETED);
+        //#endregion Approve
 
-                // Wait for a short period before checking the status again
-                await new Promise((resolve) => setTimeout(resolve, 5000));
-            } while (status !== "DONE" && status !== "FAILED");
+        //#region Initialize
+        notifyLoading(loadingMessages.bridgeStep(2, 3), {
+            id: obj.notificationId,
+        });
+        await TransactionsStep.addInitiateBridge(bridge.fromTokenAmount);
+        const txHash = await bridge.initialize();
+        await TransactionsStep.initiateBridge(TransactionStepStatus.COMPLETED);
+        //#endregion Initialize
 
-            if (status === "DONE") {
-                store.dispatch(
-                    editTransactionStepDb({
-                        transactionId: obj.notificationId!,
-                        stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-                        amount: (finalAmountToDeposit - toBal).toString(),
-                        status: TransactionStepStatus.COMPLETED,
-                    })
-                );
-                allStatus = true;
-            } else {
-                store.dispatch(
-                    editTransactionStepDb({
-                        transactionId: obj.notificationId!,
-                        stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
-                        status: TransactionStepStatus.FAILED,
-                    })
-                );
-                console.error(`Transaction ${res.txHash} failed`);
-                allStatus = false;
-            }
-            i++;
-        }
-        if (allStatus) {
+        //#region WaitForBridge
+        notifyLoading(loadingMessages.bridgeStep(3, 3), {
+            id: obj.notificationId,
+        });
+        await TransactionsStep.addWaitForBridge({
+            bridgeService: BridgeService.LAYER_ZERO,
+            txHash: txHash,
+            fromChain: bridge.fromChainId,
+            toChain: bridge.toChainId,
+            beforeBridgeBalance: bridge.fromTokenAmount.toString(),
+        });
+        const bridgeResult = await bridge.waitAndGetDstAmt();
+        await TransactionsStep.waitForBridge(TransactionStepStatus.COMPLETED);
+        //#endregion WaitForBridge
+
+        if (bridgeResult) {
+            finalAmountToDeposit = bridgeResult.receivedToken + toBal;
             // @ts-ignore
             return {
                 status: true,

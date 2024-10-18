@@ -22,7 +22,7 @@ import {
     simulateTransaction,
 } from "../tenderly";
 import { backendApi, isGasSponsored } from "..";
-import { zapOutBase, slippageOut, crossChainBridgeIfNecessary } from "./common";
+import { zapOutBase, slippageOut, bridgeIfNeededLayerZero } from "./common";
 import merge from "lodash.merge";
 import { encodeFunctionData, getContract, Hex, zeroAddress } from "viem";
 import pools_json from "src/config/constants/pools_json";
@@ -145,7 +145,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     finalAmountToDeposit,
                     isBridged,
                     status: bridgeStatus,
-                } = await crossChainBridgeIfNecessary({
+                } = await bridgeIfNeededLayerZero({
                     getPublicClient,
                     getWalletClient,
                     notificationId: id,
@@ -252,7 +252,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     status: bridgeStatus,
                     isBridged,
                     finalAmountToDeposit,
-                } = await crossChainBridgeIfNecessary({
+                } = await bridgeIfNeededLayerZero({
                     getPublicClient,
                     getWalletClient,
                     notificationId: id,
@@ -426,7 +426,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             // use weth address as tokenId, but in case of some farms (e.g: hop)
             // we need the token of liquidity pair, so use tokenIn if provided
             token = tokenIn ?? wethAddress;
-            const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
+            const { afterBridgeBal, amountToBeBridged } = await bridgeIfNeededLayerZero({
                 getPublicClient,
                 getWalletClient,
                 balances,
@@ -455,7 +455,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             transaction.input = populated.data || "";
             transaction.value = populated.value?.toString();
         } else {
-            const { afterBridgeBal, amountToBeBridged } = await crossChainBridgeIfNecessary({
+            const { afterBridgeBal, amountToBeBridged } = await bridgeIfNeededLayerZero({
                 getPublicClient,
                 getWalletClient,
                 balances,
