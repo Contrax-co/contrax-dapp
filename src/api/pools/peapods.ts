@@ -13,7 +13,7 @@ import {
     ZapOutFn,
 } from "./types";
 import { defaultChainId } from "src/config/constants";
-import { crossChainBridgeIfNecessary, slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
+import { bridgeIfNeededLayerZero, slippageIn, slippageOut, zapInBase, zapOutBase } from "./common";
 import { TenderlySimulateTransactionBody } from "src/types/tenderly";
 import { filterAssetChanges, simulateTransaction } from "../tenderly";
 import { isGasSponsored } from "..";
@@ -189,7 +189,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                 finalAmountToDeposit,
                 isBridged,
                 status: bridgeStatus,
-            } = await crossChainBridgeIfNecessary({
+            } = await bridgeIfNeededLayerZero({
                 getPublicClient,
                 getWalletClient,
                 notificationId: id,

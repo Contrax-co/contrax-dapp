@@ -50,7 +50,7 @@ const baseAddresses: Addresses = {
 const coreAddresses: Addresses = {
     bridgedUsdAddress: "0xa4151B2B3e269645181dCcF2D426cE75fcbDeca9",
     factoryAddress: "" as Address,
-    wethAddress: "0xeAB3aC417c4d6dF6b143346a46fEe1B847B50296",
+    wethAddress: "0x40375C92d9FAf44d2f9db9Bd9ba41a3317a2404f",
     nativeUsdAddress: "0xa4151B2B3e269645181dCcF2D426cE75fcbDeca9",
     usdcAddress: "0xa4151B2B3e269645181dCcF2D426cE75fcbDeca9",
     arbitrumAddress: "",

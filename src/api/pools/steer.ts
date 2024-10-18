@@ -22,7 +22,7 @@ import {
     simulateTransaction,
 } from "../tenderly";
 import { isGasSponsored } from "..";
-import { zapOutBase, slippageOut, slippageIn, crossChainBridgeIfNecessary, zapInBase } from "./common";
+import { zapOutBase, slippageOut, slippageIn, zapInBase } from "./common";
 import merge from "lodash.merge";
 import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";

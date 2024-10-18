@@ -4,7 +4,7 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { getDefaultExternalAdapters } from "@web3auth/default-evm-adapter";
-import { POLLING_INTERVAL, walletConnectProjectId, WEB3AUTH_CLIENT_ID } from "./constants";
+import { ALCHEMY_KEY, POLLING_INTERVAL, walletConnectProjectId, WEB3AUTH_CLIENT_ID } from "./constants";
 // import { Web3Auth } from "@web3auth/modal";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { providers } from "ethers";
@@ -30,36 +30,38 @@ import { createConfig, createConnector as createWagmiConnector } from "wagmi";
 
 Object.assign(arbitrum.rpcUrls, {
     alchemy: {
-        http: ["https://arb-mainnet.g.alchemy.com/v2"],
+        http: ["https://arb-mainnet.g.alchemy.com/v2/" + ALCHEMY_KEY],
     },
 });
 Object.assign(mainnet.rpcUrls, {
     alchemy: {
-        http: ["https://eth-mainnet.g.alchemy.com/v2"],
+        http: ["https://eth-mainnet.g.alchemy.com/v2/" + ALCHEMY_KEY],
     },
 });
 Object.assign(polygon.rpcUrls, {
     alchemy: {
-        http: ["https://polygon-mainnet.g.alchemy.com/v2"],
+        http: ["https://polygon-mainnet.g.alchemy.com/v2/" + ALCHEMY_KEY],
     },
 });
 Object.assign(optimism.rpcUrls, {
     alchemy: {
-        http: ["https://opt-mainnet.g.alchemy.com/v2"],
+        http: ["https://opt-mainnet.g.alchemy.com/v2/" + ALCHEMY_KEY],
     },
 });
 Object.assign(linea.rpcUrls, {
     alchemy: {
-        http: ["https://linea-mainnet.g.alchemy.com/v2"],
+        http: ["https://linea-mainnet.g.alchemy.com/v2/" + ALCHEMY_KEY],
     },
 });
 Object.assign(base.rpcUrls, {
     alchemy: {
-        http: ["https://base-mainnet.g.alchemy.com/v2"],
+        http: ["https://base-mainnet.g.alchemy.com/v2/" + ALCHEMY_KEY],
     },
 });
 
-export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc, base, coreDao] as const;
+export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc, base, coreDao] as (Chain & {
+    rpcUrls: { alchemy?: { http: string[] } };
+})[];
 
 // #region web3auth config
 export const ARBITRUM_MAINNET = "https://arb1.arbitrum.io/rpc";
@@ -134,7 +136,7 @@ export const web3authProvider = web3AuthInstance.provider;
 export const rainbowConfig = getDefaultConfig({
     appName: "Contrax",
     projectId: walletConnectProjectId,
-    chains: SupportedChains,
+    chains: SupportedChains as [Chain, ...Chain[]],
     transports: SupportedChains.reduce((acc, curr) => {
         acc[curr.id] = http();
         return acc;

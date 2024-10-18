@@ -4,6 +4,7 @@ import { Decimals, StateInterface, UpdateDecimalsActionPayload } from "./types";
 import tokens from "src/config/constants/tokens";
 import { Common_Chains_State } from "src/config/constants/pools_json";
 import { CHAIN_ID } from "src/types/enums";
+import { addressesByChainId } from "src/config/constants/contracts";
 
 const initialState: StateInterface = { decimals: Common_Chains_State, isLoading: false, isFetched: false };
 
@@ -29,6 +30,7 @@ export const fetchDecimals = createAsyncThunk(
         });
         // Extra addresses for balance
         addresses[CHAIN_ID.BASE].add("0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913");
+        addresses[CHAIN_ID.CORE].add(addressesByChainId[CHAIN_ID.CORE].usdcAddress);
 
         let decimals: Decimals = {};
         await Promise.all(
