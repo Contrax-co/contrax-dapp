@@ -16,6 +16,8 @@ import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageW
 import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
 import { PoolDef } from "src/config/constants/pools_json";
 import useWallet from "src/hooks/useWallet";
+import moment from "moment";
+import useStCoreRedeem from "src/hooks/farms/useStCoreRedeem";
 
 interface Props {
     farm: PoolDef;
@@ -41,6 +43,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         isLoadingTransaction,
     } = useDetailInput(farm);
     const { farmDetails } = useFarmDetails();
+    const { isLoading: isStCoreRedeeming, redeem } = useStCoreRedeem();
     const farmData = farmDetails[farm.id];
 
     const dispatch = useAppDispatch();
@@ -87,7 +90,6 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
             handleSubmit();
         }
     };
-
     return (
         <form
             className={`${styles.inputContainer} ${lightMode && styles.inputContainer_light}`}
@@ -96,53 +98,137 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
             {isLoadingTransaction && <Loader />}
             {isLoadingFarm && <Skeleton w={100} h={20} style={{ marginLeft: "auto" }} />}
 
-            {!isLoadingFarm && currentWallet ? (
-                <Select
-                    options={selectOptions}
-                    value={currencySymbol}
-                    setValue={(val) => setFarmOptions({ currencySymbol: val })}
-                    extraText={selectExtraOptions}
-                />
-            ) : (
-                <div></div>
-            )}
-            <div></div>
+            {farm.id === 301 && transactionType === FarmTransactionType.Withdraw ? (
+                <>
+                    <div style={{ gridArea: "1/1/1/span 2", display: "flex", flexFlow: "column", gap: 10 }}>
+                        <div
+                            style={{
+                                display: "flex",
+                                // flexFlow: "column",
+                                alignItems: "center",
+                                gap: 10,
+                            }}
+                        >
+                            <p>
+                                Redeemable:{" "}
+                                {Number(
+                                    farmDetails?.[farm.id]?.withdrawableAmounts[1].amountDollar || 0
+                                ).toLocaleString()}
+                                $
+                            </p>
+                            <button
+                                disabled={isStCoreRedeeming}
+                                className={`custom-button ${lightMode && "custom-button-light"}`}
+                                style={{ width: 100, height: 40, minHeight: 0, padding: 0, minWidth: 0 }}
+                                onClick={() => redeem()}
+                                type="button"
+                            >
+                                Redeem
+                            </button>
+                        </div>
+                        <p>Redeem Records</p>
+                        <div>
+                            {farmDetails?.[farm.id]?.extraData?.redeemRecords.map((item, i) => (
+                                <div
+                                    key={i}
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        background: "var(--background_light)",
+                                        padding: "2px 10px",
+                                        borderRadius: 4,
+                                        marginBottom: 5,
+                                    }}
+                                >
+                                    <p>$ {item.amountDollar.toLocaleString()}</p>
+                                    <p>Unlocks At {moment(Number(item.unlockTime) * 1000).calendar()}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                background: "var(--background_light)",
+                                padding: "20px 20px",
 
-            <div className={styles.inputWrapper}>
-                <input
-                    type="number"
-                    placeholder="0"
-                    required
-                    value={noExponents(amount)}
-                    max={maxBalance}
-                    onChange={handleInput}
-                />
-                <div className={styles.maxContainer}>
-                    <p className={styles.maxBtn} onClick={() => setMax(true)}>
-                        MAX
-                    </p>
-                    <UsdToggle showInUsd={showInUsd} handleToggleShowInUsdc={handleToggleShowInUsdc} />
-                </div>
-            </div>
-            <button
-                className={`custom-button ${lightMode && "custom-button-light"}`}
-                type="submit"
-                disabled={
-                    parseFloat(amount) <= 0 || isNaN(parseFloat(amount)) || isLoadingTransaction || fetchingSlippage
-                }
-            >
-                {!currentWallet
-                    ? "Please Login"
-                    : parseFloat(amount) > 0
-                    ? parseFloat(amount) > parseFloat(maxBalance)
-                        ? "Insufficent Balance"
-                        : fetchingSlippage
-                        ? "Simulating..."
-                        : transactionType === FarmTransactionType.Deposit
-                        ? "Deposit"
-                        : "Withdraw"
-                    : "Enter Amount"}
-            </button>
+                                borderRadius: 4,
+                                marginBottom: 5,
+                            }}
+                        >
+                            <p>Total Unlock Amount</p>
+                            <p>$ {farmDetails?.[farm.id]?.extraData?.unlockAmountDollar.toLocaleString()}</p>
+                        </div>
+                        <div
+                            style={{
+                                display: "flex",
+                                flexFlow: "column",
+                                alignItems: "center",
+                                justifyContent: "flex-start",
+                            }}
+                        >
+                            <button
+                                disabled={farmDetails?.[farm.id]?.extraData?.unlockAmountDollar === 0}
+                                className={`custom-button ${lightMode && "custom-button-light"}`}
+                            >
+                                Withdraw
+                            </button>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <>
+                    {!isLoadingFarm && currentWallet ? (
+                        <Select
+                            options={selectOptions}
+                            value={currencySymbol}
+                            setValue={(val) => setFarmOptions({ currencySymbol: val })}
+                            extraText={selectExtraOptions}
+                        />
+                    ) : (
+                        <div></div>
+                    )}
+                    <div></div>
+                    <div className={styles.inputWrapper}>
+                        <input
+                            type="number"
+                            placeholder="0"
+                            required
+                            value={noExponents(amount)}
+                            max={maxBalance}
+                            onChange={handleInput}
+                        />
+                        <div className={styles.maxContainer}>
+                            <p className={styles.maxBtn} onClick={() => setMax(true)}>
+                                MAX
+                            </p>
+                            <UsdToggle showInUsd={showInUsd} handleToggleShowInUsdc={handleToggleShowInUsdc} />
+                        </div>
+                    </div>
+                    <button
+                        className={`custom-button ${lightMode && "custom-button-light"}`}
+                        type="submit"
+                        disabled={
+                            parseFloat(amount) <= 0 ||
+                            isNaN(parseFloat(amount)) ||
+                            isLoadingTransaction ||
+                            fetchingSlippage
+                        }
+                    >
+                        {!currentWallet
+                            ? "Please Login"
+                            : parseFloat(amount) > 0
+                            ? parseFloat(amount) > parseFloat(maxBalance)
+                                ? "Insufficent Balance"
+                                : fetchingSlippage
+                                ? "Simulating..."
+                                : transactionType === FarmTransactionType.Deposit
+                                ? "Deposit"
+                                : "Withdraw"
+                            : "Enter Amount"}
+                    </button>
+                </>
+            )}
 
             <div style={{ justifyContent: "flex-start" }} className="center">
                 <p className={styles.slippage}>Slippage: &nbsp;</p>

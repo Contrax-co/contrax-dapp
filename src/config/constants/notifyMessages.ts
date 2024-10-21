@@ -16,6 +16,10 @@ export const errorMessages: ErrorMessages = {
 };
 
 export const successMessages: SuccessMessages = {
+    redeem: () => ({
+        title: "Redeem!",
+        message: "Successful",
+    }),
     deposit: () => ({
         title: "Deposit!",
         message: "Successful",
@@ -94,5 +98,13 @@ export const loadingMessages: LoadingMessages = {
     withdrawBridgeDestTxWait: () => ({
         title: "Withdrawing...",
         message: `Waiting for destination transaction to be mined`,
+    }),
+    approving: () => ({
+        title: "Approving",
+        message: "Please Wait...",
+    }),
+    redeeming: () => ({
+        title: "Redeeming",
+        message: "Please Wait...",
     }),
 };

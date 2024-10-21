@@ -68,6 +68,7 @@ export interface ErrorMessages {
 }
 
 export interface SuccessMessages {
+    redeem: () => NotifyMessage;
     deposit: () => NotifyMessage;
     zapIn: () => NotifyMessage;
     withdraw: () => NotifyMessage;
@@ -90,6 +91,8 @@ export interface LoadingMessages {
     withdrawBridgeQuote: () => NotifyMessage;
     withdrawBridgeStep: (step: number, totalSteps: number) => NotifyMessage;
     withdrawBridgeDestTxWait: () => NotifyMessage;
+    approving: () => NotifyMessage;
+    redeeming: () => NotifyMessage;
 }
 
 export interface AccountInfo {

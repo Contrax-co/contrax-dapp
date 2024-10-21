@@ -23,7 +23,9 @@ const useFarmDetails = () => {
 
     const reloadFarmData = useCallback(() => {
         if (isBalancesFetched && isPricesFetched && currentWallet) {
-            dispatch(updateFarmDetails({ farms, totalSupplies, currentWallet, balances, prices, decimals }));
+            dispatch(
+                updateFarmDetails({ farms, totalSupplies, currentWallet, balances, prices, decimals, getPublicClient })
+            );
             dispatch(
                 updateEarnings({
                     farms,

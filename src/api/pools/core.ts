@@ -1,4 +1,4 @@
-import { approveErc20 } from "src/api/token";
+import { approveErc20, getBalance } from "src/api/token";
 import { awaitTransaction, getCombinedBalance, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { addressesByChainId } from "src/config/constants/contracts";
@@ -8,6 +8,7 @@ import {
     GetFarmDataProcessedFn,
     SlippageInBaseFn,
     SlippageOutBaseFn,
+    StCoreFarmFunctions,
     TokenAmounts,
     ZapInBaseFn,
     ZapInFn,
@@ -27,7 +28,7 @@ import { zapOutBase, slippageOut, slippageIn, zapInBase, bridgeIfNeededLayerZero
 import merge from "lodash.merge";
 import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
-import { Address, encodeFunctionData, zeroAddress } from "viem";
+import { Address, encodeFunctionData, formatUnits, zeroAddress } from "viem";
 import store from "src/state";
 import { ApproveZapStep, TransactionStepStatus, TransactionTypes, ZapInStep } from "src/state/transactions/types";
 import {
@@ -39,8 +40,43 @@ import {
 } from "src/state/transactions/transactionsReducer";
 import zapperAbi from "src/assets/abis/zapperAbi";
 import { SimulationParametersOverrides } from "@tenderly/sdk";
+import { IClients } from "src/types";
+import { Prices } from "src/state/prices/types";
 
-let core = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
+const EarnAbi = [
+    {
+        outputs: [
+            { name: "unlockedAmount", internalType: "uint256", type: "uint256" },
+            { name: "lockedAmount", internalType: "uint256", type: "uint256" },
+        ],
+        inputs: [{ name: "_account", internalType: "address", type: "address" }],
+        name: "getRedeemAmount",
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        outputs: [
+            {
+                components: [
+                    { name: "redeemTime", internalType: "uint256", type: "uint256" },
+                    { name: "unlockTime", internalType: "uint256", type: "uint256" },
+                    { name: "amount", internalType: "uint256", type: "uint256" },
+                    { name: "stCore", internalType: "uint256", type: "uint256" },
+                    { name: "protocolFee", internalType: "uint256", type: "uint256" },
+                ],
+                name: "",
+                internalType: "struct RedeemRecord[]",
+                type: "tuple[]",
+            },
+        ],
+        inputs: [{ name: "_account", internalType: "address", type: "address" }],
+        name: "getRedeemRecords",
+        stateMutability: "view",
+        type: "function",
+    },
+] as const;
+
+let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, "deposit" | "withdraw"> {
     const farm = pools_json.find((farm) => farm.id === farmId)!;
 
     const getProcessedFarmData: GetFarmDataProcessedFn = (balances, prices, decimals, vaultTotalSupply) => {
@@ -99,8 +135,90 @@ let core = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"
             isCrossChain,
             vaultBalanceFormated: (Number(toEth(BigInt(vaultTotalSupply ?? 0))) * vaultTokenPrice).toString(),
             id: farm.id,
+            extraData: {} as any,
         };
         return result;
+    };
+
+    const fetchRedeemAndWithdraw: StCoreFarmFunctions["fetchRedeemAndWithdraw"] = async (args) => {
+        const publicClient = args.getPublicClient(farm.chainId);
+        const earnContract = "0xf5fA1728bABc3f8D2a617397faC2696c958C3409";
+        const stakingAddr = await publicClient.readContract({
+            address: farm.zapper_addr,
+            abi: zapperAbi,
+            functionName: "userStakingContracts",
+            args: [args.currentWallet],
+        });
+
+        const [unlockedAmount, lockedAmount] = await publicClient.readContract({
+            abi: EarnAbi,
+            address: earnContract,
+            functionName: "getRedeemAmount",
+            args: [stakingAddr],
+        });
+
+        const redeemRecords = await publicClient.readContract({
+            abi: EarnAbi,
+            address: earnContract,
+            functionName: "getRedeemRecords",
+            args: [stakingAddr],
+        });
+        const unlockAmountDollar =
+            Number(formatUnits(unlockedAmount, 18)) *
+            args.prices[farm.chainId][addressesByChainId[farm.chainId].wethAddress];
+        const lockAmountDollar =
+            Number(formatUnits(lockedAmount, 18)) *
+            args.prices[farm.chainId][addressesByChainId[farm.chainId].wethAddress];
+        return {
+            unlockedAmount: unlockedAmount.toString(),
+            unlockAmountDollar,
+            lockAmountDollar,
+            lockedAmount: lockedAmount.toString(),
+            redeemRecords: redeemRecords.map((item) => ({
+                redeemTime: item.redeemTime.toString(),
+                unlockTime: item.unlockTime.toString(),
+                amount: item.amount.toString(),
+                amountDollar: Number(formatUnits(item.amount, 18)) * args.prices[farm.chainId][zeroAddress],
+                stCore: item.stCore.toString(),
+                stCoreDollar:
+                    Number(formatUnits(item.stCore, 18)) *
+                    args.prices[farm.chainId][addressesByChainId[farm.chainId].wethAddress],
+                protocolFee: item.protocolFee.toString(),
+            })),
+        };
+    };
+
+    const redeem: StCoreFarmFunctions["redeem"] = async ({ currentWallet, getPublicClient, getWalletClient }) => {
+        const publicClient = getPublicClient(farm.chainId);
+        const bal = await getBalance(farm.vault_addr, currentWallet, { public: publicClient });
+        const notiId = notifyLoading(loadingMessages.approving());
+        await approveErc20(
+            farm.vault_addr,
+            farm.zapper_addr,
+            bal,
+            currentWallet,
+            farm.chainId,
+            getPublicClient,
+            getWalletClient
+        );
+        notifyLoading(loadingMessages.redeeming(), { id: notiId });
+        const walletClient = await getWalletClient(farm.chainId);
+        const res = await awaitTransaction(
+            walletClient.writeContract({
+                address: farm.zapper_addr,
+                abi: zapperAbi,
+                functionName: "redeem",
+                args: [farm.vault_addr, bal],
+            }),
+            { public: publicClient }
+        );
+        dismissNotify(notiId);
+        if (res.status) {
+            notifySuccess(successMessages.redeem());
+        } else {
+            notifyError(errorMessages.generalError("Error redeeming..."));
+        }
+        return res;
     };
 
     const slippageIn: SlippageInBaseFn = async (args) => {
@@ -229,6 +347,8 @@ let core = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"
         getProcessedFarmData,
         zapIn,
         zapOut,
+        redeem,
+        fetchRedeemAndWithdraw,
         zapInSlippage,
         zapOutSlippage,
     };

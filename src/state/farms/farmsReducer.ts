@@ -14,7 +14,7 @@ import VaultAbi from "src/assets/abis/vault.json";
 import { Address, erc20Abi, getContract } from "viem";
 import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
 import { IS_LEGACY, defaultChainId } from "src/config/constants";
-import { FarmTransactionType } from "src/types/enums";
+import { FarmOriginPlatform, FarmTransactionType } from "src/types/enums";
 
 const initialState: StateInterface = {
     farmDetails: {},
@@ -32,27 +32,50 @@ const initialState: StateInterface = {
 
 export const updateFarmDetails = createAsyncThunk(
     "farms/updateFarmDetails",
-    async ({ currentWallet, farms, totalSupplies, balances, prices, decimals }: FetchFarmDetailsAction, thunkApi) => {
+    async (
+        { currentWallet, farms, totalSupplies, balances, prices, decimals, getPublicClient }: FetchFarmDetailsAction,
+        thunkApi
+    ) => {
         if (!currentWallet) return;
         try {
             const data: FarmDetails = {};
-            farms.forEach((farm) => {
-                data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(
-                    balances,
-                    prices,
-                    decimals,
-                    totalSupplies[farm.chainId][farm.vault_addr]
-                );
-            });
-            // const usdcI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "USDC");
-            // const ethI = data[farms[0].id]?.depositableAmounts.findIndex((item) => item.tokenSymbol === "ETH");
+            farms
+                .filter((farm) => farm.originPlatform !== FarmOriginPlatform.Core)
+                .forEach((farm) => {
+                    data[farm.id] = farmFunctions[farm.id]?.getProcessedFarmData(
+                        balances,
+                        prices,
+                        decimals,
+                        totalSupplies[farm.chainId][farm.vault_addr]
+                    );
+                });
 
-            // if (
-            //     Number(data[farms[0].id]?.depositableAmounts[ethI!].amountDollar) >
-            //     Number(data[farms[0].id]?.depositableAmounts[usdcI!].amountDollar)
-            // ) {
-            //     thunkApi.dispatch(setCurrencySymbol("ETH"));
-            // }
+            // #region stCoreFarm data fetch
+            const stCoreFarmId = 301;
+            const stCoreFarm = farms.find((farm) => farm.id === stCoreFarmId);
+            if (!stCoreFarm) return;
+            data[stCoreFarm.id] = farmFunctions[stCoreFarm.id]?.getProcessedFarmData(
+                balances,
+                prices,
+                decimals,
+                totalSupplies[stCoreFarm.chainId][stCoreFarm.vault_addr]
+            );
+            // @ts-ignore
+            const redeemData = await farmFunctions[stCoreFarm.id].fetchRedeemAndWithdraw({
+                getPublicClient,
+                currentWallet,
+                prices,
+            });
+            Object.assign(data[stCoreFarm.id]?.extraData!, redeemData);
+            // @ts-ignore
+            data[stCoreFarm.id]!.withdrawableAmounts[0].amountDollar =
+                // @ts-ignore
+                data[stCoreFarm.id]?.extraData?.unlockAmountDollar + data[stCoreFarm.id]?.extraData?.lockAmountDollar;
+            // @ts-ignore
+            data[stCoreFarm.id]!.withdrawableAmounts[0].amount =
+                // @ts-ignore
+                data[stCoreFarm.id]?.extraData?.unlockedAmount + data[stCoreFarm.id]?.extraData?.lockedAmount;
+            // #endregion stCoreFarm data fetch
 
             return { data, currentWallet };
         } catch (error) {

@@ -30,6 +30,7 @@ export interface FetchFarmDetailsAction {
     farms: PoolDef[];
     totalSupplies: TotalSupplies;
     currentWallet: string;
+    getPublicClient: (chainId: number) => IClients["public"];
     balances: Balances;
     prices: Prices;
     decimals: Decimals;
