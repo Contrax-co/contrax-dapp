@@ -13,11 +13,37 @@ export const GET_PRICE_TOKEN = (networkName: string, tokenAddress: string) => [
     tokenAddress,
 ];
 
-export const FARM_ZAP_IN = (currentWallet: string, farmId: number) => ["farm", "function", "zapIn", farmId, currentWallet];
+export const FARM_ZAP_IN = (currentWallet: string, farmId: number) => [
+    "farm",
+    "function",
+    "zapIn",
+    farmId,
+    currentWallet,
+];
 
-export const FARM_ZAP_OUT = (currentWallet: string, farmId: number) => ["farm", "function", "zapOut", farmId, currentWallet];
+export const FARM_REDEEM = (currentWallet: string, farmId: number) => [
+    "farm",
+    "function",
+    "redeem",
+    farmId,
+    currentWallet,
+];
 
-export const FARM_DEPOSIT = (currentWallet: string, farmId: number) => ["farm", "function", "deposit", farmId, currentWallet];
+export const FARM_ZAP_OUT = (currentWallet: string, farmId: number) => [
+    "farm",
+    "function",
+    "zapOut",
+    farmId,
+    currentWallet,
+];
+
+export const FARM_DEPOSIT = (currentWallet: string, farmId: number) => [
+    "farm",
+    "function",
+    "deposit",
+    farmId,
+    currentWallet,
+];
 
 export const FARM_WITHDRAW = (currentWallet: string, farmId: number) => [
     "farm",

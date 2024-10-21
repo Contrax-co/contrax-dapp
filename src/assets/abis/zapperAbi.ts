@@ -73,6 +73,23 @@ const zapperAbi = [
         stateMutability: "payable",
         type: "function",
     },
+    {
+        outputs: [{ name: "", internalType: "address", type: "address" }],
+        inputs: [{ name: "", internalType: "address", type: "address" }],
+        name: "userStakingContracts",
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        outputs: [{ name: "stCoreRedeemed", internalType: "uint256", type: "uint256" }],
+        inputs: [
+            { name: "vault", internalType: "contract IVault", type: "address" },
+            { name: "withdrawAmount", internalType: "uint256", type: "uint256" },
+        ],
+        name: "redeem",
+        stateMutability: "nonpayable",
+        type: "function",
+    },
 ] as const;
 
 export default zapperAbi;

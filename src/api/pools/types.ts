@@ -3,6 +3,7 @@ import { Balances } from "src/state/balances/types";
 import { Decimals } from "src/state/decimals/types";
 import { Prices } from "src/state/prices/types";
 import { EstimateTxGasArgs, IClients } from "src/types";
+import { awaitTransaction } from "src/utils/common";
 import { Address } from "viem";
 
 export interface ZapInArgs {
@@ -70,6 +71,7 @@ export interface FarmDataProcessed {
     vaultBalanceFormated: string;
     isCrossChain: boolean;
     id: number;
+    extraData?: Awaited<ReturnType<StCoreFarmFunctions["fetchRedeemAndWithdraw"]>>;
 }
 
 export interface SlippageOutArgs {
@@ -105,3 +107,31 @@ export interface FarmFunctions {
     withdrawSlippage?: SlippageWithdrawBaseFn;
 }
 export type DynamicFarmFunctions = (farmId: number) => FarmFunctions;
+
+export interface StCoreFarmFunctions extends FarmFunctions {
+    fetchRedeemAndWithdraw: (args: {
+        getPublicClient: (chainId: number) => IClients["public"];
+        currentWallet: Address;
+        prices: Prices;
+    }) => Promise<{
+        unlockedAmount: string;
+        unlockAmountDollar: number;
+        lockAmountDollar: number;
+        lockedAmount: string;
+        redeemRecords: {
+            redeemTime: string;
+            unlockTime: string;
+            amount: string;
+            stCore: string;
+            amountDollar: number;
+            stCoreDollar: number;
+            protocolFee: string;
+        }[];
+    }>;
+
+    redeem: (args: {
+        getPublicClient: (chainId: number) => IClients["public"];
+        getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
+        currentWallet: Address;
+    }) => ReturnType<typeof awaitTransaction>;
+}
