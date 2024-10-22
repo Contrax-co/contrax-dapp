@@ -28,7 +28,16 @@ import { zapOutBase, slippageOut, slippageIn, zapInBase, bridgeIfNeededLayerZero
 import merge from "lodash.merge";
 import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
-import { Address, encodeFunctionData, formatUnits, zeroAddress } from "viem";
+import {
+    Address,
+    encodeFunctionData,
+    encodePacked,
+    formatUnits,
+    keccak256,
+    numberToHex,
+    StateOverride,
+    zeroAddress,
+} from "viem";
 import store from "src/state";
 import { ApproveZapStep, TransactionStepStatus, TransactionTypes, ZapInStep } from "src/state/transactions/types";
 import {
@@ -42,6 +51,7 @@ import zapperAbi from "src/assets/abis/zapperAbi";
 import { SimulationParametersOverrides } from "@tenderly/sdk";
 import { IClients } from "src/types";
 import { Prices } from "src/state/prices/types";
+import { getAllowanceSlot, getBalanceSlot } from "src/config/constants/storageSlots";
 
 const EarnAbi = [
     {
@@ -238,37 +248,27 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                 amountInWei = BigInt(balance);
             }
             //#endregion
-            let state_overrides: SimulationParametersOverrides | undefined = undefined;
-            let balance_overrides: { [key: string]: string } | undefined = undefined;
+            let stateOverrides: StateOverride = [];
             if (token !== zeroAddress) {
-                state_overrides = getAllowanceStateOverride([
-                    {
-                        tokenAddress: token,
-                        owner: currentWallet,
-                        spender: farm.zapper_addr,
-                    },
-                ]);
-                merge(
-                    state_overrides,
-                    getTokenBalanceStateOverride({
-                        owner: currentWallet,
-                        tokenAddress: token,
-                        balance: amountInWei.toString(),
-                    })
-                );
+                stateOverrides.push({
+                    address: token,
+                    stateDiff: [
+                        {
+                            slot: getAllowanceSlot(farm.chainId, token, currentWallet, farm.zapper_addr),
+                            value: numberToHex(amountInWei, { size: 32 }),
+                        },
+                        {
+                            slot: getBalanceSlot(farm.chainId, token, currentWallet),
+                            value: numberToHex(amountInWei, { size: 32 }),
+                        },
+                    ],
+                });
             } else {
-                balance_overrides = {
-                    [currentWallet]: amountInWei.toString(),
-                };
+                stateOverrides.push({
+                    address: currentWallet,
+                    balance: amountInWei,
+                });
             }
-            console.log("state_overrides =>", state_overrides);
-            console.log("balance_overrides =>", balance_overrides);
-
-            if (state_overrides) {
-                const overrides = await encodeStateOverrides(state_overrides, farm.chainId);
-                console.log("overrides =>", overrides);
-            }
-
             // #region Zapping In
 
             // eth zap
@@ -299,6 +299,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                     address: farm.zapper_addr,
                     account: currentWallet,
                     value: amountInWei,
+                    stateOverride: stateOverrides,
                 });
                 return { difference: vaultBalance, isBridged };
             }
@@ -325,6 +326,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                     args: [farm.vault_addr, 0n, token, amountInWei],
                     address: farm.zapper_addr,
                     account: currentWallet,
+                    stateOverride: stateOverrides,
                 });
                 return { difference: vaultBalance, isBridged };
             }
