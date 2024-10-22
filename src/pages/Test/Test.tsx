@@ -10,10 +10,12 @@ import { CHAIN_ID } from "src/types/enums";
 import {
     Address,
     encodeFunctionData,
+    encodePacked,
     erc20Abi,
     getContract,
     Hex,
     hexToString,
+    keccak256,
     maxUint256,
     parseEther,
     parseUnits,
@@ -30,6 +32,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useConnectors } from "wagmi";
 import Bridge from "../../utils/Bridge";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
+import { getAllowanceSlot } from "src/config/constants/storageSlots";
 // import { createModularAccountAlchemyClient } from "@alchemy/aa-alchemy";
 // import { LocalAccountSigner, arbitrum } from "@alchemy/aa-core";
 // import { createWeb3AuthSigner } from "src/config/walletConfig";
@@ -50,51 +53,50 @@ const Test = () => {
     const { migrate } = useVaultMigrate();
 
     const fn = async () => {
-        setModelOpen(true);
-
-        const bridge = new Bridge(
-            currentWallet!,
-            CHAIN_ID.CORE,
-            addressesByChainId[CHAIN_ID.CORE].usdcAddress,
-            CHAIN_ID.BASE,
-            addressesByChainId[CHAIN_ID.BASE].usdcAddress,
-            parseUnits("1", 6),
-            "",
-            getWalletClient,
-            prices[CHAIN_ID.CORE][zeroAddress]
-        );
-        await bridge.approve();
-        const hash = await bridge.initialize();
-        console.log("hash =>", hash);
-        // console.log("bridge.nativeFee =>", bridge.nativeFee);
-        const message = await bridge.waitForLayerZeroTx();
-        // const message = await bridge.waitForLayerZeroTx(
-        //     42161,
-        //     "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
-        // );
-        console.log("message =>", message);
-        // const dst = await bridge.waitAndGetDstAmt();
-        // console.log("dst =>", dst);
-        // console.timeEnd("bridge");
-        // let res = await bridge.getDestinationBridgedAmt(
-        //     CHAIN_ID.ARBITRUM,
-        //     CHAIN_ID.BASE,
-        //     "0x55ae8ce6589cdcaeb473261cfd274b16b8b767193b6ffdc12dd9026ecce6f4e9"
-        // );
-        // console.log("Arbitrum to base =>", res);
-        // res = await bridge.getDestinationBridgedAmt(
-        //     CHAIN_ID.CORE,
-        //     CHAIN_ID.ARBITRUM,
-        //     "0x10088629459e891ab355cd7b0f613f69d715e19964be9ec470a22799166310cb"
-        // );
-        // console.log("core to arbitrum =>", res);
-        // res = await bridge.getDestinationBridgedAmt(
-        //     CHAIN_ID.ARBITRUM,
-        //     CHAIN_ID.CORE,
-        //     "0x8082d0a012281db0ffb3ae4ef3fcdef4968d9965b984b2d61b791950a3c36dd7"
-        // );
-        // console.log("arbitrum to core =>", res);
-        // await bridge.estimateAmountOut();
+        // setModelOpen(true);
+        const tokenAddress = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
+        const owner = "0x2f1eA3b412862f3a6a81CB575504D7A2c8e5bC30";
+        const spender = "0x53b0705194e686Ba745eF8A80cB1Ef355dE645D0";
+        const publicClient = getPublicClient(CHAIN_ID.ARBITRUM);
+        const allowance = await publicClient.readContract({
+            address: tokenAddress,
+            abi: erc20Abi,
+            functionName: "allowance",
+            args: [owner, spender],
+        });
+        console.log("allowance =>", allowance);
+        for (let i = 0; i < 100; i++) {
+            const slot = keccak256(
+                encodePacked(
+                    ["uint256", "uint256"],
+                    [
+                        BigInt(spender),
+                        BigInt(keccak256(encodePacked(["uint256", "uint256"], [BigInt(owner), BigInt(i)]))),
+                    ]
+                )
+            );
+            console.log("slot =>", i, slot);
+            // console.log("i =>", i);
+            // const slot = keccak256(
+            //     encodePacked(
+            //         ["uint256", "uint256"],
+            //         [
+            //             BigInt(spender),
+            //             BigInt(keccak256(encodePacked(["uint256", "uint256"], [BigInt(owner), BigInt(i)]))),
+            //         ]
+            //     )
+            // );
+            // const res = await publicClient.getStorageAt({
+            //     address: tokenAddress,
+            //     slot: slot,
+            // });
+            // console.log("res =>", res);
+            // if (BigInt(res!) === allowance) {
+            //     console.log("Matched", i);
+            //     console.log("slot", slot);
+            //     break;
+            // }
+        }
     };
 
     return (

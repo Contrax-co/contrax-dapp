@@ -176,7 +176,7 @@ export const useDetailInput = (farm: PoolDef) => {
             console.log("%cFetching slippage", "color: lightgreen;");
             await fetchSlippage();
             setFetchingSlippage(false);
-        }, 2000);
+        }, 500);
         return () => {
             clearTimeout(int);
         };

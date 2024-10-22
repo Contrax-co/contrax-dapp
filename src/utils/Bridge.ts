@@ -13,9 +13,11 @@ import {
     encodeFunctionData,
     parseUnits,
     formatUnits,
+    numberToHex,
 } from "viem";
 import { waitForMessageReceived } from "@layerzerolabs/scan-client";
 import { addressesByChainId } from "src/config/constants/contracts";
+import { getAllowanceSlot } from "src/config/constants/storageSlots";
 
 class Bridge {
     private currentWallet: Address;
@@ -77,6 +79,7 @@ class Bridge {
             return { amountOut: this.fromTokenAmount };
         } else {
             const { value, fees } = await this.getStargateFees();
+            const slot = getAllowanceSlot(this.fromChainId, this.fromToken, this.currentWallet, bridgeAddr);
             const { result } = await publicClient.simulateContract({
                 account: this.currentWallet,
                 address: bridgeAddr as Address,
@@ -96,6 +99,17 @@ class Bridge {
                     this.currentWallet,
                 ],
                 value,
+                stateOverride: [
+                    {
+                        address: this.fromToken,
+                        stateDiff: [
+                            {
+                                slot,
+                                value: numberToHex(this.fromTokenAmount, { size: 32 }),
+                            },
+                        ],
+                    },
+                ],
             });
             return { amountOut: result[1].amountReceivedLD };
         }
