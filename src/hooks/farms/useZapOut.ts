@@ -54,6 +54,7 @@ const useZapOut = (farm: PoolDef) => {
             isSocial,
             getClients,
             max,
+            prices,
             token,
         });
         reloadBalances();
@@ -65,7 +66,7 @@ const useZapOut = (farm: PoolDef) => {
         let amountInWei = toWei(withdrawAmt, farm.decimals);
 
         // @ts-expect-error
-        const { difference } = await farmFunctions[farm.id]?.zapOutSlippage({
+        const { receviedAmt } = await farmFunctions[farm.id]?.zapOutSlippage({
             currentWallet,
             amountInWei,
             farm,
@@ -75,11 +76,12 @@ const useZapOut = (farm: PoolDef) => {
             max,
             estimateTxGas,
             getPublicClient,
+            prices,
             getWalletClient,
             token,
         });
         const afterWithdrawAmount =
-            Number(toEth(difference, decimals[farm.chainId][token])) * prices[farm.chainId][token];
+            Number(toEth(receviedAmt, decimals[farm.chainId][token])) * prices[farm.chainId][token];
         const beforeWithdrawAmount = withdrawAmt * prices[farm.chainId][farm.vault_addr];
         let slippage = (1 - afterWithdrawAmount / beforeWithdrawAmount) * 100;
         if (slippage < 0) slippage = 0;

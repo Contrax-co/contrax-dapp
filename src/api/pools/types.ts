@@ -27,6 +27,7 @@ export interface ZapOutArgs {
     id: string;
     amountInWei: bigint;
     currentWallet: Address;
+    prices?: Prices;
     max?: boolean;
     isSocial: boolean;
     token: Address;
@@ -75,7 +76,7 @@ export interface FarmDataProcessed {
 }
 
 export interface SlippageOutArgs {
-    difference: bigint;
+    receviedAmt: bigint;
     isBridged?: boolean;
 }
 

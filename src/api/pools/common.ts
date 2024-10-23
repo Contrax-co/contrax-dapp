@@ -327,6 +327,7 @@ export const zapOutBase: ZapOutBaseFn = async ({
             store.dispatch(markAsFailedDb(id));
             throw new Error(withdrawTxn.error);
         } else {
+            // Bridge after zap out
             const chainToWithdrawOn = await getWithdrawChainForFarm(currentWallet, farm.id);
             if (chainToWithdrawOn !== farm.chainId) {
                 const data = await traceTransactionAssetChange({
@@ -514,7 +515,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     //     BigNumber.from(filteredState.original[farm.vault_addr.toLowerCase()])
     // );
     // const difference = BigNumber.from(assetChanges.added);
-    return { difference: assetChanges.difference, isBridged };
+    return { receviedAmt: assetChanges.difference, isBridged };
 };
 
 export const slippageOut: SlippageOutBaseFn = async ({
@@ -596,7 +597,7 @@ export const slippageOut: SlippageOutBaseFn = async ({
         difference = added - subtracted;
     }
 
-    return { difference };
+    return { receviedAmt: difference };
 };
 
 // export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTransactionObject, "contractCall">>(

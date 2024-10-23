@@ -1,5 +1,5 @@
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, getCombinedBalance, subtractGas, toEth } from "src/utils/common";
+import { awaitTransaction, getCombinedBalance, subtractGas, toEth, toWei } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
@@ -22,9 +22,10 @@ import {
     getAllowanceStateOverride,
     getTokenBalanceStateOverride,
     simulateTransaction,
+    traceTransactionAssetChange,
 } from "../tenderly";
 import { isGasSponsored } from "..";
-import { zapOutBase, slippageOut, slippageIn, zapInBase, bridgeIfNeededLayerZero } from "./common";
+import { zapOutBase, zapInBase, bridgeIfNeededLayerZero } from "./common";
 import merge from "lodash.merge";
 import pools_json from "src/config/constants/pools_json";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
@@ -35,11 +36,18 @@ import {
     formatUnits,
     keccak256,
     numberToHex,
+    parseEventLogs,
     StateOverride,
     zeroAddress,
 } from "viem";
 import store from "src/state";
-import { ApproveZapStep, TransactionStepStatus, TransactionTypes, ZapInStep } from "src/state/transactions/types";
+import {
+    ApproveZapStep,
+    BridgeService,
+    TransactionStepStatus,
+    TransactionTypes,
+    ZapInStep,
+} from "src/state/transactions/types";
 import {
     addTransactionStepDb,
     editTransactionDb,
@@ -52,6 +60,8 @@ import { SimulationParametersOverrides } from "@tenderly/sdk";
 import { IClients } from "src/types";
 import { Prices } from "src/state/prices/types";
 import { getAllowanceSlot, getBalanceSlot } from "src/config/constants/storageSlots";
+import { getWithdrawChainForFarm } from "../transaction";
+import Bridge from "src/utils/Bridge";
 
 const EarnAbi = [
     {
@@ -82,6 +92,32 @@ const EarnAbi = [
         inputs: [{ name: "_account", internalType: "address", type: "address" }],
         name: "getRedeemRecords",
         stateMutability: "view",
+        type: "function",
+    },
+] as const;
+
+const ZapperAbi = [
+    {
+        inputs: [
+            { indexed: true, name: "recipient", internalType: "address", type: "address" },
+            { indexed: false, name: "amountOut", internalType: "uint256", type: "uint256" },
+        ],
+        name: "Withdraw",
+        anonymous: false,
+        type: "event",
+    },
+    {
+        outputs: [{ name: "tokenBalance", internalType: "uint256", type: "uint256" }],
+        inputs: [{ name: "vault", internalType: "contract IVault", type: "address" }],
+        name: "zapOutAndSwap",
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        outputs: [{ name: "ethBalance", internalType: "uint256", type: "uint256" }],
+        inputs: [{ name: "vault", internalType: "contract IVault", type: "address" }],
+        name: "zapOutAndSwapEth",
+        stateMutability: "nonpayable",
         type: "function",
     },
 ] as const;
@@ -301,7 +337,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                     value: amountInWei,
                     stateOverride: stateOverrides,
                 });
-                return { difference: vaultBalance, isBridged };
+                return { receviedAmt: vaultBalance, isBridged };
             }
             // token zap
             else {
@@ -328,7 +364,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                     account: currentWallet,
                     stateOverride: stateOverrides,
                 });
-                return { difference: vaultBalance, isBridged };
+                return { receviedAmt: vaultBalance, isBridged };
             }
 
             // #endregionbn
@@ -336,13 +372,190 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
             console.log(error);
             let err = JSON.parse(JSON.stringify(error));
         }
-        return { difference: 0n, isBridged };
+        return { receviedAmt: 0n, isBridged };
     };
 
+    const slippageOut: SlippageOutBaseFn = async ({ getPublicClient, farm, token, prices, currentWallet }) => {
+        if (!prices) throw new Error("Prices not found");
+        const state = store.getState();
+        const decimals = state.decimals.decimals;
+        const publicClient = getPublicClient(farm.chainId);
+        const { unlockAmountDollar, redeemRecords } = await fetchRedeemAndWithdraw({
+            getPublicClient,
+            currentWallet,
+            prices,
+        });
+        console.log("unlockAmountDollar =>", unlockAmountDollar);
+        //#region Zapping Out
+        let receivedAmtDollar = 0;
+        if (token === zeroAddress) {
+            const res = await publicClient.simulateContract({
+                account: currentWallet,
+                address: farm.zapper_addr,
+                abi: ZapperAbi,
+                functionName: "zapOutAndSwapEth",
+                args: [farm.vault_addr],
+            });
+
+            receivedAmtDollar =
+                Number(toEth(res.result, decimals[farm.chainId][zeroAddress])) * prices[farm.chainId][zeroAddress];
+            console.log("receivedAmtDollar =>", receivedAmtDollar);
+            return { receviedAmt: res.result };
+        } else {
+            const res = await publicClient.simulateContract({
+                account: currentWallet,
+                address: farm.zapper_addr,
+                abi: ZapperAbi,
+                functionName: "zapOutAndSwap",
+                args: [farm.vault_addr],
+            });
+            receivedAmtDollar = Number(toEth(res.result, decimals[farm.chainId][token])) * prices[farm.chainId][token];
+            console.log("receivedAmtDollar =>", receivedAmtDollar);
+            return { receviedAmt: res.result };
+        }
+        //#endregion
+    };
+
+    const zapOutBase: ZapOutFn = async ({
+        amountInWei,
+        currentWallet,
+        estimateTxGas,
+        getClients,
+        getPublicClient,
+        getWalletClient,
+        id,
+        isSocial,
+        token,
+        max,
+        prices,
+    }) => {
+        notifyLoading(loadingMessages.withDrawing(), { id });
+        const TransactionsStep = new TransactionsDB(id);
+
+        try {
+            const client = await getClients(farm.chainId);
+            const vaultBalance = await getBalance(farm.vault_addr, currentWallet, client);
+            await TransactionsStep.addZapOut(amountInWei);
+
+            //#region Zapping Out
+
+            let withdrawTxn: Awaited<ReturnType<typeof awaitTransaction>>;
+            if (max) {
+                amountInWei = vaultBalance;
+            }
+            if (token === zeroAddress) {
+                withdrawTxn = await awaitTransaction(
+                    client.wallet.sendTransaction({
+                        to: farm.zapper_addr,
+                        data: encodeFunctionData({
+                            abi: ZapperAbi,
+                            functionName: "zapOutAndSwapEth",
+                            args: [farm.vault_addr],
+                        }),
+                    }),
+                    client,
+                    async (hash) => {
+                        await TransactionsStep.zapOut(TransactionStepStatus.IN_PROGRESS, hash);
+                    }
+                );
+            } else {
+                withdrawTxn = await awaitTransaction(
+                    client.wallet.sendTransaction({
+                        to: farm.zapper_addr,
+                        data: encodeFunctionData({
+                            abi: ZapperAbi,
+                            functionName: "zapOutAndSwap",
+                            args: [farm.vault_addr],
+                        }),
+                    }),
+                    client,
+                    async (hash) => {
+                        await TransactionsStep.zapOut(TransactionStepStatus.IN_PROGRESS, hash);
+                    }
+                );
+            }
+            await TransactionsStep.zapOut(TransactionStepStatus.COMPLETED);
+            if (!withdrawTxn.status) {
+                store.dispatch(markAsFailedDb(id));
+                throw new Error(withdrawTxn.error);
+            } else {
+                // Bridge after zap out
+                const chainToWithdrawOn = await getWithdrawChainForFarm(currentWallet, farm.id);
+                if (chainToWithdrawOn !== farm.chainId) {
+                    const logs = parseEventLogs({
+                        logs: withdrawTxn.receipt!.logs,
+                        abi: ZapperAbi,
+                        eventName: "Withdraw",
+                    });
+                    const eventData = logs.find(
+                        (item) => item.address.toLowerCase() === farm.zapper_addr.toLowerCase()
+                    );
+                    if (!eventData) throw new Error("Event data not found");
+                    let amountOut = eventData.args.amountOut;
+                    if (amountOut && amountOut > 0n) {
+                        const nativePrice = store.getState().prices.prices[farm.chainId][zeroAddress];
+                        const bridge = new Bridge(
+                            currentWallet,
+                            farm.chainId,
+                            token,
+                            chainToWithdrawOn,
+                            token === zeroAddress ? zeroAddress : addressesByChainId[chainToWithdrawOn].usdcAddress,
+                            amountOut,
+                            "",
+                            getWalletClient,
+                            nativePrice
+                        );
+
+                        //#region Approve
+                        notifyLoading(loadingMessages.withdrawBridgeStep(1, 3), {
+                            id,
+                        });
+                        await TransactionsStep.addApproveBridge();
+                        await bridge.approve();
+                        await TransactionsStep.approveBridge(TransactionStepStatus.COMPLETED);
+                        //#endregion Approve
+
+                        //#region Initialize
+                        notifyLoading(loadingMessages.withdrawBridgeStep(2, 3), {
+                            id,
+                        });
+                        await TransactionsStep.addInitiateBridge(bridge.fromTokenAmount);
+                        const txHash = await bridge.initialize();
+                        await TransactionsStep.initiateBridge(TransactionStepStatus.COMPLETED);
+                        //#endregion Initialize
+
+                        //#region WaitForBridge
+                        notifyLoading(loadingMessages.withdrawBridgeStep(3, 3), {
+                            id,
+                        });
+                        await TransactionsStep.addWaitForBridge({
+                            bridgeService: BridgeService.LAYER_ZERO,
+                            txHash: txHash,
+                            fromChain: bridge.fromChainId,
+                            toChain: bridge.toChainId,
+                            beforeBridgeBalance: bridge.fromTokenAmount.toString(),
+                        });
+                        await bridge.waitAndGetDstAmt();
+                        await TransactionsStep.waitForBridge(TransactionStepStatus.COMPLETED);
+                        //#endregion WaitForBridge
+                    }
+                }
+                dismissNotify(id);
+                notifySuccess(successMessages.withdraw());
+            }
+            //#endregion
+        } catch (error: any) {
+            console.log(error);
+            let err = JSON.parse(JSON.stringify(error));
+            dismissNotify(id);
+            store.dispatch(markAsFailedDb(id));
+            notifyError(errorMessages.generalError(error.message || err.reason || err.message));
+        }
+    };
     const zapIn: ZapInFn = (props) => zapInBase({ ...props, farm });
     const zapInSlippage: SlippageInBaseFn = (props) => slippageIn({ ...props, farm });
 
-    const zapOut: ZapOutFn = (props) => zapOutBase({ ...props, farm });
+    const zapOut: ZapOutFn = (props) => zapOutBase({ ...props });
     const zapOutSlippage: SlippageOutBaseFn = (props) => slippageOut({ ...props, farm });
 
     return {
