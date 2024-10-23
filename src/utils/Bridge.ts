@@ -341,28 +341,38 @@ class Bridge {
         let bridgeAddr = "" as Address;
         let usdcAddr = "" as Address;
         let zapperBridge = "" as Address;
+        switch (this.fromChainId) {
+            case CHAIN_ID.ARBITRUM:
+                zapperBridge = "0x0Ac9C48eA1De87E8679E81502c01c0C8eB3f98fa";
+                break;
+            case CHAIN_ID.CORE:
+                zapperBridge = "0x378eB5201c77B6886c2c6a825c53bD8E49878541";
+                break;
+            case CHAIN_ID.BASE:
+                zapperBridge = "0x2BD3d6872B6F44d27Fb7E6a3D71B1d8582b8460D";
+                break;
+            default:
+                throw new Error("Invalid Chain");
+        }
         if (this.fromChainId === CHAIN_ID.CORE || this.toChainId === CHAIN_ID.CORE) {
             bridgeAddr = this.getCoreBridgeAddr(this.fromChainId).bridgeAddr;
-            zapperBridge = this.getCoreBridgeAddr(this.fromChainId).zapperBridge;
             usdcAddr = this.getUsdcAddress(this.fromChainId);
         } else {
             if (this.fromChainId === CHAIN_ID.ARBITRUM) {
-                zapperBridge = "0x95f368B55AB8eAbE29491C0e9DA38Def6A302868";
                 if (this.fromToken === zeroAddress) {
                     bridgeAddr = "0xA45B5130f36CDcA45667738e2a258AB09f4A5f7F";
                     usdcAddr = zeroAddress;
                 } else {
                     bridgeAddr = "0xe8CDF27AcD73a434D661C84887215F7598e7d0d3";
-                    usdcAddr = addressesByChainId[this.fromChainId].usdcAddress;
+                    usdcAddr = this.getUsdcAddress(this.fromChainId);
                 }
             } else if (this.fromChainId === CHAIN_ID.BASE) {
-                zapperBridge = "0x914fEf038fE15A3a5b631358Ff4251FAC2d7Dc6b";
                 if (this.fromToken === zeroAddress) {
                     bridgeAddr = "0xdc181Bd607330aeeBEF6ea62e03e5e1Fb4B6F7C7";
                     usdcAddr = zeroAddress;
                 } else {
                     bridgeAddr = "0x27a16dc786820B16E5c9028b75B99F6f604b5d26";
-                    usdcAddr = addressesByChainId[this.fromChainId].usdcAddress;
+                    usdcAddr = this.getUsdcAddress(this.fromChainId);
                 }
             }
         }
@@ -372,24 +382,20 @@ class Bridge {
 
     private getCoreBridgeAddr(srcChainId: number) {
         let bridgeAddr = "" as Address;
-        let zapperBridge = "" as Address;
         switch (srcChainId) {
             case CHAIN_ID.ARBITRUM:
-                zapperBridge = "0x95f368B55AB8eAbE29491C0e9DA38Def6A302868";
                 bridgeAddr = "0x29d096cD18C0dA7500295f082da73316d704031A";
                 break;
             case CHAIN_ID.BASE:
-                zapperBridge = "0x914fEf038fE15A3a5b631358Ff4251FAC2d7Dc6b";
                 bridgeAddr = "0x84FB2086Fed7b3c9b3a4Bc559f60fFaA91507879";
                 break;
             case CHAIN_ID.CORE:
-                zapperBridge = "0xcB83907995a41f8406b2De1122ecbc24bf2D311c";
                 bridgeAddr = "0xA4218e1F39DA4AaDaC971066458Db56e901bcbdE";
                 break;
             default:
                 throw new Error("Invalid Chain");
         }
-        return { bridgeAddr, zapperBridge };
+        return { bridgeAddr };
     }
 
     private getLayerZeroEid(chainId: number) {
