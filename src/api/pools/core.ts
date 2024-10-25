@@ -466,9 +466,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
             //#region Zapping Out
 
             let withdrawTxn: Awaited<ReturnType<typeof awaitTransaction>>;
-            if (max) {
-                amountInWei = vaultBalance;
-            }
+
             if (token === zeroAddress) {
                 withdrawTxn = await awaitTransaction(
                     client.wallet.sendTransaction({
