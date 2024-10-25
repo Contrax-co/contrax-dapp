@@ -11,10 +11,11 @@ import {
     FarmDetailInputOptions,
 } from "./types";
 import VaultAbi from "src/assets/abis/vault.json";
-import { Address, erc20Abi, getContract } from "viem";
+import { Address, erc20Abi, formatUnits, getContract } from "viem";
 import { getPricesOfLpByTimestamp } from "../prices/pricesReducer";
 import { IS_LEGACY, defaultChainId } from "src/config/constants";
 import { FarmOriginPlatform, FarmTransactionType } from "src/types/enums";
+import { StCoreFarmFunctions } from "src/api/pools/types";
 
 const initialState: StateInterface = {
     farmDetails: {},
@@ -54,27 +55,26 @@ export const updateFarmDetails = createAsyncThunk(
             const stCoreFarmId = 301;
             const stCoreFarm = farms.find((farm) => farm.id === stCoreFarmId);
             if (!stCoreFarm) return;
-            data[stCoreFarm.id] = farmFunctions[stCoreFarm.id]?.getProcessedFarmData(
+            data[stCoreFarm.id] = farmFunctions[stCoreFarm.id]!.getProcessedFarmData(
                 balances,
                 prices,
                 decimals,
                 totalSupplies[stCoreFarm.chainId][stCoreFarm.vault_addr]
             );
-            // @ts-ignore
-            const redeemData = await farmFunctions[stCoreFarm.id].fetchRedeemAndWithdraw({
+            const redeemData = await(farmFunctions[stCoreFarm.id] as StCoreFarmFunctions).fetchRedeemAndWithdraw({
                 getPublicClient,
-                currentWallet,
+                currentWallet: currentWallet as Address,
                 prices,
+                balances,
             });
             Object.assign(data[stCoreFarm.id]?.extraData!, redeemData);
-            // @ts-ignore
+
             data[stCoreFarm.id]!.withdrawableAmounts[0].amountDollar =
-                // @ts-ignore
-                data[stCoreFarm.id]?.extraData?.unlockAmountDollar + data[stCoreFarm.id]?.extraData?.lockAmountDollar;
-            // @ts-ignore
-            data[stCoreFarm.id]!.withdrawableAmounts[0].amount =
-                // @ts-ignore
-                data[stCoreFarm.id]?.extraData?.unlockedAmount + data[stCoreFarm.id]?.extraData?.lockedAmount;
+                data[stCoreFarm.id]!.extraData!.totalDollarInvested.toString();
+            data[stCoreFarm.id]!.withdrawableAmounts[0].amount = formatUnits(
+                BigInt(data[stCoreFarm.id]!.extraData!.totalCoreInvested),
+                18
+            );
             // #endregion stCoreFarm data fetch
 
             return { data, currentWallet };

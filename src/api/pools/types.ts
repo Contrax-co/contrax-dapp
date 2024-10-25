@@ -114,7 +114,10 @@ export interface StCoreFarmFunctions extends FarmFunctions {
         getPublicClient: (chainId: number) => IClients["public"];
         currentWallet: Address;
         prices: Prices;
+        balances: Balances;
     }) => Promise<{
+        totalCoreInvested: string;
+        totalDollarInvested: number;
         unlockedAmount: string;
         unlockAmountDollar: number;
         lockAmountDollar: number;

@@ -8,9 +8,10 @@ interface IProps {
     setValue: Dispatch<SetStateAction<any>>;
     options?: string[];
     extraText?: string[];
+    size?: "small";
 }
 
-export const Select: FC<IProps> = ({ value, setValue, options, extraText }) => {
+export const Select: FC<IProps> = ({ value, setValue, options, extraText, size }) => {
     const [openSelect, setOpenSelect] = useState(false);
 
     useEffect(() => {
@@ -22,7 +23,11 @@ export const Select: FC<IProps> = ({ value, setValue, options, extraText }) => {
     return (
         <div className={styles.selectWrapper}>
             <OutsideClickHandler display="inline-block" onOutsideClick={() => setOpenSelect(false)}>
-                <div className={styles.select} onClick={() => setOpenSelect((prev) => !prev)}>
+                <div
+                    className={styles.select}
+                    style={{ width: size === "small" ? 50 : undefined }}
+                    onClick={() => setOpenSelect((prev) => !prev)}
+                >
                     {value}{" "}
                     {extraText && extraText[options!.reduce((prev, curr, index) => (curr === value ? index : prev), 0)]}
                     <AiOutlineCaretDown className={`${styles.arrow} ${openSelect && styles.rotate}`} />

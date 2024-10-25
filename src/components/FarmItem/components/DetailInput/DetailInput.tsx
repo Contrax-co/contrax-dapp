@@ -125,6 +125,13 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                             >
                                 Redeem
                             </button>
+                            <Select
+                                options={selectOptions}
+                                value={currencySymbol}
+                                setValue={(val) => setFarmOptions({ currencySymbol: val })}
+                                size="small"
+                                // extraText={selectExtraOptions}
+                            />
                         </div>
                         <p>Redeem Records</p>
                         <div>
