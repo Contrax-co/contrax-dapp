@@ -71,7 +71,7 @@ const useZapIn = (farm: PoolDef) => {
         let amountInWei = toWei(zapAmount, decimals[farm.chainId][token]);
         if (!farmFunctions[farm.id]?.zapInSlippage) throw new Error("No zapInSlippage function");
         // @ts-expect-error
-        const { difference } = await farmFunctions[farm.id].zapInSlippage({
+        const { receviedAmt: difference } = await farmFunctions[farm.id].zapInSlippage({
             currentWallet,
             amountInWei,
             balances,

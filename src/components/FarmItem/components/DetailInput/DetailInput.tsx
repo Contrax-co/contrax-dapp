@@ -125,6 +125,13 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                             >
                                 Redeem
                             </button>
+                            <Select
+                                options={selectOptions}
+                                value={currencySymbol}
+                                setValue={(val) => setFarmOptions({ currencySymbol: val })}
+                                size="small"
+                                // extraText={selectExtraOptions}
+                            />
                         </div>
                         <p>Redeem Records</p>
                         <div>
@@ -162,11 +169,19 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                         <div
                             style={{
                                 display: "flex",
-                                flexFlow: "column",
+                                // flexFlow: "column",
                                 alignItems: "center",
-                                justifyContent: "flex-start",
+                                gap: 10,
+                                justifyContent: "center",
                             }}
                         >
+                            <button
+                                className={`custom-button ${lightMode && "custom-button-light"}`}
+                                type="button"
+                                onClick={() => setMax((prev) => !prev)}
+                            >
+                                Estimate
+                            </button>
                             <button
                                 disabled={farmDetails?.[farm.id]?.extraData?.unlockAmountDollar === 0}
                                 className={`custom-button ${lightMode && "custom-button-light"}`}

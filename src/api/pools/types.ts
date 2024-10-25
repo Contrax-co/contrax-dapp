@@ -27,6 +27,7 @@ export interface ZapOutArgs {
     id: string;
     amountInWei: bigint;
     currentWallet: Address;
+    prices?: Prices;
     max?: boolean;
     isSocial: boolean;
     token: Address;
@@ -75,7 +76,7 @@ export interface FarmDataProcessed {
 }
 
 export interface SlippageOutArgs {
-    difference: bigint;
+    receviedAmt: bigint;
     isBridged?: boolean;
 }
 
@@ -113,7 +114,10 @@ export interface StCoreFarmFunctions extends FarmFunctions {
         getPublicClient: (chainId: number) => IClients["public"];
         currentWallet: Address;
         prices: Prices;
+        balances: Balances;
     }) => Promise<{
+        totalCoreInvested: string;
+        totalDollarInvested: number;
         unlockedAmount: string;
         unlockAmountDollar: number;
         lockAmountDollar: number;

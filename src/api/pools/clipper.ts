@@ -490,7 +490,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         });
         console.log({ simulationResult });
         const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
-        return { difference: assetChanges.difference, isBridged };
+        return { receviedAmt: assetChanges.difference, isBridged };
     };
 
     const zapIn: ZapInFn = (props) => zapInClipperBase({ ...props, farm });

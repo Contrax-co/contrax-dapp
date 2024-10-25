@@ -5,7 +5,7 @@ import { CgInfo } from "react-icons/cg";
 import { Tooltip } from "react-tooltip";
 import useApp from "src/hooks/useApp";
 import uuid from "react-uuid";
-import { toFixedFloor } from "src/utils/common";
+import { toFixedFloor, toPreciseNumber } from "src/utils/common";
 import { Skeleton } from "../Skeleton/Skeleton";
 import useFarmDetails from "src/hooks/farms/useFarmDetails";
 import useFarmApy from "src/hooks/farms/useFarmApy";
@@ -42,7 +42,6 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
     const dispatch = useAppDispatch();
     const { getTraxApy } = useTrax();
     const showVaultsWithFunds = useAppSelector((state) => state.settings.showVaultsWithFunds);
-
     const estimateTrax = useMemo(() => getTraxApy(farm.vault_addr), [getTraxApy, farm]);
 
     const handleClick = (e: any) => {
@@ -214,11 +213,10 @@ const FarmRow: React.FC<Props> = ({ farm, openedFarm, setOpenedFarm }) => {
                                     .slice(0, -1)}
                             </p>
                             <p className={`deposited ${lightMode && "deposited--light"}`}>
-                                {toFixedFloor(
+                                {toPreciseNumber(
                                     parseFloat(
                                         farmData.withdrawableAmounts.find((_) => _.isPrimaryVault)?.amount || "0"
-                                    ),
-                                    10
+                                    )
                                 ).toString()}
                                 &nbsp;{farm?.name}
                             </p>

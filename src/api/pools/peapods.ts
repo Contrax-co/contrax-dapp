@@ -344,7 +344,7 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         console.log({ simulationResult });
         const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
 
-        return { difference: assetChanges.difference };
+        return { receviedAmt: assetChanges.difference };
     };
 
     const zapIn: ZapInFn = (props) =>
