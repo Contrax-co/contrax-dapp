@@ -37,6 +37,7 @@ import {
     keccak256,
     numberToHex,
     parseEventLogs,
+    parseUnits,
     StateOverride,
     zeroAddress,
 } from "viem";
@@ -62,6 +63,7 @@ import { Prices } from "src/state/prices/types";
 import { getAllowanceSlot, getBalanceSlot } from "src/config/constants/storageSlots";
 import { getWithdrawChainForFarm } from "../transaction";
 import Bridge from "src/utils/Bridge";
+import { CHAIN_ID } from "src/types/enums";
 
 const EarnAbi = [
     {
@@ -215,7 +217,22 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
         const lockAmountDollar =
             Number(formatUnits(lockedAmount, 18)) *
             args.prices[farm.chainId][addressesByChainId[farm.chainId].wethAddress];
+
+        const vaultTokenPrice = args.prices[farm.chainId][farm.vault_addr];
+        const vaultBalance = BigInt(args.balances[farm.chainId][farm.vault_addr]);
+        const stCoreDollar = Number(toEth(vaultBalance, farm.decimals)) * vaultTokenPrice;
+
+        const corePrice = args.prices[CHAIN_ID.CORE][addressesByChainId[CHAIN_ID.CORE].wethAddress];
+
+        const coreDollar = stCoreDollar;
+        const core = parseUnits((coreDollar / corePrice).toString(), 18);
+
+        const totalCoreInvested = core + unlockedAmount + lockedAmount;
+        const totalDollarInvested = coreDollar + unlockAmountDollar + lockAmountDollar;
+
         return {
+            totalCoreInvested: totalCoreInvested.toString(),
+            totalDollarInvested,
             unlockedAmount: unlockedAmount.toString(),
             unlockAmountDollar,
             lockAmountDollar,
@@ -375,8 +392,16 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
         return { receviedAmt: 0n, isBridged };
     };
 
-    const slippageOut: SlippageOutBaseFn = async ({ getPublicClient, farm, token, prices, currentWallet }) => {
+    const slippageOut: SlippageOutBaseFn = async ({
+        getPublicClient,
+        farm,
+        token,
+        prices,
+        currentWallet,
+        balances,
+    }) => {
         if (!prices) throw new Error("Prices not found");
+        console.log('token =>', token);
         const state = store.getState();
         const decimals = state.decimals.decimals;
         const publicClient = getPublicClient(farm.chainId);
@@ -384,6 +409,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
             getPublicClient,
             currentWallet,
             prices,
+            balances,
         });
         console.log("unlockAmountDollar =>", unlockAmountDollar);
         //#region Zapping Out
