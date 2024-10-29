@@ -70,8 +70,13 @@ const useZapIn = (farm: PoolDef) => {
         if (!currentWallet) return;
         let amountInWei = toWei(zapAmount, decimals[farm.chainId][token]);
         if (!farmFunctions[farm.id]?.zapInSlippage) throw new Error("No zapInSlippage function");
-        // @ts-expect-error
-        const { receviedAmt: difference } = await farmFunctions[farm.id].zapInSlippage({
+        const {
+            receviedAmt: difference,
+            slippage,
+            afterTxAmount,
+            beforeTxAmount,
+            // @ts-expect-error
+        } = await farmFunctions[farm.id].zapInSlippage({
             currentWallet,
             amountInWei,
             balances,
@@ -86,10 +91,7 @@ const useZapIn = (farm: PoolDef) => {
             getPublicClient,
             getWalletClient,
         });
-        const afterDepositAmount = Number(toEth(difference, farm.decimals)) * prices[farm.chainId][farm.vault_addr];
-        const beforeDepositAmount = zapAmount * prices[farm.chainId][token];
-        let slippage = (1 - afterDepositAmount / beforeDepositAmount) * 100;
-        if (slippage < 0) slippage = 0;
+
         console.log({
             vaultPrice: prices[farm.chainId][farm.vault_addr],
             lpPrice: prices[farm.chainId][farm.lp_address],
@@ -99,11 +101,11 @@ const useZapIn = (farm: PoolDef) => {
             zapAmount,
             difference,
             differenceEth: toEth(difference),
-            afterDepositAmount,
-            beforeDepositAmount,
+            afterDepositAmount: afterTxAmount,
+            beforeDepositAmount: beforeTxAmount,
             slippage,
         });
-        return { afterDepositAmount, beforeDepositAmount, slippage };
+        return { afterDepositAmount: afterTxAmount, beforeDepositAmount: beforeTxAmount, slippage };
     };
 
     const {

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { arbitrum, mainnet, polygon, optimism, linea, bsc, base, Chain, coreDao } from "viem/chains";
+import { arbitrum, mainnet, polygon, optimism, linea, bsc, base, Chain } from "viem/chains";
 import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
@@ -8,7 +8,7 @@ import { ALCHEMY_KEY, POLLING_INTERVAL, walletConnectProjectId, WEB3AUTH_CLIENT_
 // import { Web3Auth } from "@web3auth/modal";
 import { Web3AuthNoModal } from "@web3auth/no-modal";
 import { providers } from "ethers";
-import { PublicClient, WalletClient, http, type HttpTransport } from "viem";
+import { PublicClient, WalletClient, defineChain, http, type HttpTransport } from "viem";
 import { connectorsForWallets, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { Web3AuthConnector } from "@web3auth/web3auth-wagmi-connector";
 import googleIcon from "./../assets/images/google-logo.svg";
@@ -57,6 +57,32 @@ Object.assign(base.rpcUrls, {
     alchemy: {
         http: ["https://base-mainnet.g.alchemy.com/v2/" + ALCHEMY_KEY],
     },
+});
+
+const coreDao = defineChain({
+    id: 1116,
+    name: "Core Dao",
+    nativeCurrency: {
+        decimals: 18,
+        name: "Core",
+        symbol: "CORE",
+    },
+    rpcUrls: {
+        default: { http: ["https://rpcar.coredao.org "] },
+    },
+    blockExplorers: {
+        default: {
+            name: "CoreDao",
+            url: "https://scan.coredao.org",
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+            blockCreated: 11_907_934,
+        },
+    },
+    testnet: false,
 });
 
 export const SupportedChains = [arbitrum, mainnet, polygon, optimism, linea, bsc, base, coreDao] as (Chain & {

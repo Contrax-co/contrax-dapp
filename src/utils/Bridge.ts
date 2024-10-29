@@ -230,7 +230,6 @@ class Bridge {
                 functionName: "estimateBridgeFee",
                 args: [this.getLayerZeroEid(this.toChainId) % 1000, false, "0x"],
             });
-
             const walletClient = await this.getWalletClient(this.fromChainId);
 
             const calldata = encodeFunctionData({
@@ -245,7 +244,7 @@ class Bridge {
                     { refundAddress: this.currentWallet, zroPaymentAddress: zeroAddress },
                     "0x",
                 ],
-            });
+            });           
             const txHash = await walletClient.writeContract({
                 abi: ZapperAbi,
                 address: zapperBridge,

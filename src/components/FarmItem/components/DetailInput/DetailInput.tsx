@@ -183,7 +183,11 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                                 Estimate
                             </button>
                             <button
-                                disabled={farmDetails?.[farm.id]?.extraData?.unlockAmountDollar === 0}
+                                disabled={
+                                    farmDetails?.[farm.id]?.extraData?.unlockAmountDollar === 0 ||
+                                    isLoadingTransaction ||
+                                    fetchingSlippage
+                                }
                                 className={`custom-button ${lightMode && "custom-button-light"}`}
                             >
                                 Withdraw

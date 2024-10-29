@@ -21,7 +21,6 @@ export const fetchApys = createAsyncThunk("apys/fetchApys", async (_, thunkApi) 
     data.forEach((vault: any) => {
         obj[vault.farmId] = vault.apys;
     });
-
     return obj;
 });
 
@@ -43,7 +42,7 @@ const apysSlice = createSlice({
         builder.addCase(fetchApys.fulfilled, (state, action) => {
             state.isLoading = false;
             state.isFetched = true;
-            state.apys = { ...action.payload, [301]: { apy: 0, compounding: 0, feeApr: 0, rewardsApr: 0 } };
+            state.apys = { ...action.payload };
         });
         builder.addCase(fetchApys.rejected, (state) => {
             state.isLoading = false;

@@ -369,12 +369,16 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
 
     const slippageIn: SlippageInBaseFn = async (args) => {
         let isBridged = false;
+        let receviedAmt = 0n;
+
         let {
             amountInWei,
             balances,
             currentWallet,
             estimateTxGas,
             getPublicClient,
+            decimals,
+            prices,
             getWalletClient,
             token,
             max,
@@ -490,7 +494,14 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         });
         console.log({ simulationResult });
         const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
-        return { receviedAmt: assetChanges.difference, isBridged };
+        receviedAmt = assetChanges.difference;
+        const zapAmount = Number(toEth(amountInWei, decimals[farm.chainId][token]));
+
+        const afterTxAmount = Number(toEth(receviedAmt, farm.decimals)) * prices[farm.chainId][farm.vault_addr];
+        const beforeTxAmount = zapAmount * prices[farm.chainId][token];
+        let slippage = (1 - afterTxAmount / beforeTxAmount) * 100;
+        if (slippage < 0) slippage = 0;
+        return { receviedAmt, isBridged, afterTxAmount, beforeTxAmount, slippage };
     };
 
     const zapIn: ZapInFn = (props) => zapInClipperBase({ ...props, farm });
