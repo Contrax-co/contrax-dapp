@@ -12,8 +12,8 @@ export interface ZapInArgs {
     max?: boolean;
     token: Address;
     balances: Balances;
-    prices?: Prices;
-    decimals?: Decimals;
+    prices: Prices;
+    decimals: Decimals;
     currentWallet: Address;
     tokenIn?: Address;
     isSocial: boolean;
@@ -27,7 +27,8 @@ export interface ZapOutArgs {
     id: string;
     amountInWei: bigint;
     currentWallet: Address;
-    prices?: Prices;
+    decimals: Decimals;
+    prices: Prices;
     max?: boolean;
     isSocial: boolean;
     token: Address;
@@ -78,6 +79,9 @@ export interface FarmDataProcessed {
 export interface SlippageOutArgs {
     receviedAmt: bigint;
     isBridged?: boolean;
+    slippage: number;
+    afterTxAmount: number;
+    beforeTxAmount: number;
 }
 
 export type DepositFn = (args: DepositArgs) => Promise<void>;
@@ -137,5 +141,6 @@ export interface StCoreFarmFunctions extends FarmFunctions {
         getPublicClient: (chainId: number) => IClients["public"];
         getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
         currentWallet: Address;
+        estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     }) => ReturnType<typeof awaitTransaction>;
 }

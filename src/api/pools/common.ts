@@ -1,5 +1,5 @@
 import { approveErc20, getBalance } from "src/api/token";
-import { awaitTransaction, getCombinedBalance, subtractGas } from "src/utils/common";
+import { awaitTransaction, getCombinedBalance, subtractGas, toEth } from "src/utils/common";
 import { dismissNotify, notifyLoading, notifyError, notifySuccess } from "src/api/notify";
 import { errorMessages, loadingMessages, successMessages } from "src/config/constants/notifyMessages";
 import { SlippageInBaseFn, SlippageOutBaseFn, ZapInBaseFn, ZapOutBaseFn } from "./types";
@@ -121,7 +121,7 @@ export const zapInBase: ZapInBaseFn = async ({
                     amountInWei = afterGasCut;
                 }
 
-                notifyLoading(loadingMessages.zapping(), { id });                
+                notifyLoading(loadingMessages.zapping(), { id });
                 zapperTxn = await awaitTransaction(
                     client.wallet.sendTransaction({
                         to: farm.zapper_addr,
@@ -404,6 +404,8 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         balances,
         currentWallet,
         getPublicClient,
+        prices,
+        decimals,
         estimateTxGas,
         token,
         max,
@@ -413,6 +415,7 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
         farm,
     } = args;
     const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
+    let receviedAmt = 0n;
 
     const transaction = {} as Omit<
         TenderlySimulateTransactionBody,
@@ -515,7 +518,14 @@ export const slippageIn: SlippageInBaseFn = async (args) => {
     //     BigNumber.from(filteredState.original[farm.vault_addr.toLowerCase()])
     // );
     // const difference = BigNumber.from(assetChanges.added);
-    return { receviedAmt: assetChanges.difference, isBridged };
+    receviedAmt = assetChanges.difference;
+    const zapAmount = Number(toEth(amountInWei, decimals[farm.chainId][token]));
+    const afterTxAmount = Number(toEth(receviedAmt, farm.decimals)) * prices[farm.chainId][farm.vault_addr];
+    const beforeTxAmount = zapAmount * prices[farm.chainId][token];
+    let slippage = (1 - afterTxAmount / beforeTxAmount) * 100;
+    if (slippage < 0) slippage = 0;
+
+    return { receviedAmt, isBridged, afterTxAmount, beforeTxAmount, slippage };
 };
 
 export const slippageOut: SlippageOutBaseFn = async ({
@@ -525,7 +535,10 @@ export const slippageOut: SlippageOutBaseFn = async ({
     max,
     amountInWei,
     currentWallet,
+    decimals,
+    prices,
 }) => {
+    let receviedAmt = 0n;
     const publicClient = getPublicClient(farm.chainId);
     const transaction = {} as Omit<
         TenderlySimulateTransactionBody,
@@ -596,8 +609,16 @@ export const slippageOut: SlippageOutBaseFn = async ({
         const { added, subtracted } = filterAssetChanges(token, currentWallet, simulationResult.assetChanges);
         difference = added - subtracted;
     }
+    receviedAmt = difference;
 
-    return { receviedAmt: difference };
+    const withdrawAmt = Number(toEth(amountInWei, farm.decimals));
+
+    const afterTxAmount = Number(toEth(receviedAmt, decimals[farm.chainId][token])) * prices[farm.chainId][token];
+    const beforeTxAmount = withdrawAmt * prices[farm.chainId][farm.vault_addr];
+    let slippage = (1 - afterTxAmount / beforeTxAmount) * 100;
+    if (slippage < 0) slippage = 0;
+
+    return { receviedAmt: difference, afterTxAmount, beforeTxAmount, slippage };
 };
 
 // export async function crossChainBridgeIfNecessary<T extends Omit<CrossChainTransactionObject, "contractCall">>(

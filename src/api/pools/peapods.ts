@@ -290,8 +290,20 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         }
     };
     const slippageInLp: SlippageInBaseFn = async (args) => {
-        let { amountInWei, balances, getPublicClient, currentWallet, estimateTxGas, token, max, getClients, farm } =
-            args;
+        let receviedAmt = 0n;
+        let {
+            amountInWei,
+            decimals,
+            prices,
+            balances,
+            getPublicClient,
+            currentWallet,
+            estimateTxGas,
+            token,
+            max,
+            getClients,
+            farm,
+        } = args;
         const publicClient = getPublicClient(farm.chainId);
         const apContract = getContract({
             address: farm.token1,
@@ -332,7 +344,6 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
             }),
             value: amountInWei,
         };
-
         transaction.input = populated.data || "";
         transaction.value = populated.value?.toString();
         console.log(transaction, farm);
@@ -343,8 +354,13 @@ let peapods = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         });
         console.log({ simulationResult });
         const assetChanges = filterAssetChanges(farm.vault_addr, currentWallet, simulationResult.assetChanges);
-
-        return { receviedAmt: assetChanges.difference };
+        receviedAmt = assetChanges.difference;
+        const zapAmount = Number(toEth(amountInWei, decimals[farm.chainId][zeroAddress]));
+        const afterTxAmount = Number(toEth(receviedAmt, farm.decimals)) * prices[farm.chainId][farm.vault_addr];
+        const beforeTxAmount = zapAmount * prices[farm.chainId][zeroAddress];
+        let slippage = (1 - afterTxAmount / beforeTxAmount) * 100;
+        if (slippage < 0) slippage = 0;
+        return { receviedAmt, afterTxAmount, beforeTxAmount, slippage };
     };
 
     const zapIn: ZapInFn = (props) =>

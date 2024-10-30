@@ -251,45 +251,85 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
         };
     };
 
-    const redeem: StCoreFarmFunctions["redeem"] = async ({ currentWallet, getPublicClient, getWalletClient }) => {
+    const redeem: StCoreFarmFunctions["redeem"] = async ({
+        currentWallet,
+        estimateTxGas,
+        getPublicClient,
+        getWalletClient,
+    }) => {
         const publicClient = getPublicClient(farm.chainId);
-        const bal = await getBalance(farm.vault_addr, currentWallet, { public: publicClient });
         const notiId = notifyLoading(loadingMessages.approving());
-        await approveErc20(
-            farm.vault_addr,
-            farm.zapper_addr,
-            bal,
-            currentWallet,
-            farm.chainId,
-            getPublicClient,
-            getWalletClient
-        );
-        notifyLoading(loadingMessages.redeeming(), { id: notiId });
-        const walletClient = await getWalletClient(farm.chainId);
-        const res = await awaitTransaction(
-            walletClient.writeContract({
-                address: farm.zapper_addr,
-                abi: zapperAbi,
-                functionName: "redeem",
-                args: [farm.vault_addr, bal],
-            }),
-            { public: publicClient }
-        );
-        dismissNotify(notiId);
-        if (res.status) {
-            notifySuccess(successMessages.redeem());
-        } else {
-            notifyError(errorMessages.generalError("Error redeeming..."));
+        try {
+            const bal = await getBalance(farm.vault_addr, currentWallet, { public: publicClient });
+            await approveErc20(
+                farm.vault_addr,
+                farm.zapper_addr,
+                bal,
+                currentWallet,
+                farm.chainId,
+                getPublicClient,
+                getWalletClient
+            );
+            notifyLoading(loadingMessages.redeeming(), { id: notiId });
+            const walletClient = await getWalletClient(farm.chainId);
+            await estimateTxGas({
+                to: farm.zapper_addr,
+                data: encodeFunctionData({
+                    abi: zapperAbi,
+                    functionName: "redeem",
+                    args: [farm.vault_addr, toWei(0.01, 18)],
+                }),
+                chainId: farm.chainId,
+            });
+            const res = await awaitTransaction(
+                walletClient.writeContract({
+                    address: farm.zapper_addr,
+                    abi: zapperAbi,
+                    functionName: "redeem",
+                    args: [farm.vault_addr, toWei(0.01, 18)],
+                }),
+                { public: publicClient }
+            );
+            dismissNotify(notiId);
+            if (res.status) {
+                notifySuccess(successMessages.redeem());
+            } else {
+                notifyError(errorMessages.generalError(res.error || "Error redeeming..."));
+            }
+            return res;
+        } catch (error) {
+            console.error(error);
+            let err = JSON.parse(JSON.stringify(error));
+            notifyError(errorMessages.generalError(err.shortMessage || error.message || err.reason || err.message));
+            notiId && dismissNotify(notiId);
+            return {
+                status: false,
+                error: error.message || err.reason || err.message,
+                receipt: undefined,
+                txHash: undefined,
+            };
         }
-        return res;
     };
 
     const slippageIn: SlippageInBaseFn = async (args) => {
-        let { amountInWei, balances, currentWallet, token, max, getPublicClient, getWalletClient, farm, tokenIn } =
-            args;
+        let {
+            amountInWei,
+            balances,
+            currentWallet,
+            token,
+            max,
+            getPublicClient,
+            decimals,
+            prices,
+            getWalletClient,
+            farm,
+            tokenIn,
+        } = args;
         const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
         const publicClient = getPublicClient(farm.chainId);
         let isBridged = false;
+        let receviedAmt = 0n;
+
         try {
             //#region Select Max
             if (max) {
@@ -354,7 +394,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                     value: amountInWei,
                     stateOverride: stateOverrides,
                 });
-                return { receviedAmt: vaultBalance, isBridged };
+                receviedAmt = vaultBalance;
             }
             // token zap
             else {
@@ -381,15 +421,21 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                     account: currentWallet,
                     stateOverride: stateOverrides,
                 });
-                return { receviedAmt: vaultBalance, isBridged };
+                receviedAmt = vaultBalance;
             }
 
             // #endregionbn
         } catch (error: any) {
             console.log(error);
-            let err = JSON.parse(JSON.stringify(error));
         }
-        return { receviedAmt: 0n, isBridged };
+        const zapAmount = Number(toEth(amountInWei, decimals[farm.chainId][token]));
+
+        const afterTxAmount = Number(toEth(receviedAmt, farm.decimals)) * prices[farm.chainId][farm.vault_addr];
+        const beforeTxAmount = zapAmount * prices[farm.chainId][token];
+        let slippage = (1 - afterTxAmount / beforeTxAmount) * 100;
+        if (slippage < 0) slippage = 0;
+
+        return { receviedAmt: 0n, isBridged, slippage, beforeTxAmount, afterTxAmount };
     };
 
     const slippageOut: SlippageOutBaseFn = async ({
@@ -401,7 +447,6 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
         balances,
     }) => {
         if (!prices) throw new Error("Prices not found");
-        console.log('token =>', token);
         const state = store.getState();
         const decimals = state.decimals.decimals;
         const publicClient = getPublicClient(farm.chainId);
@@ -411,9 +456,9 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
             prices,
             balances,
         });
-        console.log("unlockAmountDollar =>", unlockAmountDollar);
         //#region Zapping Out
         let receivedAmtDollar = 0;
+        let receviedAmt = 0n;
         if (token === zeroAddress) {
             const res = await publicClient.simulateContract({
                 account: currentWallet,
@@ -425,8 +470,8 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
 
             receivedAmtDollar =
                 Number(toEth(res.result, decimals[farm.chainId][zeroAddress])) * prices[farm.chainId][zeroAddress];
-            console.log("receivedAmtDollar =>", receivedAmtDollar);
-            return { receviedAmt: res.result };
+
+            receviedAmt = res.result;
         } else {
             const res = await publicClient.simulateContract({
                 account: currentWallet,
@@ -436,9 +481,15 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                 args: [farm.vault_addr],
             });
             receivedAmtDollar = Number(toEth(res.result, decimals[farm.chainId][token])) * prices[farm.chainId][token];
-            console.log("receivedAmtDollar =>", receivedAmtDollar);
-            return { receviedAmt: res.result };
+
+            receviedAmt = res.result;
         }
+        const afterTxAmount = receivedAmtDollar;
+        const beforeTxAmount = unlockAmountDollar;
+        let slippage = (1 - afterTxAmount / beforeTxAmount) * 100;
+        if (slippage < 0) slippage = 0;
+
+        return { receviedAmt, slippage, afterTxAmount, beforeTxAmount };
         //#endregion
     };
 
