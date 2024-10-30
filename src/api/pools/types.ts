@@ -141,5 +141,6 @@ export interface StCoreFarmFunctions extends FarmFunctions {
         getPublicClient: (chainId: number) => IClients["public"];
         getWalletClient: (chainId: number) => Promise<IClients["wallet"]>;
         currentWallet: Address;
+        estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     }) => ReturnType<typeof awaitTransaction>;
 }

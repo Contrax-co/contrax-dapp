@@ -251,37 +251,64 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
         };
     };
 
-    const redeem: StCoreFarmFunctions["redeem"] = async ({ currentWallet, getPublicClient, getWalletClient }) => {
+    const redeem: StCoreFarmFunctions["redeem"] = async ({
+        currentWallet,
+        estimateTxGas,
+        getPublicClient,
+        getWalletClient,
+    }) => {
         const publicClient = getPublicClient(farm.chainId);
-        const bal = await getBalance(farm.vault_addr, currentWallet, { public: publicClient });
         const notiId = notifyLoading(loadingMessages.approving());
-        await approveErc20(
-            farm.vault_addr,
-            farm.zapper_addr,
-            bal,
-            currentWallet,
-            farm.chainId,
-            getPublicClient,
-            getWalletClient
-        );
-        notifyLoading(loadingMessages.redeeming(), { id: notiId });
-        const walletClient = await getWalletClient(farm.chainId);
-        const res = await awaitTransaction(
-            walletClient.writeContract({
-                address: farm.zapper_addr,
-                abi: zapperAbi,
-                functionName: "redeem",
-                args: [farm.vault_addr, bal],
-            }),
-            { public: publicClient }
-        );
-        dismissNotify(notiId);
-        if (res.status) {
-            notifySuccess(successMessages.redeem());
-        } else {
-            notifyError(errorMessages.generalError("Error redeeming..."));
+        try {
+            const bal = await getBalance(farm.vault_addr, currentWallet, { public: publicClient });
+            await approveErc20(
+                farm.vault_addr,
+                farm.zapper_addr,
+                bal,
+                currentWallet,
+                farm.chainId,
+                getPublicClient,
+                getWalletClient
+            );
+            notifyLoading(loadingMessages.redeeming(), { id: notiId });
+            const walletClient = await getWalletClient(farm.chainId);
+            await estimateTxGas({
+                to: farm.zapper_addr,
+                data: encodeFunctionData({
+                    abi: zapperAbi,
+                    functionName: "redeem",
+                    args: [farm.vault_addr, toWei(0.01, 18)],
+                }),
+                chainId: farm.chainId,
+            });
+            const res = await awaitTransaction(
+                walletClient.writeContract({
+                    address: farm.zapper_addr,
+                    abi: zapperAbi,
+                    functionName: "redeem",
+                    args: [farm.vault_addr, toWei(0.01, 18)],
+                }),
+                { public: publicClient }
+            );
+            dismissNotify(notiId);
+            if (res.status) {
+                notifySuccess(successMessages.redeem());
+            } else {
+                notifyError(errorMessages.generalError(res.error || "Error redeeming..."));
+            }
+            return res;
+        } catch (error) {
+            console.error(error);
+            let err = JSON.parse(JSON.stringify(error));
+            notifyError(errorMessages.generalError(err.shortMessage || error.message || err.reason || err.message));
+            notiId && dismissNotify(notiId);
+            return {
+                status: false,
+                error: error.message || err.reason || err.message,
+                receipt: undefined,
+                txHash: undefined,
+            };
         }
-        return res;
     };
 
     const slippageIn: SlippageInBaseFn = async (args) => {

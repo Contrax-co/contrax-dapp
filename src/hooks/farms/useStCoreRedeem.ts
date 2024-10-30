@@ -7,13 +7,14 @@ import { FARM_REDEEM, FARM_ZAP_IN } from "src/config/constants/query";
 
 const farmId = 301;
 const useStCoreRedeem = () => {
-    const { currentWallet, getPublicClient, getWalletClient } = useWallet();
+    const { currentWallet, getPublicClient, getWalletClient, estimateTxGas } = useWallet();
     const _redeem = async () => {
         if (!currentWallet) return;
-        await (farmFunctions[farmId] as StCoreFarmFunctions).redeem({
+        await(farmFunctions[farmId] as StCoreFarmFunctions).redeem({
             currentWallet,
             getPublicClient,
             getWalletClient,
+            estimateTxGas,
         });
     };
 
