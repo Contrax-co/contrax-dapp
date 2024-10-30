@@ -313,6 +313,7 @@ export interface CrossChainTransactionObject {
     };
     balances: Balances;
     currentWallet: Address;
+    fromChainId?: number;
     toChainId: number;
     toToken: Address;
     toTokenAmount: bigint;

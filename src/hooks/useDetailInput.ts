@@ -85,7 +85,7 @@ export const useDetailInput = (farm: PoolDef) => {
         setMax(false);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async ({ bridgeChainId }: { bridgeChainId?: number }) => {
         // check for eth balance greater than gas fee
         // if (isBalanceTooLow()) return;
         // if enough balance than proceed transaction
@@ -93,7 +93,12 @@ export const useDetailInput = (farm: PoolDef) => {
             if (depositable?.tokenAddress === farm.lp_address) {
                 await depositAsync({ depositAmount: getTokenAmount(), max });
             } else {
-                await zapInAsync({ zapAmount: getTokenAmount(), max, token: depositable?.tokenAddress! });
+                await zapInAsync({
+                    zapAmount: getTokenAmount(),
+                    max,
+                    token: depositable?.tokenAddress!,
+                    bridgeChainId,
+                });
             }
         } else {
             if (withdrawable?.tokenAddress === farm.lp_address) {
@@ -192,6 +197,7 @@ export const useDetailInput = (farm: PoolDef) => {
         setMax,
         fetchingSlippage,
         handleToggleShowInUsdc,
+        getTokenAmount,
         handleInput,
         handleSubmit,
         isLoadingTransaction: isZapping || isZappingOut || isDepositing || isWithdrawing,

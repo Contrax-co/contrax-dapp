@@ -58,6 +58,7 @@ export const zapInBase: ZapInBaseFn = async ({
     id,
     getPublicClient,
     tokenIn,
+    bridgeChainId,
 }) => {
     const wethAddress = addressesByChainId[farm.chainId].wethAddress as Address;
     const publicClient = getPublicClient(farm.chainId);
@@ -90,6 +91,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 notificationId: id,
                 balances: balances,
                 currentWallet: currentWallet,
+                fromChainId: bridgeChainId,
                 toChainId: farm.chainId,
                 toToken: zeroAddress,
                 toTokenAmount: amountInWei,
@@ -155,6 +157,7 @@ export const zapInBase: ZapInBaseFn = async ({
                 getPublicClient,
                 getWalletClient,
                 notificationId: id,
+                fromChainId: bridgeChainId,
                 balances,
                 currentWallet,
                 toChainId: farm.chainId,
@@ -944,12 +947,14 @@ export async function bridgeIfNeededLayerZero<T extends Omit<CrossChainTransacti
             obj.toChainId,
             obj.toToken === zeroAddress ? "native" : "usdc"
         );
-        const fromChainId: number | undefined = Number(
-            Object.entries(chainBalances).find(([key, value]) => {
-                if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
-                return false;
-            })?.[0]
-        );
+        const fromChainId: number | undefined =
+            obj.fromChainId ||
+            Number(
+                Object.entries(chainBalances).find(([key, value]) => {
+                    if (value >= toBalDiff && Number(key) !== obj.toChainId) return true;
+                    return false;
+                })?.[0]
+            );
         if (!fromChainId) {
             if (obj.simulate) {
                 // @ts-ignore

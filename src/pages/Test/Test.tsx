@@ -3,7 +3,7 @@ import useNotify from "src/hooks/useNotify";
 import { commify } from "ethers/lib/utils.js";
 import { usePlatformTVL } from "src/hooks/usePlatformTVL";
 import useWallet from "src/hooks/useWallet";
-import SlippageModal from "src/components/modals/SlippageModal/SlippageModal";
+import DepositModal from "src/components/modals/DepositModal/DepositModal";
 import SuccessfulEarnTrax from "src/components/modals/SuccessfulEarnTrax/SuccessfulEarnTrax";
 import { addressesByChainId } from "src/config/constants/contracts";
 import { CHAIN_ID } from "src/types/enums";
@@ -25,7 +25,7 @@ import {
 import useVaultMigrate from "src/hooks/useVaultMigrate";
 import { convertQuoteToRoute, getContractCallsQuote, getStatus } from "@lifi/sdk";
 import steerZapperAbi from "src/assets/abis/steerZapperAbi";
-import { awaitTransaction, toWei } from "src/utils/common";
+import { awaitTransaction, toPreciseNumber, toWei } from "src/utils/common";
 import { approveErc20, getBalance } from "src/api/token";
 import { buildTransaction, getBridgeStatus, getRoute } from "src/api/bridge";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -54,60 +54,57 @@ const Test = () => {
 
     const fn = async () => {
         // setModelOpen(true);
-        const tokenAddress = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831";
-        const owner = "0x2f1eA3b412862f3a6a81CB575504D7A2c8e5bC30";
-        const spender = "0x53b0705194e686Ba745eF8A80cB1Ef355dE645D0";
-        const publicClient = getPublicClient(CHAIN_ID.ARBITRUM);
-        const allowance = await publicClient.readContract({
-            address: tokenAddress,
-            abi: erc20Abi,
-            functionName: "allowance",
-            args: [owner, spender],
-        });
-        console.log("allowance =>", allowance);
-        for (let i = 0; i < 100; i++) {
-            const slot = keccak256(
-                encodePacked(
-                    ["uint256", "uint256"],
-                    [
-                        BigInt(spender),
-                        BigInt(keccak256(encodePacked(["uint256", "uint256"], [BigInt(owner), BigInt(i)]))),
-                    ]
-                )
-            );
-            console.log("slot =>", i, slot);
-            // console.log("i =>", i);
-            // const slot = keccak256(
-            //     encodePacked(
-            //         ["uint256", "uint256"],
-            //         [
-            //             BigInt(spender),
-            //             BigInt(keccak256(encodePacked(["uint256", "uint256"], [BigInt(owner), BigInt(i)]))),
-            //         ]
-            //     )
-            // );
-            // const res = await publicClient.getStorageAt({
-            //     address: tokenAddress,
-            //     slot: slot,
-            // });
-            // console.log("res =>", res);
-            // if (BigInt(res!) === allowance) {
-            //     console.log("Matched", i);
-            //     console.log("slot", slot);
-            //     break;
-            // }
-        }
+        const publicClient = getPublicClient(CHAIN_ID.CORE);
+        const currentBlock = await publicClient.getBlockNumber();
+        const oldBlock = currentBlock - 28944n * 30n;
+        const rate = Number(
+            await publicClient.readContract({
+                address: "0xf5fA1728bABc3f8D2a617397faC2696c958C3409",
+                abi: [
+                    {
+                        outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+                        inputs: [],
+                        name: "getCurrentExchangeRate",
+                        stateMutability: "view",
+                        type: "function",
+                    },
+                ],
+                functionName: "getCurrentExchangeRate",
+            })
+        );
+        const oldRate = Number(
+            await publicClient.readContract({
+                address: "0xf5fA1728bABc3f8D2a617397faC2696c958C3409",
+                abi: [
+                    {
+                        outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+                        inputs: [],
+                        name: "getCurrentExchangeRate",
+                        stateMutability: "view",
+                        type: "function",
+                    },
+                ],
+                functionName: "getCurrentExchangeRate",
+                blockNumber: oldBlock,
+            })
+        );
+
+        const apr = ((1 + (rate - oldRate) / oldRate) ** 12 - 1) * 100;
+        console.log("apr =>", apr);
     };
 
     return (
         <div style={{ color: "red" }}>
-            {/* <SlippageModal
+            {toPreciseNumber(1035.1000124)}
+            <DepositModal
                 handleClose={() => {
                     // setShowSlippageModal(false);
                 }}
-                handleSubmit={() => {}}
-                percentage={12}
-            /> */}
+                handleSubmit={async ({ bridgeChainId }) => {}}
+                farmId={39}
+                inputAmount={2}
+                symbol="usdc"
+            />
             Test
             <button onClick={fn} ref={clickMeButtonRef}>
                 Click Me

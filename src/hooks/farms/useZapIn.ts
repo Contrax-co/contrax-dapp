@@ -19,6 +19,7 @@ export interface ZapIn {
     zapAmount: number;
     max?: boolean;
     token: Address;
+    bridgeChainId?: number;
 }
 
 const useZapIn = (farm: PoolDef) => {
@@ -29,7 +30,7 @@ const useZapIn = (farm: PoolDef) => {
     const { prices } = usePriceOfTokens();
     const dispatch = useAppDispatch();
 
-    const _zapIn = async ({ zapAmount, max, token }: ZapIn) => {
+    const _zapIn = async ({ zapAmount, max, token, bridgeChainId }: ZapIn) => {
         if (!currentWallet) return;
         let amountInWei = toWei(zapAmount, decimals[farm.chainId][token]);
         const dbTx = await dispatch(
@@ -60,6 +61,7 @@ const useZapIn = (farm: PoolDef) => {
             decimals,
             getPublicClient,
             getWalletClient,
+            bridgeChainId,
         });
 
         reloadBalances();

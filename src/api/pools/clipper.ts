@@ -117,6 +117,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         getPublicClient,
         getWalletClient,
         decimals,
+        bridgeChainId,
     }) => {
         const publicClient = getPublicClient(farm.chainId);
 
@@ -150,6 +151,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     getWalletClient,
                     notificationId: id,
                     balances,
+                    bridgeChainId,
                     currentWallet,
                     toChainId: farm.chainId,
                     toToken: zeroAddress,
@@ -258,6 +260,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     notificationId: id,
                     balances,
                     currentWallet,
+                    bridgeChainId,
                     toChainId: farm.chainId,
                     toToken: token,
                     toTokenAmount: amountInWei,
