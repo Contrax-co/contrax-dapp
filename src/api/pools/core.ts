@@ -277,7 +277,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                 data: encodeFunctionData({
                     abi: zapperAbi,
                     functionName: "redeem",
-                    args: [farm.vault_addr, toWei(0.01, 18)],
+                    args: [farm.vault_addr, bal],
                 }),
                 chainId: farm.chainId,
             });
@@ -286,7 +286,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                     address: farm.zapper_addr,
                     abi: zapperAbi,
                     functionName: "redeem",
-                    args: [farm.vault_addr, toWei(0.01, 18)],
+                    args: [farm.vault_addr, bal],
                 }),
                 { public: publicClient }
             );
