@@ -512,7 +512,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
         try {
             const client = await getClients(farm.chainId);
             const vaultBalance = await getBalance(farm.vault_addr, currentWallet, client);
-            await TransactionsStep.addZapOut(amountInWei);
+            await TransactionsStep.zapOut(TransactionStepStatus.IN_PROGRESS, amountInWei);
 
             //#region Zapping Out
 
@@ -530,7 +530,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                     }),
                     client,
                     async (hash) => {
-                        await TransactionsStep.zapOut(TransactionStepStatus.IN_PROGRESS, hash);
+                        await TransactionsStep.zapOut(TransactionStepStatus.IN_PROGRESS, amountInWei, hash);
                     }
                 );
             } else {
@@ -545,11 +545,11 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                     }),
                     client,
                     async (hash) => {
-                        await TransactionsStep.zapOut(TransactionStepStatus.IN_PROGRESS, hash);
+                        await TransactionsStep.zapOut(TransactionStepStatus.IN_PROGRESS, amountInWei, hash);
                     }
                 );
             }
-            await TransactionsStep.zapOut(TransactionStepStatus.COMPLETED);
+            await TransactionsStep.zapOut(TransactionStepStatus.COMPLETED, amountInWei);
             if (!withdrawTxn.status) {
                 store.dispatch(markAsFailedDb(id));
                 throw new Error(withdrawTxn.error);
@@ -585,7 +585,7 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                         notifyLoading(loadingMessages.withdrawBridgeStep(1, 3), {
                             id,
                         });
-                        await TransactionsStep.addApproveBridge();
+                        await TransactionsStep.approveBridge(TransactionStepStatus.IN_PROGRESS);
                         await bridge.approve();
                         await TransactionsStep.approveBridge(TransactionStepStatus.COMPLETED);
                         //#endregion Approve
@@ -594,16 +594,19 @@ let core = function (farmId: number): Omit<FarmFunctions & StCoreFarmFunctions, 
                         notifyLoading(loadingMessages.withdrawBridgeStep(2, 3), {
                             id,
                         });
-                        await TransactionsStep.addInitiateBridge(bridge.fromTokenAmount);
+                        await TransactionsStep.initiateBridge(
+                            TransactionStepStatus.IN_PROGRESS,
+                            bridge.fromTokenAmount
+                        );
                         const txHash = await bridge.initialize();
-                        await TransactionsStep.initiateBridge(TransactionStepStatus.COMPLETED);
+                        await TransactionsStep.initiateBridge(TransactionStepStatus.COMPLETED, bridge.fromTokenAmount);
                         //#endregion Initialize
 
                         //#region WaitForBridge
                         notifyLoading(loadingMessages.withdrawBridgeStep(3, 3), {
                             id,
                         });
-                        await TransactionsStep.addWaitForBridge({
+                        await TransactionsStep.waitForBridge(TransactionStepStatus.IN_PROGRESS, {
                             bridgeService: BridgeService.LAYER_ZERO,
                             txHash: txHash,
                             fromChain: bridge.fromChainId,
