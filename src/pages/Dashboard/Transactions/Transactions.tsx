@@ -99,6 +99,7 @@ const Row: FC<{ _id: string }> = ({ _id }) => {
                 withdrawAmt: Number(toEth(BigInt(tx.amountInWei), farm.decimals)),
                 max: tx.max,
                 token: tx.token,
+                txId: tx._id,
             });
         }
     };
@@ -166,7 +167,7 @@ const Row: FC<{ _id: string }> = ({ _id }) => {
                         )}
                     </div>
                 </div>
-                <TransactionDetails transactionId={_id} open={open} />
+                <TransactionDetails transactionId={_id} open={open} farm={undefined} tx={undefined} />
             </div>
         </>
     );

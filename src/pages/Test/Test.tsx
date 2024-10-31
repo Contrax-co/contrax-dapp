@@ -96,7 +96,7 @@ const Test = () => {
     return (
         <div style={{ color: "red" }}>
             {toPreciseNumber(1035.1000124)}
-            <DepositModal
+            {/* <DepositModal
                 handleClose={() => {
                     // setShowSlippageModal(false);
                 }}
@@ -104,7 +104,7 @@ const Test = () => {
                 farmId={39}
                 inputAmount={2}
                 symbol="usdc"
-            />
+            /> */}
             Test
             <button onClick={fn} ref={clickMeButtonRef}>
                 Click Me
