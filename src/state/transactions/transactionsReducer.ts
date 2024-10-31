@@ -62,6 +62,7 @@ export const editTransactionStepDb = createAsyncThunk(
             stepType: string;
             status: TransactionStepStatus;
             amount?: string;
+            bridgeInfo?: WaitForBridgeResultsStep["bridgeInfo"];
         },
         _thunkApi
     ) => {
@@ -77,6 +78,8 @@ export const editTransactionStepDb = createAsyncThunk(
             status: params.status,
             // @ts-ignore
             txHash: params.txHash || tx.steps[ind].txHash,
+            // @ts-ignore
+            bridgeInfo: params.bridgeInfo || tx.steps[ind].bridgeInfo,
         });
         return params;
     }
@@ -350,7 +353,6 @@ export class TransactionsDB {
     constructor(id: string) {
         this.id = id;
     }
-
     async addApproveZap() {
         await store.dispatch(
             addTransactionStepDb({
@@ -372,7 +374,6 @@ export class TransactionsDB {
             })
         );
     }
-
     async addApproveBridge() {
         await store.dispatch(
             addTransactionStepDb({
@@ -395,6 +396,17 @@ export class TransactionsDB {
         );
     }
 
+    async zapIn(status: TransactionStepStatus, amount: bigint, txHash?: Hex) {
+        await store.dispatch(
+            editTransactionStepDb({
+                transactionId: this.id,
+                stepType: TransactionTypes.ZAP_IN,
+                status,
+                txHash,
+                amount: amount.toString(),
+            })
+        );
+    }
     async addZapIn(amountInWei: bigint) {
         await store.dispatch(
             addTransactionStepDb({
@@ -407,18 +419,6 @@ export class TransactionsDB {
             })
         );
     }
-
-    async zapIn(status: TransactionStepStatus, txHash?: Hex) {
-        await store.dispatch(
-            editTransactionStepDb({
-                transactionId: this.id,
-                stepType: TransactionTypes.ZAP_IN,
-                status,
-                txHash,
-            })
-        );
-    }
-
     async addZapOut(amountInWei: bigint) {
         await store.dispatch(
             addTransactionStepDb({
@@ -432,17 +432,17 @@ export class TransactionsDB {
         );
     }
 
-    async zapOut(status: TransactionStepStatus, txHash?: Hex) {
+    async zapOut(status: TransactionStepStatus, amountInWei: bigint, txHash?: Hex) {
         await store.dispatch(
             editTransactionStepDb({
                 transactionId: this.id,
                 stepType: TransactionTypes.ZAP_OUT,
                 status,
+                amount: amountInWei.toString(),
                 txHash,
             })
         );
     }
-
     async addInitiateBridge(fromTokenAmount: bigint) {
         await store.dispatch(
             addTransactionStepDb({
@@ -456,16 +456,16 @@ export class TransactionsDB {
         );
     }
 
-    async initiateBridge(status: TransactionStepStatus) {
+    async initiateBridge(status: TransactionStepStatus, fromTokenAmount: bigint) {
         await store.dispatch(
             editTransactionStepDb({
                 transactionId: this.id,
                 stepType: TransactionTypes.INITIATE_BRIDGE,
                 status,
+                amount: fromTokenAmount.toString(),
             })
         );
     }
-
     async addWaitForBridge(bridgeInfo?: WaitForBridgeResultsStep["bridgeInfo"]) {
         await store.dispatch(
             addTransactionStepDb({
@@ -479,12 +479,13 @@ export class TransactionsDB {
         );
     }
 
-    async waitForBridge(status: TransactionStepStatus) {
+    async waitForBridge(status: TransactionStepStatus, bridgeInfo?: WaitForBridgeResultsStep["bridgeInfo"]) {
         await store.dispatch(
             editTransactionStepDb({
                 transactionId: this.id,
                 stepType: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
                 status,
+                bridgeInfo,
             })
         );
     }

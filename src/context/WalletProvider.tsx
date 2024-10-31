@@ -278,6 +278,7 @@ const WalletProvider: React.FC<IProps> = ({ children }) => {
 
     async function logout() {
         await disconnectAsync();
+        if (web3AuthInstance.connected) await web3AuthInstance.logout();
         setCurrentWallet(undefined);
         _walletClients.current = {};
     }

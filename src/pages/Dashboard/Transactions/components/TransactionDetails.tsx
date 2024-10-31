@@ -1,33 +1,54 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
 import { FaRegCircle } from "react-icons/fa";
 
 import styles from "./TransactionDetails.module.scss";
-import { TransactionStepStatus } from "src/state/transactions/types";
+import { Transaction, TransactionStepStatus } from "src/state/transactions/types";
 import { formatUnits, zeroAddress } from "viem";
 import useTransaction from "src/hooks/useTransaction";
+import { PoolDef } from "src/config/constants/pools_json";
 
-interface IProps {
-    transactionId: string;
-    open: boolean;
-}
+type IProps =
+    | {
+          transactionId: string;
+          open: boolean;
+          showLoadingBar?: boolean;
+          tx: undefined;
+          farm: undefined;
+      }
+    | {
+          transactionId: undefined;
+          open: boolean;
+          showLoadingBar?: boolean;
+          tx: Transaction;
+          farm: PoolDef;
+      };
 
-const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
-    const { tx, farm } = useTransaction(transactionId);
+const TransactionDetails: React.FC<IProps> = (args) => {
+    let farm: PoolDef | undefined = args.farm;
+    let tx: Transaction | undefined = args.tx;
+    if (args.transactionId) {
+        const obj = useTransaction(args.transactionId);
+        farm = obj?.farm;
+        tx = obj?.tx;
+    }
+
     if (!farm || !tx) return;
 
     return (
-        <div className={`${styles.container} ${open ? styles.open : styles.closed}`}>
-            <div className={styles.loadingBarContainer}>
-                <div
-                    className={
-                        tx.steps.some((item) => item.status === TransactionStepStatus.IN_PROGRESS)
-                            ? styles.loadingBarAnimated
-                            : ""
-                    }
-                />
-            </div>
+        <div className={`${styles.container} ${args.open ? styles.open : styles.closed}`}>
+            {args.showLoadingBar && (
+                <div className={styles.loadingBarContainer}>
+                    <div
+                        className={
+                            tx.steps.some((item) => item.status === TransactionStepStatus.IN_PROGRESS)
+                                ? styles.loadingBarAnimated
+                                : ""
+                        }
+                    />
+                </div>
+            )}
             <div style={{ marginTop: 10 }}>
                 {tx.steps.map((step, i) => (
                     <React.Fragment key={i}>

@@ -85,7 +85,7 @@ export const useDetailInput = (farm: PoolDef) => {
         setMax(false);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async ({ bridgeChainId, txId }: { bridgeChainId?: number; txId: string }) => {
         // check for eth balance greater than gas fee
         // if (isBalanceTooLow()) return;
         // if enough balance than proceed transaction
@@ -93,13 +93,25 @@ export const useDetailInput = (farm: PoolDef) => {
             if (depositable?.tokenAddress === farm.lp_address) {
                 await depositAsync({ depositAmount: getTokenAmount(), max });
             } else {
-                await zapInAsync({ zapAmount: getTokenAmount(), max, token: depositable?.tokenAddress! });
+                await zapInAsync({
+                    zapAmount: getTokenAmount(),
+                    max,
+                    token: depositable?.tokenAddress!,
+                    bridgeChainId,
+                    txId,
+                });
             }
         } else {
             if (withdrawable?.tokenAddress === farm.lp_address) {
                 await withdrawAsync({ withdrawAmount: getTokenAmount(), max });
             } else {
-                await zapOutAsync({ withdrawAmt: getTokenAmount(), max, token: withdrawable?.tokenAddress! });
+                await zapOutAsync({
+                    withdrawAmt: getTokenAmount(),
+                    max,
+                    token: withdrawable?.tokenAddress!,
+                    bridgeChainId,
+                    txId,
+                });
             }
         }
 
@@ -186,13 +198,17 @@ export const useDetailInput = (farm: PoolDef) => {
         type,
         amount,
         slippage,
+        depositable,
         showInUsd,
         currentWallet,
         maxBalance,
         setMax,
         fetchingSlippage,
         handleToggleShowInUsdc,
+        max,
+        getTokenAmount,
         handleInput,
+        withdrawable,
         handleSubmit,
         isLoadingTransaction: isZapping || isZappingOut || isDepositing || isWithdrawing,
         isLoadingFarm: isLoading,

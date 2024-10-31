@@ -45,15 +45,16 @@ export const getEarnings = async (userAddress: string) => {
                 }
               }`,
         });
-        let responseDataArb = res.data.data.user?.earn.map((item: any) => ({
-            ...item,
-            chainId: CHAIN_ID.ARBITRUM,
-        })) as Response[];
-        let responseDataBase = res_base.data.data.user?.earn.map((item: any) => ({
-            ...item,
-            chainId: CHAIN_ID.BASE,
-        })) as Response[];
-
+        let responseDataArb =
+            (res.data.data.user?.earn.map((item: any) => ({
+                ...item,
+                chainId: CHAIN_ID.ARBITRUM,
+            })) as Response[]) || [];
+        let responseDataBase =
+            (res_base.data.data.user?.earn.map((item: any) => ({
+                ...item,
+                chainId: CHAIN_ID.BASE,
+            })) as Response[]) || [];
         return responseDataArb.concat(responseDataBase);
     } catch (err: any) {
         console.error(err);

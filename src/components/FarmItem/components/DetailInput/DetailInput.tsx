@@ -15,9 +15,10 @@ import { FarmDetailInputOptions } from "src/state/farms/types";
 import { SlippageWarning } from "src/components/modals/SlippageWarning/SlippageWarning";
 import { SlippageNotCalculate } from "src/components/modals/SlippageNotCalculate/SlippageNotCalculate";
 import { PoolDef } from "src/config/constants/pools_json";
-import useWallet from "src/hooks/useWallet";
 import moment from "moment";
 import useStCoreRedeem from "src/hooks/farms/useStCoreRedeem";
+import DepositModal from "src/components/modals/DepositModal/DepositModal";
+import WithdrawModal from "src/components/modals/WithdrawModal/WithdrawModal";
 
 interface Props {
     farm: PoolDef;
@@ -28,6 +29,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
     const { transactionType, currencySymbol } = useAppSelector((state) => state.farms.farmDetailInputOptions);
     const [showSlippageModal, setShowSlippageModal] = useState(false);
     const [showNotSlipageModal, setShowNotSlipageModal] = useState(false);
+    const [showZapModal, setShowZapModal] = useState(false);
     const {
         amount,
         showInUsd,
@@ -39,8 +41,12 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         fetchingSlippage,
         handleToggleShowInUsdc,
         isLoadingFarm,
+        getTokenAmount,
         slippage,
         isLoadingTransaction,
+        max,
+        depositable,
+        withdrawable,
     } = useDetailInput(farm);
     const { farmDetails } = useFarmDetails();
     const { isLoading: isStCoreRedeeming, redeem } = useStCoreRedeem();
@@ -81,13 +87,13 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
     );
 
     const submitHandler = (e: any) => {
-        e.preventDefault();
-        if (slippage && slippage > 2) {
+        e?.preventDefault();
+        if (slippage && slippage > 2 && !showSlippageModal) {
             setShowSlippageModal(true);
-        } else if (slippage === undefined) {
+        } else if (slippage === undefined && !showNotSlipageModal) {
             setShowNotSlipageModal(true);
         } else {
-            handleSubmit();
+            setShowZapModal(true);
         }
     };
     return (
@@ -264,7 +270,7 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     handleClose={() => {
                         setShowSlippageModal(false);
                     }}
-                    handleSubmit={handleSubmit}
+                    handleSubmit={submitHandler}
                     percentage={slippage || 0}
                 />
             )}
@@ -273,9 +279,35 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     handleClose={() => {
                         setShowNotSlipageModal(false);
                     }}
-                    handleSubmit={handleSubmit}
+                    handleSubmit={submitHandler}
                 />
             )}
+            {showZapModal &&
+                (transactionType === FarmTransactionType.Deposit ? (
+                    <DepositModal
+                        handleClose={() => {
+                            setShowZapModal(false);
+                        }}
+                        handleSubmit={handleSubmit}
+                        farmId={farm.id}
+                        inputAmount={getTokenAmount()}
+                        max={max}
+                        token={depositable!.tokenAddress}
+                        symbol={currencySymbol.toLowerCase() === "usdc" ? "usdc" : "native"}
+                    />
+                ) : (
+                    <WithdrawModal
+                        handleClose={() => {
+                            setShowZapModal(false);
+                        }}
+                        handleSubmit={handleSubmit}
+                        farmId={farm.id}
+                        inputAmount={getTokenAmount()}
+                        max={max}
+                        token={withdrawable!.tokenAddress}
+                        symbol={currencySymbol.toLowerCase() === "usdc" ? "usdc" : "native"}
+                    />
+                ))}
         </form>
     );
 };
