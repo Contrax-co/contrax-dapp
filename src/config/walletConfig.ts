@@ -25,6 +25,8 @@ import {
     metaMaskWallet,
     safeWallet,
     argentWallet,
+    okxWallet,
+    ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { createConfig, createConnector as createWagmiConnector } from "wagmi";
 
@@ -276,6 +278,8 @@ export const rainbowConfig = getDefaultConfig({
                 metaMaskWallet,
                 safeWallet,
                 argentWallet,
+                okxWallet,
+                ledgerWallet,
             ],
         },
     ],
