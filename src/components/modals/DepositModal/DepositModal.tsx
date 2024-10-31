@@ -7,20 +7,37 @@ import useBalances from "src/hooks/useBalances";
 import useFarms from "src/hooks/farms/useFarms";
 import { CHAIN_ID } from "src/types/enums";
 import usePriceOfTokens from "src/hooks/usePriceOfTokens";
-import { zeroAddress } from "viem";
+import { Address, zeroAddress } from "viem";
 import { getBalance } from "src/api/token";
 import { addressesByChainId } from "src/config/constants/contracts";
 import useWallet from "src/hooks/useWallet";
 import { notifyError } from "src/api/notify";
+import TransactionDetails from "src/pages/Dashboard/Transactions/components/TransactionDetails";
+import {
+    ApproveBridgeStep,
+    ApproveZapStep,
+    InitiateBridgeStep,
+    TransactionStep,
+    TransactionStepStatus,
+    TransactionTypes,
+    WaitForBridgeResultsStep,
+    ZapInStep,
+} from "src/state/transactions/types";
+import { useAppDispatch } from "src/state";
+import { addTransactionDb } from "src/state/transactions/transactionsReducer";
+import { useDecimals } from "src/hooks/useDecimals";
+import useTransaction from "src/hooks/useTransaction";
 
 interface IProps {
     handleClose: Function;
-    handleSubmit: (x: { bridgeChainId?: number }) => Promise<void>;
+    handleSubmit: (x: { bridgeChainId?: number; txId: string }) => Promise<void>;
     farmId: number;
     inputAmount: number;
     symbol: "usdc" | "native";
+    token: Address;
+    max: boolean;
 }
-const DepositModal: FC<IProps> = ({ handleClose, handleSubmit, farmId, inputAmount, symbol }) => {
+const DepositModal: FC<IProps> = ({ handleClose, handleSubmit, farmId, inputAmount, symbol, max, token }) => {
     // const { farmDetails } = useFarmDetails();
     const { getPublicClient, currentWallet } = useWallet();
     const { farms } = useFarms();
@@ -29,6 +46,11 @@ const DepositModal: FC<IProps> = ({ handleClose, handleSubmit, farmId, inputAmou
     const { balances } = useBalances();
     const combined = useMemo(() => getCombinedBalance(balances, farm.chainId, symbol), [balances, symbol]);
     const [checkedNetwork, setCheckedNetwork] = useState<string>();
+    const dispatch = useAppDispatch();
+    const { decimals } = useDecimals();
+    const [txId, setTxId] = useState("");
+    const { tx } = useTransaction(txId);
+    const isTransacting = useMemo(() => tx?.steps.some((item) => item.status !== TransactionStepStatus.PENDING), [tx]);
 
     const handleCheckboxClick = (chainId: string) => {
         if (chainId === farm.chainId.toString()) return;
@@ -65,6 +87,56 @@ const DepositModal: FC<IProps> = ({ handleClose, handleSubmit, farmId, inputAmou
             setCheckedNetwork(fromChainId?.toString());
         })();
     }, [combined, currentWallet]);
+
+    useEffect(() => {
+        (async function () {
+            if (!currentWallet || !!txId) return;
+            const toBal = await getBalance(
+                symbol === "usdc" ? addressesByChainId[farm.chainId].nativeUsdAddress! : zeroAddress,
+                currentWallet,
+                { public: getPublicClient(farm.chainId) }
+            );
+            const toBalDiff = toWei(inputAmount, symbol === "usdc" ? 6 : 18) - toBal;
+            let steps: TransactionStep[] = [];
+            if (toBalDiff >= 0) {
+                steps.push({
+                    status: TransactionStepStatus.PENDING,
+                    type: TransactionTypes.APPROVE_BRIDGE,
+                } as ApproveBridgeStep);
+                steps.push({
+                    status: TransactionStepStatus.PENDING,
+                    type: TransactionTypes.INITIATE_BRIDGE,
+                } as InitiateBridgeStep);
+                steps.push({
+                    status: TransactionStepStatus.PENDING,
+                    type: TransactionTypes.WAIT_FOR_BRIDGE_RESULTS,
+                } as WaitForBridgeResultsStep);
+            }
+            let amountInWei = toWei(inputAmount, decimals[farm.chainId][token]);
+
+            steps.push({ status: TransactionStepStatus.PENDING, type: TransactionTypes.APPROVE_ZAP } as ApproveZapStep);
+            steps.push({
+                status: TransactionStepStatus.PENDING,
+                type: TransactionTypes.ZAP_IN,
+                amount: amountInWei.toString(),
+            } as ZapInStep);
+
+            const dbTx = await dispatch(
+                addTransactionDb({
+                    from: currentWallet,
+                    amountInWei: amountInWei.toString(),
+                    date: new Date().toString(),
+                    type: "deposit",
+                    farmId: farm.id,
+                    max: !!max,
+                    token,
+                    steps,
+                })
+            );
+            const id = dbTx.payload._id;
+            setTxId(id);
+        })();
+    }, []);
 
     return (
         <ModalLayout onClose={handleClose} className={styles.modal}>
@@ -104,6 +176,14 @@ const DepositModal: FC<IProps> = ({ handleClose, handleSubmit, farmId, inputAmou
                             </div>
                         ))}
                 </div>
+                <h5 style={{ marginTop: 20 }}>Steps</h5>
+                <TransactionDetails
+                    showLoadingBar={false}
+                    open={true}
+                    transactionId={txId}
+                    farm={undefined}
+                    tx={undefined}
+                />
                 <div className={styles.buttonContainer}>
                     <button
                         className={`custom-button ${styles.cancelButton}`}
@@ -115,9 +195,10 @@ const DepositModal: FC<IProps> = ({ handleClose, handleSubmit, farmId, inputAmou
                     </button>
                     <button
                         className={`custom-button ${styles.continueButton}`}
+                        disabled={!txId || isTransacting}
                         onClick={() => {
-                            handleSubmit({ bridgeChainId: Number(checkedNetwork) });
-                            handleClose();
+                            handleSubmit({ bridgeChainId: Number(checkedNetwork), txId });
+                            // handleClose();
                         }}
                     >
                         Confirm

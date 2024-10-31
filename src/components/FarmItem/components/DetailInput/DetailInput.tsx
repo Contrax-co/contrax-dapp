@@ -18,6 +18,7 @@ import { PoolDef } from "src/config/constants/pools_json";
 import moment from "moment";
 import useStCoreRedeem from "src/hooks/farms/useStCoreRedeem";
 import DepositModal from "src/components/modals/DepositModal/DepositModal";
+import WithdrawModal from "src/components/modals/WithdrawModal/WithdrawModal";
 
 interface Props {
     farm: PoolDef;
@@ -43,6 +44,9 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
         getTokenAmount,
         slippage,
         isLoadingTransaction,
+        max,
+        depositable,
+        withdrawable,
     } = useDetailInput(farm);
     const { farmDetails } = useFarmDetails();
     const { isLoading: isStCoreRedeeming, redeem } = useStCoreRedeem();
@@ -278,17 +282,32 @@ const DetailInput: React.FC<Props> = ({ farm }) => {
                     handleSubmit={submitHandler}
                 />
             )}
-            {showZapModal && (
-                <DepositModal
-                    handleClose={() => {
-                        setShowZapModal(false);
-                    }}
-                    handleSubmit={handleSubmit}
-                    farmId={farm.id}
-                    inputAmount={getTokenAmount()}
-                    symbol={currencySymbol.toLowerCase() === "usdc" ? "usdc" : "native"}
-                />
-            )}
+            {showZapModal &&
+                (transactionType === FarmTransactionType.Deposit ? (
+                    <DepositModal
+                        handleClose={() => {
+                            setShowZapModal(false);
+                        }}
+                        handleSubmit={handleSubmit}
+                        farmId={farm.id}
+                        inputAmount={getTokenAmount()}
+                        max={max}
+                        token={depositable!.tokenAddress}
+                        symbol={currencySymbol.toLowerCase() === "usdc" ? "usdc" : "native"}
+                    />
+                ) : (
+                    <WithdrawModal
+                        handleClose={() => {
+                            setShowZapModal(false);
+                        }}
+                        handleSubmit={handleSubmit}
+                        farmId={farm.id}
+                        inputAmount={getTokenAmount()}
+                        max={max}
+                        token={withdrawable!.tokenAddress}
+                        symbol={currencySymbol.toLowerCase() === "usdc" ? "usdc" : "native"}
+                    />
+                ))}
         </form>
     );
 };

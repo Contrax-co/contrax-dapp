@@ -432,6 +432,7 @@ class Bridge {
         return publicClient;
     }
 
+
     private nativeToUsdcFee(amount: bigint) {
         return parseUnits((Number(formatUnits(amount, 18)) * this.primaryNativePrice * 1.1).toString(), 6);
     }

@@ -45,7 +45,6 @@ export const getEarnings = async (userAddress: string) => {
                 }
               }`,
         });
-        console.log("res_base =>", res_base);
         let responseDataArb =
             (res.data.data.user?.earn.map((item: any) => ({
                 ...item,

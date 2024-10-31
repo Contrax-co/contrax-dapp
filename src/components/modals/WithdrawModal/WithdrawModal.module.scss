@@ -1,0 +1,36 @@
+@import "../../../styles/variables.scss";
+@import "../../../styles/_mixins.scss";
+
+.modal {
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.container {
+    width: 540px;
+    @include devices(tablet) {
+        width: 100%;
+    }
+
+
+    .cancelButton {
+        background: var(--color_grey);
+        @include devices(mobile) {
+            min-width: 100px;
+        }
+    }
+    .continueButton {
+        @include devices(mobile) {
+            min-width: 100px;
+        }
+    }
+    .buttonContainer {
+        margin-top: 16px;
+        display: flex;
+        gap: 16px;
+        justify-content: flex-end;
+        @include devices(tablet) {
+            gap: 8px;
+        }
+    }
+}

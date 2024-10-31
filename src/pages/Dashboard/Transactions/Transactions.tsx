@@ -92,6 +92,7 @@ const Row: FC<{ _id: string }> = ({ _id }) => {
                 zapAmount: Number(toEth(BigInt(tx.amountInWei), decimals[farm.chainId][token])),
                 max: tx.max,
                 token: tx.token,
+                txId: tx._id,
             });
         } else {
             zapOut({

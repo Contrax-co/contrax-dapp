@@ -33,6 +33,7 @@ export interface ZapOutArgs {
     max?: boolean;
     isSocial: boolean;
     token: Address;
+    bridgeChainId?: number;
     estimateTxGas: (args: EstimateTxGasArgs) => Promise<bigint>;
     getClients: (chainId: number) => Promise<IClients>;
     getPublicClient: (chainId: number) => IClients["public"];

@@ -18,6 +18,8 @@ export interface ZapOut {
     withdrawAmt: number;
     max?: boolean;
     token: Address;
+    bridgeChainId?: number;
+    txId: string;
 }
 
 const useZapOut = (farm: PoolDef) => {
@@ -28,24 +30,12 @@ const useZapOut = (farm: PoolDef) => {
     const { reloadSupplies } = useTotalSupplies();
     const dispatch = useAppDispatch();
 
-    const _zapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
+    const _zapOut = async ({ withdrawAmt, max, token, txId, bridgeChainId }: ZapOut) => {
         if (!currentWallet) return;
         let amountInWei = toWei(withdrawAmt, farm.decimals);
-        const dbTx = await dispatch(
-            addTransactionDb({
-                from: currentWallet,
-                amountInWei: amountInWei.toString(),
-                date: new Date().toString(),
-                type: "withdraw",
-                farmId: farm.id,
-                max: !!max,
-                token,
-                steps: [],
-            })
-        );
-        const id = dbTx.payload._id;
+
         await farmFunctions[farm.id].zapOut({
-            id,
+            id: txId,
             amountInWei,
             getPublicClient,
             getWalletClient,
@@ -57,12 +47,13 @@ const useZapOut = (farm: PoolDef) => {
             max,
             prices,
             token,
+            bridgeChainId,
         });
         reloadBalances();
         reloadSupplies();
     };
 
-    const slippageZapOut = async ({ withdrawAmt, max, token }: ZapOut) => {
+    const slippageZapOut = async ({ withdrawAmt, max, token }: Omit<ZapOut, "txId">) => {
         if (!currentWallet) return;
         let amountInWei = toWei(withdrawAmt, farm.decimals);
 

@@ -35,6 +35,7 @@ import {
     editTransactionDb,
     editTransactionStepDb,
     markAsFailedDb,
+    TransactionsDB,
 } from "src/state/transactions/transactionsReducer";
 
 let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdraw"> {
@@ -120,6 +121,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
         bridgeChainId,
     }) => {
         const publicClient = getPublicClient(farm.chainId);
+        const TransactionsStep = new TransactionsDB(id);
 
         const wethAddress = addressesByChainId[farm.chainId].wethAddress;
         let zapperTxn;
@@ -159,16 +161,7 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     max,
                 });
                 if (bridgeStatus) {
-                    store.dispatch(
-                        addTransactionStepDb({
-                            transactionId: id!,
-                            step: {
-                                type: TransactionTypes.ZAP_IN,
-                                amount: amountInWei.toString(),
-                                status: TransactionStepStatus.IN_PROGRESS,
-                            } as ZapInStep,
-                        })
-                    );
+                    await TransactionsStep.zapIn(TransactionStepStatus.IN_PROGRESS, amountInWei);
                     const client = await getClients(farm.chainId);
                     if (isBridged) amountInWei = finalAmountToDeposit;
 
@@ -224,23 +217,10 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                         }),
                         client,
                         async (hash) => {
-                            store.dispatch(
-                                editTransactionStepDb({
-                                    transactionId: id,
-                                    stepType: TransactionTypes.ZAP_IN,
-                                    status: TransactionStepStatus.IN_PROGRESS,
-                                    txHash: hash,
-                                })
-                            );
+                            await TransactionsStep.zapIn(TransactionStepStatus.IN_PROGRESS, amountInWei, hash);
                         }
                     );
-                    store.dispatch(
-                        editTransactionStepDb({
-                            transactionId: id,
-                            stepType: TransactionTypes.ZAP_IN,
-                            status: TransactionStepStatus.COMPLETED,
-                        })
-                    );
+                    await TransactionsStep.zapIn(TransactionStepStatus.COMPLETED, amountInWei);
                 } else {
                     zapperTxn = {
                         status: false,
@@ -272,15 +252,8 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                     // first approve tokens, if zap is not in eth
                     if (token !== zeroAddress) {
                         notifyLoading(loadingMessages.approvingZapping(), { id });
-                        store.dispatch(
-                            addTransactionStepDb({
-                                transactionId: id!,
-                                step: {
-                                    type: TransactionTypes.APPROVE_ZAP,
-                                    status: TransactionStepStatus.IN_PROGRESS,
-                                } as ApproveZapStep,
-                            })
-                        );
+                        await TransactionsStep.approveZap(TransactionStepStatus.IN_PROGRESS);
+
                         const response = await approveErc20(
                             token,
                             farm.zapper_addr,
@@ -290,26 +263,13 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                             getPublicClient,
                             getWalletClient
                         );
-                        store.dispatch(
-                            editTransactionStepDb({
-                                transactionId: id,
-                                stepType: TransactionTypes.APPROVE_ZAP,
-                                status: TransactionStepStatus.COMPLETED,
-                            })
-                        );
+                        await TransactionsStep.approveZap(TransactionStepStatus.COMPLETED);
+
                         if (!response.status) throw new Error("Error approving vault!");
                     }
                     // #endregion
-                    store.dispatch(
-                        addTransactionStepDb({
-                            transactionId: id!,
-                            step: {
-                                type: TransactionTypes.ZAP_IN,
-                                amount: amountInWei.toString(),
-                                status: TransactionStepStatus.IN_PROGRESS,
-                            } as ZapInStep,
-                        })
-                    );
+                    await TransactionsStep.zapIn(TransactionStepStatus.IN_PROGRESS, amountInWei);
+
                     const { packedConfig, packedInput, r, s } = await createClipperData(
                         amountInWei.toString(),
                         token === zeroAddress ? wethAddress : token,
@@ -328,23 +288,10 @@ let clipper = function (farmId: number): Omit<FarmFunctions, "deposit" | "withdr
                         }),
                         { public: publicClient },
                         async (hash) => {
-                            store.dispatch(
-                                editTransactionStepDb({
-                                    transactionId: id,
-                                    stepType: TransactionTypes.ZAP_IN,
-                                    status: TransactionStepStatus.IN_PROGRESS,
-                                    txHash: hash,
-                                })
-                            );
+                            await TransactionsStep.zapIn(TransactionStepStatus.IN_PROGRESS, amountInWei, hash);
                         }
                     );
-                    store.dispatch(
-                        editTransactionStepDb({
-                            transactionId: id,
-                            stepType: TransactionTypes.ZAP_IN,
-                            status: TransactionStepStatus.COMPLETED,
-                        })
-                    );
+                    await TransactionsStep.zapIn(TransactionStepStatus.COMPLETED, amountInWei);
                 } else {
                     zapperTxn = {
                         status: false,

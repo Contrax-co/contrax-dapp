@@ -20,6 +20,7 @@ export interface ZapIn {
     max?: boolean;
     token: Address;
     bridgeChainId?: number;
+    txId: string;
 }
 
 const useZapIn = (farm: PoolDef) => {
@@ -30,25 +31,12 @@ const useZapIn = (farm: PoolDef) => {
     const { prices } = usePriceOfTokens();
     const dispatch = useAppDispatch();
 
-    const _zapIn = async ({ zapAmount, max, token, bridgeChainId }: ZapIn) => {
+    const _zapIn = async ({ zapAmount, max, token, bridgeChainId, txId }: ZapIn) => {
         if (!currentWallet) return;
         let amountInWei = toWei(zapAmount, decimals[farm.chainId][token]);
-        const dbTx = await dispatch(
-            addTransactionDb({
-                from: currentWallet,
-                amountInWei: amountInWei.toString(),
-                date: new Date().toString(),
-                type: "deposit",
-                farmId: farm.id,
-                max: !!max,
-                token,
-                steps: [],
-            })
-        );
-        const id = dbTx.payload._id;
 
         await farmFunctions[farm.id].zapIn({
-            id,
+            id: txId,
             currentWallet,
             isSocial,
             amountInWei,
@@ -68,7 +56,7 @@ const useZapIn = (farm: PoolDef) => {
         reloadSupplies();
     };
 
-    const slippageZapIn = async ({ zapAmount, max, token }: ZapIn) => {
+    const slippageZapIn = async ({ zapAmount, max, token }: Omit<ZapIn, "txId">) => {
         if (!currentWallet) return;
         let amountInWei = toWei(zapAmount, decimals[farm.chainId][token]);
         if (!farmFunctions[farm.id]?.zapInSlippage) throw new Error("No zapInSlippage function");
