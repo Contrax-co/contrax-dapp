@@ -7,6 +7,7 @@ import peapods from "./peapods";
 import steer from "./steer";
 import clipper from "./clipper";
 import core from "./core";
+import gamma from "./gamma";
 
 // TODO: find a better way to add farms here, instead of using the farm id manually
 const farmFunctions: { [key: number]: FarmFunctions } = {
@@ -52,6 +53,8 @@ const farmFunctions: { [key: number]: FarmFunctions } = {
     40: clipper(40), // 36: Clipper
 
     301: core(301), // 301: stCore
+
+    401: gamma(401), // 401: wPol
 };
 
 export default farmFunctions;
