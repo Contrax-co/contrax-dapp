@@ -97,7 +97,7 @@ const WithdrawModal: FC<IProps> = ({ handleClose, handleSubmit, farmId, inputAmo
             // @ts-expect-error
             _id: undefined,
             farmId: farm.id,
-            amountInWei: inputAmount.toString(),
+            amountInWei: toWei(inputAmount).toString(),
             date: new Date().toString(),
             from: currentWallet!,
             max: !!max,
