@@ -29,27 +29,21 @@ const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
                 />
             </div>
             <div style={{ marginTop: 10 }}>
-                {tx.steps.map((step, i) => (
-                    <React.Fragment key={i}>
-                        {getStep(
-                            step.type,
-                            step.status,
-                            tx.type === "deposit" ? (tx.token === zeroAddress ? 18 : 6) : 18,
-                            step.amount &&
-                                (tx.type === "deposit"
-                                    ? step.amount
-                                    : BigInt(
-                                          (
-                                              ((Number(formatUnits(BigInt(step.amount), 18)) * tx.vaultPrice!) /
-                                                  tx.tokenPrice!) *
-                                              1e18
-                                          ).toFixed()
-                                      )
-                                ).toString(),
-                            tx.token === zeroAddress ? "ETH" : "USDC"
-                        )}
-                    </React.Fragment>
-                ))}
+                {tx.steps.map((step, i) => {
+                    const decimals = tx.type === "deposit" ? (tx.token === zeroAddress ? 18 : 6) : 18;
+                    const amount = Number(formatUnits(BigInt(step.amount ?? 0), decimals));
+                    const amountInUsd = (amount * tx.vaultPrice!) / tx.tokenPrice!;
+                    return (
+                        <React.Fragment key={i}>
+                            {getStep(
+                                step.type,
+                                step.status,
+                                tx.type === "deposit" ? amount : amountInUsd,
+                                tx.token === zeroAddress ? "ETH" : "USDC"
+                            )}
+                        </React.Fragment>
+                    );
+                })}
             </div>
         </div>
     );
@@ -57,7 +51,7 @@ const TransactionDetails: React.FC<IProps> = ({ transactionId, open }) => {
 
 export default TransactionDetails;
 
-function getStep(name: string, status: TransactionStepStatus, decimals: number, value?: string, tokenName?: string) {
+function getStep(name: string, status: TransactionStepStatus, value: number, tokenName?: string) {
     return (
         <div className={styles.row}>
             {status === TransactionStepStatus.COMPLETED ? (
@@ -73,7 +67,7 @@ function getStep(name: string, status: TransactionStepStatus, decimals: number, 
                 <p className={styles.stepName}>{name}</p>
                 {value && (
                     <p className={styles.tokenValue}>
-                        {Number(formatUnits(BigInt(value), decimals)).toLocaleString()} {tokenName}
+                        {value.toLocaleString()} {tokenName}
                     </p>
                 )}
             </div>
